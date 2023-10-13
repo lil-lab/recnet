@@ -1,0 +1,30 @@
+{
+  "name": "recnet",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@dhaiwat10/react-link-preview": "^1.15.0",
+    "@emotion/react": "^11.11.1",
+    "@emotion/styled": "^11.11.0",
+    "@mui/icons-material": "^5.14.11",
+    "@mui/lab": "^5.0.0-alpha.146",
+    "@mui/material": "^5.14.5",
+    "@react-oauth/google": "^0.11.1",
+    "@reduxjs/toolkit": "^1.9.5",
+    "axios": "^1.4.0",
+    "eslint": "8.47.0",
+    "eslint-config-next": "13.4.19",
+    "firebase": "^10.2.0",
+    "firebase-admin": "^11.10.1",
+    "next": "13.4.19",
+    "react": "18.2.0",
+    "react-dom": "18.2.0",
+    "react-redux": "^8.1.2"
+  }
+}
