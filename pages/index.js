@@ -34,7 +34,6 @@ export default function Home() {
     async function getPosts() {
       const posts = await getFollowingPostsByDate(userId, filter);
       setPosts(posts);
-      console.log(posts);
     }
 
     async function getLastPost() {
@@ -64,9 +63,9 @@ export default function Home() {
       </Head>
 
       {userLoaded && posts !== -1 && lastPost !== -1 && (
-        <main className={styles.main}>
+        <>
           {user ? (
-            <>
+            <main className={styles.main} styles={{ flexDirection: "row" }}>
               {/* Left Sidebar */}
               <div className={styles.left}>
                 <LeftBar
@@ -98,9 +97,16 @@ export default function Home() {
               {/* <div>
                 <RightBar />
               </div> */}
-            </>
+            </main>
           ) : (
-            <>
+            <main
+              className={styles.main}
+              style={{
+                flexDirection: "column",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
               <Typography
                 variant="h1"
                 sx={{
@@ -120,9 +126,9 @@ export default function Home() {
                 receive weekly paper recs from researchers you follow.
               </Typography>
               <LoginButton />
-            </>
+            </main>
           )}
-        </main>
+        </>
       )}
     </>
   );

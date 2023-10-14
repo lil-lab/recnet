@@ -35,6 +35,7 @@ export default function TopBar() {
       }
       dispatch(setLoaded());
     }
+
     if (!user || !userId) checkUserLoggedIn();
   }, []);
 

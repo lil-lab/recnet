@@ -11,11 +11,13 @@ import LoginButton from "@/components/LoginButton";
 import { getUserById, followUser, unfollowUser } from "@/utils/db/user";
 import AddIcon from "@mui/icons-material/Add";
 import BackLink from "@/components/BackLink";
+import { clearUser } from "@/utils/redux/userSlice";
+import { useDispatch } from "react-redux";
 
 const ProfilePage = () => {
   const router = useRouter();
-  const { userId } = router.query; // profile user
-  const [user, setUser] = useState(undefined);
+  const { userId } = router.query; // profile userId
+  const [user, setUser] = useState(undefined); // profile user
   const userLoaded = useSelector((state) => state.user.loaded);
   const currentUserId = useSelector((state) => state.user.id);
   const [posts, setPosts] = useState(undefined);
@@ -38,7 +40,7 @@ const ProfilePage = () => {
         router.push("/");
       }
     }
-  }, [userId, userLoaded, router, currentUserId, update]);
+  }, [userLoaded, userId, update]);
 
   return (
     <main className={styles.main}>
@@ -68,7 +70,8 @@ const ProfilePage = () => {
               </span>{" "}
               following
             </Typography>
-            {userId !== currentUserId &&
+            {currentUserId &&
+              userId !== currentUserId &&
               (user.followers && user.followers.includes(currentUserId) ? (
                 <Button
                   variant="outlined"

@@ -30,7 +30,9 @@ const PostCard = ({ post, showUser, showDate, width }) => {
         }}
       >
         <Link href={link} target="_blank" rel="noopener" align="left">
-          <Typography variant="h4">{title}</Typography>
+          <Typography variant="h4" color="primary">
+            {title}
+          </Typography>
         </Link>
         <Typography
           className={styles.text}
