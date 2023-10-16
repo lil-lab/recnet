@@ -14,9 +14,10 @@ export default async function getUserByEmailHandler(req, res) {
     if (querySnapshot.empty) {
       // No user found with the provided email
       res.status(200).json(undefined);
+    } else {
+      const userId = querySnapshot.docs[0].id;
+      res.status(200).json({ ...querySnapshot.docs[0].data(), id: userId });
     }
-    const userId = querySnapshot.docs[0].id;
-    res.status(200).json({ ...querySnapshot.docs[0].data(), id: userId });
   } catch (error) {
     console.error(error);
     res.status(500).json(error);

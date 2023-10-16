@@ -10,20 +10,21 @@ import { doc, updateDoc, arrayRemove } from "firebase/firestore";
 export default async function followUserHandler(req, res) {
   try {
     const { id, currentUserId } = req.body;
-    if (!id || !currentUserId)
+    if (!id || !currentUserId) {
       res.status(500).json({ message: "Empty user id" });
+    } else {
+      // remove from [id] user followers
+      await updateDoc(doc(db, "users", id), {
+        followers: arrayRemove(currentUserId),
+      });
 
-    // remove from [id] user followers
-    await updateDoc(doc(db, "users", id), {
-      followers: arrayRemove(currentUserId),
-    });
+      // remove from current user following
+      await updateDoc(doc(db, "users", currentUserId), {
+        following: arrayRemove(id),
+      });
 
-    // remove from current user following
-    await updateDoc(doc(db, "users", currentUserId), {
-      following: arrayRemove(id),
-    });
-
-    res.status(200).json({ message: "Success" });
+      res.status(200).json({ message: "Success" });
+    }
   } catch (error) {
     console.error(error);
     res.status(500).json(error);

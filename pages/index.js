@@ -4,21 +4,17 @@ import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 
-import { Button, Typography, Container, Grid } from "@mui/material";
+import { Typography } from "@mui/material";
 
-import PostCard from "@/components/PostCard";
 import LoginButton from "../components/LoginButton";
 
-import { LAST_CUTOFF, NEXT_CUTOFF } from "@/utils/dateHelper";
+import { LAST_CUTOFF } from "@/utils/dateHelper";
 import { getFollowingPostsByDate, getUserLastPost } from "@/utils/db/post";
 
 import { fontStyles } from "@/utils/fonts";
-import { logOut } from "@/utils/db/auth";
 
-import LeftBar from "../components/LeftBar";
-import RightBar from "../components/RightBar";
-import { formatDate } from "@/utils/dateHelper";
 import FollowingPosts from "@/components/FollowingPosts";
+import LeftBar from "../components/LeftBar";
 
 export default function Home() {
   const user = useSelector((state) => state.user.value);
