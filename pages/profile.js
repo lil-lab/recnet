@@ -1,16 +1,16 @@
 import BackLink from "@/components/BackLink";
+import FollowButton from "@/components/FollowButton";
 import LoginButton from "@/components/LoginButton";
 import styles from "@/styles/Profile.module.css";
 import { getPostsByUser } from "@/utils/db/post";
-import { followUser, getUserById, unfollowUser } from "@/utils/db/user";
+import { getUserById } from "@/utils/db/user";
 import { fontStyles } from "@/utils/fonts";
-import AddIcon from "@mui/icons-material/Add";
-import { Avatar, Button, Typography } from "@mui/material";
+import { Avatar, Typography } from "@mui/material";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import PostCard from "../components/PostCard";
-import FollowButton from "@/components/FollowButton";
+import Loading from "@/components/Loading";
 
 const ProfilePage = () => {
   const router = useRouter();
@@ -39,6 +39,13 @@ const ProfilePage = () => {
       }
     }
   }, [userLoaded, userId, update]);
+
+  if (!user || !posts || !userLoaded)
+    return (
+      <main className={styles.main}>
+        <Loading />
+      </main>
+    );
 
   return (
     <main className={styles.main}>
@@ -76,7 +83,7 @@ const ProfilePage = () => {
                 userId={userId}
                 currentUserId={currentUserId}
                 additionalCallback={() => setUpdate(!update)}
-                styles={{ marginTop: "2%" }}
+                style={{ marginTop: "1%", marginBottom: "1%" }}
               />
             )}
             {userId === currentUserId && <LoginButton />}

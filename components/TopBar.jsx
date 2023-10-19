@@ -64,8 +64,13 @@ export default function TopBar() {
           onChange={(e) => {
             setText(e.target.value);
           }}
+          onKeyUp={(e) => {
+            if (e.key === "Enter") {
+              handleSearch();
+            }
+          }}
         ></input>
-        <IconButton onClick={handleSearch} className={styles.searchIcon}>
+        <IconButton onClick={handleSearch} sx={{ marginRight: "1%" }}>
           <SearchIcon color="white" />
         </IconButton>
 
