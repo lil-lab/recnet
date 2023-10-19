@@ -66,7 +66,7 @@ export default function TopBar() {
           }}
         ></input>
         <IconButton onClick={handleSearch} className={styles.searchIcon}>
-          <SearchIcon />
+          <SearchIcon color="white" />
         </IconButton>
 
         {user && (

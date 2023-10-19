@@ -31,13 +31,12 @@ export default function UserCard({ user, width }) {
           referrerPolicy="no-referrer"
           sx={{ width: "5%", height: "5%" }}
         />
-        <Typography className={styles.item} variant="h4" sx={fontStyles.bold}>
+        <Typography variant="h4" sx={{ ...fontStyles.bold, marginLeft: "5%" }}>
           {user.displayName}
         </Typography>
         <Typography
-          className={styles.item}
           variant="body1"
-          sx={fontStyles.regular}
+          sx={{ ...fontStyles.regular, marginLeft: "5%" }}
         >
           {user.email}
         </Typography>
