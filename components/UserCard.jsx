@@ -5,42 +5,57 @@ import styles from "./UserCard.module.css";
 import { useRouter } from "next/router";
 import FollowButton from "./FollowButton";
 
-export default function UserCard({ user, width }) {
+export default function UserCard({ user, width, currentUserId, updateUser }) {
   return (
-    <a
-      href={`/profile?userId=${user.id}`}
-      target="_blank"
-      rel="noopener"
-      style={{
-        width: "100%",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
+    <Paper
+      className={styles.paper}
+      sx={{
+        borderRadius: 8,
+        width: width ?? "100%",
       }}
     >
-      <Paper
-        className={styles.paper}
-        sx={{
-          borderRadius: 8,
-          width: width ?? "100%",
+      <a
+        href={`/profile?userId=${user.id}`}
+        target="_blank"
+        rel="noopener"
+        style={{
+          width: "100%",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "flex-start",
         }}
       >
         <Avatar
           alt="profile"
           src={user.photoURL}
           referrerPolicy="no-referrer"
-          sx={{ width: "5%", height: "5%" }}
+          sx={{ width: "8%", height: "8%" }}
         />
-        <Typography variant="h4" sx={{ ...fontStyles.bold, marginLeft: "5%" }}>
+        <Typography variant="h4" sx={{ ...fontStyles.bold, marginLeft: "3%" }}>
           {user.displayName}
         </Typography>
         <Typography
           variant="body1"
-          sx={{ ...fontStyles.regular, marginLeft: "5%" }}
+          sx={{ ...fontStyles.regular, marginLeft: "3%" }}
         >
           {user.email}
         </Typography>
-      </Paper>
-    </a>
+      </a>
+      {currentUserId && user.id !== currentUserId && (
+        <FollowButton
+          unFollow={user.followers && user.followers.includes(currentUserId)}
+          userId={user.id}
+          currentUserId={currentUserId}
+          additionalCallback={() =>
+            updateUser(
+              user.id,
+              user.followers && user.followers.includes(currentUserId)
+                ? user.followers.filter((u) => u !== currentUserId)
+                : user.followers + [currentUserId]
+            )
+          }
+        />
+      )}
+    </Paper>
   );
 }

@@ -34,7 +34,7 @@ export default function TopBar() {
   }, []);
 
   const handleSearch = () => {
-    text.trim().length > 0 && router.push(`/searchUser?q=${text}`);
+    text.trim().length > 0 && router.push(`/searchUsers?q=${text}`);
   };
 
   return (

@@ -4,14 +4,17 @@ import styles from "@/styles/Search.module.css";
 import { searchUsers } from "@/utils/db/user";
 import { fontStyles } from "@/utils/fonts";
 import { Typography } from "@mui/material";
+import { current } from "@reduxjs/toolkit";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
 
-export default function SearchUser() {
+export default function SearchUsers() {
   const router = useRouter();
   const { q } = router.query;
   const [users, setUsers] = useState([]);
   const [userLoading, setUserLoading] = useState(true);
+  const currentUserId = useSelector((state) => state.user.id);
 
   useEffect(() => {
     async function getUsers(query) {
@@ -26,17 +29,39 @@ export default function SearchUser() {
     }
   }, [q]);
 
+  // update local user info follow/unfollow
+  const updateUser = (userId, newFollowers) => {
+    setUsers(
+      users.map((user) => {
+        if (user.id === userId) {
+          return { ...user, followers: newFollowers };
+        }
+        return user;
+      })
+    );
+  };
+
   return (
     <main className={styles.main}>
       {!userLoading &&
+        currentUserId &&
         (users.length === 0 ? (
           <Typography variant="h6" sx={fontStyles.regular}>
             {"No user matches the search. Search users by name or email."}
           </Typography>
         ) : (
-          users.map((user, index) => (
-            <UserCard key={index} user={user} width={"80%"} />
-          ))
+          users.map(
+            (user, index) =>
+              user.id !== currentUserId && (
+                <UserCard
+                  key={index}
+                  user={user}
+                  width={"80%"}
+                  updateUser={updateUser}
+                  currentUserId={currentUserId}
+                />
+              )
+          )
         ))}
 
       <BackLink />
