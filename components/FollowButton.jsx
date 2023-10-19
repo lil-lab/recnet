@@ -7,13 +7,13 @@ export default function FollowButton({
   additionalCallback,
   userId,
   currentUserId,
-  styles
+  style
 }) {
   return unFollow ? (
     <Button
       variant="outlined"
       color="primary"
-      sx={styles}
+      sx={style}
       onClick={async () => {
         await unfollowUser(userId, currentUserId);
         additionalCallback();
@@ -26,7 +26,7 @@ export default function FollowButton({
       startIcon={<AddIcon />}
       variant="contained"
       color="secondary"
-      sx={styles}
+      sx={style}
       onClick={async () => {
         await followUser(userId, currentUserId);
         additionalCallback();

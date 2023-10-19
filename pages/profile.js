@@ -83,7 +83,7 @@ const ProfilePage = () => {
                 userId={userId}
                 currentUserId={currentUserId}
                 additionalCallback={() => setUpdate(!update)}
-                styles={{ marginTop: "2%" }}
+                style={{ marginTop: "1%", marginBottom: "1%" }}
               />
             )}
             {userId === currentUserId && <LoginButton />}

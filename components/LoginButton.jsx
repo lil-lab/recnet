@@ -13,46 +13,40 @@ export default function LoginButton() {
   const dispatch = useDispatch();
   const router = useRouter();
 
-  return (
-    <div>
-      {user ? (
-        <div>
-          <Button
-            style={{ marginTop: "10%", marginBottom: "10%" }}
-            variant="outlined"
-            onClick={async () => {
-              router.push("/");
-              await logOut();
-              dispatch(clearUser());
-            }}
-          >
-            Log out
-          </Button>
-        </div>
-      ) : (
-        <Button
-          variant="contained"
-          color="secondary"
-          onClick={async () => {
-            const user = await logIn();
-            if (user) {
-              const userData = await getUserByEmail(user.email);
-              if (userData) {
-                // existing user
-                dispatch(setUser(userData));
-                dispatch(setId(userData.id));
-              } else {
-                // new user
-                const newUser = await addUser(user);
-                dispatch(setUser(newUser));
-                dispatch(setId(newUser.id));
-              }
-            }
-          }}
-        >
-          Sign in with Google 🚀
-        </Button>
-      )}
-    </div>
+  return user ? (
+    <Button
+      style={{ marginTop: "1%", marginBottom: "1%" }}
+      variant="outlined"
+      onClick={async () => {
+        router.push("/");
+        await logOut();
+        dispatch(clearUser());
+      }}
+    >
+      Log out
+    </Button>
+  ) : (
+    <Button
+      variant="contained"
+      color="secondary"
+      onClick={async () => {
+        const user = await logIn();
+        if (user) {
+          const userData = await getUserByEmail(user.email);
+          if (userData) {
+            // existing user
+            dispatch(setUser(userData));
+            dispatch(setId(userData.id));
+          } else {
+            // new user
+            const newUser = await addUser(user);
+            dispatch(setUser(newUser));
+            dispatch(setId(newUser.id));
+          }
+        }
+      }}
+    >
+      Sign in with Google 🚀
+    </Button>
   );
 }
