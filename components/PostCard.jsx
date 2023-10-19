@@ -68,11 +68,16 @@ export default function PostCard({ post, showUser, showDate, width }) {
             src={recommender.photoURL}
             referrerPolicy="no-referrer"
             onClick={() => {
-              router.push(`/profile?userId=${userId}`);
+              router.push(`/profile?userId=${post.userId}`);
             }}
             style={{ cursor: "pointer" }}
           />
-          <Link href={link} target="_blank" rel="noopener" align="left">
+          <Link
+            href={`/profile?userId=${post.userId}`}
+            target="_blank"
+            rel="noopener"
+            align="left"
+          >
             <Typography
               variant="body2"
               sx={fontStyles.regular}

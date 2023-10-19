@@ -8,6 +8,7 @@ import { current } from "@reduxjs/toolkit";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
+import Loading from "@/components/Loading";
 
 export default function SearchUsers() {
   const router = useRouter();
@@ -40,6 +41,13 @@ export default function SearchUsers() {
       })
     );
   };
+
+  if (!currentUserId || userLoading)
+    return (
+      <main className={styles.main}>
+        <Loading />
+      </main>
+    );
 
   return (
     <main className={styles.main}>

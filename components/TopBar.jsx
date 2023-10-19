@@ -65,7 +65,7 @@ export default function TopBar() {
             setText(e.target.value);
           }}
         ></input>
-        <IconButton onClick={handleSearch} className={styles.searchIcon}>
+        <IconButton onClick={handleSearch} sx={{ marginRight: "1%" }}>
           <SearchIcon color="white" />
         </IconButton>
 
