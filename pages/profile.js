@@ -1,18 +1,16 @@
-import { Avatar, Button, Typography, Link } from "@mui/material";
+import BackLink from "@/components/BackLink";
+import LoginButton from "@/components/LoginButton";
+import styles from "@/styles/Profile.module.css";
+import { getPostsByUser } from "@/utils/db/post";
+import { followUser, getUserById, unfollowUser } from "@/utils/db/user";
+import { fontStyles } from "@/utils/fonts";
+import AddIcon from "@mui/icons-material/Add";
+import { Avatar, Button, Typography } from "@mui/material";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
-import PostCard from "../components/PostCard";
 import { useSelector } from "react-redux";
-import styles from "@/styles/Profile.module.css";
-import { grey } from "@mui/material/colors";
-import { fontStyles } from "@/utils/fonts";
-import { getPostsByUser } from "@/utils/db/post";
-import LoginButton from "@/components/LoginButton";
-import { getUserById, followUser, unfollowUser } from "@/utils/db/user";
-import AddIcon from "@mui/icons-material/Add";
-import BackLink from "@/components/BackLink";
-import { clearUser } from "@/utils/redux/userSlice";
-import { useDispatch } from "react-redux";
+import PostCard from "../components/PostCard";
+import FollowButton from "@/components/FollowButton";
 
 const ProfilePage = () => {
   const router = useRouter();
@@ -52,7 +50,7 @@ const ProfilePage = () => {
               alt="profile"
               src={user.photoURL}
               referrerPolicy="no-referrer"
-              sx={{ width: 80, height: 80 }}
+              sx={{ width: "5%", height: "5%" }}
             />
             <Typography variant="h3" sx={fontStyles.bold}>
               {user.displayName}
@@ -70,34 +68,17 @@ const ProfilePage = () => {
               </span>{" "}
               following
             </Typography>
-            {currentUserId &&
-              userId !== currentUserId &&
-              (user.followers && user.followers.includes(currentUserId) ? (
-                <Button
-                  variant="outlined"
-                  color="primary"
-                  sx={{ marginTop: 2 }}
-                  onClick={async () => {
-                    await unfollowUser(userId, currentUserId);
-                    setUpdate(!update);
-                  }}
-                >
-                  Unfollow
-                </Button>
-              ) : (
-                <Button
-                  startIcon={<AddIcon />}
-                  variant="contained"
-                  color="secondary"
-                  sx={{ marginTop: 2 }}
-                  onClick={async () => {
-                    await followUser(userId, currentUserId);
-                    setUpdate(!update);
-                  }}
-                >
-                  Follow
-                </Button>
-              ))}
+            {currentUserId && userId !== currentUserId && (
+              <FollowButton
+                unFollow={
+                  user.followers && user.followers.includes(currentUserId)
+                }
+                userId={userId}
+                currentUserId={currentUserId}
+                additionalCallback={() => setUpdate(!update)}
+                styles={{ marginTop: "2%" }}
+              />
+            )}
             {userId === currentUserId && <LoginButton />}
             <div className={styles.posts}>
               {posts.map((post) => (

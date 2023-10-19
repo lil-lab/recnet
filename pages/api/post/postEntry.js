@@ -43,7 +43,7 @@ export default async function postEntryHandler(req, res) {
 
     res.status(200).json({ id });
   } catch (error) {
-    console.error(error.toJSON());
-    res.status(500).json(error);
+    console.error(error);
+    res.status(500).json(error.message);
   }
 }
