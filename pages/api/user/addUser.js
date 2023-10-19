@@ -18,6 +18,6 @@ export default async function addUserHandler(req, res) {
     res.status(200).json({ ...data, id }); // NOTE: createdAt in the return data is not a valid timestamp: {"_methodName": "serverTimestamp"}
   } catch (error) {
     console.error(error);
-    res.status(500).json(error);
+    res.status(500).json(error.message);
   }
 }

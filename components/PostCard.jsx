@@ -5,7 +5,7 @@ import { fontStyles } from "@/utils/fonts";
 import { getUserById } from "@/utils/db/user";
 import { formatDate, getDateFromServerTimestamp } from "@/utils/dateHelper";
 
-const PostCard = ({ post, showUser, showDate, width }) => {
+export default function PostCard({ post, showUser, showDate, width }) {
   const { title, link, author, description } = post;
   const [recommender, setRecommender] = useState(undefined);
 
@@ -101,6 +101,4 @@ const PostCard = ({ post, showUser, showDate, width }) => {
   } else {
     return showBasicPost();
   }
-};
-
-export default PostCard;
+}

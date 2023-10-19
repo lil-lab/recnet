@@ -1,26 +1,20 @@
-import { useEffect } from "react";
+import { AppBar, Avatar, IconButton, Toolbar, Typography } from "@mui/material";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { setId, setLoaded, setUser } from "../utils/redux/userSlice";
-
-import {
-  AppBar,
-  Avatar,
-  Toolbar,
-  Typography,
-  IconButton,
-  Link,
-} from "@mui/material";
+import styles from "./TopBar.module.css";
 
 import { getCurrentUser } from "../utils/db/auth";
 import { getUserByEmail } from "../utils/db/user";
 
-import { useRouter } from "next/router";
 import SearchIcon from "@mui/icons-material/Search";
+import { useRouter } from "next/router";
 
 export default function TopBar() {
   const user = useSelector((state) => state.user.value);
   const userId = useSelector((state) => state.user.id);
   const dispatch = useDispatch();
+  const [text, setText] = useState("");
 
   const router = useRouter();
 
@@ -38,6 +32,10 @@ export default function TopBar() {
 
     if (!user || !userId) checkUserLoggedIn();
   }, []);
+
+  const handleSearch = () => {
+    text.trim().length > 0 && router.push(`/searchUser?q=${text}`);
+  };
 
   return (
     <AppBar position="fixed" sx={{ top: 0 }} elevation={0}>
@@ -59,13 +57,16 @@ export default function TopBar() {
         >
           recnet
         </Typography>
-        <IconButton
-          onClick={() => {
-            router.push("/search");
+
+        <input
+          className={styles.searchText}
+          placeholder="search user..."
+          onChange={(e) => {
+            setText(e.target.value);
           }}
-          style={{ margin: "1%" }}
-        >
-          <SearchIcon style={{ color: "white" }} />
+        ></input>
+        <IconButton onClick={handleSearch} className={styles.searchIcon}>
+          <SearchIcon />
         </IconButton>
 
         {user && (

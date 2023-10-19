@@ -23,6 +23,6 @@ export default async function getPostByUserHandler(req, res) {
     res.status(200).json(recommendations);
   } catch (error) {
     console.error(error);
-    res.status(500).json(error);
+    res.status(500).json(error.message);
   }
 }

@@ -1,0 +1,21 @@
+.paper {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+  padding-left: 2rem;
+  margin-bottom: 1rem;
+}
+
+.paperLink {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.item {
+  margin-left: 5%;
+}

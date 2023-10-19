@@ -13,12 +13,13 @@ export default async function getPostByIdHandler(req, res) {
 
     if (docSnap.exists()) {
       res.status(200).json(docSnap.data());
-    } else {
+    } 
+    else {
       // docSnap.data() will be undefined in this case
       res.status(404).json({ error: "Post not found" });
     }
   } catch (error) {
     console.error(error);
-    res.status(500).json(error);
+    res.status(500).json(error.message);
   }
 }

@@ -15,6 +15,6 @@ export default async function getUserByIdHandler(req, res) {
     res.status(200).json({ ...docSnap.data(), id });
   } catch (error) {
     console.error(error);
-    res.status(500).json(error);
+    res.status(500).json(error.message);
   }
 }
