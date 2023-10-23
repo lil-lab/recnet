@@ -57,18 +57,15 @@ export default function SearchUsers() {
             {"No user matches the search. Search users by name or email."}
           </Typography>
         ) : (
-          users.map(
-            (user, index) =>
-              user.id !== currentUserId && (
-                <UserCard
-                  key={index}
-                  user={user}
-                  width={"80%"}
-                  updateUser={updateUser}
-                  currentUserId={currentUserId}
-                />
-              )
-          )
+          users.map((user, index) => (
+            <UserCard
+              key={index}
+              user={user}
+              width={"80%"}
+              updateUser={updateUser}
+              currentUserId={currentUserId}
+            />
+          ))
         ))}
 
       <BackLink />
