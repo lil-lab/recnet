@@ -7,7 +7,11 @@ import { useSelector } from "react-redux";
 import { Box, TextField, Typography } from "@mui/material";
 import { getPostbyId, postEntry, updatePost } from "../utils/db/post";
 
-import { getNextDueDay } from "@/utils/dateHelper";
+import {
+  formatDateVerbose,
+  formatNextDueDay,
+  getNextCutoff,
+} from "@/utils/dateHelper";
 import LoadingButton from "@mui/lab/LoadingButton";
 
 export default function Edit() {
@@ -37,7 +41,7 @@ export default function Edit() {
               padding: "1%",
             }}
           >
-            Week of {getNextDueDay()}
+            Week of {formatNextDueDay()}
           </Typography>
           <PaperForm postId={postId} />
         </>
@@ -206,7 +210,9 @@ function PaperForm({ postId }) {
       </LoadingButton>
 
       <Typography variant="body2" color="textSecondary">
-        You can edit as many times as you want before the cutoff.
+        {`You can edit as many times as you want before this week's cutoff: ${formatDateVerbose(
+          getNextCutoff()
+        )}.`}
       </Typography>
       <BackLink />
     </div>

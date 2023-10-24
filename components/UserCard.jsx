@@ -29,7 +29,7 @@ export default function UserCard({ user, width, currentUserId, updateUser }) {
           alt="profile"
           src={user.photoURL}
           referrerPolicy="no-referrer"
-          sx={{ width: "8%", height: "8%" }}
+          sx={{ width: "5vw", height: "5vw" }}
         />
         <Typography variant="h4" sx={{ ...fontStyles.bold, marginLeft: "3%" }}>
           {user.displayName}

@@ -1,5 +1,12 @@
 import { db } from "../../../utils/db/init";
-import { getDocs, query, collection, where } from "firebase/firestore";
+import {
+  getDocs,
+  query,
+  collection,
+  where,
+  Timestamp,
+} from "firebase/firestore";
+import { getNextCutoff } from "@/utils/dateHelper";
 
 /** [GET] Get all posts by user.
  * req.query requires:
@@ -7,12 +14,22 @@ import { getDocs, query, collection, where } from "firebase/firestore";
  */
 export default async function getPostByUserHandler(req, res) {
   try {
-    const { userId } = req.query;
+    const { userId, current } = req.query;
 
-    const q = query(
-      collection(db, "recommendations"),
-      where("userId", "==", userId)
-    );
+    let q;
+    if (current === "true") {
+      // including upcoming post in current cutoff
+      q = query(
+        collection(db, "recommendations"),
+        where("userId", "==", userId)
+      );
+    } else {
+      q = query(
+        collection(db, "recommendations"),
+        where("userId", "==", userId),
+        where("cutoff", "!=", Timestamp.fromMillis(getNextCutoff()))
+      );
+    }
 
     const querySnapshot = await getDocs(q);
     let recommendations = [];

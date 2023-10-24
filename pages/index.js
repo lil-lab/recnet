@@ -6,7 +6,7 @@ import { Typography } from "@mui/material";
 
 import LoginButton from "../components/LoginButton";
 
-import { LAST_CUTOFF } from "@/utils/dateHelper";
+import { getLastCutoff, getNextCutoff } from "@/utils/dateHelper";
 import { getFollowingPostsByDate, getUserLastPost } from "@/utils/db/post";
 
 import { fontStyles } from "@/utils/fonts";
@@ -22,7 +22,7 @@ export default function Home() {
 
   const [posts, setPosts] = useState(-1); // -1 when the page is just loaded; undefined when there's no post
   const [lastPost, setLastPost] = useState(-1);
-  const [filter, setFilter] = useState(LAST_CUTOFF);
+  const [filter, setFilter] = useState(getLastCutoff());
 
   useEffect(() => {
     async function getPosts() {

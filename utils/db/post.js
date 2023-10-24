@@ -64,8 +64,8 @@ export const updatePost = async (title, link, author, description, postId) => {
   });
 };
 
-export const getPostsByUser = async (userId) => {
-  const postRes = await axios.get(`/api/post/getPostsByUser?userId=${userId}`);
+export const getPostsByUser = async (userId, currentCutoff) => {
+  const postRes = await axios.get(`/api/post/getPostsByUser?userId=${userId}&current=${currentCutoff}`);
   if (postRes.status === 200) {
     return postRes.data;
   }

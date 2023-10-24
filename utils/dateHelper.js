@@ -3,25 +3,30 @@ import { Timestamp } from "firebase/firestore";
 export const DUE_DAY = 2;
 export const START_DATE = new Date(2023, 8, 29); // TODO
 
-const currentDate = new Date();
-const currentDay = currentDate.getUTCDay(); // 0 for Sunday, 1 for Monday, ..., 6 for Saturday
-const daysUntilNextCutoff = (DUE_DAY + 7 - currentDay) % 7;
-const daysSinceLastCutoff = 7 - daysUntilNextCutoff;
-
-/** Returns a cutoff Date object given the date.
- * @param {number} date
+/** Returns a cutoff Date object with exact cutoff time given the date.
+ * @param {Date} date
  */
-function getCutoff(date) {
-  const cutoff = new Date();
-  cutoff.setUTCDate(date);
+function getCutoffTime(cutoff) {
   cutoff.setUTCHours(23, 59, 59, 999);
   return cutoff;
 }
 
-const LAST_CUTOFF = getCutoff(currentDate.getUTCDate() - daysSinceLastCutoff);
-const NEXT_CUTOFF = getCutoff(currentDate.getUTCDate() + daysUntilNextCutoff);
+export function getLastCutoff() {
+  const currentDate = new Date();
+  const currentDay = currentDate.getUTCDay(); // 0 for Sunday, 1 for Monday, ..., 6 for Saturday
+  const daysUntilNextCutoff = (DUE_DAY + 7 - currentDay) % 7;
+  const daysSinceLastCutoff = 7 - daysUntilNextCutoff;
+  currentDate.setUTCDate(currentDate.getUTCDate() - daysSinceLastCutoff);
+  return getCutoffTime(currentDate);
+}
 
-export { LAST_CUTOFF, NEXT_CUTOFF };
+export function getNextCutoff() {
+  const currentDate = new Date();
+  const currentDay = currentDate.getUTCDay();
+  const daysUntilNextCutoff = (DUE_DAY + 7 - currentDay) % 7;
+  currentDate.setUTCDate(currentDate.getUTCDate() + daysUntilNextCutoff);
+  return getCutoffTime(currentDate);
+}
 
 /** Format a given day in local timezone in the form of MM/DD/YYYY.
  * @param d Date object
@@ -35,8 +40,39 @@ export function formatDate(d) {
 }
 
 /** Format next cutoff day in the form of MM/DD/YYYY.*/
-export function getNextDueDay() {
-  return formatDate(NEXT_CUTOFF);
+export function formatNextDueDay() {
+  return formatDate(getNextCutoff());
+}
+
+/** Format the cutoff as Weekday MM/DD HH:MM:SS Time_zone. */
+export function formatDateVerbose(date, excludeDate) {
+  var options = {};
+  if (excludeDate) {
+    options = {
+      weekday: "long",
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+      hour12: false,
+      timeZoneName: "short",
+    };
+  } else {
+    options = {
+      weekday: "long",
+      month: "numeric",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+      hour12: false,
+      timeZoneName: "short",
+    };
+  }
+
+  const formattedDate = new Intl.DateTimeFormat("default", options).format(
+    date
+  );
+  return formattedDate.replaceAll(",", "");
 }
 
 /** Get timestamp in milliseconds from server timestamp.
@@ -47,8 +83,9 @@ export function getDateFromServerTimestamp(timestamp) {
   return new Date(timestamp.toMillis());
 }
 
-/** Gets all due day dates from the start date to today in reverse order.
- * @param startDate
+/** Gets all cutoff day dates from the start date to today in reverse order.
+ * @param {Date} startDate
+ * @return {Date[]} cutoff dates from the latest
  */
 export function getPastDueDays(startDate) {
   let result = [];
@@ -58,10 +95,10 @@ export function getPastDueDays(startDate) {
   while (currentDate.getUTCDay() !== DUE_DAY) {
     currentDate.setUTCDate(currentDate.getUTCDate() + 1);
   }
-
+  currentDate = getCutoffTime(currentDate);
   // add subsequent due dates to list
   while (currentDate <= new Date()) {
-    result.push(getCutoff(currentDate.getUTCDate()));
+    result.push(new Date(currentDate));
     currentDate.setUTCDate(currentDate.getUTCDate() + 7);
   }
 
@@ -72,5 +109,5 @@ export function getPastDueDays(startDate) {
  * @param date
  */
 export function isDateWithinDateRange(date) {
-  return date > LAST_CUTOFF && date <= NEXT_CUTOFF;
+  return date > getLastCutoff() && date <= getNextCutoff();
 }

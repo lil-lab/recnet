@@ -1,4 +1,10 @@
-import { START_DATE, formatDate, getPastDueDays } from "@/utils/dateHelper";
+import {
+  START_DATE,
+  formatDate,
+  formatDateVerbose,
+  getNextCutoff,
+  getPastDueDays,
+} from "@/utils/dateHelper";
 import { fontStyles } from "@/utils/fonts";
 import { Button, Divider, List, ListItem, Typography } from "@mui/material";
 import { useState } from "react";
@@ -14,7 +20,16 @@ export default function LeftBar({ lastPost, setFilter }) {
       <ListItem>
         <PostButton lastPost={lastPost} />
       </ListItem>
-      <Divider textAlign="left" flexItem>
+      <ListItem>
+        <Typography variant="body2" color="textSecondary" align="center">
+          {lastPost
+            ? `Edit you recommendation anytime before: ${formatDateVerbose(
+                getNextCutoff()
+              )}`
+            : `Recommend a paper before: ${formatDateVerbose(getNextCutoff())}`}
+        </Typography>
+      </ListItem>
+      <Divider textAlign="left" flexItem style={{ marginTop: "1%" }}>
         <Typography
           variant="body2"
           sx={fontStyles.regular}

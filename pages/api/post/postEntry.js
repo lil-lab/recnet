@@ -7,7 +7,7 @@ import {
   doc,
   arrayUnion,
 } from "firebase/firestore";
-import { NEXT_CUTOFF } from "@/utils/dateHelper";
+import { getNextCutoff } from "@/utils/dateHelper";
 
 /** [POST] Post an entry and update user.
  * req.body requires:
@@ -24,7 +24,7 @@ export default async function postEntryHandler(req, res) {
     const { id } = await addDoc(collection(db, "recommendations"), {
       ...req.body,
       createdAt: serverTimestamp(),
-      cutoff: NEXT_CUTOFF,
+      cutoff: getNextCutoff(),
     });
 
     // update user

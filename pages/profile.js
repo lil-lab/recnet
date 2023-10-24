@@ -23,7 +23,7 @@ const ProfilePage = () => {
 
   useEffect(() => {
     async function getPosts(id) {
-      const posts = await getPostsByUser(id);
+      const posts = await getPostsByUser(id, false);
       setPosts(posts);
     }
     async function getUser(id) {
@@ -57,7 +57,7 @@ const ProfilePage = () => {
               alt="profile"
               src={user.photoURL}
               referrerPolicy="no-referrer"
-              sx={{ width: "5%", height: "5%" }}
+              sx={{ width: "5vw", height: "5vw" }}
             />
             <Typography variant="h3" sx={fontStyles.bold}>
               {user.displayName}
