@@ -9,6 +9,7 @@ import { getUserByEmail } from "../utils/db/user";
 
 import SearchIcon from "@mui/icons-material/Search";
 import { useRouter } from "next/router";
+import { fontStyles } from "@/utils/fonts";
 
 export default function TopBar() {
   const user = useSelector((state) => state.user.value);
@@ -46,16 +47,29 @@ export default function TopBar() {
           component="a"
           href="/"
           sx={{
-            mr: 2,
-            display: { xs: "none", md: "flex" },
-            fontWeight: 700,
+            display: "flex",
+            ...fontStyles.bold,
             letterSpacing: ".3rem",
-            textDecoration: "none",
-            flexGrow: 1,
             color: "white",
           }}
         >
           recnet
+        </Typography>
+        <Typography
+          variant="h6"
+          noWrap
+          component="a"
+          href="/about"
+          sx={{
+            ml: "2%",
+            ...fontStyles.regular,
+            letterSpacing: ".1rem",
+            color: "white",
+            flexGrow: 1,
+            textDecoration: "underline",
+          }}
+        >
+          about
         </Typography>
 
         <input

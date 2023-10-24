@@ -33,7 +33,7 @@ export default function LeftBar({ lastPost, setFilter }) {
         <Typography
           variant="body2"
           sx={fontStyles.regular}
-          color="secondary"
+          color="primary"
           align="left"
         >
           previous weeks

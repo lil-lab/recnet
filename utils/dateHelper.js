@@ -1,6 +1,6 @@
 import { Timestamp } from "firebase/firestore";
 
-export const DUE_DAY = 2;
+export const DUE_DAY = 2; // 0 for Sunday, 1 for Monday, ..., 6 for Saturday
 export const START_DATE = new Date(2023, 8, 29); // TODO
 
 /** Returns a cutoff Date object with exact cutoff time given the date.
@@ -13,7 +13,7 @@ function getCutoffTime(cutoff) {
 
 export function getLastCutoff() {
   const currentDate = new Date();
-  const currentDay = currentDate.getUTCDay(); // 0 for Sunday, 1 for Monday, ..., 6 for Saturday
+  const currentDay = currentDate.getUTCDay(); 
   const daysUntilNextCutoff = (DUE_DAY + 7 - currentDay) % 7;
   const daysSinceLastCutoff = 7 - daysUntilNextCutoff;
   currentDate.setUTCDate(currentDate.getUTCDate() - daysSinceLastCutoff);

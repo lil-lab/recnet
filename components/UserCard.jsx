@@ -16,7 +16,7 @@ export default function UserCard({ user, width, currentUserId, updateUser }) {
     >
       <a
         href={`/profile?userId=${user.id}`}
-        target="_blank"
+        target="_self"
         rel="noopener"
         style={{
           width: "100%",
