@@ -24,7 +24,7 @@ export default async function getFollowingPostsByDateHandler(req, res) {
     let following = [];
     if (data) {
       following = data.following;
-      following.push(userId); // include self
+      // following.push(userId); // include self
     } else {
       res.status(404).json({ error: "User not found" });
     }
