@@ -25,8 +25,13 @@ export default async function getFollowingPostsByDateHandler(req, res) {
     if (data) {
       following = data.following;
       // following.push(userId); // include self
+      if (following.length === 0) {
+        res.status(200).json([]);
+        return;
+      }
     } else {
       res.status(404).json({ error: "User not found" });
+      return;
     }
 
     // following users' posts at this cutoff
