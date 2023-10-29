@@ -16,13 +16,14 @@ export default function About() {
         About
       </Typography>
       <Typography variant="body1">
-        With the abundance of academic papers and overwhelmingly complex
-        recommendation systems around, an entirely human-based recommendation
-        system is much needed to provide high-quality recommendations from
-        trusted sources. Lorem ipsum dolor sit amet, consectetur adipisicing
-        elit. Quos blanditiis tenetur unde suscipit, quam beatae rerum inventore
-        consectetur, neque doloribus, cupiditate numquam dignissimos laborum
-        fugiat deleniti? Eum quasi quidem quibusdam.
+        Recnet is a human-driven recommendation system for academic readings. 
+          Recnet implements a mechanism similar to contemporary social networks, 
+          but it is designed to be improvished in certain ways through information 
+          bottlenecks that increase communication cost. This is intended to limit 
+          the amount of time the system consumes from its users, while increasing 
+          the quality of information passed. The Recnet mechanism was initially 
+          outlined by Yoav Artzi in <a href="https://yoavartzi.substack.com/p/a-quick-sketch-of-a-human-based-paper">a Substack post</a>.
+          Recnet is currently is initial development stages.
       </Typography>
       <Divider
         textAlign="left"
@@ -33,13 +34,12 @@ export default function About() {
         }}
       ></Divider>
       <Typography variant="h3" color="primary" sx={{ marginBottom: "3%" }}>
-        Contact
+        Team
       </Typography>
       <Typography variant="body1">
-        Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quos
-        blanditiis tenetur unde suscipit, quam beatae rerum inventore
-        consectetur, neque doloribus, cupiditate numquam dignissimos laborum
-        fugiat deleniti? Eum quasi quidem quibusdam.
+        Anya Ji [<a href="https://anya-ji.github.io/">website</a>] [<a href="https://www.recnet.io/profile?userId=LCiJ5IX9R0P8DxqyBFr28LkBsUq1">recnet profile</a>]
+        Valene Tjong
+        Yoav Artzi [<a href="https://yoavartzi.com/">website</a>] [<a href="https://www.recnet.io/profile?userId=foiYV9JeW2fFUkJvbQ6KnIC1tT93">recnet profile</a>]
       </Typography>
     </main>
   );
