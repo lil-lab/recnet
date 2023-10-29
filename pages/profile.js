@@ -1,18 +1,18 @@
 import BackLink from "@/components/BackLink";
+import EditProfilePopUp from "@/components/EditProfilePopUp";
 import FollowButton from "@/components/FollowButton";
-import LoginButton from "@/components/LoginButton";
+import Loading from "@/components/Loading";
 import styles from "@/styles/Profile.module.css";
 import { getPostsByUser } from "@/utils/db/post";
 import { getUserById } from "@/utils/db/user";
 import { fontStyles } from "@/utils/fonts";
-import { Avatar, Typography } from "@mui/material";
+import { Avatar, Button, Typography, Dialog } from "@mui/material";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import PostCard from "../components/PostCard";
-import Loading from "@/components/Loading";
 
-const ProfilePage = () => {
+export default function ProfilePage() {
   const router = useRouter();
   const { userId } = router.query; // profile userId
   const [user, setUser] = useState(undefined); // profile user
@@ -20,6 +20,15 @@ const ProfilePage = () => {
   const currentUserId = useSelector((state) => state.user.id);
   const [posts, setPosts] = useState(undefined);
   const [update, setUpdate] = useState(false); // update user after follow/unfollow action
+  const [open, setOpen] = useState(false);
+
+  const handleClickOpen = () => {
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
 
   useEffect(() => {
     async function getPosts(id) {
@@ -75,6 +84,7 @@ const ProfilePage = () => {
               </span>{" "}
               following
             </Typography>
+            {/* Follow button */}
             {currentUserId && userId !== currentUserId && (
               <FollowButton
                 unFollow={
@@ -86,7 +96,26 @@ const ProfilePage = () => {
                 style={{ marginTop: "1%", marginBottom: "1%" }}
               />
             )}
-            {userId === currentUserId && <LoginButton />}
+
+            {/* Edit profile */}
+            {userId === currentUserId && (
+              <Button
+                variant="outlined"
+                style={{ marginTop: "1%", marginBottom: "1%" }}
+                onClick={handleClickOpen}
+              >
+                Edit Profile
+              </Button>
+            )}
+            <Dialog open={open} onClose={handleClose} keepMounted={false}>
+              <EditProfilePopUp
+                open={open}
+                handleClose={handleClose}
+                user={user}
+              />
+            </Dialog>
+
+            {/* Posts */}
             <div className={styles.posts}>
               {posts.map((post) => (
                 <PostCard key={post.id} post={post} showDate />
@@ -103,6 +132,4 @@ const ProfilePage = () => {
         ))}
     </main>
   );
-};
-
-export default ProfilePage;
+}

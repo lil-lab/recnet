@@ -29,21 +29,28 @@ export async function addUser(user) {
 }
 
 export async function followUser(id, currentUserId) {
-  const response = await axios.post("/api/user/follow", { id, currentUserId });
+  if (id && currentUserId) {
+    const response = await axios.post("/api/user/follow", {
+      id,
+      currentUserId,
+    });
 
-  if (response.status === 200) {
-    return response.data;
+    if (response.status === 200) {
+      return response.data;
+    }
   }
 }
 
 export async function unfollowUser(id, currentUserId) {
-  const response = await axios.post("/api/user/unfollow", {
-    id,
-    currentUserId,
-  });
+  if (id && currentUserId) {
+    const response = await axios.post("/api/user/unfollow", {
+      id,
+      currentUserId,
+    });
 
-  if (response.status === 200) {
-    return response.data;
+    if (response.status === 200) {
+      return response.data;
+    }
   }
 }
 
