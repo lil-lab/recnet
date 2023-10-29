@@ -18,7 +18,7 @@ export default function About() {
       <Typography variant="body1">
         Recnet is a human-driven recommendation system for academic readings. 
           Recnet implements a mechanism similar to contemporary social networks, 
-          but it is designed to be improvished in certain ways through information 
+          but it is designed to be impoverished in certain ways through information 
           bottlenecks that increase communication cost. This is intended to limit 
           the amount of time the system consumes from its users, while increasing 
           the quality of information passed. The Recnet mechanism was initially 
