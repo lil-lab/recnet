@@ -70,7 +70,7 @@ const ProfilePage = () => {
                 {user.followers ? user.followers.length : 0}{" "}
               </span>{" "}
               followers |{" "}
-              <span style={{ fontWeight: "bold" }}>
+              <span style={{ fontWeight: "bold", cursor: "pointer" }} onClick={() => router.push(`/profile?userid=${userId}/following`)}>
                 {user.following ? user.following.length : 0}
               </span>{" "}
               following
