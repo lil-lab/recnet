@@ -1,0 +1,19 @@
+/* components/FollowingModal.css */
+.modalBox {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 80%;
+    max-height: 80%;
+    background-color: white;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 16px;
+    overflow: auto;
+}
+
+.closeButton {
+    position: absolute;
+    right: 8px;
+    top: 8px;
+}

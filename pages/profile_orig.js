@@ -1,7 +1,6 @@
 import BackLink from "@/components/BackLink";
 import FollowButton from "@/components/FollowButton";
 import LoginButton from "@/components/LoginButton";
-import FollowingModal from "@/components/FollowingModal";  
 import styles from "@/styles/Profile.module.css";
 import { getPostsByUser } from "@/utils/db/post";
 import { getUserById } from "@/utils/db/user";
@@ -21,7 +20,6 @@ const ProfilePage = () => {
   const currentUserId = useSelector((state) => state.user.id);
   const [posts, setPosts] = useState(undefined);
   const [update, setUpdate] = useState(false); // update user after follow/unfollow action
-  const [modalOpen, setModalOpen] = useState(false); // State to control the modal
 
   useEffect(() => {
     async function getPosts(id) {
@@ -49,20 +47,6 @@ const ProfilePage = () => {
       </main>
     );
 
-  // Callback function to refresh user data
-  const refreshUserData = async () => {
-    const updatedUser = await getUserById(userId);
-    setUser(updatedUser);
-  };
-
-  const handleModalOpen = () => {
-    setModalOpen(true);
-  };
-
-  const handleModalClose = () => {
-    setModalOpen(false);
-  };
-
   return (
     <main className={styles.main}>
       {user &&
@@ -86,7 +70,7 @@ const ProfilePage = () => {
                 {user.followers ? user.followers.length : 0}{" "}
               </span>{" "}
               followers |{" "}
-              <span style={{ fontWeight: "bold", cursor: "pointer" }} onClick={handleModalOpen}>
+              <span style={{ fontWeight: "bold", cursor: "pointer" }} onClick={() => router.push(`/following?userid=${userId}`)}>
                 {user.following ? user.following.length : 0}
               </span>{" "}
               following
@@ -117,14 +101,6 @@ const ProfilePage = () => {
             <BackLink />
           </>
         ))}
-      {/* Following Modal */}
-      <FollowingModal
-        userId={userId}
-        open={modalOpen}
-        onClose={handleModalClose}
-        currentUserId={currentUserId}
-        onUserUpdate={refreshUserData} // Pass the callback function as a prop
-      />
     </main>
   );
 };
