@@ -37,11 +37,16 @@ export default function LoginButton() {
             // existing user
             dispatch(setUser(userData));
             dispatch(setId(userData.id));
+            if (!userData.username) {
+              // no username
+              router.push("/welcome");
+            }
           } else {
             // new user
             const newUser = await addUser(user);
             dispatch(setUser(newUser));
             dispatch(setId(newUser.id));
+            router.push("/welcome");
           }
         }
       }}

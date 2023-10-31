@@ -14,8 +14,10 @@ import { fontStyles } from "@/utils/fonts";
 import FollowingPosts from "@/components/FollowingPosts";
 import Loading from "@/components/Loading";
 import LeftBar from "../components/LeftBar";
+import { useCheckUser } from "@/utils/hooks";
 
 export default function Home() {
+  useCheckUser();
   const user = useSelector((state) => state.user.value);
   const userId = useSelector((state) => state.user.id);
   const userLoaded = useSelector((state) => state.user.loaded);

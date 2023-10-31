@@ -1,18 +1,22 @@
 import BackLink from "@/components/BackLink";
+import SettingsDialogContent from "@/components/SettingsDialogContent";
 import FollowButton from "@/components/FollowButton";
-import LoginButton from "@/components/LoginButton";
+import Loading from "@/components/Loading";
 import styles from "@/styles/Profile.module.css";
 import { getPostsByUser } from "@/utils/db/post";
 import { getUserById } from "@/utils/db/user";
 import { fontStyles } from "@/utils/fonts";
-import { Avatar, Typography } from "@mui/material";
+import { Avatar, Button, Typography, Dialog } from "@mui/material";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import PostCard from "../components/PostCard";
-import Loading from "@/components/Loading";
+import SettingsIcon from "@mui/icons-material/Settings";
+import CorporateFareIcon from "@mui/icons-material/CorporateFare";
+import { useCheckUser } from "@/utils/hooks";
 
-const ProfilePage = () => {
+export default function ProfilePage() {
+  useCheckUser();
   const router = useRouter();
   const { userId } = router.query; // profile userId
   const [user, setUser] = useState(undefined); // profile user
@@ -20,6 +24,15 @@ const ProfilePage = () => {
   const currentUserId = useSelector((state) => state.user.id);
   const [posts, setPosts] = useState(undefined);
   const [update, setUpdate] = useState(false); // update user after follow/unfollow action
+  const [open, setOpen] = useState(false);
+
+  const handleClickOpen = () => {
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
 
   useEffect(() => {
     async function getPosts(id) {
@@ -62,10 +75,32 @@ const ProfilePage = () => {
             <Typography variant="h3" sx={fontStyles.bold}>
               {user.displayName}
             </Typography>
-            <Typography variant="h6" sx={fontStyles.regular}>
+            {/* <Typography variant="h6" sx={fontStyles.regular}>
               {user.email}
-            </Typography>
-            <Typography variant="h6" sx={fontStyles.regular}>
+            </Typography> */}
+            {user.username && (
+              <Typography
+                variant="h6"
+                sx={{ ...fontStyles.regular, color: "grey" }}
+              >
+                {`@ ${user.username}`}
+              </Typography>
+            )}
+
+            {user.organization && (
+              <div className={styles.organization}>
+                <CorporateFareIcon />{" "}
+                <Typography variant="body1" sx={fontStyles.regular}>
+                  {" "}
+                  {user.organization}
+                </Typography>
+              </div>
+            )}
+
+            <Typography
+              variant="h6"
+              sx={{ ...fontStyles.regular, marginTop: "1%" }}
+            >
               <span style={{ fontWeight: "bold" }}>
                 {user.followers ? user.followers.length : 0}{" "}
               </span>{" "}
@@ -75,6 +110,7 @@ const ProfilePage = () => {
               </span>{" "}
               following
             </Typography>
+            {/* Follow button */}
             {currentUserId && userId !== currentUserId && (
               <FollowButton
                 unFollow={
@@ -86,7 +122,27 @@ const ProfilePage = () => {
                 style={{ marginTop: "1%", marginBottom: "1%" }}
               />
             )}
-            {userId === currentUserId && <LoginButton />}
+
+            {/* Edit profile */}
+            {userId === currentUserId && (
+              <Button
+                variant="outlined"
+                style={{ marginTop: "1%", marginBottom: "1%" }}
+                onClick={handleClickOpen}
+                startIcon={<SettingsIcon />}
+              >
+                Settings
+              </Button>
+            )}
+            <Dialog open={open} onClose={handleClose} keepMounted={false}>
+              <SettingsDialogContent
+                handleClose={handleClose}
+                user={user}
+                onUpdate={() => setUpdate(!update)}
+              />
+            </Dialog>
+
+            {/* Posts */}
             <div className={styles.posts}>
               {posts.map((post) => (
                 <PostCard key={post.id} post={post} showDate />
@@ -103,6 +159,4 @@ const ProfilePage = () => {
         ))}
     </main>
   );
-};
-
-export default ProfilePage;
+}

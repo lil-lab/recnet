@@ -16,6 +16,7 @@ export default function App({ Component, pageProps }) {
       white: { main: "#FFFFFF" },
     },
   });
+
   return (
     <Provider store={store}>
       <ThemeProvider theme={theme}>

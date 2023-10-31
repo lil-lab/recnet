@@ -13,8 +13,10 @@ import {
   getNextCutoff,
 } from "@/utils/dateHelper";
 import LoadingButton from "@mui/lab/LoadingButton";
+import { useCheckUser } from "@/utils/hooks";
 
 export default function Edit() {
+  useCheckUser();
   const user = useSelector((state) => state.user.value);
   const userLoaded = useSelector((state) => state.user.loaded);
 
@@ -60,8 +62,13 @@ function PaperForm({ postId }) {
   const [linkError, setLinkError] = useState(false);
   const [authorError, setAuthorError] = useState(false);
   const [descriptionError, setDescriptionError] = useState(false);
-  const [firstLoaded, setFirstLoaded] = useState(true);
-  const charLimit = 200;
+
+  const [titleFirstLoaded, setTitleFirstLoaded] = useState(true);
+  const [linkFirstLoaded, setLinkFirstLoaded] = useState(true);
+  const [authorFirstLoaded, setAuthorFirstLoaded] = useState(true);
+  const [descriptionFirstLoaded, setDescriptionFirstLoaded] = useState(true);
+
+  const charLimit = 280;
 
   const user = useSelector((state) => state.user.value);
   const userId = useSelector((state) => state.user.id);
@@ -83,59 +90,52 @@ function PaperForm({ postId }) {
     if (postId) getPost(postId);
   }, [postId]);
 
-  const handleFieldChange = (event, setFunction, setError) => {
-    setFirstLoaded(false);
-    setFunction(event.target.value);
-    setError(event.target.value.length === 0);
+  const handleLinkChange = (event) => {
+    setLinkFirstLoaded(false);
+    setLink(event.target.value);
+    setLinkError(event.target.value.length === 0);
+  };
+  const handleTitleChange = (event) => {
+    setTitleFirstLoaded(false);
+    setTitle(event.target.value);
+    setTitleError(event.target.value.length === 0);
+  };
+  const handleAuthorChange = (event) => {
+    setAuthorFirstLoaded(false);
+    setAuthor(event.target.value);
+    setAuthorError(event.target.value.length === 0);
   };
 
   const handleDescriptionChange = (event) => {
-    setFirstLoaded(false);
+    setDescriptionFirstLoaded(false);
     setDescription(event.target.value);
     setDescriptionError(
-      event.target.value.length === 0 || event.target.value.length > 200
+      event.target.value.length === 0 || event.target.value.length > charLimit
     );
   };
 
-  function checkErrorExists() {
-    const titleCondition = title.length === 0;
-    const linkCondition = link.length === 0;
-    const authorCondition = author.length === 0;
-    const descriptionCondition =
-      description.length === 0 || description.length > 200;
-    setTitleError(titleCondition);
-    setLinkError(linkCondition);
-    setAuthorError(authorCondition);
-    setDescriptionError(descriptionCondition);
-    return (
-      titleCondition || linkCondition || authorCondition || descriptionCondition
-    );
-  }
-
   const handleSubmit = async () => {
-    if (!checkErrorExists()) {
-      setLoading(true);
+    setLoading(true);
 
-      if (postId) {
-        //update post
-        await updatePost(title, link, author, description, postId);
-        setLoading(false);
+    if (postId) {
+      //update post
+      await updatePost(title, link, author, description, postId);
+      setLoading(false);
+      router.push("/");
+    } else {
+      // create new post
+      const newPostId = await postEntry(
+        title,
+        link,
+        author,
+        description,
+        user.email,
+        userId
+      );
+      setLoading(false);
+
+      if (newPostId) {
         router.push("/");
-      } else {
-        // create new post
-        const newPostId = await postEntry(
-          title,
-          link,
-          author,
-          description,
-          user.email,
-          userId
-        );
-        setLoading(false);
-
-        if (newPostId) {
-          router.push("/");
-        }
       }
     }
   };
@@ -149,7 +149,7 @@ function PaperForm({ postId }) {
         margin="normal"
         value={link}
         error={linkError}
-        onChange={(e) => handleFieldChange(e, setLink, setLinkError)}
+        onChange={handleLinkChange}
       />
       <TextField
         label="Title"
@@ -158,7 +158,7 @@ function PaperForm({ postId }) {
         margin="normal"
         value={title}
         error={titleError}
-        onChange={(e) => handleFieldChange(e, setTitle, setTitleError)}
+        onChange={handleTitleChange}
       />
       <TextField
         label="Author(s)"
@@ -167,7 +167,7 @@ function PaperForm({ postId }) {
         margin="normal"
         value={author}
         error={authorError}
-        onChange={(e) => handleFieldChange(e, setAuthor, setAuthorError)}
+        onChange={handleAuthorChange}
       />
       <TextField
         label="Description"
@@ -178,7 +178,7 @@ function PaperForm({ postId }) {
         margin="normal"
         value={description}
         error={descriptionError}
-        onChange={(e) => handleDescriptionChange(e)}
+        onChange={handleDescriptionChange}
       />
       <Box
         display="flex"
@@ -201,7 +201,10 @@ function PaperForm({ postId }) {
           titleError ||
           authorError ||
           descriptionError ||
-          firstLoaded
+          linkFirstLoaded ||
+          titleFirstLoaded ||
+          authorFirstLoaded ||
+          descriptionFirstLoaded
         }
         onClick={handleSubmit}
         loading={loading}
