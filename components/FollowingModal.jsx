@@ -5,7 +5,7 @@ import { fontStyles } from "@/utils/fonts";
 import { Modal, IconButton, Box, Typography } from "@mui/material";
 import CloseIcon from '@mui/icons-material/Close';
 import modalStyles from "@/styles/FollowingModal.module.css";
-import loadingStyles from "@/styles/Profile.module.css";
+import profileStyles from "@/styles/Profile.module.css";
 import Loading from "@/components/Loading";
 
 export default function FollowingModal({ userId, open, onClose, currentUserId, onUserUpdate }) {
@@ -68,7 +68,7 @@ export default function FollowingModal({ userId, open, onClose, currentUserId, o
   
   if (loading) {
     return (
-      <main className={loadingStyles.main}>
+      <main className={profileStyles.main}>
         <Loading />
       </main>
     );
