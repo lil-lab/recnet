@@ -95,7 +95,7 @@ export default function TopBar() {
 
         {user && (
           <a
-            href={disable ? undefined : `/profile?userId=${userId}`}
+            href={disable ? undefined : `/${user.username}`}
             target="_self"
             rel="noopener"
             align="left"

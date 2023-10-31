@@ -15,7 +15,7 @@ export default function UserCard({ user, width, currentUserId, updateUser }) {
       }}
     >
       <a
-        href={`/profile?userId=${user.id}`}
+        href={`/${user.username}`}
         target="_self"
         rel="noopener"
         style={{
@@ -34,11 +34,17 @@ export default function UserCard({ user, width, currentUserId, updateUser }) {
         <Typography variant="h4" sx={{ ...fontStyles.bold, marginLeft: "3%" }}>
           {user.displayName}
         </Typography>
-        <Typography
+        {/* <Typography
           variant="body1"
           sx={{ ...fontStyles.regular, marginLeft: "3%" }}
         >
           {user.email}
+        </Typography> */}
+        <Typography
+          variant="body1"
+          sx={{ ...fontStyles.regular, marginLeft: "3%", color: "grey" }}
+        >
+          {"@ " + user.username}
         </Typography>
       </a>
       {currentUserId && user.id !== currentUserId && (

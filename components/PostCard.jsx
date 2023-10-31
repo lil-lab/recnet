@@ -14,8 +14,8 @@ export default function PostCard({ post, showUser, showDate, width }) {
       const recommender = await getUserById(id);
       setRecommender(recommender);
     }
-    showUser && getRecommender(post.userId);
-  }, [showUser, post]);
+    getRecommender(post.userId);
+  }, [post]);
 
   function showBasicPost(children) {
     return (
@@ -68,12 +68,12 @@ export default function PostCard({ post, showUser, showDate, width }) {
             src={recommender.photoURL}
             referrerPolicy="no-referrer"
             onClick={() => {
-              router.push(`/profile?userId=${post.userId}`);
+              router.push(`/${recommender.username}`);
             }}
             style={{ cursor: "pointer" }}
           />
           <Link
-            href={`/profile?userId=${post.userId}`}
+            href={`/${recommender.username}`}
             target="_blank"
             rel="noopener"
             align="left"

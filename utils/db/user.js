@@ -1,4 +1,5 @@
 import axios from "axios";
+import { post, get } from "./shared";
 
 export async function getUserByEmail(email) {
   const getUserResponse = await axios.get(
@@ -12,14 +13,7 @@ export async function getUserByEmail(email) {
 }
 
 export async function getUserByUsername(username) {
-  const getUserResponse = await axios.get(
-    `/api/user/getUserByUsername?username=${username}`
-  );
-
-  if (getUserResponse.status === 200) {
-    // User exists, return the user; otherwise return undefined
-    return getUserResponse.data;
-  }
+  return await get(`/api/user/getUserByUsername?username=${username}`);
 }
 
 export async function getUserById(id) {
@@ -74,15 +68,10 @@ export async function searchUsers(emailOrName) {
 }
 
 export async function setUserInfo(username, organization, name, userId) {
-  try {
-    const response = await axios.post("/api/user/setUserInfo", {
-      username,
-      organization,
-      name,
-      userId,
-    });
-    return response;
-  } catch (error) {
-    return error.response.data;
-  }
+  return await post("/api/user/setUserInfo", {
+    username,
+    organization,
+    name,
+    userId,
+  });
 }
