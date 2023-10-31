@@ -75,3 +75,7 @@ export async function setUserInfo(username, organization, name, userId) {
     userId,
   });
 }
+
+export async function getFollowingUsers(userId) {
+  return await get(`/api/user/getFollowingUsers?userId=${userId}`);
+}
