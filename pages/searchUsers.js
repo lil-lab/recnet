@@ -8,8 +8,10 @@ import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import Loading from "@/components/Loading";
+import { useCheckUser } from "@/utils/hooks";
 
 export default function SearchUsers() {
+  useCheckUser();
   const router = useRouter();
   const { q } = router.query;
   const [users, setUsers] = useState([]);

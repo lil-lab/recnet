@@ -13,8 +13,10 @@ import {
   getNextCutoff,
 } from "@/utils/dateHelper";
 import LoadingButton from "@mui/lab/LoadingButton";
+import { useCheckUser } from "@/utils/hooks";
 
 export default function Edit() {
+  useCheckUser();
   const user = useSelector((state) => state.user.value);
   const userLoaded = useSelector((state) => state.user.loaded);
 

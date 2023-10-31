@@ -18,6 +18,7 @@ export default function TopBar() {
   const [text, setText] = useState("");
 
   const router = useRouter();
+  const disable = !user || !user.username; // disable top bar clickables
 
   useEffect(() => {
     // check user logged in
@@ -65,32 +66,36 @@ export default function TopBar() {
             ...fontStyles.regular,
             letterSpacing: ".1rem",
             color: "white",
-            flexGrow: 1,
+            marginRight: "auto",
             textDecoration: "underline",
           }}
         >
           about
         </Typography>
 
-        <input
-          className={styles.searchText}
-          placeholder="search user..."
-          onChange={(e) => {
-            setText(e.target.value);
-          }}
-          onKeyUp={(e) => {
-            if (e.key === "Enter") {
-              handleSearch();
-            }
-          }}
-        ></input>
-        <IconButton onClick={handleSearch} sx={{ marginRight: "1%" }}>
-          <SearchIcon color="white" />
-        </IconButton>
+        {!disable && (
+          <input
+            className={styles.searchText}
+            placeholder="search user..."
+            onChange={(e) => {
+              setText(e.target.value);
+            }}
+            onKeyUp={(e) => {
+              if (e.key === "Enter") {
+                handleSearch();
+              }
+            }}
+          ></input>
+        )}
+        {!disable && (
+          <IconButton onClick={handleSearch} sx={{ marginRight: "1%" }}>
+            <SearchIcon color="white" />
+          </IconButton>
+        )}
 
         {user && (
           <a
-            href={`/profile?userId=${userId}`}
+            href={disable ? undefined : `/profile?userId=${userId}`}
             target="_self"
             rel="noopener"
             align="left"
@@ -99,7 +104,7 @@ export default function TopBar() {
               alt="profile"
               src={user.photoURL}
               referrerPolicy="no-referrer"
-              style={{ cursor: "pointer" }}
+              style={{ cursor: disable ? "default" : "pointer" }}
             />
           </a>
         )}

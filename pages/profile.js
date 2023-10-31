@@ -1,5 +1,5 @@
 import BackLink from "@/components/BackLink";
-import EditProfilePopUp from "@/components/EditProfilePopUp";
+import SettingsDialogContent from "@/components/SettingsDialogContent";
 import FollowButton from "@/components/FollowButton";
 import Loading from "@/components/Loading";
 import styles from "@/styles/Profile.module.css";
@@ -11,8 +11,12 @@ import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import PostCard from "../components/PostCard";
+import SettingsIcon from "@mui/icons-material/Settings";
+import CorporateFareIcon from "@mui/icons-material/CorporateFare";
+import { useCheckUser } from "@/utils/hooks";
 
 export default function ProfilePage() {
+  useCheckUser();
   const router = useRouter();
   const { userId } = router.query; // profile userId
   const [user, setUser] = useState(undefined); // profile user
@@ -71,10 +75,32 @@ export default function ProfilePage() {
             <Typography variant="h3" sx={fontStyles.bold}>
               {user.displayName}
             </Typography>
-            <Typography variant="h6" sx={fontStyles.regular}>
+            {/* <Typography variant="h6" sx={fontStyles.regular}>
               {user.email}
-            </Typography>
-            <Typography variant="h6" sx={fontStyles.regular}>
+            </Typography> */}
+            {user.username && (
+              <Typography
+                variant="h6"
+                sx={{ ...fontStyles.regular, color: "grey" }}
+              >
+                {`@ ${user.username}`}
+              </Typography>
+            )}
+
+            {user.organization && (
+              <div className={styles.organization}>
+                <CorporateFareIcon />{" "}
+                <Typography variant="body1" sx={fontStyles.regular}>
+                  {" "}
+                  {user.organization}
+                </Typography>
+              </div>
+            )}
+
+            <Typography
+              variant="h6"
+              sx={{ ...fontStyles.regular, marginTop: "1%" }}
+            >
               <span style={{ fontWeight: "bold" }}>
                 {user.followers ? user.followers.length : 0}{" "}
               </span>{" "}
@@ -103,15 +129,16 @@ export default function ProfilePage() {
                 variant="outlined"
                 style={{ marginTop: "1%", marginBottom: "1%" }}
                 onClick={handleClickOpen}
+                startIcon={<SettingsIcon />}
               >
-                Edit Profile
+                Settings
               </Button>
             )}
             <Dialog open={open} onClose={handleClose} keepMounted={false}>
-              <EditProfilePopUp
-                open={open}
+              <SettingsDialogContent
                 handleClose={handleClose}
                 user={user}
+                onUpdate={() => setUpdate(!update)}
               />
             </Dialog>
 

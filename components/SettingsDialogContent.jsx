@@ -1,20 +1,22 @@
-import { setUser } from "@/utils/redux/userSlice";
 import {
-  Avatar,
-  Typography,
   Button,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogContentText,
-  TextField,
   DialogActions,
+  DialogContent,
+  DialogTitle,
   InputAdornment,
+  TextField,
+  Divider,
 } from "@mui/material";
 import { useState } from "react";
-export default function EditProfilePopUp({ open, handleClose, user }) {
+import LoginButton from "./LoginButton";
+import { setUserInfo } from "@/utils/db/user";
+import { useSelector } from "react-redux";
+import { isUsernameValid } from "@/utils/helpers";
+
+export default function SettingsDialogContent({ handleClose, user, onUpdate }) {
+  const userId = useSelector((state) => state.user.id);
   const [name, setName] = useState(user.displayName);
-  const [username, setUsername] = useState(user.username);
+  const [username, setUsernameState] = useState(user.username);
   const [organization, setOrganization] = useState(user.organization);
 
   const [nameError, setNameError] = useState(false);
@@ -35,11 +37,9 @@ export default function EditProfilePopUp({ open, handleClose, user }) {
   };
   const handleUsernameChange = (e) => {
     let value = e.target.value;
-    setUsername(value);
-    // Create a regular expression that matches only letters, numbers, and underscores
-    var regex = /^[A-Za-z0-9_]+$/;
+    setUsernameState(value);
 
-    if (value < 4 || value > 15 || !regex.test(value)) {
+    if (!isUsernameValid(value)) {
       setUsernameError(true);
       setUsernameErrorHelperText(
         "Username should be between 4 to 15 characters and contain only letters (A-Z, a-z), numbers, and underscores (_)."
@@ -53,19 +53,41 @@ export default function EditProfilePopUp({ open, handleClose, user }) {
     setOrganization(e.target.value);
   };
 
-  const handleSubmit = () => {
-    // check username is unique
-    // update fields
-    handleClose();
+  const handleSubmit = async () => {
+    const updatedUsername = username === user.username ? undefined : username;
+    const updatedOrganization =
+      organization === user.organization ? undefined : organization;
+    const updatedName = name === user.displayName ? undefined : name;
+    const { data, error } = await setUserInfo(
+      updatedUsername,
+      updatedOrganization,
+      updatedName,
+      userId
+    );
+    if (data) {
+      handleClose();
+      onUpdate();
+    } else if (error) {
+      if (error.usernameError) {
+        setUsernameError(true);
+        setUsernameErrorHelperText(error.usernameError);
+      } else {
+        console.log(error); // TODO: might need to handle other errors
+      }
+    }
   };
 
-  function checkDisable(){
-    return nameError || usernameError 
+  function checkDisable() {
+    const noChange =
+      name === user.displayName &&
+      username === user.username &&
+      organization === user.organization;
+    return nameError || usernameError || noChange;
   }
 
   return (
     <>
-      <DialogTitle>Edit Profile</DialogTitle>
+      <DialogTitle>Settings</DialogTitle>
       <DialogContent>
         <TextField
           margin="dense"
@@ -96,16 +118,31 @@ export default function EditProfilePopUp({ open, handleClose, user }) {
         <TextField
           margin="dense"
           id="organization"
-          label="Organization"
+          label="Organization (optional)"
           fullWidth
           variant="outlined"
           value={organization}
           onChange={handleOrganizationChange}
         />
+        <Divider
+          textAlign="left"
+          flexItem
+          sx={{
+            marginTop: "3%",
+            marginBottom: "3%",
+          }}
+        ></Divider>
+        <LoginButton />
       </DialogContent>
+
       <DialogActions>
         <Button onClick={handleClose}>Cancel</Button>
-        <Button onClick={handleSubmit} variant="contained" color="secondary">
+        <Button
+          onClick={handleSubmit}
+          variant="contained"
+          color="secondary"
+          disabled={checkDisable()}
+        >
           Save
         </Button>
       </DialogActions>

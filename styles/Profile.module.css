@@ -16,3 +16,11 @@
   align-items: center;
   width: 80%;
 }
+
+.organization {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.5vw;
+  color:grey
+}

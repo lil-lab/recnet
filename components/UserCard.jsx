@@ -51,7 +51,7 @@ export default function UserCard({ user, width, currentUserId, updateUser }) {
               user.id,
               user.followers && user.followers.includes(currentUserId)
                 ? user.followers.filter((u) => u !== currentUserId)
-                : user.followers + [currentUserId]
+                : (user.followers || []).concat([currentUserId])
             )
           }
         />

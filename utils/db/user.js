@@ -11,6 +11,17 @@ export async function getUserByEmail(email) {
   }
 }
 
+export async function getUserByUsername(username) {
+  const getUserResponse = await axios.get(
+    `/api/user/getUserByUsername?username=${username}`
+  );
+
+  if (getUserResponse.status === 200) {
+    // User exists, return the user; otherwise return undefined
+    return getUserResponse.data;
+  }
+}
+
 export async function getUserById(id) {
   const getUserResponse = await axios.get(`/api/user/getUserById?id=${id}`);
 
@@ -57,8 +68,21 @@ export async function unfollowUser(id, currentUserId) {
 export async function searchUsers(emailOrName) {
   const response = await axios.get(`/api/user/search?q=${emailOrName}`);
 
-  console.log(response.data);
   if (response.status === 200) {
     return response.data;
+  }
+}
+
+export async function setUserInfo(username, organization, name, userId) {
+  try {
+    const response = await axios.post("/api/user/setUserInfo", {
+      username,
+      organization,
+      name,
+      userId,
+    });
+    return response;
+  } catch (error) {
+    return error.response.data;
   }
 }
