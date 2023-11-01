@@ -76,6 +76,6 @@ export async function setUserInfo(username, affiliation, name, userId) {
   });
 }
 
-export async function getFollowingUsers(userId) {
-  return await get(`/api/user/getFollowingUsers?userId=${userId}`);
+export async function getUsers(userIds) {
+  return await post(`/api/user/getUsers`, { userIds });
 }
