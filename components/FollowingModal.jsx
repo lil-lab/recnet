@@ -47,17 +47,18 @@ export default function FollowingModal({
   }, [userId, open]);
 
   // update the user in following list (update this user's followers list)
-  const updateUser = async (userIdToUpdate, newFollowers) => {
-    setFollowing((prevFollowing) => {
-      return prevFollowing.map((user) => {
+  const updateUser = (userIdToUpdate, newFollowers) => {
+    setFollowing(
+      following.map((user) => {
         if (user.id === userIdToUpdate) {
           return {
             ...user,
             followers: newFollowers,
           };
         }
-      });
-    });
+        return user;
+      })
+    );
 
     onUserUpdate();
   };
