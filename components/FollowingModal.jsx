@@ -4,7 +4,7 @@ import UserCard from "@/components/UserCard";
 import { fontStyles } from "@/utils/fonts";
 import { Modal, IconButton, Box, Typography } from "@mui/material";
 import CloseIcon from '@mui/icons-material/Close';
-import modalStyles from "@/styles/FollowingModal.module.css";
+import modalStyles from "@/components/FollowingModal.module.css";
 import profileStyles from "@/styles/Profile.module.css";
 import Loading from "@/components/Loading";
 
