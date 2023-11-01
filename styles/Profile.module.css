@@ -17,10 +17,10 @@
   width: 80%;
 }
 
-.organization {
+.affiliation {
   display: flex;
   justify-content: space-between;
   align-items: center;
   gap: 0.5vw;
-  color:grey
+  color: grey;
 }

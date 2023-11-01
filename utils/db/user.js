@@ -67,10 +67,10 @@ export async function searchUsers(emailOrName) {
   }
 }
 
-export async function setUserInfo(username, organization, name, userId) {
+export async function setUserInfo(username, affiliation, name, userId) {
   return await post("/api/user/setUserInfo", {
     username,
-    organization,
+    affiliation,
     name,
     userId,
   });

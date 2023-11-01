@@ -103,12 +103,12 @@ export default function ProfilePage() {
               </Typography>
             )}
 
-            {user.organization && (
-              <div className={styles.organization}>
+            {user.affiliation && (
+              <div className={styles.affiliation}>
                 <CorporateFareIcon />{" "}
                 <Typography variant="body1" sx={fontStyles.regular}>
                   {" "}
-                  {user.organization}
+                  {user.affiliation}
                 </Typography>
               </div>
             )}

@@ -16,7 +16,7 @@ export default function Welcome() {
 
   const router = useRouter();
   const [username, setUsername] = useState("");
-  const [organization, setOrganization] = useState("");
+  const [affiliation, setAffiliation] = useState("");
   const [usernameError, setUsernameError] = useState(false);
   const [usernameErrorHelperText, setUsernameErrorHelperText] = useState("");
 
@@ -35,8 +35,8 @@ export default function Welcome() {
     }
   };
 
-  const handleOrganizationChange = (e) => {
-    setOrganization(e.target.value);
+  const handleAffiliationChange = (e) => {
+    setAffiliation(e.target.value);
   };
 
   function checkDisable() {
@@ -45,10 +45,10 @@ export default function Welcome() {
 
   const handleSubmit = async () => {
     const updatedUsername = username;
-    const updatedOrganization = organization;
+    const updatedAffiliation = affiliation;
     const { data, error } = await setUserInfo(
       updatedUsername,
-      updatedOrganization,
+      updatedAffiliation,
       undefined,
       userId
     );
@@ -122,12 +122,12 @@ export default function Welcome() {
           />
           <TextField
             margin="dense"
-            id="organization"
-            label="Organization (optional)"
+            id="affiliation"
+            label="Affiliation (optional)"
             fullWidth
             variant="outlined"
-            value={organization}
-            onChange={handleOrganizationChange}
+            value={affiliation}
+            onChange={handleAffiliationChange}
           />
           <Button
             color="secondary"

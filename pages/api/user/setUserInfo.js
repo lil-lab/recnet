@@ -15,12 +15,12 @@ import {
  * @param userId
  * optional:
  * @param username
- * @param organization
+ * @param affiliation
  * @returns userId, fields that were updated
  */
 export default async function setUserInfoHandler(req, res) {
   try {
-    const { username, userId, organization, name } = req.body;
+    const { username, userId, affiliation, name } = req.body;
 
     if (username) {
       // validate username
@@ -60,7 +60,7 @@ export default async function setUserInfoHandler(req, res) {
 
     let data = {};
     if (username) data["username"] = username;
-    if (organization) data["organization"] = organization;
+    if (affiliation) data["affiliation"] = affiliation;
     if (name) data["displayName"] = name;
 
     if (docSnap.exists()) {

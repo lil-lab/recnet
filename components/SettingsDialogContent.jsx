@@ -17,7 +17,7 @@ export default function SettingsDialogContent({ handleClose, user, onUpdate }) {
   const userId = useSelector((state) => state.user.id);
   const [name, setName] = useState(user.displayName);
   const [username, setUsernameState] = useState(user.username);
-  const [organization, setOrganization] = useState(user.organization);
+  const [affiliation, setAffiliation] = useState(user.affiliation);
 
   const [nameError, setNameError] = useState(false);
   const [usernameError, setUsernameError] = useState(false);
@@ -49,18 +49,18 @@ export default function SettingsDialogContent({ handleClose, user, onUpdate }) {
       setUsernameErrorHelperText("");
     }
   };
-  const handleOrganizationChange = (e) => {
-    setOrganization(e.target.value);
+  const handleAffiliationChange = (e) => {
+    setAffiliation(e.target.value);
   };
 
   const handleSubmit = async () => {
     const updatedUsername = username === user.username ? undefined : username;
-    const updatedOrganization =
-      organization === user.organization ? undefined : organization;
+    const updatedAffiliation =
+      affiliation === user.affiliation ? undefined : affiliation;
     const updatedName = name === user.displayName ? undefined : name;
     const { data, error } = await setUserInfo(
       updatedUsername,
-      updatedOrganization,
+      updatedAffiliation,
       updatedName,
       userId
     );
@@ -81,7 +81,7 @@ export default function SettingsDialogContent({ handleClose, user, onUpdate }) {
     const noChange =
       name === user.displayName &&
       username === user.username &&
-      organization === user.organization;
+      affiliation === user.affiliation;
     return nameError || usernameError || noChange;
   }
 
@@ -117,12 +117,12 @@ export default function SettingsDialogContent({ handleClose, user, onUpdate }) {
         />
         <TextField
           margin="dense"
-          id="organization"
-          label="Organization (optional)"
+          id="affiliation"
+          label="Affiliation (optional)"
           fullWidth
           variant="outlined"
-          value={organization}
-          onChange={handleOrganizationChange}
+          value={affiliation}
+          onChange={handleAffiliationChange}
         />
         <Divider
           textAlign="left"
