@@ -5,6 +5,13 @@ import styles from "./UserCard.module.css";
 import { useRouter } from "next/router";
 import FollowButton from "./FollowButton";
 
+/** UserCard displays basica user info and a follow/unfollow button.
+ * @param {object} props
+ * @param {object} props.user
+ * @param {string} props.width
+ * @param {string} props.currentUserId
+ * @param {(userId, newFollowers) => void} props.updateUser callback to send to parent the updated followers list of the user of this UserCard
+ */
 export default function UserCard({ user, width, currentUserId, updateUser }) {
   return (
     <Paper
@@ -47,6 +54,7 @@ export default function UserCard({ user, width, currentUserId, updateUser }) {
           userId={user.id}
           currentUserId={currentUserId}
           additionalCallback={() =>
+            updateUser &&
             updateUser(
               user.id,
               user.followers && user.followers.includes(currentUserId)

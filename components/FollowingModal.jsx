@@ -1,14 +1,20 @@
 import { useEffect, useState } from "react";
-import { getUserById, followUser, unfollowUser } from "@/utils/db/user";
+import { getUserById } from "@/utils/db/user";
 import UserCard from "@/components/UserCard";
 import { fontStyles } from "@/utils/fonts";
 import { Modal, IconButton, Box, Typography } from "@mui/material";
-import CloseIcon from '@mui/icons-material/Close';
+import CloseIcon from "@mui/icons-material/Close";
 import modalStyles from "@/components/FollowingModal.module.css";
 import profileStyles from "@/styles/Profile.module.css";
 import Loading from "@/components/Loading";
 
-export default function FollowingModal({ userId, open, onClose, currentUserId, onUserUpdate }) {
+export default function FollowingModal({
+  userId,
+  open,
+  onClose,
+  currentUserId,
+  onUserUpdate,
+}) {
   const [following, setFollowing] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -18,7 +24,9 @@ export default function FollowingModal({ userId, open, onClose, currentUserId, o
       if (userId) {
         const user = await getUserById(userId);
         if (user && user.following) {
-          const followingUsersPromises = user.following.map((followingId) => getUserById(followingId));
+          const followingUsersPromises = user.following.map((followingId) =>
+            getUserById(followingId)
+          );
           const followingUsers = await Promise.all(followingUsersPromises);
           setFollowing(followingUsers.filter(Boolean)); // Filter out any undefined values
         }
@@ -38,34 +46,22 @@ export default function FollowingModal({ userId, open, onClose, currentUserId, o
     };
   }, [userId, open]);
 
-  const updateUser = async (userIdToUpdate, isFollowing) => {
-    try {
-      if (isFollowing) {
-        await unfollowUser(userIdToUpdate, currentUserId);
-      } else {
-        await followUser(userIdToUpdate, currentUserId);
-      }
-      setFollowing((prevFollowing) => {
-        return prevFollowing.map((user) => {
-          if (user.id === userIdToUpdate) {
-            return {
-              ...user,
-              followers: isFollowing
-                ? user.followers.filter((id) => id !== currentUserId)
-                : [...user.followers, currentUserId],
-            };
-          }
-          return user;
-        });
+  // update the user in following list (update this user's followers list)
+  const updateUser = async (userIdToUpdate, newFollowers) => {
+    setFollowing((prevFollowing) => {
+      return prevFollowing.map((user) => {
+        if (user.id === userIdToUpdate) {
+          return {
+            ...user,
+            followers: newFollowers,
+          };
+        }
       });
-  
-      onUserUpdate();
-    } catch (error) {
-      console.error("Error updating user:", error);
-    }
-  };  
-  
-  
+    });
+
+    onUserUpdate();
+  };
+
   if (loading) {
     return (
       <main className={profileStyles.main}>
@@ -95,7 +91,7 @@ export default function FollowingModal({ userId, open, onClose, currentUserId, o
               key={user.id}
               user={user}
               currentUserId={currentUserId}
-              updateUser={(userIdToUpdate, isFollowing) => updateUser(userIdToUpdate, isFollowing)}
+              updateUser={updateUser}
             />
           ))
         )}
