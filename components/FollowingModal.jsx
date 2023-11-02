@@ -56,7 +56,7 @@ export default function FollowingModal({
 //         if (followingIds && followingIds.length > 0) {
 //           try {
 //             const followingUsers = await getUsers(followingIds); 
-//             setFollowing(followingUsers);
+//             setFollowing(followingUsers.filter(Boolean));
 //           } catch (error) {
 //             console.error("Error fetching following users:", error);
 //           }

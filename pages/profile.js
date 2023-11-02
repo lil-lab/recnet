@@ -125,7 +125,8 @@ const ProfilePage = () => {
         open={modalOpen}
         onClose={handleModalClose}
         currentUserId={currentUserId}
-        onUserUpdate={refreshUserData} // Pass the callback function as a prop
+        onUserUpdate={refreshUserData}
+        // followingIds={user.following} 
       />
     </main>
   );
