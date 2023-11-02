@@ -66,11 +66,26 @@ export default function TopBar() {
             ...fontStyles.regular,
             letterSpacing: ".1rem",
             color: "white",
-            marginRight: "auto",
             textDecoration: "underline",
           }}
         >
           about
+        </Typography>
+        <Typography
+          variant="h6"
+          noWrap
+          component="a"
+          href="/help"
+          sx={{
+            ml: "2%",
+            ...fontStyles.regular,
+            letterSpacing: ".1rem",
+            color: "white",
+            mr: "auto",
+            textDecoration: "underline",
+          }}
+        >
+          help
         </Typography>
 
         {!disable && (

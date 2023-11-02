@@ -6,15 +6,16 @@ import { Typography } from "@mui/material";
 
 import LoginButton from "../components/LoginButton";
 
-import { getLastCutoff, getNextCutoff } from "@/utils/dateHelper";
+import { getLastCutoff } from "@/utils/dateHelper";
 import { getFollowingPostsByDate, getUserLastPost } from "@/utils/db/post";
 
 import { fontStyles } from "@/utils/fonts";
 
 import FollowingPosts from "@/components/FollowingPosts";
+import Help from "@/components/Help";
 import Loading from "@/components/Loading";
-import LeftBar from "../components/LeftBar";
 import { useCheckUser } from "@/utils/hooks";
+import LeftBar from "../components/LeftBar";
 
 export default function Home() {
   useCheckUser();
@@ -68,15 +69,18 @@ export default function Home() {
               <div className={styles.mid}>
                 {posts ? (
                   posts.length === 0 ? (
-                    <Typography
-                      variant="body1"
-                      sx={{
-                        ...fontStyles.regular,
-                        padding: "10%",
-                      }}
-                    >
-                      No recommendations from your network this week.
-                    </Typography>
+                    <div className={styles.noRecsText}>
+                      <Typography
+                        variant="body1"
+                        sx={{
+                          ...fontStyles.regular,
+                          // padding: "10%",
+                        }}
+                      >
+                        No recommendations from your network this week.
+                      </Typography>
+                      <Help />
+                    </div>
                   ) : (
                     <FollowingPosts posts={posts} />
                   )

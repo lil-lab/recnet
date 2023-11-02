@@ -15,6 +15,8 @@ import {
 import LoadingButton from "@mui/lab/LoadingButton";
 import { useCheckUser } from "@/utils/hooks";
 
+import Help from "@/components/Help";
+
 export default function Edit() {
   useCheckUser();
   const user = useSelector((state) => state.user.value);
@@ -212,11 +214,15 @@ function PaperForm({ postId }) {
         <span>{buttonText}</span>
       </LoadingButton>
 
-      <Typography variant="body2" color="textSecondary">
-        {`You can edit as many times as you want before this week's cutoff: ${formatDateVerbose(
-          getNextCutoff()
-        )}.`}
-      </Typography>
+      <div className={styles.infoText}>
+        <Typography variant="body2" color="textSecondary">
+          {`You can edit as many times as you want before this week's cutoff: ${formatDateVerbose(
+            getNextCutoff()
+          )}.`}
+        </Typography>
+        <Help />
+      </div>
+
       <BackLink />
     </div>
   );
