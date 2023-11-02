@@ -1,4 +1,5 @@
 import axios from "axios";
+import { post, get } from "./shared";
 
 export async function getUserByEmail(email) {
   const getUserResponse = await axios.get(
@@ -9,6 +10,10 @@ export async function getUserByEmail(email) {
     // User exists, return the user; otherwise return undefined
     return getUserResponse.data;
   }
+}
+
+export async function getUserByUsername(username) {
+  return await get(`/api/user/getUserByUsername?username=${username}`);
 }
 
 export async function getUserById(id) {
@@ -29,29 +34,48 @@ export async function addUser(user) {
 }
 
 export async function followUser(id, currentUserId) {
-  const response = await axios.post("/api/user/follow", { id, currentUserId });
+  if (id && currentUserId) {
+    const response = await axios.post("/api/user/follow", {
+      id,
+      currentUserId,
+    });
 
-  if (response.status === 200) {
-    return response.data;
+    if (response.status === 200) {
+      return response.data;
+    }
   }
 }
 
 export async function unfollowUser(id, currentUserId) {
-  const response = await axios.post("/api/user/unfollow", {
-    id,
-    currentUserId,
-  });
+  if (id && currentUserId) {
+    const response = await axios.post("/api/user/unfollow", {
+      id,
+      currentUserId,
+    });
 
-  if (response.status === 200) {
-    return response.data;
+    if (response.status === 200) {
+      return response.data;
+    }
   }
 }
 
 export async function searchUsers(emailOrName) {
   const response = await axios.get(`/api/user/search?q=${emailOrName}`);
 
-  console.log(response.data);
   if (response.status === 200) {
     return response.data;
   }
+}
+
+export async function setUserInfo(username, affiliation, name, userId) {
+  return await post("/api/user/setUserInfo", {
+    username,
+    affiliation,
+    name,
+    userId,
+  });
+}
+
+export async function getUsers(userIds) {
+  return await post(`/api/user/getUsers`, { userIds });
 }

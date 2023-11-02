@@ -82,14 +82,16 @@ const ProfilePage = () => {
               {user.email}
             </Typography>
             <Typography variant="h6" sx={fontStyles.regular}>
-              <span style={{ fontWeight: "bold" }}>
-                {user.followers ? user.followers.length : 0}{" "}
-              </span>{" "}
-              followers |{" "}
-              <span style={{ fontWeight: "bold", cursor: "pointer" }} onClick={handleModalOpen}>
-                {user.following ? user.following.length : 0}
-              </span>{" "}
-              following
+                <span style={{ fontWeight: "bold" }}>
+                    {user.followers ? user.followers.length : 0}{" "}
+                </span>{" "}
+                followers |{" "}
+                <span style={{ fontWeight: "bold", cursor: "pointer" }} onClick={handleModalOpen}>
+                    {user.following ? user.following.length : 0}
+                </span>{" "}
+                <span style={{ cursor: "pointer" }} onClick={handleModalOpen}>
+                    following
+                </span>
             </Typography>
             {currentUserId && userId !== currentUserId && (
               <FollowButton
