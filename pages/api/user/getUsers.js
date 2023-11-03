@@ -16,7 +16,7 @@ export default async function getUsersHandler(req, res) {
     const { userIds } = req.body;
 
     // const q = query(collection(db, "users"), where("uid", "in", userIds));
-    const q = query(collection(db, "users"), where("id", "in", userIds)); 
+    const q = query(collection(db, "users"), where("uid", "in", userIds)); 
     const querySnapshot = await getDocs(q);
     let users = [];
     querySnapshot.forEach((doc) => {

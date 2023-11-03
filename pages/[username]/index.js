@@ -45,6 +45,11 @@ export default function ProfilePage() {
     setModalOpen(false);
   };
 
+  const refreshUserData = async () => {
+    const updatedUser = await getUserById(user.uid);
+    setUser(updatedUser);
+  };
+
   useEffect(() => {
     async function getPosts(id) {
       const posts = await getPostsByUser(id, false);
@@ -59,7 +64,7 @@ export default function ProfilePage() {
     if (username) {
       getUser(username)
         .then((user) => {
-          user && getPosts(user.id);
+          user && getPosts(user.uid);
           setIsLoading(false);
         })
         .catch((error) => {
@@ -139,21 +144,21 @@ export default function ProfilePage() {
               </span>
             </Typography>
             {/* Follow button */}
-            {currentUser && user.id !== currentUser.id && (
+            {currentUser && user.uid !== currentUser.uid && (
               <FollowButton
                 unFollow={
-                  user.followers && user.followers.includes(currentUser.id)
+                  user.followers && user.followers.includes(currentUser.uid)
                 }
-                userId={user.id}
-                currentUserId={currentUser.id}
+                userId={user.uid}
+                currentUserId={currentUser.uid}
                 additionalCallback={() =>
                   // update user followers locally
                   setUser({
                     ...user,
                     followers:
-                      user.followers && user.followers.includes(currentUser.id)
-                        ? user.followers.filter((u) => u !== currentUser.id)
-                        : (user.followers || []).concat([currentUser.id]),
+                      user.followers && user.followers.includes(currentUser.uid)
+                        ? user.followers.filter((u) => u !== currentUser.uid)
+                        : (user.followers || []).concat([currentUser.uid]),
                   })
                 }
                 style={{ marginTop: "1%", marginBottom: "1%" }}
@@ -161,15 +166,16 @@ export default function ProfilePage() {
             )}
             {/* Following Modal */}
             <FollowingModal
-                userId={user.id}
+                userId={user.uid}
                 open={modalOpen}
                 onClose={handleModalClose}
-                currentUserId={currentUser.id}
+                currentUserId={currentUser.uid}
+                onUserUpdate={refreshUserData}
                 followingIds={user.following} 
             />
 
             {/* Edit profile */}
-            {currentUser && user.id === currentUser.id && (
+            {currentUser && user.uid === currentUser.uid && (
               <Button
                 variant="outlined"
                 style={{ marginTop: "1%", marginBottom: "1%" }}

@@ -3,45 +3,72 @@ import { Modal, Box, IconButton, Typography } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import UserCard from '@/components/UserCard';
 import { getUsers } from "@/utils/db/user";
-import styles from './FollowingModal.module.css'; // Import your custom CSS module
+import styles from './FollowingModal.module.css';
+import Loading from "@/components/Loading";
 
-const FollowingModal = ({ userId, open, onClose, currentUserId, followingIds }) => {
+const FollowingModal = ({ open, onClose, currentUserId, onUserUpdate, followingIds }) => {
   const [followingUsers, setFollowingUsers] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    console.log('Modal opened:', open); // log the modal open status
-    console.log('Following IDs:', followingIds); // log the IDs to fetch
-    if (open && followingIds && followingIds.length > 0) {
-      const fetchFollowingUsers = async () => {
-        console.log('Fetching users for IDs:', followingIds); // log fetch attempt
+    if (open && followingIds.length > 0) {
+      setLoading(true);
+      const loadFollowing = async () => {
         const { data, error } = await getUsers(followingIds);
-        console.log('Fetched data:', data); // log fetched data
         if (data) {
           setFollowingUsers(data);
         } else {
-          console.error('Error fetching users:', error); // Log any errors
+          console.error('Error fetching users:', error);
         }
+        setLoading(false);
       };
-      fetchFollowingUsers();
-    } else {
-      setFollowingUsers([]); // clear if modal is closed/no IDs provided
-      console.log('Following list cleared.'); // log clearing of the list
+  
+      loadFollowing();
     }
   }, [open, followingIds]);
 
-  const updateUser = (userId, newFollowers) => {
-    setUsers(
-      users.map((user) => {
-        if (user.id === userId) {
-          return { ...user, followers: newFollowers };
-        }
-        return user;
-      })
+  const updateUser = (userIdToUpdate, newFollowers) => {
+    setFollowingUsers(followingUsers.map(user =>
+      user.uid === userIdToUpdate ? { ...user, followers: newFollowers } : user
+    ));
+    onUserUpdate();
+  };
+
+  // Render loading inside the modal if the data is being fetched.
+  const renderContent = () => {
+    if (loading) {
+      return <Loading />;
+    }
+
+    return (
+      <Box>
+        {followingUsers.length > 0 ? (
+          followingUsers.map(user => (
+            <UserCard
+              key={user.uid}
+              user={user}
+              currentUserId={currentUserId}
+              updateUser={updateUser}
+            />
+          ))
+        ) : (
+          <Typography sx={{ textAlign: 'center' }}>
+            No users followed.
+          </Typography>
+        )}
+      </Box>
     );
   };
 
   return (
-    <Modal open={open} onClose={onClose}>
+    <Modal
+      open={open}
+      onClose={() => {
+        onClose();
+        // Optionally, delay resetting followingUsers if there is a closing transition
+        setTimeout(() => setFollowingUsers([]), 300); // Assume a 300ms transition
+      }}
+    >
       <Box className={styles.modalBox}>
         <IconButton className={styles.closeButton} onClick={onClose}>
           <CloseIcon />
@@ -49,22 +76,7 @@ const FollowingModal = ({ userId, open, onClose, currentUserId, followingIds }) 
         <Typography variant="h6" component="h2" sx={{ mb: 2 }}>
           Following
         </Typography>
-        <Box>
-          {followingUsers.length > 0 ? (
-            followingUsers.map((user) => (
-              <UserCard
-                key={user.id}  
-                user={user}
-                currentUserId={currentUserId}
-                updateUser={updateUser}
-              />
-            ))
-          ) : (
-            <Typography sx={{ textAlign: 'center' }}>
-              No users followed.
-            </Typography>
-          )}
-        </Box>
+        {renderContent()}
       </Box>
     </Modal>
   );
