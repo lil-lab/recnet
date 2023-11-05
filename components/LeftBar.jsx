@@ -23,7 +23,7 @@ export default function LeftBar({ lastPost, setFilter }) {
       <ListItem>
         <Typography variant="body2" color="textSecondary" align="center">
           {lastPost
-            ? `Edit you recommendation anytime before: ${formatDateVerbose(
+            ? `Edit your recommendation anytime before: ${formatDateVerbose(
                 getNextCutoff()
               )}`
             : `Recommend a paper before: ${formatDateVerbose(getNextCutoff())}`}

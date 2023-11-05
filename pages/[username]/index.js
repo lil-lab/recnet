@@ -36,7 +36,7 @@ export default function ProfilePage() {
   const handleClose = () => {
     setOpen(false);
   };
-  
+
   const handleModalOpen = () => {
     setModalOpen(true);
   };
@@ -46,7 +46,7 @@ export default function ProfilePage() {
   };
 
   const refreshUserData = async () => {
-    const updatedUser = await getUserById(user.uid);
+    const updatedUser = await getUserById(user.id);
     setUser(updatedUser);
   };
 
@@ -64,7 +64,7 @@ export default function ProfilePage() {
     if (username) {
       getUser(username)
         .then((user) => {
-          user && getPosts(user.uid);
+          user && getPosts(user.id);
           setIsLoading(false);
         })
         .catch((error) => {
@@ -136,46 +136,54 @@ export default function ProfilePage() {
                 {user.followers ? user.followers.length : 0}{" "}
               </span>{" "}
               followers |{" "}
-              <span style={{ fontWeight: "bold", cursor: "pointer" }} onClick={handleModalOpen}>
-                    {user.following ? user.following.length : 0}
-              </span>{" "} 
-              <span style={{ cursor: "pointer" }} onClick={handleModalOpen}>
-                    following
+              <span
+                style={{ fontWeight: "bold", cursor: "pointer" }}
+                onClick={handleModalOpen}
+              >
+                {user.following ? user.following.length : 0}
+              </span>{" "}
+              <span
+                style={{ cursor: "pointer", textDecoration: "underline" }}
+                onClick={handleModalOpen}
+              >
+                following
               </span>
             </Typography>
             {/* Follow button */}
-            {currentUser && user.uid !== currentUser.uid && (
+            {currentUser && user.id !== currentUser.id && (
               <FollowButton
                 unFollow={
-                  user.followers && user.followers.includes(currentUser.uid)
+                  user.followers && user.followers.includes(currentUser.id)
                 }
-                userId={user.uid}
-                currentUserId={currentUser.uid}
+                userId={user.id}
+                currentUserId={currentUser.id}
                 additionalCallback={() =>
                   // update user followers locally
                   setUser({
                     ...user,
                     followers:
-                      user.followers && user.followers.includes(currentUser.uid)
-                        ? user.followers.filter((u) => u !== currentUser.uid)
-                        : (user.followers || []).concat([currentUser.uid]),
+                      user.followers && user.followers.includes(currentUser.id)
+                        ? user.followers.filter((u) => u !== currentUser.id)
+                        : (user.followers || []).concat([currentUser.id]),
                   })
                 }
                 style={{ marginTop: "1%", marginBottom: "1%" }}
               />
             )}
             {/* Following Modal */}
-            <FollowingModal
-                userId={user.uid}
+            {currentUser && (
+              <FollowingModal
+                userId={user.id}
                 open={modalOpen}
                 onClose={handleModalClose}
-                currentUserId={currentUser.uid}
+                currentUserId={currentUser.id}
                 onUserUpdate={refreshUserData}
-                followingIds={user.following} 
-            />
+                followingIds={user.following}
+              />
+            )}
 
             {/* Edit profile */}
-            {currentUser && user.uid === currentUser.uid && (
+            {currentUser && user.id === currentUser.id && (
               <Button
                 variant="outlined"
                 style={{ marginTop: "1%", marginBottom: "1%" }}

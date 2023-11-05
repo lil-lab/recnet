@@ -47,14 +47,14 @@ export default function UserCard({ user, width, currentUserId, updateUser }) {
           {"@ " + user.username}
         </Typography>
       </a>
-      {currentUserId && user.uid !== currentUserId && (
+      {currentUserId && user.id !== currentUserId && (
         <FollowButton
           unFollow={user.followers && user.followers.includes(currentUserId)}
-          userId={user.uid}
+          userId={user.id}
           currentUserId={currentUserId}
           additionalCallback={() =>
             updateUser(
-              user.uid,
+              user.id,
               user.followers && user.followers.includes(currentUserId)
                 ? user.followers.filter((u) => u !== currentUserId)
                 : (user.followers || []).concat([currentUserId])

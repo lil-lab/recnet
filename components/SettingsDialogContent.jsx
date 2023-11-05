@@ -1,20 +1,21 @@
+import { setUserInfo } from "@/utils/db/user";
+import { isUsernameValid } from "@/utils/helpers";
+import { setUser } from "@/utils/redux/userSlice";
 import {
   Button,
   DialogActions,
   DialogContent,
   DialogTitle,
+  Divider,
   InputAdornment,
   TextField,
-  Divider,
 } from "@mui/material";
+import { useRouter } from "next/router";
 import { useState } from "react";
+import { useDispatch } from "react-redux";
 import LoginButton from "./LoginButton";
-import { setUserInfo } from "@/utils/db/user";
-import { useSelector } from "react-redux";
-import { isUsernameValid } from "@/utils/helpers";
 
 export default function SettingsDialogContent({ handleClose, user, onUpdate }) {
-  const userId = useSelector((state) => state.user.id);
   const [name, setName] = useState(user.displayName);
   const [username, setUsernameState] = useState(user.username);
   const [affiliation, setAffiliation] = useState(user.affiliation);
@@ -24,6 +25,9 @@ export default function SettingsDialogContent({ handleClose, user, onUpdate }) {
 
   const [nameErrorHelperText, setNameErrorHelperText] = useState("");
   const [usernameErrorHelperText, setUsernameErrorHelperText] = useState("");
+
+  const router = useRouter();
+  const dispatch = useDispatch();
 
   const handleNameChange = (e) => {
     setName(e.target.value);
@@ -62,9 +66,16 @@ export default function SettingsDialogContent({ handleClose, user, onUpdate }) {
       updatedUsername,
       updatedAffiliation,
       updatedName,
-      userId
+      user.id
     );
+    // dispatch user info in context
+    dispatch(setUser({ ...user, ...data }));
+
+    // handle close
     if (data) {
+      if (updatedUsername) {
+        router.replace(`/${updatedUsername}`);
+      }
       handleClose();
       onUpdate();
     } else if (error) {

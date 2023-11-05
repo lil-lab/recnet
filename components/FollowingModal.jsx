@@ -29,7 +29,7 @@ const FollowingModal = ({ open, onClose, currentUserId, onUserUpdate, followingI
 
   const updateUser = (userIdToUpdate, newFollowers) => {
     setFollowingUsers(followingUsers.map(user =>
-      user.uid === userIdToUpdate ? { ...user, followers: newFollowers } : user
+      user.id === userIdToUpdate ? { ...user, followers: newFollowers } : user
     ));
     onUserUpdate();
   };
@@ -45,7 +45,7 @@ const FollowingModal = ({ open, onClose, currentUserId, onUserUpdate, followingI
         {followingUsers.length > 0 ? (
           followingUsers.map(user => (
             <UserCard
-              key={user.uid}
+              key={user.id}
               user={user}
               currentUserId={currentUserId}
               updateUser={updateUser}

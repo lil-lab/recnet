@@ -14,9 +14,9 @@ const capitalize = (s) => {
     .join(" ");
 };
 
-/** [GET] Get user(s) by email or name
+/** [GET] Get user(s) by username or name
  * req.query requires:
- * @param q user email or name
+ * @param q user username or name
  * @returns users
  */
 export default async function searchHandler(req, res) {
@@ -25,12 +25,20 @@ export default async function searchHandler(req, res) {
     q = q.trim().replace(/ +(?= )/g, ""); // remove extra space
 
     // serach by email
-    const emailQuery = query(
+    // const emailQuery = query(
+    //   collection(db, "users"),
+    //   where("email", ">=", q),
+    //   where("email", "<=", q + "\uf8ff")
+    // );
+    // const emailQuerySnapshot = await getDocs(emailQuery);
+
+    //search by username
+    const usernameQuery = query(
       collection(db, "users"),
-      where("email", ">=", q),
-      where("email", "<=", q + "\uf8ff")
+      where("username", ">=", q),
+      where("username", "<=", q + "\uf8ff")
     );
-    const emailQuerySnapshot = await getDocs(emailQuery);
+    const usernameQuerySnapshot = await getDocs(usernameQuery);
 
     // search by name
     const nameQuery = query(
@@ -49,7 +57,7 @@ export default async function searchHandler(req, res) {
     const nameQuerySnapshot = await getDocs(nameQuery);
 
     // combine results and remove duplicates
-    let allResults = emailQuerySnapshot.docs
+    let allResults = usernameQuerySnapshot.docs
       .map((doc) => {
         return { ...doc.data(), id: doc.id };
       })

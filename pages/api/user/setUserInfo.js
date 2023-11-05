@@ -65,7 +65,7 @@ export default async function setUserInfoHandler(req, res) {
 
     if (docSnap.exists()) {
       await setDoc(docRef, data, { merge: true });
-      res.status(200).json({ ...data, uid: userId });
+      res.status(200).json({ ...data, id: userId });
       return;
     } else {
       res.status(404).json({ error: "User does not exist." });

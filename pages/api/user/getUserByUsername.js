@@ -14,8 +14,15 @@ export default async function getUserByUsernameHandler(req, res) {
     if (querySnapshot.empty) {
       // No user found with the provided username
       res.status(200).json(undefined);
+      return;
     } else {
-      res.status(200).json({ ...querySnapshot.docs[0].data() });
+      res
+        .status(200)
+        .json({
+          ...querySnapshot.docs[0].data(),
+          id: querySnapshot.docs[0].id,
+        });
+      return;
     }
   } catch (error) {
     console.error(error);

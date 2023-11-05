@@ -1,10 +1,5 @@
 import { db } from "../../../utils/db/init";
-import {
-  getDocs,
-  query,
-  collection,
-  where,
-} from "firebase/firestore";
+import { doc, getDoc } from "firebase/firestore";
 
 /** [POST] Get user objects from a list of userIds
  * req.query requires:
@@ -14,15 +9,15 @@ import {
 export default async function getUsersHandler(req, res) {
   try {
     const { userIds } = req.body;
-
-    // const q = query(collection(db, "users"), where("uid", "in", userIds));
-    const q = query(collection(db, "users"), where("uid", "in", userIds)); 
-    const querySnapshot = await getDocs(q);
     let users = [];
-    querySnapshot.forEach((doc) => {
-      // doc.data() is never undefined for query doc snapshots
-      users.push(doc.data());
-    });
+
+    for (let userId of userIds) {
+      const docSnap = await getDoc(doc(db, "users", userId));
+
+      if (docSnap.exists()) {
+        users.push({ ...docSnap.data(), id: docSnap.id });
+      }
+    }
 
     res.status(200).json(users);
   } catch (error) {
