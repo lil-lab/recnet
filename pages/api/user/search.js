@@ -70,6 +70,7 @@ export default async function searchHandler(req, res) {
     allResults = allResults.filter((user, index) => {
       const _id = user.id;
       return (
+        user.username && // registered user (with username)
         index === allResults.map((u) => u.id).findIndex((uid) => uid === _id)
       );
     });
