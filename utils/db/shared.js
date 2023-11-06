@@ -5,7 +5,7 @@ export async function post(route, body) {
     const response = await axios.post(route, body);
     return response;
   } catch (error) {
-    return error.response.data;
+    return { error: error.response.data };
   }
 }
 
@@ -14,6 +14,6 @@ export async function get(route) {
     const response = await axios.get(route);
     return response;
   } catch (error) {
-    return error.response.data;
+    return { error: error.response.data };
   }
 }

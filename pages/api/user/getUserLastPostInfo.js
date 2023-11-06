@@ -16,7 +16,7 @@ export default async function getUserLastPostInfoHandler(req, res) {
       res.status(200).json({ lastPostId, lastPosted });
     } else {
       // docSnap.data() will be undefined in this case
-      res.status(404).json({ error: "User not found" });
+      res.status(404).json("User not found");
     }
   } catch (error) {
     console.error(error);

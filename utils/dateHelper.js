@@ -1,7 +1,7 @@
 import { Timestamp } from "firebase/firestore";
 
 export const DUE_DAY = 2; // 0 for Sunday, 1 for Monday, ..., 6 for Saturday
-export const START_DATE = new Date(2023, 9, 17); // NOTE: month is 0-indexed
+export const START_DATE = new Date(2023, 9, 24); // NOTE: month is 0-indexed
 
 /** Returns a cutoff Date object with exact cutoff time given the date.
  * @param {Date} date

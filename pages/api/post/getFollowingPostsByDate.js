@@ -30,7 +30,7 @@ export default async function getFollowingPostsByDateHandler(req, res) {
         return;
       }
     } else {
-      res.status(404).json({ error: "User not found" });
+      res.status(404).json("User not found");
       return;
     }
 

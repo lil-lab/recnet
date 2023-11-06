@@ -40,16 +40,14 @@ export default async function setUserInfoHandler(req, res) {
       );
       const snapshot = await getDocs(q);
       if (!snapshot.empty) {
-        res
-          .status(409)
-          .json({ error: { usernameError: "Username already exists." } });
+        res.status(409).json({ usernameError: "Username already exists." });
         return;
       }
     }
 
     if (name) {
       if (name.length === 0) {
-        res.status(409).json({ error: { nameError: "Name cannot be empty." } });
+        res.status(409).json({ nameError: "Name cannot be empty." });
         return;
       }
     }
@@ -68,10 +66,10 @@ export default async function setUserInfoHandler(req, res) {
       res.status(200).json({ ...data, id: userId });
       return;
     } else {
-      res.status(404).json({ error: "User does not exist." });
+      res.status(404).json("User does not exist.");
     }
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: error.message });
+    res.status(500).json(error.message);
   }
 }

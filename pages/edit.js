@@ -142,6 +142,33 @@ function PaperForm({ postId }) {
     }
   };
 
+  function submitDisabled() {
+    if (buttonText === "Post") {
+      return (
+        linkError ||
+        titleError ||
+        authorError ||
+        descriptionError ||
+        linkFirstLoaded ||
+        titleFirstLoaded ||
+        authorFirstLoaded ||
+        descriptionFirstLoaded
+      );
+    }
+    if (buttonText === "Update") {
+      return (
+        linkError ||
+        titleError ||
+        authorError ||
+        descriptionError ||
+        (linkFirstLoaded &&
+          titleFirstLoaded &&
+          authorFirstLoaded &&
+          descriptionFirstLoaded)
+      );
+    }
+  }
+
   return (
     <div>
       <TextField
@@ -198,16 +225,7 @@ function PaperForm({ postId }) {
         variant="contained"
         color="secondary"
         size="large"
-        disabled={
-          linkError ||
-          titleError ||
-          authorError ||
-          descriptionError ||
-          linkFirstLoaded ||
-          titleFirstLoaded ||
-          authorFirstLoaded ||
-          descriptionFirstLoaded
-        }
+        disabled={submitDisabled()}
         onClick={handleSubmit}
         loading={loading}
       >
