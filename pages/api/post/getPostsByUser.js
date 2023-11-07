@@ -5,6 +5,7 @@ import {
   collection,
   where,
   Timestamp,
+  orderBy,
 } from "firebase/firestore";
 import { getNextCutoff } from "@/utils/dateHelper";
 
@@ -21,13 +22,15 @@ export default async function getPostByUserHandler(req, res) {
       // including upcoming post in current cutoff
       q = query(
         collection(db, "recommendations"),
-        where("userId", "==", userId)
+        where("userId", "==", userId),
+        orderBy("cutoff", "desc")
       );
     } else {
       q = query(
         collection(db, "recommendations"),
         where("userId", "==", userId),
-        where("cutoff", "!=", Timestamp.fromMillis(getNextCutoff()))
+        where("cutoff", "!=", Timestamp.fromMillis(getNextCutoff())),
+        orderBy("cutoff", "desc")
       );
     }
 
