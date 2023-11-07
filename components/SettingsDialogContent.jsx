@@ -1,5 +1,5 @@
 import { setUserInfo } from "@/utils/db/user";
-import { isUsernameValid } from "@/utils/helpers";
+import { isUsernameValid } from "@/utils/validationHelper";
 import { setUser } from "@/utils/redux/userSlice";
 import {
   Button,

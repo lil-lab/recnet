@@ -1,4 +1,4 @@
-import { isUsernameValid } from "@/utils/helpers";
+import { isUsernameValid } from "@/utils/validationHelper";
 import { db } from "../../../utils/db/init";
 import {
   doc,

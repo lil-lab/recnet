@@ -10,6 +10,8 @@ export const postEntry = async (
   author,
   description,
   email,
+  year,
+  month,
   userId
 ) => {
   const res = await axios.post("/api/post/postEntry", {
@@ -18,6 +20,8 @@ export const postEntry = async (
     author,
     description,
     email,
+    year,
+    month,
     userId,
   });
   if (res.status === 200) {
@@ -54,18 +58,30 @@ export const getPostbyId = async (postId) => {
   }
 };
 
-export const updatePost = async (title, link, author, description, postId) => {
+export const updatePost = async (
+  title,
+  link,
+  author,
+  description,
+  year,
+  month,
+  postId
+) => {
   await axios.put("/api/post/updatePost", {
     title,
     link,
     author,
     description,
+    year,
+    month,
     postId,
   });
 };
 
 export const getPostsByUser = async (userId, currentCutoff) => {
-  const postRes = await axios.get(`/api/post/getPostsByUser?userId=${userId}&current=${currentCutoff}`);
+  const postRes = await axios.get(
+    `/api/post/getPostsByUser?userId=${userId}&current=${currentCutoff}`
+  );
   if (postRes.status === 200) {
     return postRes.data;
   }

@@ -12,8 +12,8 @@ export default async function getUserLastPostInfoHandler(req, res) {
     const docSnap = await getDoc(docRef);
 
     if (docSnap.exists()) {
-      const { lastPostId, lastPosted } = docSnap.data();
-      res.status(200).json({ lastPostId, lastPosted });
+      const { postIds, lastPosted } = docSnap.data();
+      res.status(200).json({ lastPostId: postIds.slice(-1)[0], lastPosted });
     } else {
       // docSnap.data() will be undefined in this case
       res.status(404).json("User not found");

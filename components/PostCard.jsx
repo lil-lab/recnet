@@ -6,7 +6,7 @@ import { getUserById } from "@/utils/db/user";
 import { formatDate, getDateFromServerTimestamp } from "@/utils/dateHelper";
 
 export default function PostCard({ post, showUser, showDate, width }) {
-  const { title, link, author, description } = post;
+  const { title, link, author, description, year, month } = post;
   const [recommender, setRecommender] = useState(undefined);
 
   useEffect(() => {
@@ -31,7 +31,9 @@ export default function PostCard({ post, showUser, showDate, width }) {
       >
         <Link href={link} target="_blank" rel="noopener" align="left">
           <Typography variant="h4" color="primary">
-            {title}
+            {`${title} ${
+              year && month ? `(${month} ${year})` : year ? `(${year})` : ""
+            }`}
           </Typography>
         </Link>
         <Typography

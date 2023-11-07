@@ -16,6 +16,8 @@ import { getNextCutoff } from "@/utils/dateHelper";
  * @param author,
  * @param description,
  * @param email,
+ * @param year,
+ * @param month,
  * @param userId
  */
 export default async function postEntryHandler(req, res) {
@@ -35,7 +37,6 @@ export default async function postEntryHandler(req, res) {
       userRef,
       {
         lastPosted: serverTimestamp(),
-        lastPostId: id,
         postIds: arrayUnion(id),
       },
       { merge: true }

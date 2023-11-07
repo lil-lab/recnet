@@ -4,7 +4,7 @@ import { Typography, TextField, InputAdornment, Button } from "@mui/material";
 import { fontStyles } from "@/utils/fonts";
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect, useState } from "react";
-import { isUsernameValid } from "@/utils/helpers";
+import { isUsernameValid } from "@/utils/validationHelper";
 import { setUserInfo } from "@/utils/db/user";
 import { setUser } from "@/utils/redux/userSlice";
 
