@@ -15,10 +15,10 @@ import { getNextCutoff } from "@/utils/dateHelper";
  */
 export default async function getPostByUserHandler(req, res) {
   try {
-    const { userId, current } = req.query;
+    const { userId, includeCurrentCutoff } = req.query;
 
     let q;
-    if (current === "true") {
+    if (includeCurrentCutoff === "true") {
       // including upcoming post in current cutoff
       q = query(
         collection(db, "recommendations"),

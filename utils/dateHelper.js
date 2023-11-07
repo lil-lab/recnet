@@ -76,11 +76,11 @@ export function formatDateVerbose(date, excludeDate) {
 }
 
 /** Get timestamp in milliseconds from server timestamp.
- * @param timestamp Server timestamp object
+ * @param timestamp Server timestamp object {seconds: number, nanoseconds: number}
  */
 export function getDateFromServerTimestamp(timestamp) {
   timestamp = new Timestamp(timestamp.seconds, timestamp.nanoseconds);
-  return new Date(timestamp.toMillis());
+  return timestamp.toDate();
 }
 
 /** Gets all cutoff day dates from the start date to today in reverse order.

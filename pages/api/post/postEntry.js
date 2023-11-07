@@ -36,7 +36,6 @@ export default async function postEntryHandler(req, res) {
     await setDoc(
       userRef,
       {
-        lastPosted: serverTimestamp(),
         postIds: arrayUnion(id),
       },
       { merge: true }
