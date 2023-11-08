@@ -21,6 +21,11 @@ export default async function getPostInProgressByUserHandler(req, res) {
       const { postIds } = docSnap.data();
 
       // get user's last post
+      if (postIds.length === 0) {
+        // no posts
+        res.status(200).json(undefined);
+        return;
+      }
       const lastPostId = postIds.slice(-1)[0];
       const postRef = doc(db, "recommendations", lastPostId);
       const postSnap = await getDoc(postRef);
