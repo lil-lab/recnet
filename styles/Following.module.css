@@ -1,0 +1,16 @@
+/* FollowingPage.module.css */
+.main {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start; /* Align items from the start */
+    align-items: center;
+    padding: 10rem 1rem 1rem; /* Increase the top padding */
+    margin-top: var(--top-bar-height, 10rem); /* Adjust this value to match your top bar's height */
+    min-height: 100vh;
+    text-align: center;
+    width: 100%;
+    box-sizing: border-box;
+    position: relative; /* Ensure this is relative to the viewport */
+    z-index: 1; /* Ensure this stacks above the background elements */
+  }
+  
