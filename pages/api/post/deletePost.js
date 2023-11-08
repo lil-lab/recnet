@@ -2,7 +2,6 @@ import { db } from "../../../utils/db/init";
 import {
   setDoc,
   getDoc,
-  serverTimestamp,
   doc,
   deleteDoc,
   arrayRemove,
@@ -10,6 +9,7 @@ import {
 
 /** [DELETE] Delete a post by id.
  * @param postId
+ * @return deleted postId, userId
  */
 export default async function deletePostHandler(req, res) {
   try {
@@ -24,22 +24,19 @@ export default async function deletePostHandler(req, res) {
       await setDoc(
         userRef,
         {
-          lastPosted: serverTimestamp(),
-          postIds: arrayRemove(id),
+          postIds: arrayRemove(postId),
         },
         { merge: true }
       );
 
-      res.status(200).json(docSnap.data());
-
       // delete post
       await deleteDoc(docRef);
-    } else {
-      // docSnap.data() will be undefined in this case
-      res.status(404).json("Post not found");
-    }
 
-    res.status(200).json();
+      res.status(200).json({ postId, userId });
+    } else {
+      // post doens't exist
+      res.status(404).json(`Post ${postId} not found`);
+    }
   } catch (error) {
     console.error(error);
     res.status(500).json(error.message);
