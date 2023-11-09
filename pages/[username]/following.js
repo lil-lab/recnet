@@ -60,7 +60,7 @@ const FollowingPage = () => {
   if (following.length === 0) {
     return (
       <Typography variant="h6" sx={{ textAlign: 'center' }}>
-        You're not following anyone yet.
+        You are not following anyone yet.
       </Typography>
     );
   }

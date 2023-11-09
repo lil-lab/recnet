@@ -52,6 +52,7 @@ export default function ProfilePage() {
       return data;
     }
     setIsLoading(true);
+    
     if (username) {
       getUser(username)
         .then((user) => {
