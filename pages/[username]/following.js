@@ -11,6 +11,7 @@ import Typography from "@mui/material/Typography";
 import { fontStyles } from "@/utils/fonts";
 import ErrorSnackbar from '@/components/ErrorSnackbar';
 
+// Vercel Deployment Test
 export default function FollowingPage() {
   const [following, setFollowing] = useState([]);
   const [loading, setLoading] = useState(true);
