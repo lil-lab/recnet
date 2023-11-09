@@ -11,7 +11,7 @@ import Typography from "@mui/material/Typography";
 import { fontStyles } from "@/utils/fonts";
 import ErrorSnackbar from '@/components/ErrorSnackbar';
 
-const FollowingPage = () => {
+export default function FollowingPage() {
   const [following, setFollowing] = useState([]);
   const [loading, setLoading] = useState(true);
   const currentUser = useSelector((state) => state.user.value);
@@ -23,18 +23,19 @@ const FollowingPage = () => {
       if (currentUser?.id) {
         setLoading(true);
         const { data, error } = await getUsers(currentUser.following);
+    
         if (data) {
           setFollowing(data);
         } else {
-            setSnackbarMessage(error);
-            setSnackbarOpen(true);
+          setSnackbarOpen(true);
+          setSnackbarMessage(error);
         }
         setLoading(false);
       }
     }
-
+  
     loadFollowing();
-  }, [currentUser]);
+  }, [currentUser]);  
 
   const updateUser = (userIdToUpdate, newFollowers) => {
     setFollowing(following.map(user =>
@@ -57,38 +58,36 @@ const FollowingPage = () => {
       );
   }
 
-  if (following.length === 0) {
-    return (
-      <Typography variant="h6" sx={{ textAlign: 'center' }}>
-        You are not following anyone yet.
-      </Typography>
-    );
-  }
-
-  return (
+return (
     <>
-      <div className={styles.main}>
+      <main className={styles.main}>
         <Link href={`/${currentUser.username}`} style={{ marginBottom: "2%" }}>
           <Typography variant="body2" sx={fontStyles.regular}>
             Back to profile
           </Typography>
         </Link>
-        {following.map((user) => (
-          <UserCard
-            key={user.id}
-            user={user}
-            currentUserId={currentUser.id}
-            updateUser={updateUser}
-          />
-        ))}
-      </div>
+        {following.length === 0 ? (
+          <noFollowingsText className={styles.noFollowingsText}>
+            <Typography variant="body1" sx={fontStyles.regular}>
+            You are not following anyone yet.
+            </Typography>
+          </noFollowingsText>
+        ) : (
+          following.map((user) => (
+            <UserCard
+              key={user.id}
+              user={user}
+              currentUserId={currentUser.id}
+              updateUser={updateUser}
+            />
+          ))
+        )}
       <ErrorSnackbar
         open={snackbarOpen}
         message={snackbarMessage}
         handleClose={handleSnackbarClose}
       />
+      </main>
     </>
-  );
-};
-
-export default FollowingPage;
+  )
+}
