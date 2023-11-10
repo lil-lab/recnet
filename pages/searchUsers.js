@@ -70,7 +70,10 @@ export default function SearchUsers() {
           ))
         ))}
 
-      <BackLink />
+    <BackLink 
+        route = "/"
+        text = "back to homepage"
+      />
     </main>
   );
 }

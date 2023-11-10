@@ -1,11 +1,11 @@
 import { Typography, Link } from "@mui/material";
 import { fontStyles } from "@/utils/fonts";
 
-export default function BackLink() {
+export default function BackLink({route, text}) {
   return (
-    <Link href={"/"} style={{ marginTop: "2%" }}>
+    <Link href={route} style={{ marginTop: "2%" }}>
       <Typography variant="body2" sx={fontStyles.regular}>
-        back to homepage
+        {text}
       </Typography>
     </Link>
   );

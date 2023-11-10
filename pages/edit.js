@@ -286,7 +286,10 @@ function PaperForm({ postId }) {
         <Help />
       </div>
 
-      <BackLink />
+      <BackLink 
+        route = "/"
+        text = "back to homepage"
+      />
     </div>
   );
 }
