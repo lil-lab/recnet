@@ -57,14 +57,6 @@ export default function FollowingPage() {
   return (
     <>
       <main className={styles.main}>
-        {following.length >= 5 && (
-          <div style={{ paddingBottom: '25px' }}>
-            <BackLink
-              route={`/${currentUser.username}`}
-              text="back to profile"
-            />
-          </div>
-        )}
         {following.length === 0 ? (
           <div className={styles.noFollowingsText}>
             <Typography variant="h6" sx={fontStyles.regular}>
@@ -81,14 +73,12 @@ export default function FollowingPage() {
             />
           ))
         )}
-        {following.length < 5 && (
-          <div style={{ paddingTop: '25px' }}>
+        {<div style={{ paddingTop: '25px' }}>
             <BackLink
               route={`/${currentUser.username}`}
               text="back to profile"
             />
-          </div>
-        )}
+        </div>}
         <ErrorSnackbar
           open={snackbarOpen}
           message={snackbarMessage}
