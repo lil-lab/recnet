@@ -77,7 +77,10 @@ export default function ProfilePage() {
         <Typography variant="h6" sx={fontStyles.regular}>
           {"User doesn't exist."}
         </Typography>
-        <BackLink />
+        <BackLink 
+        route = "/"
+        text = "back to homepage"
+      />
       </main>
     );
   }
@@ -169,7 +172,10 @@ export default function ProfilePage() {
             <Typography variant="h6" sx={fontStyles.regular}>
               {"User doesn't exist."}
             </Typography>
-            <BackLink />
+            <BackLink 
+            route = "/"
+            text = "back to homepage"
+             />
           </>
         ))}
     </main>

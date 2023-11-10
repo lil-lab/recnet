@@ -1,4 +1,4 @@
-import { useRouter } from "next/router";
+import BackLink from "@/components/BackLink";
 import { useEffect, useState } from "react";
 import UserCard from "@/components/UserCard";
 import { getUsers } from "@/utils/db/user";
@@ -6,25 +6,23 @@ import Loading from "@/components/Loading";
 import profilestyles from "@/styles/Profile.module.css";
 import styles from "@/styles/Following.module.css";
 import { useSelector } from "react-redux";
-import Link from "@mui/material/Link";
 import Typography from "@mui/material/Typography";
 import { fontStyles } from "@/utils/fonts";
 import ErrorSnackbar from '@/components/ErrorSnackbar';
 
-// Vercel Deployment Test
 export default function FollowingPage() {
   const [following, setFollowing] = useState([]);
   const [loading, setLoading] = useState(true);
   const currentUser = useSelector((state) => state.user.value);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
-  
+
   useEffect(() => {
     async function loadFollowing() {
       if (currentUser?.id) {
         setLoading(true);
         const { data, error } = await getUsers(currentUser.following);
-    
+
         if (data) {
           setFollowing(data);
         } else {
@@ -34,45 +32,45 @@ export default function FollowingPage() {
         setLoading(false);
       }
     }
-  
+
     loadFollowing();
-  }, [currentUser]);  
+  }, [currentUser]);
 
   const updateUser = (userIdToUpdate, newFollowers) => {
     setFollowing(following.map(user =>
       user.id === userIdToUpdate ? { ...user, followers: newFollowers } : user
-        ));
-    };
+    ));
+  };
 
-  const handleSnackbarClose = (event, reason) => {
-    if (reason === 'clickaway') {
-        return;
-    }
+  const handleSnackbarClose = () => {
     setSnackbarOpen(false);
   };
 
   if (loading) {
     return (
-        <main className={profilestyles.main}>
-          <Loading />
-        </main>
-      );
+      <main className={profilestyles.main}>
+        <Loading />
+      </main>
+    );
   }
 
-return (
+  return (
     <>
       <main className={styles.main}>
-        <Link href={`/${currentUser.username}`} style={{ marginBottom: "2%" }}>
-          <Typography variant="body2" sx={fontStyles.regular}>
-            Back to profile
-          </Typography>
-        </Link>
+        {following.length >= 5 && (
+          <div style={{ paddingBottom: '25px' }}>
+            <BackLink
+              route={`/${currentUser.username}`}
+              text="back to profile"
+            />
+          </div>
+        )}
         {following.length === 0 ? (
-          <noFollowingsText className={styles.noFollowingsText}>
-            <Typography variant="body1" sx={fontStyles.regular}>
-            You are not following anyone yet.
+          <div className={styles.noFollowingsText}>
+            <Typography variant="h6" sx={fontStyles.regular}>
+              You are not following anyone yet.
             </Typography>
-          </noFollowingsText>
+          </div>
         ) : (
           following.map((user) => (
             <UserCard
@@ -83,12 +81,20 @@ return (
             />
           ))
         )}
-      <ErrorSnackbar
-        open={snackbarOpen}
-        message={snackbarMessage}
-        handleClose={handleSnackbarClose}
-      />
+        {following.length < 5 && (
+          <div style={{ paddingTop: '25px' }}>
+            <BackLink
+              route={`/${currentUser.username}`}
+              text="back to profile"
+            />
+          </div>
+        )}
+        <ErrorSnackbar
+          open={snackbarOpen}
+          message={snackbarMessage}
+          handleClose={handleSnackbarClose}
+        />
       </main>
     </>
-  )
+  );
 }

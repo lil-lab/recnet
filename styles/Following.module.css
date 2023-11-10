@@ -1,23 +1,9 @@
-/* FollowingPage.module.css */
-.main {
+   .main {
     display: flex;
     flex-direction: column;
-    justify-content: flex-start; 
+    justify-content: center;
     align-items: center;
-    padding: 10rem 1rem 1rem; 
-    margin-top: var(--top-bar-height, 10rem); 
+    padding: 7rem;
     min-height: 100vh;
     text-align: center;
-    width: 100%;
-    box-sizing: border-box;
-    position: relative; 
-    z-index: 1;  
   }
-  .noFollowingsText {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: center;
-    padding-top: 0%;
-  }
-  
