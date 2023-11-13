@@ -7,7 +7,10 @@ import { Typography } from "@mui/material";
 import LoginButton from "../components/LoginButton";
 
 import { getLastCutoff } from "@/utils/dateHelper";
-import { getFollowingPostsByDate, getUserLastPost } from "@/utils/db/post";
+import {
+  getFollowingPostsByDate,
+  getPostInProgressByUser,
+} from "@/utils/db/post";
 
 import { fontStyles } from "@/utils/fonts";
 
@@ -24,7 +27,7 @@ export default function Home() {
   const userLoaded = useSelector((state) => state.user.loaded);
 
   const [posts, setPosts] = useState(-1); // -1 when the page is just loaded; undefined when there's no post
-  const [lastPost, setLastPost] = useState(-1);
+  const [postInProgress, setPostInProgress] = useState(-1);
   const [filter, setFilter] = useState(getLastCutoff());
 
   useEffect(() => {
@@ -33,26 +36,30 @@ export default function Home() {
       setPosts(posts);
     }
 
-    async function getLastPost() {
-      const post = await getUserLastPost(userId);
-      setLastPost(post); // if no last post, lastPost is undefined
+    async function getPostInProgress() {
+      const { data, error } = await getPostInProgressByUser(userId);
+      if (error) {
+        console.log(error);
+      } else {
+        setPostInProgress(data); // if no post in progress, postInProgress is undefined
+      }
     }
 
     if (userLoaded) {
       if (userId) {
         getPosts();
-        getLastPost();
+        getPostInProgress();
       } else {
         // no userId (not logged in), set no post
         setPosts(undefined);
-        setLastPost(undefined);
+        setPostInProgress(undefined);
       }
     }
   }, [user, userId, userLoaded, filter]);
 
   return (
     <>
-      {userLoaded && posts !== -1 && lastPost !== -1 ? (
+      {userLoaded && posts !== -1 && postInProgress !== -1 ? (
         <>
           {user ? (
             <main className={styles.main} style={{ flexDirection: "row" }}>
@@ -61,7 +68,7 @@ export default function Home() {
                 <LeftBar
                   user={user}
                   setFilter={setFilter}
-                  lastPost={lastPost}
+                  postInProgress={postInProgress}
                 />
               </div>
 

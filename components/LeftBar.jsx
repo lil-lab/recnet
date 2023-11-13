@@ -11,18 +11,18 @@ import { useState } from "react";
 import styles from "./LeftBar.module.css";
 import PostButton from "./PostButton";
 
-export default function LeftBar({ lastPost, setFilter }) {
-  const dates = getPastDueDays(START_DATE); // TODO
-  const [selected, setSelected] = useState(formatDate(dates[0])); // TODO: no dates
+export default function LeftBar({ postInProgress, setFilter }) {
+  const dates = getPastDueDays(START_DATE);
+  const [selected, setSelected] = useState(formatDate(dates[0]));
 
   return (
     <List className={styles.sideBar}>
       <ListItem>
-        <PostButton lastPost={lastPost} />
+        <PostButton postInProgress={postInProgress} />
       </ListItem>
       <ListItem>
         <Typography variant="body2" color="textSecondary" align="center">
-          {lastPost
+          {postInProgress
             ? `Edit your recommendation anytime before: ${formatDateVerbose(
                 getNextCutoff()
               )}`

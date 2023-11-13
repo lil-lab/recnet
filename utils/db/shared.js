@@ -17,3 +17,12 @@ export async function get(route) {
     return { error: error.response.data };
   }
 }
+
+export async function del(route) {
+  try {
+    const response = await axios.delete(route);
+    return response;
+  } catch (error) {
+    return { error: error.response.data };
+  }
+}

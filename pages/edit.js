@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 
 import { Box, TextField, Typography, Select, MenuItem } from "@mui/material";
-import { getPostbyId, postEntry, updatePost } from "../utils/db/post";
+import { getPostById, postEntry, updatePost } from "../utils/db/post";
 
 import {
   formatDateVerbose,
@@ -89,7 +89,7 @@ function PaperForm({ postId }) {
 
   useEffect(() => {
     async function getPost(id) {
-      const post = await getPostbyId(id);
+      const post = await getPostById(id);
       setTitle(post.title);
       setLink(post.link);
       setAuthor(post.author);

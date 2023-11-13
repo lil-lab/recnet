@@ -1,8 +1,5 @@
 import axios from "axios";
-import {
-  isDateWithinDateRange,
-  getDateFromServerTimestamp,
-} from "../dateHelper";
+import { post, get } from "./shared";
 
 export const postEntry = async (
   title,
@@ -30,28 +27,11 @@ export const postEntry = async (
   }
 };
 
-export const getUserLastPost = async (userId) => {
-  const res = await axios.get(`/api/user/getUserLastPostInfo?userId=${userId}`);
-
-  if (res.status === 200) {
-    const { lastPostId, lastPosted } = res.data;
-    if (lastPostId && lastPosted) {
-      // if there's last post
-      const lastPostedDate = getDateFromServerTimestamp(lastPosted);
-      // if last post is within cutoff range
-      if (isDateWithinDateRange(lastPostedDate)) {
-        const postRes = await axios.get(
-          `/api/post/getPostById?postId=${lastPostId}`
-        );
-        if (postRes.status === 200) {
-          return { ...postRes.data, id: lastPostId };
-        }
-      }
-    }
-  }
+export const getPostInProgressByUser = async (userId) => {
+  return get(`/api/post/getPostInProgressByUser?userId=${userId}`);
 };
 
-export const getPostbyId = async (postId) => {
+export const getPostById = async (postId) => {
   const postRes = await axios.get(`/api/post/getPostById?postId=${postId}`);
   if (postRes.status === 200) {
     return { ...postRes.data, id: postId };
@@ -78,9 +58,9 @@ export const updatePost = async (
   });
 };
 
-export const getPostsByUser = async (userId, currentCutoff) => {
+export const getPostsByUser = async (userId, includeCurrentCutoff) => {
   const postRes = await axios.get(
-    `/api/post/getPostsByUser?userId=${userId}&current=${currentCutoff}`
+    `/api/post/getPostsByUser?userId=${userId}&includeCurrentCutoff=${includeCurrentCutoff}`
   );
   if (postRes.status === 200) {
     return postRes.data;

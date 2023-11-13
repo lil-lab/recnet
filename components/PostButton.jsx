@@ -2,13 +2,13 @@ import { Button } from "@mui/material";
 import { useRouter } from "next/router";
 import styles from "./PostButton.module.css";
 
-export default function PostButton({ lastPost }) {
+export default function PostButton({ postInProgress }) {
   const router = useRouter();
-  return lastPost ? (
+  return postInProgress ? (
     <Button
       className={styles.button}
       onClick={() => {
-        router.push(`/edit?postId=${lastPost.id}`);
+        router.push(`/edit?postId=${postInProgress.id}`);
       }}
       variant="contained"
       color="secondary"

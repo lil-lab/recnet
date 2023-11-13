@@ -15,7 +15,7 @@ export default async function getPostByIdHandler(req, res) {
       res.status(200).json(docSnap.data());
     } else {
       // docSnap.data() will be undefined in this case
-      res.status(404).json("Post not found");
+      res.status(404).json(`Post ${postId} not found`);
     }
   } catch (error) {
     console.error(error);
