@@ -20,18 +20,9 @@ import MonthPicker from "@/components/MonthPicker";
 import { isYearValid } from "@/utils/validationHelper";
 
 export default function Edit() {
-  useCheckUser();
-  const user = useSelector((state) => state.user.value);
-  const userLoaded = useSelector((state) => state.user.loaded);
+  const { user, router } = useCheckUser();
 
-  const router = useRouter();
   const { postId } = router.query;
-
-  useEffect(() => {
-    if (userLoaded && !user) {
-      router.push("/");
-    }
-  }, [router, user, userLoaded]);
 
   return (
     user && (
@@ -286,10 +277,7 @@ function PaperForm({ postId }) {
         <Help />
       </div>
 
-      <BackLink 
-        route = "/"
-        text = "back to homepage"
-      />
+      <BackLink route="/" text="back to homepage" />
     </div>
   );
 }

@@ -71,6 +71,7 @@ export default async function searchHandler(req, res) {
       const _id = user.id;
       return (
         user.username && // registered user (with username)
+        !user.test && // filter out test accounts
         index === allResults.map((u) => u.id).findIndex((uid) => uid === _id)
       );
     });
