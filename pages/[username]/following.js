@@ -8,14 +8,14 @@ import styles from "@/styles/Following.module.css";
 import { useSelector } from "react-redux";
 import Typography from "@mui/material/Typography";
 import { fontStyles } from "@/utils/fonts";
-import ErrorSnackbar from '@/components/ErrorSnackbar';
+import ErrorSnackbar from "@/components/ErrorSnackbar";
 
 export default function FollowingPage() {
   const [following, setFollowing] = useState([]);
   const [loading, setLoading] = useState(true);
   const currentUser = useSelector((state) => state.user.value);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
-  const [snackbarMessage, setSnackbarMessage] = useState('');
+  const [snackbarMessage, setSnackbarMessage] = useState("");
 
   useEffect(() => {
     async function loadFollowing() {
@@ -37,9 +37,11 @@ export default function FollowingPage() {
   }, [currentUser]);
 
   const updateUser = (userIdToUpdate, newFollowers) => {
-    setFollowing(following.map(user =>
-      user.id === userIdToUpdate ? { ...user, followers: newFollowers } : user
-    ));
+    setFollowing(
+      following.map((user) =>
+        user.id === userIdToUpdate ? { ...user, followers: newFollowers } : user
+      )
+    );
   };
 
   const handleSnackbarClose = () => {
@@ -68,17 +70,20 @@ export default function FollowingPage() {
             <UserCard
               key={user.id}
               user={user}
+              width={"80%"}
               currentUserId={currentUser.id}
               updateUser={updateUser}
             />
           ))
         )}
-        {<div style={{ paddingTop: '25px' }}>
+        {
+          <div style={{ paddingTop: "25px" }}>
             <BackLink
               route={`/${currentUser.username}`}
               text="back to profile"
             />
-        </div>}
+          </div>
+        }
         <ErrorSnackbar
           open={snackbarOpen}
           message={snackbarMessage}

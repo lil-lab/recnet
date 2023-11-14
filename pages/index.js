@@ -21,10 +21,8 @@ import { useCheckUser } from "@/utils/hooks";
 import LeftBar from "../components/LeftBar";
 
 export default function Home() {
-  useCheckUser();
-  const user = useSelector((state) => state.user.value);
+  const { user, userLoaded } = useCheckUser();
   const userId = useSelector((state) => state.user.id);
-  const userLoaded = useSelector((state) => state.user.loaded);
 
   const [posts, setPosts] = useState(-1); // -1 when the page is just loaded; undefined when there's no post
   const [postInProgress, setPostInProgress] = useState(-1);

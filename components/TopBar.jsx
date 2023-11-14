@@ -6,7 +6,7 @@ import styles from "./TopBar.module.css";
 
 import { getCurrentUser } from "../utils/db/auth";
 import { getUserByEmail } from "../utils/db/user";
-import TopBarLink from './TopBarLink';
+import TopBarLink from "./TopBarLink";
 
 import SearchIcon from "@mui/icons-material/Search";
 import { useRouter } from "next/router";
@@ -42,22 +42,23 @@ export default function TopBar() {
 
   return (
     <AppBar position="fixed" sx={{ top: 0 }} elevation={0}>
-            <Toolbar sx={{ height: "6rem" }}>
-        <TopBarLink href="/" 
-                    text="recnet" 
-                    sx={{
-                        marginLeft: "none",
-                        display: "flex",
-                        ...fontStyles.bold,
-                        letterSpacing: ".3rem", 
-                        textDecoration: "none",
-                      }} />
+      <Toolbar sx={{ height: "6rem" }}>
+        <TopBarLink
+          href="/"
+          text="recnet"
+          sx={{
+            marginLeft: "none",
+            display: "flex",
+            ...fontStyles.bold,
+            letterSpacing: ".3rem",
+            textDecoration: "none",
+          }}
+        />
         <TopBarLink href="/about" text="about" />
         <TopBarLink href="/help" text="help" />
-        {!disable && <TopBarLink 
-                        href="/allUsers" 
-                        text="all users" 
-                        sx={{ mr: "auto" }} />}
+        {!disable && (
+          <TopBarLink href="/allUsers" text="all users" sx={{ mr: "auto" }} />
+        )}
         {!disable && (
           <input
             className={styles.searchText}
