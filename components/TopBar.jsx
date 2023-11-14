@@ -6,6 +6,7 @@ import styles from "./TopBar.module.css";
 
 import { getCurrentUser } from "../utils/db/auth";
 import { getUserByEmail } from "../utils/db/user";
+import TopBarLink from './TopBarLink';
 
 import SearchIcon from "@mui/icons-material/Search";
 import { useRouter } from "next/router";
@@ -41,53 +42,22 @@ export default function TopBar() {
 
   return (
     <AppBar position="fixed" sx={{ top: 0 }} elevation={0}>
-      <Toolbar sx={{ height: "6rem" }}>
-        <Typography
-          variant="h6"
-          noWrap
-          component="a"
-          href="/"
-          sx={{
-            display: "flex",
-            ...fontStyles.bold,
-            letterSpacing: ".3rem",
-            color: "white",
-          }}
-        >
-          recnet
-        </Typography>
-        <Typography
-          variant="h6"
-          noWrap
-          component="a"
-          href="/about"
-          sx={{
-            ml: "2%",
-            ...fontStyles.regular,
-            letterSpacing: ".1rem",
-            color: "white",
-            textDecoration: "underline",
-          }}
-        >
-          about
-        </Typography>
-        <Typography
-          variant="h6"
-          noWrap
-          component="a"
-          href="/help"
-          sx={{
-            ml: "2%",
-            ...fontStyles.regular,
-            letterSpacing: ".1rem",
-            color: "white",
-            mr: "auto",
-            textDecoration: "underline",
-          }}
-        >
-          help
-        </Typography>
-
+            <Toolbar sx={{ height: "6rem" }}>
+        <TopBarLink href="/" 
+                    text="recnet" 
+                    sx={{
+                        marginLeft: "none",
+                        display: "flex",
+                        ...fontStyles.bold,
+                        letterSpacing: ".3rem", 
+                        textDecoration: "none",
+                      }} />
+        <TopBarLink href="/about" text="about" />
+        <TopBarLink href="/help" text="help" />
+        {!disable && <TopBarLink 
+                        href="/allUsers" 
+                        text="all users" 
+                        sx={{ mr: "auto" }} />}
         {!disable && (
           <input
             className={styles.searchText}

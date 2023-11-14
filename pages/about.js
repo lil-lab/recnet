@@ -44,6 +44,8 @@ export default function About() {
         ]
         <br />
         Valene Tjong [
+        <Link href="https://www.linkedin.com/in/valene-tjong/">website</Link>
+        ] [
         <Link href="https://www.recnet.io/vtjong">recnet profile</Link>
         ]
         <br />

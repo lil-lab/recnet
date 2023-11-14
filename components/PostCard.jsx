@@ -4,11 +4,13 @@ import styles from "./PostCard.module.css";
 import { fontStyles } from "@/utils/fonts";
 import { getUserById } from "@/utils/db/user";
 import { formatDate, getDateFromServerTimestamp } from "@/utils/dateHelper";
+import { useRouter } from "next/router";
 
 export default function PostCard({ post, showUser, showDate, width }) {
   const { title, link, author, description, year, month } = post;
   const [recommender, setRecommender] = useState(undefined);
-
+  const router = useRouter();
+  
   useEffect(() => {
     async function getRecommender(id) {
       const recommender = await getUserById(id);
