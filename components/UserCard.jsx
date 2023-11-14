@@ -2,7 +2,6 @@ import { Avatar, Paper, Typography } from "@mui/material";
 
 import { fontStyles } from "@/utils/fonts";
 import styles from "./UserCard.module.css";
-import { useRouter } from "next/router";
 import FollowButton from "./FollowButton";
 
 export default function UserCard({ user, width, currentUserId, updateUser }) {
