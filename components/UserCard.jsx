@@ -2,10 +2,9 @@ import { Avatar, Paper, Typography } from "@mui/material";
 
 import { fontStyles } from "@/utils/fonts";
 import styles from "./UserCard.module.css";
-import { useRouter } from "next/router";
 import FollowButton from "./FollowButton";
 
-export default function UserCard({ user, width, currentUserId, updateUser }) {
+export default function UserCard({ user, width, currentUser, updateUser }) {
   return (
     <Paper
       className={styles.paper}
@@ -47,21 +46,24 @@ export default function UserCard({ user, width, currentUserId, updateUser }) {
           {"@ " + user.username}
         </Typography>
       </a>
-      {currentUserId && user.id !== currentUserId && (
-        <FollowButton
-          unFollow={user.followers && user.followers.includes(currentUserId)}
-          userId={user.id}
-          currentUserId={currentUserId}
-          additionalCallback={() =>
-            updateUser(
-              user.id,
-              user.followers && user.followers.includes(currentUserId)
-                ? user.followers.filter((u) => u !== currentUserId)
-                : (user.followers || []).concat([currentUserId])
-            )
-          }
-        />
-      )}
+      {currentUser &&
+        currentUser.username &&
+        currentUser.id &&
+        user.id !== currentUser.id && (
+          <FollowButton
+            unFollow={user.followers && user.followers.includes(currentUser.id)}
+            userId={user.id}
+            currentUserId={currentUser.id}
+            additionalCallback={() =>
+              updateUser(
+                user.id,
+                user.followers && user.followers.includes(currentUser.id)
+                  ? user.followers.filter((u) => u !== currentUser.id)
+                  : (user.followers || []).concat([currentUser.id])
+              )
+            }
+          />
+        )}
     </Paper>
   );
 }

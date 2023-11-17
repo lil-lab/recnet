@@ -59,25 +59,23 @@ export default function TopBar() {
         {!disable && (
           <TopBarLink href="/allUsers" text="all users" sx={{ mr: "auto" }} />
         )}
-        {!disable && (
-          <input
-            className={styles.searchText}
-            placeholder="search user..."
-            onChange={(e) => {
-              setText(e.target.value);
-            }}
-            onKeyUp={(e) => {
-              if (e.key === "Enter") {
-                handleSearch();
-              }
-            }}
-          ></input>
-        )}
-        {!disable && (
-          <IconButton onClick={handleSearch} sx={{ marginRight: "1%" }}>
-            <SearchIcon color="white" />
-          </IconButton>
-        )}
+
+        <input
+          className={styles.searchText}
+          placeholder="search user..."
+          onChange={(e) => {
+            setText(e.target.value);
+          }}
+          onKeyUp={(e) => {
+            if (e.key === "Enter") {
+              handleSearch();
+            }
+          }}
+        ></input>
+
+        <IconButton onClick={handleSearch} sx={{ marginRight: "1%" }}>
+          <SearchIcon color="white" />
+        </IconButton>
 
         {user && (
           <a

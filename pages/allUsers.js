@@ -14,7 +14,7 @@ export default function AllUsersPage() {
   const [loading, setLoading] = useState(true);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
-  const currentUserId = useSelector((state) => state.user.id);
+  const currentUser = useSelector((state) => state.user.value);
 
   useEffect(() => {
     async function loadAllUsers() {
@@ -68,7 +68,7 @@ export default function AllUsersPage() {
             user={user}
             width={"80%"}
             updateUser={updateUser}
-            currentUserId={currentUserId}
+            currentUser={currentUser}
           />
         ))
       )}

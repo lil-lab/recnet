@@ -71,7 +71,7 @@ export default function FollowingPage() {
               key={user.id}
               user={user}
               width={"80%"}
-              currentUserId={currentUser.id}
+              currentUser={currentUser}
               updateUser={updateUser}
             />
           ))

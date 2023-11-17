@@ -75,13 +75,7 @@ export default function Home() {
                 {posts ? (
                   posts.length === 0 ? (
                     <div className={styles.noRecsText}>
-                      <Typography
-                        variant="body1"
-                        sx={{
-                          ...fontStyles.regular,
-                          // padding: "10%",
-                        }}
-                      >
+                      <Typography variant="body1" sx={fontStyles.regular}>
                         No recommendations from your network this week.
                       </Typography>
                       <Help />
