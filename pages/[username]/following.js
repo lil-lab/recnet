@@ -73,7 +73,6 @@ export default function FollowingPage() {
               width={"80%"}
               currentUser={currentUser}
               updateUser={updateUser}
-              width={"80%"}
             />
           ))
         )}
