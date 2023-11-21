@@ -12,9 +12,12 @@ export function useCheckUser() {
     if (userLoaded) {
       if (user) {
         if (!user.username) {
-          // check if user is registered with recnet (i.e. has username)
-          // if not, redirect to welcome screen
-          // logged in but no username
+          // user is not registered with recnet (i.e. no username)
+          if (!user.inviteCode){
+            // user doesn't have an invite code
+            router.replace("/welcome");
+          }
+          
           router.replace("/welcome");
         }
       } else {

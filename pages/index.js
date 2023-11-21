@@ -59,7 +59,7 @@ export default function Home() {
     <>
       {userLoaded && posts !== -1 && postInProgress !== -1 ? (
         <>
-          {user ? (
+          {user && user.username ? (
             <main className={styles.main} style={{ flexDirection: "row" }}>
               {/* Left Sidebar */}
               <div className={styles.left}>
