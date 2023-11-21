@@ -6,11 +6,11 @@ import { useDispatch, useSelector } from "react-redux";
 import { useEffect, useState } from "react";
 import { isUsernameValid } from "@/utils/validationHelper";
 import { setUserInfo, verifyCode } from "@/utils/db/user";
-import { setUser } from "@/utils/redux/userSlice";
+import { setUser, setId } from "@/utils/redux/userSlice";
 import LoginButton from "@/components/LoginButton";
 
 export default function Welcome() {
-  const user = useSelector((state) => state.user.value);
+  const user = useSelector((state) => state.user.value); // auth user object or full db user object
   const userId = useSelector((state) => state.user.id);
   const userLoaded = useSelector((state) => state.user.loaded);
   const dispatch = useDispatch();
@@ -55,10 +55,11 @@ export default function Welcome() {
   }
 
   const handleContinue = async () => {
-    const { data, error } = await verifyCode(user.id, code);
+    const { data, error } = await verifyCode(user, code);
     if (data) {
-      dispatch(setUser({ ...user, inviteCode: data.id }));
-      router.push("/");
+      // code verified, added user into db
+      dispatch(setUser(data)); // context user will not update until refresh
+      dispatch(setId(data.id));
     } else if (error) {
       setCodeError(true);
       setCodeErrorHelperText(error);

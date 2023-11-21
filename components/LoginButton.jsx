@@ -52,14 +52,12 @@ export default function LoginButton({ asLink, customText }) {
             dispatch(setUser(userData));
             dispatch(setId(userData.id));
             if (!userData.username) {
-              // no username
+              // user in db but no username (has invitation code verfied)
               router.push("/welcome");
             }
           } else {
-            // new user
-            const newUser = await addUser(user);
-            dispatch(setUser(newUser));
-            dispatch(setId(newUser.id));
+            // new user - data not in db
+            dispatch(setUser(user));
             router.push("/welcome");
           }
         }

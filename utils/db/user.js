@@ -84,6 +84,6 @@ export async function getAllUsers() {
   return await get(`/api/user/getAllUsers`);
 }
 
-export async function verifyCode(userId, code) {
-  return await post(`/api/user/verify`, { userId, code });
+export async function verifyCode(user, code) {
+  return await post(`/api/user/verify`, { user, code });
 }
