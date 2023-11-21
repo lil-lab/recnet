@@ -2,7 +2,8 @@ import { useRouter } from "next/router";
 import { useEffect } from "react";
 import { useSelector } from "react-redux";
 
-/** Check user status and redirect when necessary. */
+/** For pages that require user to be registered and logged in to access. 
+ * Handles redirect when necessary. */
 export function useCheckUser() {
   const user = useSelector((state) => state.user.value);
   const userLoaded = useSelector((state) => state.user.loaded);
@@ -16,7 +17,11 @@ export function useCheckUser() {
           // logged in but no username
           router.replace("/welcome");
         }
+      } else {
+        // if not logged in, redirect to home screen
+        router.replace("/");
       }
     }
   }, [userLoaded, user]);
+  return { user, userLoaded, router };
 }

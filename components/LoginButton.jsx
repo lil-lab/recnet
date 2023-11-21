@@ -7,24 +7,38 @@ import { logIn, logOut } from "../utils/db/auth";
 
 import { useRouter } from "next/router";
 import { addUser, getUserByEmail } from "../utils/db/user";
+import BackLink from "./BackLink";
 
-export default function LoginButton() {
+/** Login button that handles log in and out.
+ * @param {boolean} asLink (optional) render as link instead of button
+ * @param {string} customText (optional)
+ */
+export default function LoginButton({ asLink, customText }) {
   const user = useSelector((state) => state.user.value);
   const dispatch = useDispatch();
   const router = useRouter();
 
+  const handleLogout = async () => {
+    router.push("/");
+    await logOut();
+    dispatch(clearUser());
+  };
+
   return user ? (
-    <Button
-      style={{ marginTop: "1%", marginBottom: "1%" }}
-      variant="outlined"
-      onClick={async () => {
-        router.push("/");
-        await logOut();
-        dispatch(clearUser());
-      }}
-    >
-      Log out
-    </Button>
+    asLink ? (
+      <BackLink
+        onClick={handleLogout}
+        text={customText || "log out"}
+      ></BackLink>
+    ) : (
+      <Button
+        style={{ marginTop: "1%", marginBottom: "1%" }}
+        variant="outlined"
+        onClick={handleLogout}
+      >
+        {customText || "Log out"}
+      </Button>
+    )
   ) : (
     <Button
       variant="contained"

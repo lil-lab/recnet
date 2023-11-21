@@ -4,10 +4,12 @@ import styles from "./PostCard.module.css";
 import { fontStyles } from "@/utils/fonts";
 import { getUserById } from "@/utils/db/user";
 import { formatDate, getDateFromServerTimestamp } from "@/utils/dateHelper";
+import { useRouter } from "next/router";
 
 export default function PostCard({ post, showUser, showDate, width }) {
   const { title, link, author, description, year, month } = post;
   const [recommender, setRecommender] = useState(undefined);
+  const router = useRouter();
 
   useEffect(() => {
     async function getRecommender(id) {
@@ -74,21 +76,22 @@ export default function PostCard({ post, showUser, showDate, width }) {
             }}
             style={{ cursor: "pointer" }}
           />
-          <Link
-            href={`/${recommender.username}`}
-            target="_blank"
-            rel="noopener"
+
+          <Typography
+            variant="body2"
+            sx={{
+              ...fontStyles.regular,
+              cursor: "pointer",
+              textDecoration: "underline",
+            }}
+            color="text.secondary"
             align="left"
+            onClick={() => {
+              router.push(`/${recommender.username}`);
+            }}
           >
-            <Typography
-              variant="body2"
-              sx={fontStyles.regular}
-              color="text.secondary"
-              align="left"
-            >
-              {recommender.displayName}
-            </Typography>
-          </Link>
+            {recommender.displayName}
+          </Typography>
         </div>
       )
     );

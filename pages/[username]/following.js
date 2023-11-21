@@ -70,7 +70,8 @@ export default function FollowingPage() {
             <UserCard
               key={user.id}
               user={user}
-              currentUserId={currentUser.id}
+              width={"80%"}
+              currentUser={currentUser}
               updateUser={updateUser}
               width={"80%"}
             />

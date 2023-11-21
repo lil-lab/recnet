@@ -7,6 +7,7 @@ import { useEffect, useState } from "react";
 import { isUsernameValid } from "@/utils/validationHelper";
 import { setUserInfo } from "@/utils/db/user";
 import { setUser } from "@/utils/redux/userSlice";
+import LoginButton from "@/components/LoginButton";
 
 export default function Welcome() {
   const user = useSelector((state) => state.user.value);
@@ -53,8 +54,6 @@ export default function Welcome() {
       userId
     );
     if (data) {
-      console.log("here");
-      console.log({ ...user, ...data });
       dispatch(setUser({ ...user, ...data }));
       router.push("/");
     } else if (error) {
@@ -69,7 +68,6 @@ export default function Welcome() {
 
   useEffect(() => {
     if (router) {
-      console.log(userLoaded, user);
       // if not logged in
       if (userLoaded && !user) {
         router.push("/");
@@ -141,6 +139,7 @@ export default function Welcome() {
           <Typography variant="body2" color="textSecondary">
             You can change these information later in your profile page.
           </Typography>
+          <LoginButton asLink customText="use another account" />
         </div>
       </main>
     )

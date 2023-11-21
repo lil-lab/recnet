@@ -1,22 +1,20 @@
 import BackLink from "@/components/BackLink";
-import SettingsDialogContent from "@/components/SettingsDialogContent";
 import FollowButton from "@/components/FollowButton";
 import FollowStatsCard from "@/components/FollowStatsCard";
 import Loading from "@/components/Loading";
+import PostCard from "@/components/PostCard";
+import SettingsDialogContent from "@/components/SettingsDialogContent";
 import styles from "@/styles/Profile.module.css";
 import { getPostsByUser } from "@/utils/db/post";
-import { getUserById, getUserByUsername } from "@/utils/db/user";
+import { getUserByUsername } from "@/utils/db/user";
 import { fontStyles } from "@/utils/fonts";
-import { Avatar, Button, Typography, Dialog } from "@mui/material";
+import SettingsIcon from "@mui/icons-material/Settings";
+import { Avatar, Button, Dialog, Typography } from "@mui/material";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import PostCard from "@/components/PostCard";
-import SettingsIcon from "@mui/icons-material/Settings";
-import { useCheckUser } from "@/utils/hooks";
 
 export default function ProfilePage() {
-  useCheckUser();
   const router = useRouter();
   const { username } = router.query;
   const [user, setUser] = useState(undefined); // profile user
@@ -34,11 +32,11 @@ export default function ProfilePage() {
   const handleClose = () => {
     setOpen(false);
   };
-  
+
   const handleFollowingPageOpen = () => {
     if (username) {
-        router.push(`/${username}/following`);
-      }
+      router.push(`/${username}/following`);
+    }
   };
 
   useEffect(() => {
@@ -52,7 +50,7 @@ export default function ProfilePage() {
       return data;
     }
     setIsLoading(true);
-    
+
     if (username) {
       getUser(username)
         .then((user) => {
@@ -77,10 +75,7 @@ export default function ProfilePage() {
         <Typography variant="h6" sx={fontStyles.regular}>
           {"User doesn't exist."}
         </Typography>
-        <BackLink 
-        route = "/"
-        text = "back to homepage"
-      />
+        <BackLink route="/" text="back to homepage" />
       </main>
     );
   }
@@ -113,33 +108,36 @@ export default function ProfilePage() {
               </Typography>
             )}
 
-        {/* Follow stats */}
-          <FollowStatsCard
-            user={user}
-            currentUser={currentUser}
-            onFollowingClick={handleFollowingPageOpen}
-          />
+            {/* Follow stats */}
+            <FollowStatsCard
+              user={user}
+              currentUser={currentUser}
+              onFollowingClick={handleFollowingPageOpen}
+            />
             {/* Follow button */}
-            {currentUser && user.id !== currentUser.id && (
-              <FollowButton
-                unFollow={
-                  user.followers && user.followers.includes(currentUser.id)
-                }
-                userId={user.id}
-                currentUserId={currentUser.id}
-                additionalCallback={() =>
-                  // update user followers locally
-                  setUser({
-                    ...user,
-                    followers:
-                      user.followers && user.followers.includes(currentUser.id)
-                        ? user.followers.filter((u) => u !== currentUser.id)
-                        : (user.followers || []).concat([currentUser.id]),
-                  })
-                }
-                style={{ marginTop: "1%", marginBottom: "1%" }}
-              />
-            )}
+            {currentUser &&
+              currentUser.username &&
+              user.id !== currentUser.id && (
+                <FollowButton
+                  unFollow={
+                    user.followers && user.followers.includes(currentUser.id)
+                  }
+                  userId={user.id}
+                  currentUserId={currentUser.id}
+                  additionalCallback={() =>
+                    // update user followers locally
+                    setUser({
+                      ...user,
+                      followers:
+                        user.followers &&
+                        user.followers.includes(currentUser.id)
+                          ? user.followers.filter((u) => u !== currentUser.id)
+                          : (user.followers || []).concat([currentUser.id]),
+                    })
+                  }
+                  style={{ marginTop: "1%", marginBottom: "1%" }}
+                />
+              )}
 
             {/* Edit profile */}
             {currentUser && user.id === currentUser.id && (
@@ -172,10 +170,7 @@ export default function ProfilePage() {
             <Typography variant="h6" sx={fontStyles.regular}>
               {"User doesn't exist."}
             </Typography>
-            <BackLink 
-            route = "/"
-            text = "back to homepage"
-             />
+            <BackLink route="/" text="back to homepage" />
           </>
         ))}
     </main>

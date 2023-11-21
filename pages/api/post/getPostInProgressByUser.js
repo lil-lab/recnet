@@ -19,9 +19,8 @@ export default async function getPostInProgressByUserHandler(req, res) {
 
     if (docSnap.exists()) {
       const { postIds } = docSnap.data();
-
       // get user's last post
-      if (postIds.length === 0) {
+      if (!postIds || (postIds && postIds.length === 0)) {
         // no posts
         res.status(200).json(undefined);
         return;
