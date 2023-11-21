@@ -5,7 +5,7 @@ import { fontStyles } from "@/utils/fonts";
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect, useState } from "react";
 import { isUsernameValid } from "@/utils/validationHelper";
-import { setUserInfo } from "@/utils/db/user";
+import { setUserInfo, verifyCode } from "@/utils/db/user";
 import { setUser } from "@/utils/redux/userSlice";
 import LoginButton from "@/components/LoginButton";
 
@@ -20,6 +20,16 @@ export default function Welcome() {
   const [affiliation, setAffiliation] = useState("");
   const [usernameError, setUsernameError] = useState(false);
   const [usernameErrorHelperText, setUsernameErrorHelperText] = useState("");
+
+  const [code, setCode] = useState("");
+  const [codeError, setCodeError] = useState(false);
+  const [codeErrorHelperText, setCodeErrorHelperText] = useState("");
+
+  const handleCodeChange = (e) => {
+    setCode(e.target.value);
+    setCodeError(false);
+    setCodeErrorHelperText("");
+  };
 
   const handleUsernameChange = (e) => {
     let value = e.target.value;
@@ -38,6 +48,21 @@ export default function Welcome() {
 
   const handleAffiliationChange = (e) => {
     setAffiliation(e.target.value);
+  };
+
+  function checkContinueDisable() {
+    return codeError || code.length === 0;
+  }
+
+  const handleContinue = async () => {
+    const { data, error } = await verifyCode(user.id, code);
+    if (data) {
+      dispatch(setUser({ ...user, inviteCode: data.id }));
+      router.push("/");
+    } else if (error) {
+      setCodeError(true);
+      setCodeErrorHelperText(error);
+    }
   };
 
   function checkDisable() {
@@ -99,48 +124,76 @@ export default function Welcome() {
             paddingBottom: "3%",
           }}
         >
-          a few additional steps to get you started...
+          {user.inviteCode
+            ? "a few additional steps to get you started..."
+            : "please enter your invite code"}
         </Typography>
-        <div className={styles.form}>
-          <TextField
-            margin="dense"
-            id="username"
-            label="Username"
-            fullWidth
-            variant="outlined"
-            value={username}
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">@</InputAdornment>
-              ),
-            }}
-            onChange={handleUsernameChange}
-            error={usernameError}
-            helperText={usernameErrorHelperText}
-          />
-          <TextField
-            margin="dense"
-            id="affiliation"
-            label="Affiliation (optional)"
-            fullWidth
-            variant="outlined"
-            value={affiliation}
-            onChange={handleAffiliationChange}
-          />
-          <Button
-            color="secondary"
-            variant="contained"
-            disabled={checkDisable()}
-            sx={{ marginTop: "5%", marginBottom: "1%" }}
-            onClick={handleSubmit}
-          >
-            Enter
-          </Button>
-          <Typography variant="body2" color="textSecondary">
-            You can change these information later in your profile page.
-          </Typography>
-          <LoginButton asLink customText="use another account" />
-        </div>
+
+        {user.inviteCode ? (
+          <div className={styles.form}>
+            <TextField
+              margin="dense"
+              id="username"
+              label="Username"
+              fullWidth
+              variant="outlined"
+              value={username}
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">@</InputAdornment>
+                ),
+              }}
+              onChange={handleUsernameChange}
+              error={usernameError}
+              helperText={usernameErrorHelperText}
+            />
+            <TextField
+              margin="dense"
+              id="affiliation"
+              label="Affiliation (optional)"
+              fullWidth
+              variant="outlined"
+              value={affiliation}
+              onChange={handleAffiliationChange}
+            />
+            <Button
+              color="secondary"
+              variant="contained"
+              disabled={checkDisable()}
+              sx={{ marginTop: "5%", marginBottom: "1%" }}
+              onClick={handleSubmit}
+            >
+              Enter
+            </Button>
+            <Typography variant="body2" color="textSecondary">
+              You can change these information later in your profile page.
+            </Typography>
+          </div>
+        ) : (
+          <div className={styles.form}>
+            <TextField
+              margin="dense"
+              id="code"
+              label="Invite code"
+              fullWidth
+              variant="outlined"
+              value={code}
+              onChange={handleCodeChange}
+              error={codeError}
+              helperText={codeErrorHelperText}
+            />
+            <Button
+              color="secondary"
+              variant="contained"
+              disabled={checkContinueDisable()}
+              sx={{ marginTop: "5%", marginBottom: "1%" }}
+              onClick={handleContinue}
+            >
+              Continue
+            </Button>
+          </div>
+        )}
+        <LoginButton asLink customText="use another account" />
       </main>
     )
   );
