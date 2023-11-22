@@ -46,19 +46,24 @@ export default function LoginButton({ asLink, customText }) {
       onClick={async () => {
         const user = await logIn();
         if (user) {
-          const userData = await getUserByEmail(user.email);
-          if (userData) {
+          const {data, error} = await getUserByEmail(user.email);
+          if (data && !error) {
             // existing user
-            dispatch(setUser(userData));
-            dispatch(setId(userData.id));
-            if (!userData.username) {
-              // user in db but no username (has invitation code verfied)
+            console.log("Existing user.")
+            dispatch(setUser(data));
+            console.log(data)
+            dispatch(setId(data.id));
+            if (!data.username) {
+              // user in db but no username (has invitation code verified)
+              console.log("No username yet.")
               router.push("/welcome");
             }
           } else {
-            // new user - data not in db
-            dispatch(setUser(user));
-            router.push("/welcome");
+            if (!error){
+              // new user - data not in db
+              console.log("Entered new user.")
+              dispatch(setUser(user));
+              router.push("/welcome");}
           }
         }
       }}
