@@ -8,6 +8,7 @@ import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import Loading from "@/components/Loading";
+import InfoText from "@/components/InfoText";
 
 export default function SearchUsers() {
   const router = useRouter();
@@ -52,9 +53,9 @@ export default function SearchUsers() {
     <main className={styles.main}>
       {!userLoading &&
         (users.length === 0 ? (
-          <Typography variant="h6" sx={fontStyles.regular}>
-            {"No user matches the search. Search users by name or username."}
-          </Typography>
+          <InfoText>
+            No user matches the search. Search users by name or username.
+          </InfoText>
         ) : (
           users.map((user, index) => (
             <UserCard

@@ -1,8 +1,9 @@
 import { db } from "../../../utils/db/init";
 import { collection, query, getDocs } from "firebase/firestore";
+import { withAuth } from "@/utils/db/middleware";
 
 /** [GET] Get all users */
-export default async function getAllUsersHandler(req, res) {
+async function getAllUsersHandler(req, res) {
   try {
     const q = query(collection(db, "users"));
     const querySnapshot = await getDocs(q);
@@ -30,3 +31,5 @@ export default async function getAllUsersHandler(req, res) {
     res.status(500).json(error.message);
   }
 }
+
+export default withAuth(getAllUsersHandler);

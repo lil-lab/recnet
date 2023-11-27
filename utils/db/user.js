@@ -1,5 +1,6 @@
 import axios from "axios";
 import { post, get } from "./shared";
+import { getCurrentUser } from "./auth";
 
 export async function getUserByEmail(email) {
   const getUserResponse = await axios.get(

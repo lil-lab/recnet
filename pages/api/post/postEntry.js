@@ -8,6 +8,7 @@ import {
   arrayUnion,
 } from "firebase/firestore";
 import { getNextCutoff } from "@/utils/dateHelper";
+import { withAuth } from "@/utils/db/middleware";
 
 /** [POST] Post an entry and update user.
  * req.body requires:
@@ -20,7 +21,7 @@ import { getNextCutoff } from "@/utils/dateHelper";
  * @param month,
  * @param userId
  */
-export default async function postEntryHandler(req, res) {
+async function postEntryHandler(req, res) {
   try {
     // post to recommendations
     const { id } = await addDoc(collection(db, "recommendations"), {
@@ -47,3 +48,5 @@ export default async function postEntryHandler(req, res) {
     res.status(500).json(error.message);
   }
 }
+
+export default withAuth(postEntryHandler);
