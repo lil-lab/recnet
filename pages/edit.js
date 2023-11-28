@@ -4,17 +4,23 @@ import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 
-import { Box, TextField, Typography, Select, MenuItem } from "@mui/material";
-import { getPostById, postEntry, updatePost } from "../utils/db/post";
+import { Box, TextField, Typography } from "@mui/material";
+import {
+  deletePost,
+  getPostById,
+  postEntry,
+  updatePost,
+} from "../utils/db/post";
 
 import {
   formatDateVerbose,
   formatNextDueDay,
   getNextCutoff,
 } from "@/utils/dateHelper";
-import LoadingButton from "@mui/lab/LoadingButton";
 import { useCheckUser } from "@/utils/hooks";
+import LoadingButton from "@mui/lab/LoadingButton";
 
+import AlertDialog from "@/components/AlertDialog";
 import Help from "@/components/Help";
 import MonthPicker from "@/components/MonthPicker";
 import { isYearValid } from "@/utils/validationHelper";
@@ -58,6 +64,8 @@ function PaperForm({ postId }) {
   const [authorError, setAuthorError] = useState(false);
   const [descriptionError, setDescriptionError] = useState(false);
   const [yearError, setYearError] = useState(false);
+
+  const [alertOpen, setAlertOpen] = useState(false);
 
   const [initialPost, setInitialPost] = useState({
     title: "",
@@ -256,17 +264,47 @@ function PaperForm({ postId }) {
         </Typography>
       </Box>
 
-      <LoadingButton
-        className={styles.postButton}
-        variant="contained"
-        color="secondary"
-        size="large"
-        disabled={submitDisabled()}
-        onClick={handleSubmit}
-        loading={loading}
-      >
-        <span>{buttonText}</span>
-      </LoadingButton>
+      <div>
+        <LoadingButton
+          className={styles.postButton}
+          variant="contained"
+          color="secondary"
+          size="large"
+          disabled={submitDisabled()}
+          onClick={handleSubmit}
+          loading={loading}
+        >
+          {buttonText}
+        </LoadingButton>
+        {buttonText === "Update" && (
+          <LoadingButton
+            className={styles.deleteButton}
+            variant="outlined"
+            color="error"
+            size="large"
+            onClick={() => setAlertOpen(true)}
+            loading={loading}
+          >
+            Delete
+          </LoadingButton>
+        )}
+        {alertOpen && (
+          <AlertDialog
+            open={alertOpen}
+            handleClose={() => setAlertOpen(false)}
+            handleAction={async () => {
+              await deletePost(postId);
+              setAlertOpen(false);
+              router.push("/");
+            }}
+            text={"Are you sure you want to delete this post?"}
+            contentText={
+              "Once deleted, this post will not appear in the recommendation list for you and your network this week."
+            }
+            confirmButtonText={"Delete"}
+          ></AlertDialog>
+        )}
+      </div>
 
       <div className={styles.infoText}>
         <Typography variant="body2" color="textSecondary">

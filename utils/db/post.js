@@ -1,5 +1,5 @@
 import axios from "axios";
-import { post, get } from "./shared";
+import { post, get, del } from "./shared";
 
 export const postEntry = async (
   title,
@@ -74,4 +74,8 @@ export const getFollowingPostsByDate = async (userId, date) => {
   if (postRes.status === 200) {
     return postRes.data;
   }
+};
+
+export const deletePost = async (postId) => {
+  return await del(`/api/post/deletePost?postId=${postId}`);
 };
