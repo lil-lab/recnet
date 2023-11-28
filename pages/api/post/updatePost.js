@@ -1,12 +1,6 @@
-import { db } from "../../../utils/db/init";
-import {
-  collection,
-  addDoc,
-  setDoc,
-  serverTimestamp,
-  doc,
-  arrayUnion,
-} from "firebase/firestore";
+import { db } from "../../../utils/db/firebase-admin";
+import { Firestore } from "firebase-admin/firestore";
+import { withAuth } from "@/utils/db/middleware";
 
 /** [PUT] Update a post by postId.
  * req.body requires:
@@ -16,21 +10,23 @@ import {
  * @param description,
  * @param postId,
  */
-export default async function updatePostHandler(req, res) {
+async function updatePostHandler(req, res) {
   try {
     const { postId, ...rest } = req.body;
-    const postRef = doc(db, "recommendations", postId);
-    await setDoc(
-      postRef,
+    const postRef = db.doc(`recommendations/${postId}`);
+    await postRef.set(
       {
         ...rest,
-        updatedAt: serverTimestamp(),
+        updatedAt: Firestore.FieldValue.serverTimestamp(),
       },
       { merge: true }
     );
+
     res.status(200).json();
   } catch (error) {
     console.error(error);
     res.status(500).json(error.message);
   }
 }
+
+export default withAuth(updatePostHandler);

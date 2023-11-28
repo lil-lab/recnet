@@ -1,4 +1,4 @@
-import { AppBar, Avatar, IconButton, Toolbar, Typography } from "@mui/material";
+import { AppBar, Avatar, IconButton, Toolbar } from "@mui/material";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { setId, setLoaded, setUser } from "../utils/redux/userSlice";
@@ -26,12 +26,15 @@ export default function TopBar() {
     async function checkUserLoggedIn() {
       const currentUser = await getCurrentUser();
       if (currentUser) {
-        const {data, error} = await getUserByEmail(currentUser.email);
+        const { data, error } = await getUserByEmail(currentUser.email);
         // existing user
-        dispatch(setUser(data));
-        dispatch(setId(data.id));
-        if (error){
-          console.error(error)  // need to handle error in parent page
+        if (data) {
+          dispatch(setUser(data));
+          dispatch(setId(data.id));
+        }
+
+        if (error) {
+          console.error(error); // need to handle error in parent page
         }
       }
       dispatch(setLoaded());

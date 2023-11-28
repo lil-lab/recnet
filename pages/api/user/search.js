@@ -1,5 +1,5 @@
-import { db } from "../../../utils/db/init";
-import { collection, query, where, getDocs, or, and } from "firebase/firestore";
+import { db } from "../../../utils/db/firebase-admin";
+import { Filter } from "firebase-admin/firestore";
 
 /**
  * Capitalizes first letter of every word in the given string.
@@ -33,48 +33,52 @@ export default async function searchHandler(req, res) {
     // const emailQuerySnapshot = await getDocs(emailQuery);
 
     //search by username
-    const usernameQuery = query(
-      collection(db, "users"),
-      where("username", ">=", q),
-      where("username", "<=", q + "\uf8ff")
-    );
-    const usernameQuerySnapshot = await getDocs(usernameQuery);
+    const usernameQuerySnapshot = await db
+      .collection("users")
+      .where("username", ">=", q)
+      .where("username", "<=", q + "\uf8ff")
+      .get();
 
     // search by name
-    const nameQuery = query(
-      collection(db, "users"),
-      or(
-        and(
-          where("displayName", ">=", q),
-          where("displayName", "<=", q + "\uf8ff")
-        ),
-        and(
-          where("displayName", ">=", capitalize(q)),
-          where("displayName", "<=", capitalize(q) + "\uf8ff")
-        )
+    const nameFilter = Filter.or(
+      Filter.and(
+        Filter.where("displayName", ">=", q),
+        Filter.where("displayName", "<=", q + "\uf8ff")
+      ),
+      Filter.and(
+        Filter.where("displayName", ">=", capitalize(q)),
+        Filter.where("displayName", "<=", capitalize(q) + "\uf8ff")
       )
     );
-    const nameQuerySnapshot = await getDocs(nameQuery);
+    const nameQuerySnapshot = await db
+      .collection("users")
+      .where(nameFilter)
+      .get();
 
     // combine results and remove duplicates
-    let allResults = usernameQuerySnapshot.docs
-      .map((doc) => {
-        return { ...doc.data(), id: doc.id };
-      })
-      .concat(
-        nameQuerySnapshot.docs.map((doc) => {
+    let allResults = [];
+    if (!usernameQuerySnapshot.empty) {
+      allResults = usernameQuerySnapshot.docs
+        .map((doc) => {
           return { ...doc.data(), id: doc.id };
         })
-      );
+        .concat(
+          nameQuerySnapshot.docs.map((doc) => {
+            return { ...doc.data(), id: doc.id };
+          })
+        );
+    }
 
-    allResults = allResults.filter((user, index) => {
-      const _id = user.id;
-      return (
-        user.username && // registered user (with username)
-        !user.test && // filter out test accounts
-        index === allResults.map((u) => u.id).findIndex((uid) => uid === _id)
-      );
-    });
+    if (!nameQuerySnapshot.empty) {
+      allResults = allResults.filter((user, index) => {
+        const _id = user.id;
+        return (
+          user.username && // registered user (with username)
+          !user.test && // filter out test accounts
+          index === allResults.map((u) => u.id).findIndex((uid) => uid === _id)
+        );
+      });
+    }
 
     res.status(200).json(allResults);
   } catch (error) {

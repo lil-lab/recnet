@@ -4,7 +4,7 @@ import { getCurrentUser } from "./auth";
 export async function post(route, body) {
   try {
     const currentUser = await getCurrentUser();
-    console.log(currentUser);
+    console.log("current", currentUser);
     let response;
     if (currentUser) {
       response = await axios.post(route, body, {

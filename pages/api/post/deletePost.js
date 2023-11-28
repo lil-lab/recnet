@@ -1,36 +1,30 @@
-import { db } from "../../../utils/db/init";
-import {
-  setDoc,
-  getDoc,
-  doc,
-  deleteDoc,
-  arrayRemove,
-} from "firebase/firestore";
+import { withAuth } from "@/utils/db/middleware";
+import { db } from "../../../utils/db/firebase-admin";
+import { Firestore } from "firebase-admin/firestore";
 
 /** [DELETE] Delete a post by id.
  * @param postId
  * @return deleted postId, userId
  */
-export default async function deletePostHandler(req, res) {
+async function deletePostHandler(req, res) {
   try {
     const { postId } = req.query;
-    const docRef = doc(db, "recommendations", postId);
-    const docSnap = await getDoc(docRef);
-    if (docSnap.exists()) {
+    const docRef = db.doc(`recommendations/${postId}`);
+    const docSnap = await docRef.get();
+    if (docSnap.exists) {
       // delete from user postIds
       const { userId } = docSnap.data();
-      const userRef = doc(db, "users", userId);
+      const userRef = db.doc(`users/${userId}`);
 
-      await setDoc(
-        userRef,
+      await userRef.set(
         {
-          postIds: arrayRemove(postId),
+          postIds: Firestore.FieldValue.arrayRemove(postId),
         },
         { merge: true }
       );
 
       // delete post
-      await deleteDoc(docRef);
+      await docRef.delete();
 
       res.status(200).json({ postId, userId });
     } else {
@@ -42,3 +36,5 @@ export default async function deletePostHandler(req, res) {
     res.status(500).json(error.message);
   }
 }
+
+export default withAuth(deletePostHandler);

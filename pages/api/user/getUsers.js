@@ -1,5 +1,4 @@
-import { db } from "../../../utils/db/init";
-import { doc, getDoc } from "firebase/firestore";
+import { db } from "../../../utils/db/firebase-admin";
 
 /** [POST] Get user objects from a list of userIds
  * req.body requires:
@@ -12,9 +11,9 @@ export default async function getUsersHandler(req, res) {
     let users = [];
 
     for (let userId of userIds) {
-      const docSnap = await getDoc(doc(db, "users", userId));
+      const docSnap = await db.doc(`users/${userId}`).get();
 
-      if (docSnap.exists()) {
+      if (docSnap.exists) {
         users.push({ ...docSnap.data(), id: docSnap.id });
       }
     }

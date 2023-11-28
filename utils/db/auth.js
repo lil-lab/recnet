@@ -1,5 +1,4 @@
-// Next.js API route support: https://nextjs.org/docs/api-routes/introduction
-import { auth, provider } from "./init";
+import { auth, provider } from "./firebase-client";
 import { signInWithPopup, onAuthStateChanged } from "firebase/auth";
 
 export const logIn = async () => {

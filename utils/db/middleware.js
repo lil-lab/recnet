@@ -1,9 +1,8 @@
-import { auth } from "./admin";
+import { auth } from "./firebase-admin";
 
 export function withAuth(handler) {
   return async (req, res) => {
     const authHeader = req.headers.authorization;
-    console.log(authHeader);
     if (!authHeader) {
       return res.status(401).json("Not authenticated"); // missing auth header
     }

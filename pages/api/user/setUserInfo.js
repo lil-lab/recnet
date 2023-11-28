@@ -1,14 +1,5 @@
 import { isUsernameValid } from "@/utils/validationHelper";
-import { db } from "../../../utils/db/init";
-import {
-  doc,
-  setDoc,
-  query,
-  where,
-  collection,
-  getDocs,
-  getDoc,
-} from "firebase/firestore";
+import { db } from "../../../utils/db/firebase-admin";
 
 /** [POST] Update user info for user with userId.
  * req.body requires:
@@ -34,11 +25,10 @@ export default async function setUserInfoHandler(req, res) {
         return;
       }
       // check if username is unique
-      const q = query(
-        collection(db, "users"),
-        where("username", "==", username)
-      );
-      const snapshot = await getDocs(q);
+      const snapshot = await db
+        .collection("users")
+        .where("username", "==", username)
+        .get();
       if (!snapshot.empty) {
         res.status(409).json({ usernameError: "Username already exists." });
         return;
@@ -53,16 +43,17 @@ export default async function setUserInfoHandler(req, res) {
     }
 
     // set info
-    const docRef = doc(db, "users", userId);
-    const docSnap = await getDoc(docRef);
+    const docRef = db.doc(`users/${userId}`);
+    const docSnap = await docRef.get();
 
     let data = {};
     if (username) data["username"] = username;
     if (affiliation) data["affiliation"] = affiliation;
     if (name) data["displayName"] = name;
 
-    if (docSnap.exists()) {
-      await setDoc(docRef, data, { merge: true });
+    if (docSnap.exists) {
+      await docRef.set(data, { merge: true });
+
       res.status(200).json({ ...data, id: userId });
       return;
     } else {

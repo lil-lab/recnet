@@ -1,6 +1,5 @@
 import axios from "axios";
 import { post, get } from "./shared";
-import { getCurrentUser } from "./auth";
 
 export async function getUserByEmail(email) {
   return await get(`/api/user/getUserByEmail?email=${email}`);
@@ -14,13 +13,9 @@ export async function getUserById(id) {
   return await get(`/api/user/getUserById?id=${id}`);
 }
 
-export async function addUser(user) {
-  return await post("/api/user/addUser", user);
-}
-
 export async function followUser(id, currentUserId) {
   if (id && currentUserId) {
-    return await axios.post("/api/user/follow", {
+    return await post("/api/user/follow", {
       id,
       currentUserId,
     });

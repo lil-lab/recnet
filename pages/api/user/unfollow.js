@@ -1,5 +1,5 @@
-import { db } from "../../../utils/db/init";
-import { doc, updateDoc, arrayRemove } from "firebase/firestore";
+import { db } from "../../../utils/db/firebase-admin";
+import { Firestore } from "firebase-admin/firestore";
 
 /** [POST] Unfollow user by id
  * req.body requires:
@@ -14,13 +14,13 @@ export default async function followUserHandler(req, res) {
       res.status(500).json({ message: "Empty user id" });
     } else {
       // remove from [id] user followers
-      await updateDoc(doc(db, "users", id), {
-        followers: arrayRemove(currentUserId),
+      await db.doc(`users/${id}`).update({
+        followers: Firestore.FieldValue.arrayRemove(currentUserId),
       });
 
       // remove from current user following
-      await updateDoc(doc(db, "users", currentUserId), {
-        following: arrayRemove(id),
+      await db.doc(`users/${currentUserId}`).update({
+        following: Firestore.FieldValue.arrayRemove(id),
       });
 
       res.status(200).json({ message: "Success" });
