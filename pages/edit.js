@@ -88,14 +88,14 @@ function PaperForm({ postId }) {
 
   useEffect(() => {
     async function getPost(id) {
-      const post = await getPostById(id);
-      setTitle(post.title);
-      setLink(post.link);
-      setAuthor(post.author);
-      setDescription(post.description);
-      setYear(post.year);
-      setMonth(post.month);
-      setInitialPost(post);
+      const { data, error } = await getPostById(id);
+      setTitle(data.title);
+      setLink(data.link);
+      setAuthor(data.author);
+      setDescription(data.description);
+      setYear(data.year);
+      setMonth(data.month);
+      setInitialPost(data);
       setButtonText("Update");
     }
     if (postId) getPost(postId);
@@ -142,7 +142,7 @@ function PaperForm({ postId }) {
       router.push("/");
     } else {
       // create new post
-      const newPostId = await postEntry(
+      const { data, error } = await postEntry(
         title,
         link,
         author,
@@ -154,7 +154,7 @@ function PaperForm({ postId }) {
       );
       setLoading(false);
 
-      if (newPostId) {
+      if (data) {
         router.push("/");
       }
     }
