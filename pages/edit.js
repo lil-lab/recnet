@@ -26,18 +26,9 @@ import MonthPicker from "@/components/MonthPicker";
 import { isYearValid } from "@/utils/validationHelper";
 
 export default function Edit() {
-  useCheckUser();
-  const user = useSelector((state) => state.user.value);
-  const userLoaded = useSelector((state) => state.user.loaded);
+  const { user, router } = useCheckUser();
 
-  const router = useRouter();
   const { postId } = router.query;
-
-  useEffect(() => {
-    if (userLoaded && !user) {
-      router.push("/");
-    }
-  }, [router, user, userLoaded]);
 
   return (
     user && (
@@ -308,7 +299,7 @@ function PaperForm({ postId }) {
             }}
             text={"Are you sure you want to delete this post?"}
             contentText={
-              "Once deleted, this post will not appear in the recommendation list for you and your network."
+              "Once deleted, this post will not appear in the recommendation list for you and your network this week."
             }
             confirmButtonText={"Delete"}
           ></AlertDialog>
@@ -324,7 +315,7 @@ function PaperForm({ postId }) {
         <Help />
       </div>
 
-      <BackLink />
+      <BackLink route="/" text="back to homepage" />
     </div>
   );
 }

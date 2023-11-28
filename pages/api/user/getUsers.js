@@ -2,7 +2,7 @@ import { db } from "../../../utils/db/init";
 import { doc, getDoc } from "firebase/firestore";
 
 /** [POST] Get user objects from a list of userIds
- * req.query requires:
+ * req.body requires:
  * @param userIds
  * @returns a list of user objects
  */

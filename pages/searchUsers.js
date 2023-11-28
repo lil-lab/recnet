@@ -8,15 +8,13 @@ import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import Loading from "@/components/Loading";
-import { useCheckUser } from "@/utils/hooks";
 
 export default function SearchUsers() {
-  useCheckUser();
   const router = useRouter();
   const { q } = router.query;
   const [users, setUsers] = useState([]);
   const [userLoading, setUserLoading] = useState(true);
-  const currentUserId = useSelector((state) => state.user.id);
+  const currentUser = useSelector((state) => state.user.value);
 
   useEffect(() => {
     async function getUsers(query) {
@@ -43,7 +41,7 @@ export default function SearchUsers() {
     );
   };
 
-  if (!currentUserId || userLoading)
+  if (userLoading)
     return (
       <main className={styles.main}>
         <Loading />
@@ -53,10 +51,9 @@ export default function SearchUsers() {
   return (
     <main className={styles.main}>
       {!userLoading &&
-        currentUserId &&
         (users.length === 0 ? (
           <Typography variant="h6" sx={fontStyles.regular}>
-            {"No user matches the search. Search users by name or email."}
+            {"No user matches the search. Search users by name or username."}
           </Typography>
         ) : (
           users.map((user, index) => (
@@ -65,12 +62,12 @@ export default function SearchUsers() {
               user={user}
               width={"80%"}
               updateUser={updateUser}
-              currentUserId={currentUserId}
+              currentUser={currentUser}
             />
           ))
         ))}
 
-      <BackLink />
+      <BackLink route="/" text="back to homepage" />
     </main>
   );
 }

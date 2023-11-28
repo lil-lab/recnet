@@ -79,3 +79,11 @@ export async function setUserInfo(username, affiliation, name, userId) {
 export async function getUsers(userIds) {
   return await post(`/api/user/getUsers`, { userIds });
 }
+
+export async function getAllUsers() {
+  return await get(`/api/user/getAllUsers`);
+}
+
+export async function verifyCode(user, code) {
+  return await post(`/api/user/verify`, { user, code });
+}
