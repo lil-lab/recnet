@@ -13,8 +13,8 @@ export default function PostCard({ post, showUser, showDate, width }) {
 
   useEffect(() => {
     async function getRecommender(id) {
-      const recommender = await getUserById(id);
-      setRecommender(recommender);
+      const {data, error} = await getUserById(id);
+      setRecommender(data);
     }
     getRecommender(post.userId);
   }, [post]);
