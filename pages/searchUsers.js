@@ -1,14 +1,13 @@
 import BackLink from "@/components/BackLink";
+import ErrorSnackbar from "@/components/ErrorSnackbar";
+import InfoText from "@/components/InfoText";
+import Loading from "@/components/Loading";
 import UserCard from "@/components/UserCard";
 import styles from "@/styles/Search.module.css";
 import { searchUsers } from "@/utils/db/user";
-import { fontStyles } from "@/utils/fonts";
-import { Typography } from "@mui/material";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import Loading from "@/components/Loading";
-import InfoText from "@/components/InfoText";
 
 export default function SearchUsers() {
   const router = useRouter();
@@ -16,12 +15,19 @@ export default function SearchUsers() {
   const [users, setUsers] = useState([]);
   const [userLoading, setUserLoading] = useState(true);
   const currentUser = useSelector((state) => state.user.value);
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
 
   useEffect(() => {
     async function getUsers(query) {
       setUserLoading(true);
-      const users = await searchUsers(query);
-      setUsers(users);
+      const {data, error} = await searchUsers(query);
+      if (data) {
+        setUsers(data);
+    } else {
+        setSnackbarOpen(true);
+        setSnackbarMessage(error);
+      }
       setUserLoading(false);
     }
 
@@ -41,7 +47,11 @@ export default function SearchUsers() {
       })
     );
   };
-
+  
+  const handleSnackbarClose = () => {
+    setSnackbarOpen(false);
+  };
+  
   if (userLoading)
     return (
       <main className={styles.main}>
@@ -67,8 +77,12 @@ export default function SearchUsers() {
             />
           ))
         ))}
-
-      <BackLink route="/" text="back to homepage" />
+        <ErrorSnackbar
+          open={snackbarOpen}
+          message={snackbarMessage}
+          handleClose={handleSnackbarClose}
+        />
+        <BackLink route="/" text="back to homepage" />
     </main>
   );
 }

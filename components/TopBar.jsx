@@ -26,9 +26,13 @@ export default function TopBar() {
     async function checkUserLoggedIn() {
       const currentUser = await getCurrentUser();
       if (currentUser) {
-        const existingUser = await getUserByEmail(currentUser.email);
-        dispatch(setUser(existingUser));
-        dispatch(setId(existingUser.id));
+        const {data, error} = await getUserByEmail(currentUser.email);
+        // existing user
+        dispatch(setUser(data));
+        dispatch(setId(data.id));
+        if (error){
+          console.error(error)  // need to handle error in parent page
+        }
       }
       dispatch(setLoaded());
     }
