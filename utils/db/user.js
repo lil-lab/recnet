@@ -19,7 +19,7 @@ export async function addUser(user) {
 
 export async function followUser(id, currentUserId) {
   if (id && currentUserId) {
-    return await axios.post("/api/user/follow", {
+    return await post("/api/user/follow", {
       id,
       currentUserId,
     });

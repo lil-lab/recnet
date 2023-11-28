@@ -11,7 +11,7 @@ export const postEntry = async (
   month,
   userId
 ) => {
-  const res = await axios.post("/api/post/postEntry", {
+  return post("/api/post/postEntry", {
     title,
     link,
     author,
@@ -21,10 +21,6 @@ export const postEntry = async (
     month,
     userId,
   });
-  if (res.status === 200) {
-    const { id } = res.data;
-    return id;
-  }
 };
 
 export const getPostInProgressByUser = async (userId) => {
@@ -32,10 +28,7 @@ export const getPostInProgressByUser = async (userId) => {
 };
 
 export const getPostById = async (postId) => {
-  const postRes = await axios.get(`/api/post/getPostById?postId=${postId}`);
-  if (postRes.status === 200) {
-    return { ...postRes.data, id: postId };
-  }
+  return get(`/api/post/getPostById?postId=${postId}`);
 };
 
 export const updatePost = async (
@@ -59,19 +52,13 @@ export const updatePost = async (
 };
 
 export const getPostsByUser = async (userId, includeCurrentCutoff) => {
-  const postRes = await axios.get(
-    `/api/post/getPostsByUser?userId=${userId}&includeCurrentCutoff=${includeCurrentCutoff}`
-  );
-  if (postRes.status === 200) {
-    return postRes.data;
-  }
+  const route = `/api/post/getPostsByUser?userId=${userId}` +
+               `&includeCurrentCutoff=${includeCurrentCutoff}`;
+  return await get(route);
 };
 
 export const getFollowingPostsByDate = async (userId, date) => {
-  const postRes = await axios.get(
-    `/api/post/getFollowingPostsByDate?userId=${userId}&cutoff=${date.getTime()}`
-  );
-  if (postRes.status === 200) {
-    return postRes.data;
-  }
+  const route = `/api/post/getFollowingPostsByDate?userId=${userId}` +
+                `&cutoff=${date.getTime()}`
+  return await get(route);
 };

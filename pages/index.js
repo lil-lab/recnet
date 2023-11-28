@@ -30,8 +30,12 @@ export default function Home() {
 
   useEffect(() => {
     async function getPosts() {
-      const posts = await getFollowingPostsByDate(userId, filter);
-      setPosts(posts);
+      const { data, error } = await getFollowingPostsByDate(userId, filter);
+      if (error){
+        console.log(error);
+      } else{
+        setPosts(data);
+      }
     }
 
     async function getPostInProgress() {
