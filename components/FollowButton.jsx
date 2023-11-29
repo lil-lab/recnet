@@ -15,8 +15,8 @@ export default function FollowButton({
       color="primary"
       sx={style}
       onClick={async () => {
-        await unfollowUser(userId, currentUserId);
-        additionalCallback();
+        const { data, error } = await unfollowUser(userId, currentUserId);
+        additionalCallback(error);
       }}
     >
       Unfollow
@@ -28,8 +28,8 @@ export default function FollowButton({
       color="secondary"
       sx={style}
       onClick={async () => {
-        await followUser(userId, currentUserId);
-        additionalCallback();
+        const { data, error } = await followUser(userId, currentUserId);
+        additionalCallback(error);
       }}
     >
       Follow

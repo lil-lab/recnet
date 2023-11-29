@@ -7,7 +7,9 @@ import { logIn, logOut } from "../utils/db/auth";
 
 import { useRouter } from "next/router";
 import { addUser, getUserByEmail } from "../utils/db/user";
+import { useEffect, useState } from "react";
 import BackLink from "./BackLink";
+import ErrorSnackbar from "@/components/ErrorSnackbar";
 
 /** Login button that handles log in and out.
  * @param {boolean} asLink (optional) render as link instead of button
@@ -17,6 +19,13 @@ export default function LoginButton({ asLink, customText }) {
   const user = useSelector((state) => state.user.value);
   const dispatch = useDispatch();
   const router = useRouter();
+
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
+
+  const handleSnackbarClose = () => {
+    setSnackbarOpen(false);
+  };
 
   const handleLogout = async () => {
     router.push("/");
@@ -60,11 +69,20 @@ export default function LoginButton({ asLink, customText }) {
               // new user - data not in db
               dispatch(setUser(user));
               router.push("/welcome");}
+              else {
+                setSnackbarMessage(error);
+                setSnackbarOpen(true);
+              }
           }
         }
       }}
     >
       Sign in with Google 🚀
+      <ErrorSnackbar
+        open={snackbarOpen}
+        message={snackbarMessage}
+        handleClose={handleSnackbarClose}
+    />
     </Button>
   );
 }

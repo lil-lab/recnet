@@ -1,10 +1,19 @@
 import { Avatar, Paper, Typography } from "@mui/material";
+import { useEffect, useState } from "react";
 
 import { fontStyles } from "@/utils/fonts";
 import styles from "./UserCard.module.css";
 import FollowButton from "./FollowButton";
+import ErrorSnackbar from "@/components/ErrorSnackbar";
 
 export default function UserCard({ user, width, currentUser, updateUser }) {
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
+  
+  const handleSnackbarClose = () => {
+    setSnackbarOpen(false);
+  };
+  
   return (
     <Paper
       className={styles.paper}
@@ -46,7 +55,8 @@ export default function UserCard({ user, width, currentUser, updateUser }) {
           {"@ " + user.username}
         </Typography>
       </a>
-      {currentUser &&
+      {
+        currentUser &&
         currentUser.username &&
         currentUser.id &&
         user.id !== currentUser.id && (
@@ -54,16 +64,27 @@ export default function UserCard({ user, width, currentUser, updateUser }) {
             unFollow={user.followers && user.followers.includes(currentUser.id)}
             userId={user.id}
             currentUserId={currentUser.id}
-            additionalCallback={() =>
-              updateUser(
-                user.id,
-                user.followers && user.followers.includes(currentUser.id)
-                  ? user.followers.filter((u) => u !== currentUser.id)
-                  : (user.followers || []).concat([currentUser.id])
-              )
-            }
+            additionalCallback={(error) => {
+              if (error) {
+                setSnackbarMessage(error);
+                setSnackbarOpen(true);
+              } else {
+                updateUser(
+                  user.id,
+                  user.followers && user.followers.includes(currentUser.id)
+                    ? user.followers.filter((u) => u !== currentUser.id)
+                    : (user.followers || []).concat([currentUser.id])
+                );
+              }
+            }}
           />
-        )}
+        )
+      }
+    <ErrorSnackbar
+      open={snackbarOpen}
+      message={snackbarMessage}
+      handleClose={handleSnackbarClose}
+    />
     </Paper>
   );
 }
