@@ -7,6 +7,7 @@ import { useSelector } from "react-redux";
 import { getAllUsers } from "@/utils/db/user";
 import styles from "@/styles/AllUsers.module.css";
 import { useCheckUser } from "@/utils/hooks";
+import InfoText from "@/components/InfoText";
 
 export default function AllUsersPage() {
   useCheckUser();
@@ -60,7 +61,7 @@ export default function AllUsersPage() {
   return (
     <main className={styles.main}>
       {users.length === 0 ? (
-        <Typography variant="h6">No users yet.</Typography>
+        <InfoText>No users yet.</InfoText>
       ) : (
         users.map((user) => (
           <UserCard

@@ -1,4 +1,3 @@
-import axios from "axios";
 import { post, get } from "./shared";
 
 export async function getUserByEmail(email) {
@@ -11,10 +10,6 @@ export async function getUserByUsername(username) {
 
 export async function getUserById(id) {
   return await get(`/api/user/getUserById?id=${id}`);
-}
-
-export async function addUser(user) {
-  return await post("/api/user/addUser", user);
 }
 
 export async function followUser(id, currentUserId) {

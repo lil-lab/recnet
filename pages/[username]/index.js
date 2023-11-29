@@ -1,6 +1,7 @@
 import BackLink from "@/components/BackLink";
 import FollowButton from "@/components/FollowButton";
 import FollowStatsCard from "@/components/FollowStatsCard";
+import InfoText from "@/components/InfoText";
 import Loading from "@/components/Loading";
 import PostCard from "@/components/PostCard";
 import SettingsDialogContent from "@/components/SettingsDialogContent";
@@ -90,9 +91,7 @@ export default function ProfilePage() {
   } else if (!user) {
     return (
       <main className={styles.main}>
-        <Typography variant="h6" sx={fontStyles.regular}>
-          {"User doesn't exist."}
-        </Typography>
+        <InfoText>{"User doesn't exist."}</InfoText>
         <BackLink route="/" text="back to homepage" />
       </main>
     );
@@ -187,9 +186,7 @@ export default function ProfilePage() {
           </>
         ) : (
           <>
-            <Typography variant="h6" sx={fontStyles.regular}>
-              {"User doesn't exist."}
-            </Typography>
+            <InfoText>{"User doesn't exist."}</InfoText>
             <BackLink route="/" text="back to homepage" />
           </>
         ))}

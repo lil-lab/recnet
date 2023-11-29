@@ -1,14 +1,13 @@
 import BackLink from "@/components/BackLink";
+import ErrorSnackbar from "@/components/ErrorSnackbar";
+import InfoText from "@/components/InfoText";
+import Loading from "@/components/Loading";
 import UserCard from "@/components/UserCard";
 import styles from "@/styles/Search.module.css";
 import { searchUsers } from "@/utils/db/user";
-import { fontStyles } from "@/utils/fonts";
-import { Typography } from "@mui/material";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import Loading from "@/components/Loading";
-import ErrorSnackbar from "@/components/ErrorSnackbar";
 
 export default function SearchUsers() {
   const router = useRouter();
@@ -64,9 +63,9 @@ export default function SearchUsers() {
     <main className={styles.main}>
       {!userLoading &&
         (users.length === 0 ? (
-          <Typography variant="h6" sx={fontStyles.regular}>
-            {"No user matches the search. Search users by name or username."}
-          </Typography>
+          <InfoText>
+            No user matches the search. Search users by name or username.
+          </InfoText>
         ) : (
           users.map((user, index) => (
             <UserCard

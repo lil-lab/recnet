@@ -4,8 +4,13 @@ import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 
-import { Box, TextField, Typography, Select, MenuItem } from "@mui/material";
-import { getPostById, postEntry, updatePost } from "../utils/db/post";
+import { Box, TextField, Typography } from "@mui/material";
+import {
+  deletePost,
+  getPostById,
+  postEntry,
+  updatePost,
+} from "../utils/db/post";
 
 import ErrorSnackbar from "@/components/ErrorSnackbar";
 
@@ -14,17 +19,31 @@ import {
   formatNextDueDay,
   getNextCutoff,
 } from "@/utils/dateHelper";
-import LoadingButton from "@mui/lab/LoadingButton";
 import { useCheckUser } from "@/utils/hooks";
+import LoadingButton from "@mui/lab/LoadingButton";
 
+import AlertDialog from "@/components/AlertDialog";
 import Help from "@/components/Help";
 import MonthPicker from "@/components/MonthPicker";
 import { isYearValid } from "@/utils/validationHelper";
+import { getPostInProgressByUser } from "../utils/db/post";
 
 export default function Edit() {
-  const { user, router } = useCheckUser();
+  const { user } = useCheckUser();
 
-  const { postId } = router.query;
+  const [postInProgress, setPostInProgress] = useState(undefined);
+
+  useEffect(() => {
+    async function getPostInProgress() {
+      const { data, error } = await getPostInProgressByUser(user.id);
+      if (error) {
+        console.log(error);
+      } else {
+        if (data) setPostInProgress(data); // if there's post in progress
+      }
+    }
+    if (user) getPostInProgress();
+  }, [user]);
 
   return (
     user && (
@@ -41,13 +60,13 @@ export default function Edit() {
         >
           Week of {formatNextDueDay()}
         </Typography>
-        <PaperForm postId={postId} />
+        <PaperForm postInProgress={postInProgress} />
       </main>
     )
   );
 }
 
-function PaperForm({ postId }) {
+function PaperForm({ postInProgress }) {
   const [title, setTitle] = useState("");
   const [link, setLink] = useState("");
   const [author, setAuthor] = useState("");
@@ -63,6 +82,7 @@ function PaperForm({ postId }) {
 
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
+  const [alertOpen, setAlertOpen] = useState(false);
 
   const [initialPost, setInitialPost] = useState({
     title: "",
@@ -84,24 +104,17 @@ function PaperForm({ postId }) {
   const [buttonText, setButtonText] = useState("Post");
 
   useEffect(() => {
-    async function getPost(id) {
-      const { data, error } = await getPostById(id);
-      if (error){
-        setSnackbarOpen(true);
-        setSnackbarMessage(error);
-      } else{
-        setTitle(data.title);
-        setLink(data.link);
-        setAuthor(data.author);
-        setDescription(data.description);
-        setYear(data.year);
-        setMonth(data.month);
-        setInitialPost(data);
-        setButtonText("Update");
-      }
+    if (postInProgress) {
+      setTitle(postInProgress.title);
+      setLink(postInProgress.link);
+      setAuthor(postInProgress.author);
+      setDescription(postInProgress.description);
+      setYear(postInProgress.year);
+      setMonth(postInProgress.month);
+      setInitialPost(postInProgress);
+      setButtonText("Update");
     }
-    if (postId) getPost(postId);
-  }, [postId]);
+  }, [postInProgress]);
 
   const handleLinkChange = (event) => {
     setLink(event.target.value);
@@ -137,11 +150,19 @@ function PaperForm({ postId }) {
   const handleSubmit = async () => {
     setLoading(true);
 
-    if (postId) {
+    if (postInProgress) {
       //update post
-      await updatePost(title, link, author, description, year, month, postId);
+      await updatePost(
+        title,
+        link,
+        author,
+        description,
+        year,
+        month,
+        postInProgress.id
+      );
       setLoading(false);
-      router.push("/");
+      router.replace("/");
     } else {
       // create new post
       const { data, error } = await postEntry(
@@ -160,7 +181,7 @@ function PaperForm({ postId }) {
       } else{
         setLoading(false);
         if (data) {
-          router.push("/");
+          router.replace("/");
         }
       }
     }
@@ -274,17 +295,47 @@ function PaperForm({ postId }) {
         </Typography>
       </Box>
 
-      <LoadingButton
-        className={styles.postButton}
-        variant="contained"
-        color="secondary"
-        size="large"
-        disabled={submitDisabled()}
-        onClick={handleSubmit}
-        loading={loading}
-      >
-        <span>{buttonText}</span>
-      </LoadingButton>
+      <div>
+        <LoadingButton
+          className={styles.postButton}
+          variant="contained"
+          color="secondary"
+          size="large"
+          disabled={submitDisabled()}
+          onClick={handleSubmit}
+          loading={loading}
+        >
+          {buttonText}
+        </LoadingButton>
+        {buttonText === "Update" && (
+          <LoadingButton
+            className={styles.deleteButton}
+            variant="outlined"
+            color="error"
+            size="large"
+            onClick={() => setAlertOpen(true)}
+            loading={loading}
+          >
+            Delete
+          </LoadingButton>
+        )}
+        {alertOpen && (
+          <AlertDialog
+            open={alertOpen}
+            handleClose={() => setAlertOpen(false)}
+            handleAction={async () => {
+              await deletePost(postInProgress.id);
+              setAlertOpen(false);
+              router.replace("/");
+            }}
+            text={"Are you sure you want to delete this post?"}
+            contentText={
+              "Once deleted, this post will not appear in the recommendation list for you and your network this week."
+            }
+            confirmButtonText={"Delete"}
+          ></AlertDialog>
+        )}
+      </div>
 
       <div className={styles.infoText}>
         <Typography variant="body2" color="textSecondary">

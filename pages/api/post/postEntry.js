@@ -1,13 +1,7 @@
-import { db } from "../../../utils/db/init";
-import {
-  collection,
-  addDoc,
-  setDoc,
-  serverTimestamp,
-  doc,
-  arrayUnion,
-} from "firebase/firestore";
+import { db } from "../../../utils/db/firebase-admin";
+import { Firestore } from "firebase-admin/firestore";
 import { getNextCutoff } from "@/utils/dateHelper";
+import { withAuth } from "@/utils/db/middleware";
 
 /** [POST] Post an entry and update user.
  * req.body requires:
@@ -20,23 +14,22 @@ import { getNextCutoff } from "@/utils/dateHelper";
  * @param month,
  * @param userId
  */
-export default async function postEntryHandler(req, res) {
+async function postEntryHandler(req, res) {
   try {
     // post to recommendations
-    const { id } = await addDoc(collection(db, "recommendations"), {
+    const { id } = await db.collection("recommendations").add({
       ...req.body,
-      createdAt: serverTimestamp(),
+      createdAt: Firestore.FieldValue.serverTimestamp(),
       cutoff: getNextCutoff(),
     });
 
     // update user
     const { userId } = req.body;
-    const userRef = doc(db, "users", userId);
+    const userRef = db.doc(`users/${userId}`);
 
-    await setDoc(
-      userRef,
+    await userRef.set(
       {
-        postIds: arrayUnion(id),
+        postIds: Firestore.FieldValue.arrayUnion(id),
       },
       { merge: true }
     );
@@ -47,3 +40,5 @@ export default async function postEntryHandler(req, res) {
     res.status(500).json(error.message);
   }
 }
+
+export default withAuth(postEntryHandler);
