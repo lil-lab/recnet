@@ -1,10 +1,5 @@
-import {
-  getDateFromServerTimestamp,
-  getNextCutoff,
-  getLastCutoff,
-} from "@/utils/dateHelper";
-import { db } from "../../../utils/db/init";
-import { getDoc, doc } from "firebase/firestore";
+import { getNextCutoff } from "@/utils/dateHelper";
+import { db } from "../../../utils/db/firebase-admin";
 
 /** [GET] Get user's post in progress for the current cutoff
  * req.query requires:
@@ -14,10 +9,10 @@ import { getDoc, doc } from "firebase/firestore";
 export default async function getPostInProgressByUserHandler(req, res) {
   try {
     const { userId } = req.query;
-    const docRef = doc(db, "users", userId);
-    const docSnap = await getDoc(docRef);
+    const docRef = db.doc(`users/${userId}`);
+    const docSnap = await docRef.get();
 
-    if (docSnap.exists()) {
+    if (docSnap.exists) {
       const { postIds } = docSnap.data();
       // get user's last post
       if (!postIds || (postIds && postIds.length === 0)) {
@@ -26,10 +21,10 @@ export default async function getPostInProgressByUserHandler(req, res) {
         return;
       }
       const lastPostId = postIds.slice(-1)[0];
-      const postRef = doc(db, "recommendations", lastPostId);
-      const postSnap = await getDoc(postRef);
+      const postRef = db.doc(`recommendations/${lastPostId}`);
+      const postSnap = await postRef.get();
 
-      if (postSnap.exists()) {
+      if (postSnap.exists) {
         const postData = postSnap.data();
         const { cutoff } = postData;
         const nextCutoffTime = getNextCutoff().getTime();

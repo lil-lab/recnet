@@ -1,5 +1,4 @@
-import { db } from "../../../utils/db/init";
-import { getDoc, doc } from "firebase/firestore";
+import { db } from "../../../utils/db/firebase-admin";
 
 /** [GET] Get user by id
  * req.query requires:
@@ -9,8 +8,8 @@ import { getDoc, doc } from "firebase/firestore";
 export default async function getUserByIdHandler(req, res) {
   try {
     const { id } = req.query;
-    const docRef = doc(db, "users", id);
-    const docSnap = await getDoc(docRef);
+    const docRef = db.doc(`users/${id}`);
+    const docSnap = await docRef.get();
 
     res.status(200).json({ ...docSnap.data(), id });
   } catch (error) {

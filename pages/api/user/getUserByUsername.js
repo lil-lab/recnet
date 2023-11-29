@@ -1,5 +1,4 @@
-import { db } from "../../../utils/db/init";
-import { collection, query, where, getDocs } from "firebase/firestore";
+import { db } from "../../../utils/db/firebase-admin";
 
 /** [GET] Get user by username
  * req.query requires:
@@ -9,8 +8,12 @@ import { collection, query, where, getDocs } from "firebase/firestore";
 export default async function getUserByUsernameHandler(req, res) {
   try {
     const { username } = req.query;
-    const q = query(collection(db, "users"), where("username", "==", username));
-    const querySnapshot = await getDocs(q);
+
+    const querySnapshot = await db
+      .collection("users")
+      .where("username", "==", username)
+      .get();
+
     if (querySnapshot.empty) {
       // No user found with the provided username
       res.status(200).json(undefined);

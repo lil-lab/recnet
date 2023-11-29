@@ -1,5 +1,4 @@
-import { db } from "../../../utils/db/init";
-import { getDoc, doc } from "firebase/firestore";
+import { db } from "../../../utils/db/firebase-admin";
 
 /** [GET] Get recommendation post by post id
  * req.query requires:
@@ -8,10 +7,10 @@ import { getDoc, doc } from "firebase/firestore";
 export default async function getPostByIdHandler(req, res) {
   try {
     const { postId } = req.query;
-    const docRef = doc(db, "recommendations", postId);
-    const docSnap = await getDoc(docRef);
+    const docRef = db.doc(`recommendations/${postId}`);
+    const docSnap = await docRef.get();
 
-    if (docSnap.exists()) {
+    if (docSnap.exists) {
       res.status(200).json(docSnap.data());
     } else {
       // docSnap.data() will be undefined in this case

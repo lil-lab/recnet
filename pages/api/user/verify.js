@@ -1,12 +1,5 @@
-import { db } from "../../../utils/db/init";
-import {
-  doc,
-  getDoc,
-  setDoc,
-  serverTimestamp,
-  addDoc,
-  collection,
-} from "firebase/firestore";
+import { db } from "../../../utils/db/firebase-admin";
+import { Firestore } from "firebase-admin/firestore";
 
 /** [POST] Verify invite code and create user
  * req.body requires:
@@ -18,10 +11,10 @@ export default async function verifyCodeHandler(req, res) {
   try {
     const { user, code } = req.body;
 
-    const ref = doc(db, "invite-codes", code);
-    const docSnap = await getDoc(ref);
+    const ref = db.doc(`invite-codes/${code}`);
+    const docSnap = await ref.get();
 
-    if (docSnap.exists()) {
+    if (docSnap.exists) {
       const data = docSnap.data();
       // used invite code
       if (data["used"]) {
@@ -32,24 +25,24 @@ export default async function verifyCodeHandler(req, res) {
       // create user, get user id
       const userData = {
         ...user,
-        createdAt: serverTimestamp(),
+        createdAt: Firestore.FieldValue.serverTimestamp(),
         followers: [],
         following: [],
         inviteCode: code,
       };
-      const { id: userId } = await addDoc(collection(db, "users"), userData);
-      const userRef = doc(db, "users", userId);
+      const { id: userId } = await db.collection("users").add(userData);
+      const userRef = db.doc(`users/${userId}`);
       const additionalInfo = { seed: userId, id: userId };
-      await setDoc(userRef, additionalInfo, { merge: true }); // add seed for sorting posts (same as id)
+      await userRef.set(additionalInfo, { merge: true }); // add seed for sorting posts (same as id)
 
       // update invite code
       const newData = {
         ...data,
         used: true,
-        usedAt: serverTimestamp(),
+        usedAt: Firestore.FieldValue.serverTimestamp(),
         usedBy: userId,
       };
-      await setDoc(ref, newData, { merge: true });
+      await ref.set(newData, { merge: true });
 
       // return user data
       res.status(200).json({ ...userData, ...additionalInfo });

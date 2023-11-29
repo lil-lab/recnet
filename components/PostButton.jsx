@@ -4,27 +4,16 @@ import styles from "./PostButton.module.css";
 
 export default function PostButton({ postInProgress }) {
   const router = useRouter();
-  return postInProgress ? (
+  return (
     <Button
       className={styles.button}
       onClick={() => {
-        router.push(`/edit?postId=${postInProgress.id}`);
+        router.push(`/edit`);
       }}
       variant="contained"
       color="secondary"
     >
-      Edit my rec 🛠
-    </Button>
-  ) : (
-    <Button
-      className={styles.button}
-      onClick={() => {
-        router.push("/edit");
-      }}
-      variant="contained"
-      color="secondary"
-    >
-      Recommend a paper 📝
+      {postInProgress ? "Edit my rec 🛠" : "Recommend a paper 📝"}
     </Button>
   );
 }

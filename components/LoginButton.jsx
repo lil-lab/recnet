@@ -6,7 +6,7 @@ import { Button } from "@mui/material";
 import { logIn, logOut } from "../utils/db/auth";
 
 import { useRouter } from "next/router";
-import { addUser, getUserByEmail } from "../utils/db/user";
+import { getUserByEmail } from "../utils/db/user";
 import BackLink from "./BackLink";
 
 /** Login button that handles log in and out.
@@ -51,7 +51,6 @@ export default function LoginButton({ asLink, customText }) {
             // existing user
             console.log("Existing user.")
             dispatch(setUser(data));
-            console.log(data)
             dispatch(setId(data.id));
             if (!data.username) {
               // user in db but no username (has invitation code verified)

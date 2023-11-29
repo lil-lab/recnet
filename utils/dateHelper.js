@@ -75,11 +75,11 @@ export function formatDateVerbose(date, excludeDate) {
   return formattedDate.replaceAll(",", "");
 }
 
-/** Get timestamp in milliseconds from server timestamp.
- * @param timestamp Server timestamp object {seconds: number, nanoseconds: number}
+/** Get timestamp in milliseconds from server timestamp json object.
+ * @param timestamp Server timestamp object {_seconds: number, _nanoseconds: number}
  */
 export function getDateFromServerTimestamp(timestamp) {
-  timestamp = new Timestamp(timestamp.seconds, timestamp.nanoseconds);
+  timestamp = new Timestamp(timestamp._seconds, timestamp._nanoseconds);
   return timestamp.toDate();
 }
 

@@ -24,11 +24,24 @@ import AlertDialog from "@/components/AlertDialog";
 import Help from "@/components/Help";
 import MonthPicker from "@/components/MonthPicker";
 import { isYearValid } from "@/utils/validationHelper";
+import { getPostInProgressByUser } from "../utils/db/post";
 
 export default function Edit() {
-  const { user, router } = useCheckUser();
+  const { user } = useCheckUser();
 
-  const { postId } = router.query;
+  const [postInProgress, setPostInProgress] = useState(undefined);
+
+  useEffect(() => {
+    async function getPostInProgress() {
+      const { data, error } = await getPostInProgressByUser(user.id);
+      if (error) {
+        console.log(error);
+      } else {
+        if (data) setPostInProgress(data); // if there's post in progress
+      }
+    }
+    if (user) getPostInProgress();
+  }, [user]);
 
   return (
     user && (
@@ -45,13 +58,13 @@ export default function Edit() {
         >
           Week of {formatNextDueDay()}
         </Typography>
-        <PaperForm postId={postId} />
+        <PaperForm postInProgress={postInProgress} />
       </main>
     )
   );
 }
 
-function PaperForm({ postId }) {
+function PaperForm({ postInProgress }) {
   const [title, setTitle] = useState("");
   const [link, setLink] = useState("");
   const [author, setAuthor] = useState("");
@@ -87,19 +100,17 @@ function PaperForm({ postId }) {
   const [buttonText, setButtonText] = useState("Post");
 
   useEffect(() => {
-    async function getPost(id) {
-      const post = await getPostById(id);
-      setTitle(post.title);
-      setLink(post.link);
-      setAuthor(post.author);
-      setDescription(post.description);
-      setYear(post.year);
-      setMonth(post.month);
-      setInitialPost(post);
+    if (postInProgress) {
+      setTitle(postInProgress.title);
+      setLink(postInProgress.link);
+      setAuthor(postInProgress.author);
+      setDescription(postInProgress.description);
+      setYear(postInProgress.year);
+      setMonth(postInProgress.month);
+      setInitialPost(postInProgress);
       setButtonText("Update");
     }
-    if (postId) getPost(postId);
-  }, [postId]);
+  }, [postInProgress]);
 
   const handleLinkChange = (event) => {
     setLink(event.target.value);
@@ -135,14 +146,22 @@ function PaperForm({ postId }) {
   const handleSubmit = async () => {
     setLoading(true);
 
-    if (postId) {
+    if (postInProgress) {
       //update post
-      await updatePost(title, link, author, description, year, month, postId);
+      await updatePost(
+        title,
+        link,
+        author,
+        description,
+        year,
+        month,
+        postInProgress.id
+      );
       setLoading(false);
-      router.push("/");
+      router.replace("/");
     } else {
       // create new post
-      const newPostId = await postEntry(
+      const { data, error } = await postEntry(
         title,
         link,
         author,
@@ -154,8 +173,8 @@ function PaperForm({ postId }) {
       );
       setLoading(false);
 
-      if (newPostId) {
-        router.push("/");
+      if (data) {
+        router.replace("/");
       }
     }
   };
@@ -293,9 +312,9 @@ function PaperForm({ postId }) {
             open={alertOpen}
             handleClose={() => setAlertOpen(false)}
             handleAction={async () => {
-              await deletePost(postId);
+              await deletePost(postInProgress.id);
               setAlertOpen(false);
-              router.push("/");
+              router.replace("/");
             }}
             text={"Are you sure you want to delete this post?"}
             contentText={

@@ -9,6 +9,7 @@ import { useSelector } from "react-redux";
 import Typography from "@mui/material/Typography";
 import { fontStyles } from "@/utils/fonts";
 import ErrorSnackbar from "@/components/ErrorSnackbar";
+import InfoText from "@/components/InfoText";
 
 export default function FollowingPage() {
   const [following, setFollowing] = useState([]);
@@ -61,9 +62,7 @@ export default function FollowingPage() {
       <main className={styles.main}>
         {following.length === 0 ? (
           <div className={styles.noFollowingsText}>
-            <Typography variant="h6" sx={fontStyles.regular}>
-              You are not following anyone yet.
-            </Typography>
+            <InfoText>You are not following anyone yet.</InfoText>
           </div>
         ) : (
           following.map((user) => (

@@ -1,12 +1,5 @@
-import { db } from "../../../utils/db/init";
-import {
-  getDocs,
-  query,
-  collection,
-  where,
-  Timestamp,
-  orderBy,
-} from "firebase/firestore";
+import { db } from "../../../utils/db/firebase-admin";
+import { Timestamp } from "firebase-admin/firestore";
 import { getNextCutoff } from "@/utils/dateHelper";
 
 /** [GET] Get all posts by user.
@@ -17,24 +10,23 @@ export default async function getPostByUserHandler(req, res) {
   try {
     const { userId, includeCurrentCutoff } = req.query;
 
-    let q;
+    let querySnapshot;
     if (includeCurrentCutoff === "true") {
       // including upcoming post in current cutoff
-      q = query(
-        collection(db, "recommendations"),
-        where("userId", "==", userId),
-        orderBy("cutoff", "desc")
-      );
+      querySnapshot = await db
+        .collection("recommendations")
+        .where("userId", "==", userId)
+        .orderBy("cutoff", "desc")
+        .get();
     } else {
-      q = query(
-        collection(db, "recommendations"),
-        where("userId", "==", userId),
-        where("cutoff", "!=", Timestamp.fromMillis(getNextCutoff())),
-        orderBy("cutoff", "desc")
-      );
+      querySnapshot = await db
+        .collection("recommendations")
+        .where("userId", "==", userId)
+        .where("cutoff", "!=", Timestamp.fromMillis(getNextCutoff()))
+        .orderBy("cutoff", "desc")
+        .get();
     }
 
-    const querySnapshot = await getDocs(q);
     let recommendations = [];
     querySnapshot.forEach((doc) => {
       recommendations.push({ ...doc.data(), id: doc.id });

@@ -1,11 +1,10 @@
-import { db } from "../../../utils/db/init";
-import { collection, query, getDocs } from "firebase/firestore";
+import { db } from "../../../utils/db/firebase-admin";
+import { withAuth } from "@/utils/db/middleware";
 
 /** [GET] Get all users */
-export default async function getAllUsersHandler(req, res) {
+async function getAllUsersHandler(req, res) {
   try {
-    const q = query(collection(db, "users"));
-    const querySnapshot = await getDocs(q);
+    const querySnapshot = await db.collection("users").get();
     if (querySnapshot.empty) {
       res.status(200).json([]);
     } else {
@@ -30,3 +29,5 @@ export default async function getAllUsersHandler(req, res) {
     res.status(500).json(error.message);
   }
 }
+
+export default withAuth(getAllUsersHandler);

@@ -1,9 +1,11 @@
 import BackLink from "@/components/BackLink";
 import FollowButton from "@/components/FollowButton";
 import FollowStatsCard from "@/components/FollowStatsCard";
+import InfoText from "@/components/InfoText";
 import Loading from "@/components/Loading";
 import PostCard from "@/components/PostCard";
 import SettingsDialogContent from "@/components/SettingsDialogContent";
+import ErrorSnackbar from "@/components/ErrorSnackbar";
 import styles from "@/styles/Profile.module.css";
 import { getPostsByUser } from "@/utils/db/post";
 import { getUserByUsername } from "@/utils/db/user";
@@ -24,6 +26,8 @@ export default function ProfilePage() {
   const [posts, setPosts] = useState(undefined);
   const [update, setUpdate] = useState(false); // update user after follow/unfollow action
   const [open, setOpen] = useState(false);
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -39,16 +43,31 @@ export default function ProfilePage() {
     }
   };
 
+  const handleSnackbarClose = () => {
+    setSnackbarOpen(false);
+  };
+
   useEffect(() => {
     async function getPosts(id) {
-      const posts = await getPostsByUser(id, false);
-      setPosts(posts);
+      const { data, error } = await getPostsByUser(id, false);
+      if (error){
+        setSnackbarMessage(error);
+        setSnackbarOpen(true);
+      } else{
+        setPosts(data);
+      }
     }
+
     async function getUser(username) {
       const { data, error } = await getUserByUsername(username);
-      setUser(data);
-      return data;
-    }
+      if (error){
+        setSnackbarOpen(true);
+        setSnackbarMessage(error);
+      } else{
+        setUser(data);
+        return data;
+      }
+    } 
     setIsLoading(true);
 
     if (username) {
@@ -72,9 +91,7 @@ export default function ProfilePage() {
   } else if (!user) {
     return (
       <main className={styles.main}>
-        <Typography variant="h6" sx={fontStyles.regular}>
-          {"User doesn't exist."}
-        </Typography>
+        <InfoText>{"User doesn't exist."}</InfoText>
         <BackLink route="/" text="back to homepage" />
       </main>
     );
@@ -167,12 +184,15 @@ export default function ProfilePage() {
           </>
         ) : (
           <>
-            <Typography variant="h6" sx={fontStyles.regular}>
-              {"User doesn't exist."}
-            </Typography>
+            <InfoText>{"User doesn't exist."}</InfoText>
             <BackLink route="/" text="back to homepage" />
           </>
         ))}
+        <ErrorSnackbar
+          open={snackbarOpen}
+          message={snackbarMessage}
+          handleClose={handleSnackbarClose}
+      />
     </main>
   );
 }
