@@ -7,7 +7,7 @@ import { Firestore } from "firebase-admin/firestore";
  * @param currentUserId
  * @returns user
  */
-export default async function followUserHandler(req, res) {
+async function followUserHandler(req, res) {
   try {
     const { id, currentUserId } = req.body;
     if (!id || !currentUserId) {
@@ -30,3 +30,5 @@ export default async function followUserHandler(req, res) {
     res.status(500).json(error.message);
   }
 }
+
+export default withAuth(followUserHandler)

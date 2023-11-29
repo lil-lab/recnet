@@ -1,4 +1,3 @@
-import axios from "axios";
 import { post, get, del, put } from "./shared";
 
 export const postEntry = async (
@@ -11,16 +10,25 @@ export const postEntry = async (
   month,
   userId
 ) => {
-  return await post("/api/post/postEntry", {
-    title,
-    link,
-    author,
-    description,
-    email,
-    year,
-    month,
-    userId,
-  });
+  // check if there's post in progress
+  const { data, error } = await getPostInProgressByUser(userId);
+  if (error) {
+    // error getting post in progress
+    return { error };
+  } else {
+    if (data) return { error: "Already have post in progress." };
+
+    return await post("/api/post/postEntry", {
+      title,
+      link,
+      author,
+      description,
+      email,
+      year,
+      month,
+      userId,
+    });
+  }
 };
 
 export const getPostInProgressByUser = async (userId) => {
