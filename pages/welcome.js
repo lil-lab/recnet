@@ -8,6 +8,7 @@ import { isUsernameValid } from "@/utils/validationHelper";
 import { setUserInfo, verifyCode } from "@/utils/db/user";
 import { setUser, setId } from "@/utils/redux/userSlice";
 import LoginButton from "@/components/LoginButton";
+import ErrorSnackbar from "@/components/ErrorSnackbar";
 
 export default function Welcome() {
   const user = useSelector((state) => state.user.value); // auth user object or full db user object
@@ -24,6 +25,9 @@ export default function Welcome() {
   const [code, setCode] = useState("");
   const [codeError, setCodeError] = useState(false);
   const [codeErrorHelperText, setCodeErrorHelperText] = useState("");
+
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
 
   const handleCodeChange = (e) => {
     setCode(e.target.value);
@@ -87,9 +91,14 @@ export default function Welcome() {
         setUsernameError(true);
         setUsernameErrorHelperText(error.usernameError);
       } else {
-        console.log(error); // TODO: might need to handle other errors
+        setSnackbarOpen(true);
+        setSnackbarMessage(error);
       }
     }
+  };
+
+  const handleSnackbarClose = () => {
+    setSnackbarOpen(false);
   };
 
   useEffect(() => {
@@ -195,6 +204,12 @@ export default function Welcome() {
           </div>
         )}
         <LoginButton asLink customText="use another account" />
+        
+        <ErrorSnackbar
+          open={snackbarOpen}
+          message={snackbarMessage}
+          handleClose={handleSnackbarClose}
+        />
       </main>
     )
   );

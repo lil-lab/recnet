@@ -5,6 +5,7 @@ import { useSelector } from "react-redux";
 import { Typography } from "@mui/material";
 
 import LoginButton from "../components/LoginButton";
+import ErrorSnackbar from "@/components/ErrorSnackbar";
 
 import { getLastCutoff } from "@/utils/dateHelper";
 import {
@@ -28,11 +29,15 @@ export default function Home() {
   const [postInProgress, setPostInProgress] = useState(-1);
   const [filter, setFilter] = useState(getLastCutoff());
 
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
+
   useEffect(() => {
     async function getPosts() {
       const { data, error } = await getFollowingPostsByDate(userId, filter);
       if (error){
-        console.log(error);
+        setSnackbarOpen(true);
+        setSnackbarMessage(error);
       } else{
         setPosts(data);
       }
@@ -41,7 +46,8 @@ export default function Home() {
     async function getPostInProgress() {
       const { data, error } = await getPostInProgressByUser(userId);
       if (error) {
-        console.log(error);
+        setSnackbarOpen(true);
+        setSnackbarMessage(error);
       } else {
         setPostInProgress(data); // if no post in progress, postInProgress is undefined
       }
@@ -58,6 +64,10 @@ export default function Home() {
       }
     }
   }, [user, userId, userLoaded, filter]);
+
+  const handleSnackbarClose = () => {
+    setSnackbarOpen(false);
+  };
 
   return (
     <>
@@ -137,6 +147,11 @@ export default function Home() {
           <Loading />
         </main>
       )}
+        <ErrorSnackbar
+        open={snackbarOpen}
+        message={snackbarMessage}
+        handleClose={handleSnackbarClose}
+      />
     </>
   );
 }

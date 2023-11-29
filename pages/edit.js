@@ -7,6 +7,8 @@ import { useSelector } from "react-redux";
 import { Box, TextField, Typography, Select, MenuItem } from "@mui/material";
 import { getPostById, postEntry, updatePost } from "../utils/db/post";
 
+import ErrorSnackbar from "@/components/ErrorSnackbar";
+
 import {
   formatDateVerbose,
   formatNextDueDay,
@@ -59,6 +61,9 @@ function PaperForm({ postId }) {
   const [descriptionError, setDescriptionError] = useState(false);
   const [yearError, setYearError] = useState(false);
 
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
+
   const [initialPost, setInitialPost] = useState({
     title: "",
     link: "",
@@ -81,14 +86,19 @@ function PaperForm({ postId }) {
   useEffect(() => {
     async function getPost(id) {
       const { data, error } = await getPostById(id);
-      setTitle(data.title);
-      setLink(data.link);
-      setAuthor(data.author);
-      setDescription(data.description);
-      setYear(data.year);
-      setMonth(data.month);
-      setInitialPost(data);
-      setButtonText("Update");
+      if (error){
+        setSnackbarOpen(true);
+        setSnackbarMessage(error);
+      } else{
+        setTitle(data.title);
+        setLink(data.link);
+        setAuthor(data.author);
+        setDescription(data.description);
+        setYear(data.year);
+        setMonth(data.month);
+        setInitialPost(data);
+        setButtonText("Update");
+      }
     }
     if (postId) getPost(postId);
   }, [postId]);
@@ -144,12 +154,20 @@ function PaperForm({ postId }) {
         month,
         userId
       );
-      setLoading(false);
-
-      if (data) {
-        router.push("/");
+      if (error){
+        setSnackbarOpen(true);
+        setSnackbarMessage(error);
+      } else{
+        setLoading(false);
+        if (data) {
+          router.push("/");
+        }
       }
     }
+  };
+
+  const handleSnackbarClose = () => {
+    setSnackbarOpen(false);
   };
 
   function submitDisabled() {
@@ -276,6 +294,12 @@ function PaperForm({ postId }) {
         </Typography>
         <Help />
       </div>
+
+      <ErrorSnackbar
+        open={snackbarOpen}
+        message={snackbarMessage}
+        handleClose={handleSnackbarClose}
+      />
 
       <BackLink route="/" text="back to homepage" />
     </div>
