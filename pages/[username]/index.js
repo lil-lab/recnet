@@ -50,31 +50,37 @@ export default function ProfilePage() {
   useEffect(() => {
     async function getPosts(id) {
       const { data, error } = await getPostsByUser(id, false);
-      if (error){
+      if (error) {
         setSnackbarMessage(error);
         setSnackbarOpen(true);
-      } else{
+      } else {
         setPosts(data);
       }
     }
 
     async function getUser(username) {
       const { data, error } = await getUserByUsername(username);
-      if (error){
+      if (error) {
         setSnackbarOpen(true);
         setSnackbarMessage(error);
-      } else{
+      } else {
         setUser(data);
         return data;
       }
-    } 
+    }
     setIsLoading(true);
 
     if (username) {
       getUser(username)
         .then((user) => {
-          user && getPosts(user.id);
-          setIsLoading(false);
+          if (user)
+            getPosts(user.id)
+              .then(() => {
+                setIsLoading(false);
+              })
+              .catch((error) => {
+                console.log(error);
+              });
         })
         .catch((error) => {
           console.log(error);
@@ -188,10 +194,10 @@ export default function ProfilePage() {
             <BackLink route="/" text="back to homepage" />
           </>
         ))}
-        <ErrorSnackbar
-          open={snackbarOpen}
-          message={snackbarMessage}
-          handleClose={handleSnackbarClose}
+      <ErrorSnackbar
+        open={snackbarOpen}
+        message={snackbarMessage}
+        handleClose={handleSnackbarClose}
       />
     </main>
   );

@@ -1,5 +1,6 @@
 import { db } from "../../../utils/db/firebase-admin";
 import { Firestore } from "firebase-admin/firestore";
+import { withAuth } from "@/utils/db/middleware";
 
 /** [POST] Follow user by id
  * req.body requires:
