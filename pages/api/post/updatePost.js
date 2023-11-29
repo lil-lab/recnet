@@ -22,7 +22,7 @@ async function updatePostHandler(req, res) {
       { merge: true }
     );
 
-    res.status(200).json();
+    res.status(200).json({ message: `Updated post ${postId}` });
   } catch (error) {
     console.error(error);
     res.status(500).json(error.message);

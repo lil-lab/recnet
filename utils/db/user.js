@@ -1,4 +1,3 @@
-import axios from "axios";
 import { post, get } from "./shared";
 
 export async function getUserByEmail(email) {
