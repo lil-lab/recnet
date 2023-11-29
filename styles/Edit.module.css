@@ -8,24 +8,12 @@
   text-align: center;
 }
 
-.postButton {
-  margin-bottom: 1%;
-  margin-top: 2%;
-  align-self: center;
-}
-
-.deleteButton {
-  margin-bottom: 1%;
-  margin-top: 2%;
-  align-self: center;
-  margin-left: 5%;
-}
-
 .infoText {
   display: flex;
   flex-direction: row;
   align-items: center;
   justify-content: center;
+  margin-top: 1%;
 }
 
 .form {

@@ -175,10 +175,10 @@ function PaperForm({ postInProgress }) {
         month,
         userId
       );
-      if (error){
+      if (error) {
         setSnackbarOpen(true);
         setSnackbarMessage(error);
-      } else{
+      } else {
         setLoading(false);
         if (data) {
           router.replace("/");
@@ -297,7 +297,7 @@ function PaperForm({ postInProgress }) {
 
       <div>
         <LoadingButton
-          className={styles.postButton}
+          style={{ margin: "1%" }}
           variant="contained"
           color="secondary"
           size="large"
@@ -309,7 +309,7 @@ function PaperForm({ postInProgress }) {
         </LoadingButton>
         {buttonText === "Update" && (
           <LoadingButton
-            className={styles.deleteButton}
+            style={{ margin: "1%" }}
             variant="outlined"
             color="error"
             size="large"
