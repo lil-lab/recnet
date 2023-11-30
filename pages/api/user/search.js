@@ -50,35 +50,33 @@ export default async function searchHandler(req, res) {
         Filter.where("displayName", "<=", capitalize(q) + "\uf8ff")
       )
     );
+
     const nameQuerySnapshot = await db
       .collection("users")
       .where(nameFilter)
       .get();
-
+      
     // combine results and remove duplicates
     let allResults = [];
-    if (!usernameQuerySnapshot.empty) {
-      allResults = usernameQuerySnapshot.docs
-        .map((doc) => {
+
+    allResults = usernameQuerySnapshot.docs
+      .map((doc) => {
+        return { ...doc.data(), id: doc.id };
+      })
+      .concat(
+        nameQuerySnapshot.docs.map((doc) => {
           return { ...doc.data(), id: doc.id };
         })
-        .concat(
-          nameQuerySnapshot.docs.map((doc) => {
-            return { ...doc.data(), id: doc.id };
-          })
-        );
-    }
+      );
 
-    if (!nameQuerySnapshot.empty) {
-      allResults = allResults.filter((user, index) => {
-        const _id = user.id;
-        return (
-          user.username && // registered user (with username)
-          !user.test && // filter out test accounts
-          index === allResults.map((u) => u.id).findIndex((uid) => uid === _id)
-        );
-      });
-    }
+    allResults = allResults.filter((user, index) => {
+      const _id = user.id;
+      return (
+        user.username && // registered user (with username)
+        !user.test && // filter out test accounts
+        index === allResults.map((u) => u.id).findIndex((uid) => uid === _id)
+      );
+    });
 
     res.status(200).json(allResults);
   } catch (error) {

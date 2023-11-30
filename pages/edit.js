@@ -5,12 +5,7 @@ import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 
 import { Box, TextField, Typography } from "@mui/material";
-import {
-  deletePost,
-  getPostById,
-  postEntry,
-  updatePost,
-} from "../utils/db/post";
+import { deletePost, postEntry, updatePost } from "../utils/db/post";
 
 import ErrorSnackbar from "@/components/ErrorSnackbar";
 
@@ -38,7 +33,7 @@ export default function Edit() {
   const handleSnackbarClose = () => {
     setSnackbarOpen(false);
   };
-  
+
   useEffect(() => {
     async function getPostInProgress() {
       const { data, error } = await getPostInProgressByUser(user.id);
@@ -66,12 +61,11 @@ export default function Edit() {
           }}
         >
           Week of {formatNextDueDay()}
-
-        <ErrorSnackbar
-          open={snackbarOpen}
-          message={snackbarMessage}
-          handleClose={handleSnackbarClose}
-        />
+          <ErrorSnackbar
+            open={snackbarOpen}
+            message={snackbarMessage}
+            handleClose={handleSnackbarClose}
+          />
         </Typography>
         <PaperForm postInProgress={postInProgress} />
       </main>
@@ -109,7 +103,6 @@ function PaperForm({ postInProgress }) {
   const charLimit = 280;
 
   const user = useSelector((state) => state.user.value);
-  const userId = useSelector((state) => state.user.id);
   const router = useRouter();
 
   const [loading, setLoading] = useState(false);
@@ -186,7 +179,7 @@ function PaperForm({ postInProgress }) {
         user.email,
         year,
         month,
-        userId
+        user.id
       );
       if (error) {
         setSnackbarOpen(true);
@@ -338,11 +331,10 @@ function PaperForm({ postInProgress }) {
             handleClose={() => setAlertOpen(false)}
             handleAction={async () => {
               const { data, error } = await deletePost(postInProgress.id);
-              if (error){
+              if (error) {
                 setSnackbarOpen(true);
                 setSnackbarMessage(error);
-              }
-              else {
+              } else {
                 setAlertOpen(false);
                 router.replace("/");
               }
