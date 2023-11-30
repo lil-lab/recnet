@@ -32,12 +32,19 @@ export default function Edit() {
   const { user } = useCheckUser();
 
   const [postInProgress, setPostInProgress] = useState(undefined);
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
 
+  const handleSnackbarClose = () => {
+    setSnackbarOpen(false);
+  };
+  
   useEffect(() => {
     async function getPostInProgress() {
       const { data, error } = await getPostInProgressByUser(user.id);
       if (error) {
-        console.log(error);
+        setSnackbarOpen(true);
+        setSnackbarMessage(error);
       } else {
         if (data) setPostInProgress(data); // if there's post in progress
       }
@@ -59,6 +66,12 @@ export default function Edit() {
           }}
         >
           Week of {formatNextDueDay()}
+
+        <ErrorSnackbar
+          open={snackbarOpen}
+          message={snackbarMessage}
+          handleClose={handleSnackbarClose}
+        />
         </Typography>
         <PaperForm postInProgress={postInProgress} />
       </main>
@@ -324,9 +337,15 @@ function PaperForm({ postInProgress }) {
             open={alertOpen}
             handleClose={() => setAlertOpen(false)}
             handleAction={async () => {
-              await deletePost(postInProgress.id);
-              setAlertOpen(false);
-              router.replace("/");
+              const { data, error } = await deletePost(postInProgress.id);
+              if (error){
+                setSnackbarOpen(true);
+                setSnackbarMessage(error);
+              }
+              else {
+                setAlertOpen(false);
+                router.replace("/");
+              }
             }}
             text={"Are you sure you want to delete this post?"}
             contentText={

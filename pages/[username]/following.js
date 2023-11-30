@@ -25,6 +25,7 @@ export default function FollowingPage() {
         const { data, error } = await getUsers(currentUser.following);
 
         if (data) {
+          console.log(data)
           setFollowing(data);
         } else {
           setSnackbarOpen(true);

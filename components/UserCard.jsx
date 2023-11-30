@@ -68,7 +68,8 @@ export default function UserCard({ user, width, currentUser, updateUser }) {
               if (error) {
                 setSnackbarMessage(error);
                 setSnackbarOpen(true);
-              } else {
+              } 
+              else {
                 updateUser(
                   user.id,
                   user.followers && user.followers.includes(currentUser.id)
