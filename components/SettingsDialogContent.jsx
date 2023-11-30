@@ -14,6 +14,7 @@ import { useRouter } from "next/router";
 import { useState } from "react";
 import { useDispatch } from "react-redux";
 import LoginButton from "./LoginButton";
+import ErrorSnackbar from "@/components/ErrorSnackbar";
 
 export default function SettingsDialogContent({ handleClose, user, onUpdate }) {
   const [name, setName] = useState(user.displayName);
@@ -25,6 +26,9 @@ export default function SettingsDialogContent({ handleClose, user, onUpdate }) {
 
   const [nameErrorHelperText, setNameErrorHelperText] = useState("");
   const [usernameErrorHelperText, setUsernameErrorHelperText] = useState("");
+
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
 
   const router = useRouter();
   const dispatch = useDispatch();
@@ -57,6 +61,10 @@ export default function SettingsDialogContent({ handleClose, user, onUpdate }) {
     setAffiliation(e.target.value);
   };
 
+  const handleSnackbarClose = () => {
+    setSnackbarOpen(false);
+  };
+
   const handleSubmit = async () => {
     const updatedUsername = username === user.username ? undefined : username;
     const updatedAffiliation =
@@ -83,7 +91,8 @@ export default function SettingsDialogContent({ handleClose, user, onUpdate }) {
         setUsernameError(true);
         setUsernameErrorHelperText(error.usernameError);
       } else {
-        console.log(error); // TODO: might need to handle other errors
+        setSnackbarMessage(error);
+        setSnackbarOpen(true);
       }
     }
   };
@@ -157,6 +166,11 @@ export default function SettingsDialogContent({ handleClose, user, onUpdate }) {
           Save
         </Button>
       </DialogActions>
+      <ErrorSnackbar
+      open={snackbarOpen}
+      message={snackbarMessage}
+      handleClose={handleSnackbarClose}
+    />
     </>
   );
 }

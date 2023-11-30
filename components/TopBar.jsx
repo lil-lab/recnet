@@ -7,6 +7,7 @@ import styles from "./TopBar.module.css";
 import { getCurrentUser } from "../utils/db/auth";
 import { getUserByEmail } from "../utils/db/user";
 import TopBarLink from "./TopBarLink";
+import ErrorSnackbar from "@/components/ErrorSnackbar";
 
 import SearchIcon from "@mui/icons-material/Search";
 import { useRouter } from "next/router";
@@ -21,6 +22,13 @@ export default function TopBar() {
   const router = useRouter();
   const disable = !user || !user.username; // disable top bar clickables
 
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
+  
+  const handleSnackbarClose = () => {
+    setSnackbarOpen(false);
+  };
+
   useEffect(() => {
     // check user logged in
     async function checkUserLoggedIn() {
@@ -32,9 +40,10 @@ export default function TopBar() {
           dispatch(setUser(data));
           dispatch(setId(data.id));
         }
-
+        
         if (error) {
-          console.error(error); // need to handle error in parent page
+          setSnackbarOpen(true);
+          setSnackbarMessage(error);
         }
       }
       dispatch(setLoaded());
@@ -100,6 +109,11 @@ export default function TopBar() {
           </a>
         )}
       </Toolbar>
+      <ErrorSnackbar
+          open={snackbarOpen}
+          message={snackbarMessage}
+          handleClose={handleSnackbarClose}
+      />
     </AppBar>
   );
 }

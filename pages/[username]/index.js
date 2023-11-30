@@ -137,30 +137,32 @@ export default function ProfilePage() {
               currentUser={currentUser}
               onFollowingClick={handleFollowingPageOpen}
             />
+            
             {/* Follow button */}
             {currentUser &&
               currentUser.username &&
               user.id !== currentUser.id && (
                 <FollowButton
-                  unFollow={
-                    user.followers && user.followers.includes(currentUser.id)
-                  }
+                  unFollow={user.followers && user.followers.includes(currentUser.id)}
                   userId={user.id}
                   currentUserId={currentUser.id}
-                  additionalCallback={() =>
-                    // update user followers locally
-                    setUser({
-                      ...user,
-                      followers:
-                        user.followers &&
-                        user.followers.includes(currentUser.id)
+                  additionalCallback={(error) => {
+                    if (error) {
+                      setSnackbarMessage(error);
+                      setSnackbarOpen(true);
+                    } else {
+                      setUser({
+                        ...user,
+                        followers: user.followers && user.followers.includes(currentUser.id)
                           ? user.followers.filter((u) => u !== currentUser.id)
                           : (user.followers || []).concat([currentUser.id]),
-                    })
-                  }
+                      });
+                    }
+                  }}
                   style={{ marginTop: "1%", marginBottom: "1%" }}
                 />
-              )}
+              )
+            }
 
             {/* Edit profile */}
             {currentUser && user.id === currentUser.id && (

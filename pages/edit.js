@@ -12,6 +12,8 @@ import {
   updatePost,
 } from "../utils/db/post";
 
+import ErrorSnackbar from "@/components/ErrorSnackbar";
+
 import {
   formatDateVerbose,
   formatNextDueDay,
@@ -30,12 +32,19 @@ export default function Edit() {
   const { user } = useCheckUser();
 
   const [postInProgress, setPostInProgress] = useState(undefined);
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
 
+  const handleSnackbarClose = () => {
+    setSnackbarOpen(false);
+  };
+  
   useEffect(() => {
     async function getPostInProgress() {
       const { data, error } = await getPostInProgressByUser(user.id);
       if (error) {
-        console.log(error);
+        setSnackbarOpen(true);
+        setSnackbarMessage(error);
       } else {
         if (data) setPostInProgress(data); // if there's post in progress
       }
@@ -57,6 +66,12 @@ export default function Edit() {
           }}
         >
           Week of {formatNextDueDay()}
+
+        <ErrorSnackbar
+          open={snackbarOpen}
+          message={snackbarMessage}
+          handleClose={handleSnackbarClose}
+        />
         </Typography>
         <PaperForm postInProgress={postInProgress} />
       </main>
@@ -78,6 +93,8 @@ function PaperForm({ postInProgress }) {
   const [descriptionError, setDescriptionError] = useState(false);
   const [yearError, setYearError] = useState(false);
 
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
   const [alertOpen, setAlertOpen] = useState(false);
 
   const [initialPost, setInitialPost] = useState({
@@ -171,12 +188,20 @@ function PaperForm({ postInProgress }) {
         month,
         userId
       );
-      setLoading(false);
-
-      if (data) {
-        router.replace("/");
+      if (error) {
+        setSnackbarOpen(true);
+        setSnackbarMessage(error);
+      } else {
+        setLoading(false);
+        if (data) {
+          router.replace("/");
+        }
       }
     }
+  };
+
+  const handleSnackbarClose = () => {
+    setSnackbarOpen(false);
   };
 
   function submitDisabled() {
@@ -285,7 +310,7 @@ function PaperForm({ postInProgress }) {
 
       <div>
         <LoadingButton
-          className={styles.postButton}
+          style={{ margin: "1%" }}
           variant="contained"
           color="secondary"
           size="large"
@@ -297,7 +322,7 @@ function PaperForm({ postInProgress }) {
         </LoadingButton>
         {buttonText === "Update" && (
           <LoadingButton
-            className={styles.deleteButton}
+            style={{ margin: "1%" }}
             variant="outlined"
             color="error"
             size="large"
@@ -312,9 +337,15 @@ function PaperForm({ postInProgress }) {
             open={alertOpen}
             handleClose={() => setAlertOpen(false)}
             handleAction={async () => {
-              await deletePost(postInProgress.id);
-              setAlertOpen(false);
-              router.replace("/");
+              const { data, error } = await deletePost(postInProgress.id);
+              if (error){
+                setSnackbarOpen(true);
+                setSnackbarMessage(error);
+              }
+              else {
+                setAlertOpen(false);
+                router.replace("/");
+              }
             }}
             text={"Are you sure you want to delete this post?"}
             contentText={
@@ -333,6 +364,12 @@ function PaperForm({ postInProgress }) {
         </Typography>
         <Help />
       </div>
+
+      <ErrorSnackbar
+        open={snackbarOpen}
+        message={snackbarMessage}
+        handleClose={handleSnackbarClose}
+      />
 
       <BackLink route="/" text="back to homepage" />
     </div>
