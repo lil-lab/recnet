@@ -1,11 +1,11 @@
 import styles from "@/styles/Home.module.css";
 import { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
+import YouTube from "react-youtube";
 
-import { Typography } from "@mui/material";
+import { Grid, Typography } from "@mui/material";
 
-import LoginButton from "../components/LoginButton";
 import ErrorSnackbar from "@/components/ErrorSnackbar";
+import LoginButton from "../components/LoginButton";
 
 import { getLastCutoff } from "@/utils/dateHelper";
 import {
@@ -70,7 +70,10 @@ export default function Home() {
 
   function loggedInRegisteredUserContent() {
     return (
-      <main className={styles.main} style={{ flexDirection: "row" }}>
+      <main
+        className={styles.main}
+        style={{ flexDirection: "row", padding: "7rem" }}
+      >
         {/* Left Sidebar */}
         <div className={styles.left}>
           <LeftBar
@@ -105,33 +108,54 @@ export default function Home() {
 
   function notLoggedInContent() {
     return (
-      <main
-        className={styles.main}
-        style={{
-          flexDirection: "column",
-          alignItems: "center",
-          justifyContent: "center",
-        }}
-      >
-        <Typography
-          variant="h1"
-          sx={{
-            ...fontStyles.bold,
-            padding: "1%",
-          }}
-        >
-          recnet
-        </Typography>
-        <Typography
-          variant="h6"
-          sx={{
-            ...fontStyles.regular,
-            paddingBottom: "3%",
-          }}
-        >
-          receive weekly paper recs from researchers you follow.
-        </Typography>
-        <LoginButton />
+      <main className={styles.main}>
+        <Grid container spacing={2}>
+          <Grid
+            item
+            xs={12}
+            md={5}
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              justifyContent: "center",
+              backgroundColor: "lightgrey",
+            }}
+          >
+            <Typography
+              variant="h1"
+              sx={{
+                ...fontStyles.bold,
+                padding: "1%",
+              }}
+            >
+              recnet
+            </Typography>
+            <Typography
+              variant="h6"
+              sx={{
+                ...fontStyles.regular,
+                paddingBottom: "5%",
+              }}
+            >
+              receive weekly paper recs from researchers you follow.
+            </Typography>
+            <LoginButton />
+          </Grid>
+          <Grid
+            item
+            xs={12}
+            md={7}
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <YouTube videoId={"qpEvFhNqrn8"} />
+          </Grid>
+        </Grid>
       </main>
     );
   }

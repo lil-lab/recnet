@@ -1,5 +1,7 @@
+import DividerLine from "@/components/DividerLine";
 import styles from "@/styles/About.module.css";
-import { Typography, Divider, Link } from "@mui/material";
+import { Link, Typography } from "@mui/material";
+import YouTube from "react-youtube";
 
 export default function About() {
   return (
@@ -14,7 +16,7 @@ export default function About() {
       >
         About
       </Typography>
-      <Typography variant="body1">
+      <Typography variant="body1" style={{ marginBottom: "3%" }}>
         Recnet is a human-driven recommendation system for academic readings.
         Recnet implements a mechanism similar to contemporary social networks,
         but it is designed to be impoverished in certain ways through
@@ -27,14 +29,8 @@ export default function About() {
         </Link>
         . Recnet is currently in initial development stages.
       </Typography>
-      <Divider
-        textAlign="left"
-        flexItem
-        sx={{
-          marginTop: "3%",
-          marginBottom: "3%",
-        }}
-      ></Divider>
+      <YouTube videoId={"qpEvFhNqrn8"} />
+      <DividerLine />
       <Typography variant="h3" color="primary" sx={{ marginBottom: "3%" }}>
         Team
       </Typography>
@@ -44,8 +40,7 @@ export default function About() {
         ]
         <br />
         Valene Tjong [
-        <Link href="https://www.linkedin.com/in/valene-tjong/">website</Link>
-        ] [
+        <Link href="https://www.linkedin.com/in/valene-tjong/">website</Link>] [
         <Link href="https://www.recnet.io/vtjong">recnet profile</Link>
         ]
         <br />
