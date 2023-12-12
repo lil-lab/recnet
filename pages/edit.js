@@ -25,7 +25,7 @@ import LoadingButton from "@mui/lab/LoadingButton";
 import AlertDialog from "@/components/AlertDialog";
 import Help from "@/components/Help";
 import MonthPicker from "@/components/MonthPicker";
-import { isYearValid } from "@/utils/validationHelper";
+import { isYearValid, isLinkValid, isTitleValid, isAuthorValid } from "@/utils/validationHelper";
 import { getPostInProgressByUser } from "../utils/db/post";
 
 export default function Edit() {
@@ -131,17 +131,18 @@ function PaperForm({ postInProgress }) {
 
   const handleLinkChange = (event) => {
     setLink(event.target.value);
-    setLinkError(event.target.value.length === 0);
+    setLinkError(event.target.value.length === 0 | !isLinkValid(event.target.value));
   };
 
   const handleTitleChange = (event) => {
     setTitle(event.target.value);
-    setTitleError(event.target.value.length === 0);
+    setTitleError(event.target.value.length === 0 || !isTitleValid(event.target.value));
   };
 
   const handleAuthorChange = (event) => {
     setAuthor(event.target.value);
-    setAuthorError(event.target.value.length === 0);
+    setAuthorError(event.target.value.length === 0 || !isAuthorValid(event.target.value));
+    console.log(authorError);
   };
 
   const handleDescriptionChange = (event) => {

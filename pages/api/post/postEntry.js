@@ -2,6 +2,7 @@ import { db } from "../../../utils/db/firebase-admin";
 import { Firestore } from "firebase-admin/firestore";
 import { getNextCutoff } from "@/utils/dateHelper";
 import { withAuth } from "@/utils/db/middleware";
+import { isLinkValid } from "@/utils/validationHelper";
 
 /** [POST] Post an entry and update user.
  * req.body requires:
@@ -16,6 +17,15 @@ import { withAuth } from "@/utils/db/middleware";
  */
 async function postEntryHandler(req, res) {
   try {
+    if (!isLinkValid(req.link)) {
+        res.status(400).json({
+          error: {
+            linkError:
+              "Please enter a valid link.",
+          },
+        });
+        return;
+    }
     // post to recommendations
     const { id } = await db.collection("recommendations").add({
       ...req.body,
