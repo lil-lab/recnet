@@ -1,15 +1,13 @@
 import BackLink from "@/components/BackLink";
-import { useEffect, useState } from "react";
-import UserCard from "@/components/UserCard";
-import { getUsers } from "@/utils/db/user";
-import Loading from "@/components/Loading";
-import profilestyles from "@/styles/Profile.module.css";
-import styles from "@/styles/Following.module.css";
-import { useSelector } from "react-redux";
-import Typography from "@mui/material/Typography";
-import { fontStyles } from "@/utils/fonts";
 import ErrorSnackbar from "@/components/ErrorSnackbar";
 import InfoText from "@/components/InfoText";
+import Loading from "@/components/Loading";
+import UserCard from "@/components/UserCard";
+import styles from "@/styles/Following.module.css";
+import profilestyles from "@/styles/Profile.module.css";
+import { getUsers } from "@/utils/db/user";
+import { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
 
 export default function FollowingPage() {
   const [following, setFollowing] = useState([]);
@@ -25,7 +23,6 @@ export default function FollowingPage() {
         const { data, error } = await getUsers(currentUser.following);
 
         if (data) {
-          console.log(data)
           setFollowing(data);
         } else {
           setSnackbarOpen(true);
