@@ -36,7 +36,7 @@ export default function About() {
       </Typography>
       <Typography variant="body1">
         Anya Ji [<Link href="https://anya-ji.github.io/">website</Link>] [
-        <Link href="https://www.recnet.io/aj592">recnet profile</Link>
+        <Link href="https://www.recnet.io/anya">recnet profile</Link>
         ]
         <br />
         Valene Tjong [

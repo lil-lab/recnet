@@ -73,7 +73,7 @@ export default function ProfilePage() {
     if (username) {
       getUser(username)
         .then((user) => {
-          if (user)
+          if (user) {
             getPosts(user.id)
               .then(() => {
                 setIsLoading(false);
@@ -81,6 +81,9 @@ export default function ProfilePage() {
               .catch((error) => {
                 console.log(error);
               });
+          } else { // user not found
+            setIsLoading(false);
+          }
         })
         .catch((error) => {
           console.log(error);
@@ -137,13 +140,15 @@ export default function ProfilePage() {
               currentUser={currentUser}
               onFollowingClick={handleFollowingPageOpen}
             />
-            
+
             {/* Follow button */}
             {currentUser &&
               currentUser.username &&
               user.id !== currentUser.id && (
                 <FollowButton
-                  unFollow={user.followers && user.followers.includes(currentUser.id)}
+                  unFollow={
+                    user.followers && user.followers.includes(currentUser.id)
+                  }
                   userId={user.id}
                   currentUserId={currentUser.id}
                   additionalCallback={(error) => {
@@ -153,16 +158,17 @@ export default function ProfilePage() {
                     } else {
                       setUser({
                         ...user,
-                        followers: user.followers && user.followers.includes(currentUser.id)
-                          ? user.followers.filter((u) => u !== currentUser.id)
-                          : (user.followers || []).concat([currentUser.id]),
+                        followers:
+                          user.followers &&
+                          user.followers.includes(currentUser.id)
+                            ? user.followers.filter((u) => u !== currentUser.id)
+                            : (user.followers || []).concat([currentUser.id]),
                       });
                     }
                   }}
                   style={{ marginTop: "1%", marginBottom: "1%" }}
                 />
-              )
-            }
+              )}
 
             {/* Edit profile */}
             {currentUser && user.id === currentUser.id && (
