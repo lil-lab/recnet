@@ -11,27 +11,6 @@ export function isYearValid(year) {
   );
 }
 
-export function isTitleValid(title) {
-  const lowerCaseWords = new Set(["a", "an", "the", "and", "but", "or", "for", "nor", "on", "at", "to", "from", "by", "in", "of", "with"]);
-
-  const words = title.split(' ');
-  for (let i = 0; i < words.length; i++) {
-    if (words[i] === '') continue;
-
-    if (i === 0 || !lowerCaseWords.has(words[i].toLowerCase())) {
-      if (!words[i][0] || words[i][0] !== words[i][0].toUpperCase()) {
-        return false;
-      }
-    } else {
-      if (!words[i][0] || words[i][0] !== words[i][0].toLowerCase()) {
-        return false;
-      }
-    }
-  }
-
-  return true;
-}
-
 export function isAuthorValid(author) {
   const regex = /^([A-Za-z.]+(?: [A-Za-z.]+)*, )*[A-Za-z.]+(?: [A-Za-z.]+)*(?:\.)? *$/;
   return regex.test(author);
@@ -46,3 +25,30 @@ export function isLinkValid(link) {
   return regex.test(link);
 }
 
+export function fixTitleFormat(title) {
+  const lowerCaseWords = new Set([
+    "a", "an", "the", "and", "but", "or", "for", "nor", "on", "at", 
+    "to", "from", "by", "in", "of", "with"
+  ]);
+
+  const words = title.toLowerCase().split(' ');
+  let previousWasColon = false;
+
+  for (let i = 0; i < words.length; i++) {
+    if (words[i] === '') {
+      previousWasColon = false;
+      continue;
+    }
+
+    if (i === 0 || i === words.length - 1 || !lowerCaseWords.has(words[i]) || previousWasColon) {
+      words[i] = words[i].charAt(0).toUpperCase() + words[i].slice(1);
+      previousWasColon = false;
+    }
+
+    if (words[i].includes(':')) {
+      previousWasColon = true;
+    }
+  }
+
+  return words.join(' ');
+}

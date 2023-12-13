@@ -25,7 +25,7 @@ import LoadingButton from "@mui/lab/LoadingButton";
 import AlertDialog from "@/components/AlertDialog";
 import Help from "@/components/Help";
 import MonthPicker from "@/components/MonthPicker";
-import { isYearValid, isLinkValid, isTitleValid, isAuthorValid } from "@/utils/validationHelper";
+import { isYearValid, isLinkValid, fixTitleFormat, isAuthorValid } from "@/utils/validationHelper";
 import { getPostInProgressByUser } from "../utils/db/post";
 
 export default function Edit() {
@@ -89,7 +89,9 @@ function PaperForm({ postInProgress }) {
 
   const [titleError, setTitleError] = useState(false);
   const [linkError, setLinkError] = useState(false);
+  const [linkErrorHelper, setLinkErrorHelper] = useState("")
   const [authorError, setAuthorError] = useState(false);
+  const [authorErrorHelper, setAuthorErrorHelper] = useState("")
   const [descriptionError, setDescriptionError] = useState(false);
   const [yearError, setYearError] = useState(false);
 
@@ -131,18 +133,31 @@ function PaperForm({ postInProgress }) {
 
   const handleLinkChange = (event) => {
     setLink(event.target.value);
-    setLinkError(event.target.value.length === 0 | !isLinkValid(event.target.value));
+    setLinkError(event.target.value.length === 0 || !isLinkValid(event.target.value));
+    if (linkError) {
+      setLinkErrorHelper("Please enter a valid link that contains either http(s), www., and/or ends with .some_domain.");
+    }
+    else {
+      console.log(linkError)
+      setLinkErrorHelper("");
+    }
   };
 
   const handleTitleChange = (event) => {
-    setTitle(event.target.value);
-    setTitleError(event.target.value.length === 0 || !isTitleValid(event.target.value));
+    setTitleError(event.target.value.length === 0);
+    setTitle(fixTitleFormat(event.target.value));
   };
 
   const handleAuthorChange = (event) => {
     setAuthor(event.target.value);
     setAuthorError(event.target.value.length === 0 || !isAuthorValid(event.target.value));
-    console.log(authorError);
+    if (authorError) {
+      setAuthorErrorHelper("Please enter the author names correctly. For multiple authors, separate each name with a comma and a space, such as 'First M. Last, F. Last'.");
+    }
+    else {
+      console.log(authorError)
+      setAuthorErrorHelper("");
+    }
   };
 
   const handleDescriptionChange = (event) => {
@@ -163,10 +178,10 @@ function PaperForm({ postInProgress }) {
 
   const handleSubmit = async () => {
     setLoading(true);
+    console.log(fixTitleFormat(title))
 
     if (postInProgress) {
-      //update post
-      await updatePost(
+      const { data, error } = await updatePost(
         title,
         link,
         author,
@@ -175,8 +190,15 @@ function PaperForm({ postInProgress }) {
         month,
         postInProgress.id
       );
-      setLoading(false);
-      router.replace("/");
+      if (error) {
+        setSnackbarOpen(true);
+        setSnackbarMessage(error.message);
+      } else {
+        setLoading(false);
+        if (data) {
+          router.replace("/");
+        }
+      }
     } else {
       // create new post
       const { data, error } = await postEntry(
@@ -248,6 +270,7 @@ function PaperForm({ postInProgress }) {
         value={link}
         error={linkError}
         onChange={handleLinkChange}
+        helperText={linkErrorHelper}
       />
       <TextField
         label="Title"
@@ -286,6 +309,7 @@ function PaperForm({ postInProgress }) {
         value={author}
         error={authorError}
         onChange={handleAuthorChange}
+        helperText={authorErrorHelper}
       />
       <TextField
         label="Description"
