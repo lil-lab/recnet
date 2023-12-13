@@ -20,7 +20,12 @@ import LoadingButton from "@mui/lab/LoadingButton";
 import AlertDialog from "@/components/AlertDialog";
 import Help from "@/components/Help";
 import MonthPicker from "@/components/MonthPicker";
-import { isYearValid, isLinkValid, fixTitleFormat, isAuthorValid } from "@/utils/validationHelper";
+import {
+  isYearValid,
+  isLinkValid,
+  fixTitleFormat,
+  isAuthorValid,
+} from "@/utils/validationHelper";
 import { getPostInProgressByUser } from "../utils/db/post";
 
 export default function Edit() {
@@ -34,10 +39,6 @@ export default function Edit() {
     setSnackbarOpen(false);
   };
 
-  const handleSnackbarClose = () => {
-    setSnackbarOpen(false);
-  };
-  
   useEffect(() => {
     async function getPostInProgress() {
       const { data, error } = await getPostInProgressByUser(user.id);
@@ -87,9 +88,9 @@ function PaperForm({ postInProgress }) {
 
   const [titleError, setTitleError] = useState(false);
   const [linkError, setLinkError] = useState(false);
-  const [linkErrorHelper, setLinkErrorHelper] = useState("")
+  const [linkErrorHelper, setLinkErrorHelper] = useState("");
   const [authorError, setAuthorError] = useState(false);
-  const [authorErrorHelper, setAuthorErrorHelper] = useState("")
+  const [authorErrorHelper, setAuthorErrorHelper] = useState("");
   const [descriptionError, setDescriptionError] = useState(false);
   const [yearError, setYearError] = useState(false);
 
@@ -130,12 +131,14 @@ function PaperForm({ postInProgress }) {
 
   const handleLinkChange = (event) => {
     setLink(event.target.value);
-    setLinkError(event.target.value.length === 0 || !isLinkValid(event.target.value));
-    if (linkError) {
-      setLinkErrorHelper("Please enter a valid link that contains either http(s), www., and/or ends with .some_domain.");
-    }
-    else {
-      console.log(linkError)
+    const isError =
+      event.target.value.length === 0 || !isLinkValid(event.target.value);
+    setLinkError(isError);
+    if (isError) {
+      setLinkErrorHelper(
+        "Please enter a valid link that contains http(s), www., and/or ends with .some_domain."
+      );
+    } else {
       setLinkErrorHelper("");
     }
   };
@@ -147,12 +150,15 @@ function PaperForm({ postInProgress }) {
 
   const handleAuthorChange = (event) => {
     setAuthor(event.target.value);
-    setAuthorError(event.target.value.length === 0 || !isAuthorValid(event.target.value));
+    setAuthorError(
+      event.target.value.length === 0 || !isAuthorValid(event.target.value)
+    );
     if (authorError) {
-      setAuthorErrorHelper("Please enter the author names correctly. For multiple authors, separate each name with a comma and a space, such as 'First M. Last, F. Last'.");
-    }
-    else {
-      console.log(authorError)
+      setAuthorErrorHelper(
+        `Please enter the author names correctly. For multiple authors, separate each name with a comma and a space (, ), such as "First M. Last, F. Last".`
+      );
+    } else {
+      console.log(authorError);
       setAuthorErrorHelper("");
     }
   };
@@ -175,7 +181,7 @@ function PaperForm({ postInProgress }) {
 
   const handleSubmit = async () => {
     setLoading(true);
-    console.log(fixTitleFormat(title))
+    console.log(fixTitleFormat(title));
 
     if (postInProgress) {
       const { data, error } = await updatePost(
