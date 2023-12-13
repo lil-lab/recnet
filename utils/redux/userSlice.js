@@ -5,7 +5,6 @@ export const userSlice = createSlice({
   initialState: {
     value: null,
     loaded: false,
-    id: null,
   },
   reducers: {
     setUser: (state, action) => {
@@ -19,17 +18,13 @@ export const userSlice = createSlice({
     setLoaded: (state) => {
       state.loaded = true;
     },
-    setId: (state, action) => {
-      state.id = action.payload;
-    },
     clearUser: (state) => {
       state.value = null;
-      state.id = null;
     },
   },
 });
 
 // Action creators are generated for each case reducer function
-export const { setUser, setLoaded, setId, clearUser } = userSlice.actions;
+export const { setUser, setLoaded, clearUser } = userSlice.actions;
 
 export default userSlice.reducer;

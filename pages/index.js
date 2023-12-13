@@ -1,9 +1,10 @@
 import styles from "@/styles/Home.module.css";
 import { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
+import YouTube from "react-youtube";
 
-import { Typography } from "@mui/material";
+import { Grid, Typography } from "@mui/material";
 
+import ErrorSnackbar from "@/components/ErrorSnackbar";
 import LoginButton from "../components/LoginButton";
 import ErrorSnackbar from "@/components/ErrorSnackbar";
 
@@ -23,7 +24,6 @@ import LeftBar from "../components/LeftBar";
 
 export default function Home() {
   const { user, userLoaded } = useCheckUser();
-  const userId = useSelector((state) => state.user.id);
 
   const [posts, setPosts] = useState(-1); // -1 when the page is just loaded; undefined when there's no post
   const [postInProgress, setPostInProgress] = useState(-1);
@@ -34,17 +34,17 @@ export default function Home() {
 
   useEffect(() => {
     async function getPosts() {
-      const { data, error } = await getFollowingPostsByDate(userId, filter);
-      if (error){
+      const { data, error } = await getFollowingPostsByDate(user.id, filter);
+      if (error) {
         setSnackbarOpen(true);
         setSnackbarMessage(error);
-      } else{
+      } else {
         setPosts(data);
       }
     }
 
     async function getPostInProgress() {
-      const { data, error } = await getPostInProgressByUser(userId);
+      const { data, error } = await getPostInProgressByUser(user.id);
       if (error) {
         setSnackbarOpen(true);
         setSnackbarMessage(error);
@@ -54,7 +54,7 @@ export default function Home() {
     }
 
     if (userLoaded) {
-      if (userId) {
+      if (user && user.id) {
         getPosts();
         getPostInProgress();
       } else {
@@ -63,91 +63,129 @@ export default function Home() {
         setPostInProgress(undefined);
       }
     }
-  }, [user, userId, userLoaded, filter]);
+  }, [user, userLoaded, filter]);
 
   const handleSnackbarClose = () => {
     setSnackbarOpen(false);
   };
 
-  return (
-    <>
-      {userLoaded && posts !== -1 && postInProgress !== -1 ? (
-        <>
-          {user && user.username ? (
-            <main className={styles.main} style={{ flexDirection: "row" }}>
-              {/* Left Sidebar */}
-              <div className={styles.left}>
-                <LeftBar
-                  user={user}
-                  setFilter={setFilter}
-                  postInProgress={postInProgress}
-                />
-              </div>
+  function loggedInRegisteredUserContent() {
+    return (
+      <main
+        className={styles.main}
+        style={{ flexDirection: "row", padding: "7rem" }}
+      >
+        {/* Left Sidebar */}
+        <div className={styles.left}>
+          <LeftBar
+            user={user}
+            setFilter={setFilter}
+            postInProgress={postInProgress}
+          />
+        </div>
 
-              {/* Middle Content */}
-              <div className={styles.mid}>
-                {posts ? (
-                  posts.length === 0 ? (
-                    <div className={styles.noRecsText}>
-                      <Typography variant="body1" sx={fontStyles.regular}>
-                        No recommendations from your network this week.
-                      </Typography>
-                      <Help />
-                    </div>
-                  ) : (
-                    <FollowingPosts posts={posts} />
-                  )
-                ) : (
-                  <div className={styles.centerLoading}>
-                    <Loading />
-                  </div>
-                )}
+        {/* Middle Content */}
+        <div className={styles.mid}>
+          {posts ? (
+            posts.length === 0 ? (
+              <div className={styles.noRecsText}>
+                <Typography variant="body1" sx={fontStyles.regular}>
+                  No recommendations from your network this week.
+                </Typography>
+                <Help />
               </div>
-            </main>
+            ) : (
+              <FollowingPosts posts={posts} />
+            )
           ) : (
-            <main
-              className={styles.main}
-              style={{
-                flexDirection: "column",
-                alignItems: "center",
-                justifyContent: "center",
+            <div className={styles.centerLoading}>
+              <Loading />
+            </div>
+          )}
+        </div>
+      </main>
+    );
+  }
+
+  function notLoggedInContent() {
+    return (
+      <main className={styles.main}>
+        <Grid container spacing={2}>
+          <Grid
+            item
+            xs={12}
+            md={5}
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              justifyContent: "center",
+              backgroundColor: "lightgrey",
+            }}
+          >
+            <Typography
+              variant="h1"
+              sx={{
+                ...fontStyles.bold,
+                padding: "1%",
               }}
             >
-              <Typography
-                variant="h1"
-                sx={{
-                  ...fontStyles.bold,
-                  padding: "1%",
-                }}
-              >
-                recnet
-              </Typography>
-              <Typography
-                variant="h6"
-                sx={{
-                  ...fontStyles.regular,
-                  paddingBottom: "3%",
-                }}
-              >
-                receive weekly paper recs from researchers you follow.
-              </Typography>
-              <LoginButton />
-            </main>
-          )}
-        </>
-      ) : (
-        <main
-          className={styles.main}
-          style={{
-            flexDirection: "row",
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-        >
-          <Loading />
-        </main>
-      )}
-        <ErrorSnackbar
+              recnet
+            </Typography>
+            <Typography
+              variant="h6"
+              sx={{
+                ...fontStyles.regular,
+                paddingBottom: "5%",
+              }}
+            >
+              receive weekly paper recs from researchers you follow.
+            </Typography>
+            <LoginButton />
+          </Grid>
+          <Grid
+            item
+            xs={12}
+            md={7}
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <YouTube videoId={"qpEvFhNqrn8"} />
+          </Grid>
+        </Grid>
+      </main>
+    );
+  }
+
+  function loadingContent() {
+    return (
+      <main
+        className={styles.main}
+        style={{
+          flexDirection: "row",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
+        <Loading />
+      </main>
+    );
+  }
+
+  return (
+    <>
+      {userLoaded && posts !== -1 && postInProgress !== -1
+        ? user
+          ? user.username
+            ? loggedInRegisteredUserContent()
+            : loadingContent() // there is user but no username: redirect to welcome
+          : notLoggedInContent() // no user object: not logged in
+        : loadingContent()}
+      <ErrorSnackbar
         open={snackbarOpen}
         message={snackbarMessage}
         handleClose={handleSnackbarClose}

@@ -1,10 +1,11 @@
 import { useDispatch, useSelector } from "react-redux";
-import { clearUser, setId, setUser } from "../utils/redux/userSlice";
+import { clearUser, setUser } from "../utils/redux/userSlice";
 
 import { Button } from "@mui/material";
 
 import { logIn, logOut } from "../utils/db/auth";
 
+import ErrorSnackbar from "@/components/ErrorSnackbar";
 import { useRouter } from "next/router";
 import { addUser, getUserByEmail } from "../utils/db/user";
 import { useEffect, useState } from "react";
@@ -59,7 +60,6 @@ export default function LoginButton({ asLink, customText }) {
           if (data && !error) {
             // existing user
             dispatch(setUser(data));
-            dispatch(setId(data.id));
             if (!data.username) {
               // user in db but no username (has invitation code verified)
               router.push("/welcome");
