@@ -5,7 +5,6 @@ import { setUserInfo, verifyCode } from "@/utils/db/user";
 import { fontStyles } from "@/utils/fonts";
 import { setUser } from "@/utils/redux/userSlice";
 import { isUsernameValid } from "@/utils/validationHelper";
-import { setUserInfo, verifyCode } from "@/utils/db/user";
 import { setUser, setId } from "@/utils/redux/userSlice";
 import LoginButton from "@/components/LoginButton";
 import ErrorSnackbar from "@/components/ErrorSnackbar";

@@ -3,8 +3,6 @@ import { useEffect, useState } from "react";
 import YouTube from "react-youtube";
 
 import { Grid, Typography } from "@mui/material";
-
-import ErrorSnackbar from "@/components/ErrorSnackbar";
 import LoginButton from "../components/LoginButton";
 import ErrorSnackbar from "@/components/ErrorSnackbar";
 

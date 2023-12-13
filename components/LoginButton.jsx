@@ -7,10 +7,9 @@ import { logIn, logOut } from "../utils/db/auth";
 
 import ErrorSnackbar from "@/components/ErrorSnackbar";
 import { useRouter } from "next/router";
-import { addUser, getUserByEmail } from "../utils/db/user";
-import { useEffect, useState } from "react";
+import { getUserByEmail } from "../utils/db/user";
+import { useState } from "react";
 import BackLink from "./BackLink";
-import ErrorSnackbar from "@/components/ErrorSnackbar";
 
 /** Login button that handles log in and out.
  * @param {boolean} asLink (optional) render as link instead of button
