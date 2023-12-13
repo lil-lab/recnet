@@ -1,7 +1,7 @@
 import { AppBar, Avatar, IconButton, Toolbar } from "@mui/material";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { setId, setLoaded, setUser } from "../utils/redux/userSlice";
+import { setLoaded, setUser } from "../utils/redux/userSlice";
 import styles from "./TopBar.module.css";
 
 import { getCurrentUser } from "../utils/db/auth";
@@ -38,7 +38,6 @@ export default function TopBar() {
         // existing user
         if (data) {
           dispatch(setUser(data));
-          dispatch(setId(data.id));
         }
         
         if (error) {

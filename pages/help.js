@@ -1,10 +1,8 @@
+import DividerLine from "@/components/DividerLine";
 import styles from "@/styles/About.module.css";
-import {
-  formatDate,
-  formatDateVerbose,
-  getNextCutoff,
-} from "@/utils/dateHelper";
-import { Typography, Divider, Link } from "@mui/material";
+import { formatDateVerbose, getNextCutoff } from "@/utils/dateHelper";
+import { Typography } from "@mui/material";
+import YouTube from "react-youtube";
 
 export default function About() {
   return (
@@ -12,8 +10,16 @@ export default function About() {
       <Typography
         variant="h3"
         color="primary"
+        sx={{ marginTop: "3%", marginBottom: "3%" }}
+      >
+        Quick Introduction
+      </Typography>
+      <YouTube videoId={"qpEvFhNqrn8"} />
+      <DividerLine />
+      <Typography
+        variant="h3"
+        color="primary"
         sx={{
-          marginTop: "3%",
           marginBottom: "3%",
         }}
       >
@@ -26,14 +32,7 @@ export default function About() {
         link to the paper, (b) paper title and authors, (c) a very short tl;dr
         message of 280 characters.
       </Typography>
-      <Divider
-        textAlign="left"
-        flexItem
-        sx={{
-          marginTop: "3%",
-          marginBottom: "3%",
-        }}
-      ></Divider>
+      <DividerLine />
       <Typography variant="h3" color="primary" sx={{ marginBottom: "3%" }}>
         Cutoff
       </Typography>

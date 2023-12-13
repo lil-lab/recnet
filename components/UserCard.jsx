@@ -1,5 +1,5 @@
 import { Avatar, Paper, Typography } from "@mui/material";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { fontStyles } from "@/utils/fonts";
 import styles from "./UserCard.module.css";
 import FollowButton from "./FollowButton";
