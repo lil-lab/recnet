@@ -17,14 +17,12 @@ import { isLinkValid } from "@/utils/validationHelper";
  */
 async function postEntryHandler(req, res) {
   try {
-    const {link} = req.body;
+    const { link } = req.body;
     if (!isLinkValid(link)) {
-      res.status(400).json(
-        "Please enter a valid link."
-      );
+      res.status(400).json("Please enter a valid link.");
       return;
     }
-    // post to recommendations
+    // post to recommendationsY
     const { id } = await db.collection("recommendations").add({
       ...req.body,
       createdAt: Firestore.FieldValue.serverTimestamp(),
