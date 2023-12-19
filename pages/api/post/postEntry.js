@@ -17,14 +17,12 @@ import { isLinkValid } from "@/utils/validationHelper";
  */
 async function postEntryHandler(req, res) {
   try {
-    if (!isLinkValid(req.link)) {
-        res.status(400).json({
-          error: {
-            linkError:
-              "Please enter a valid link.",
-          },
-        });
-        return;
+    const {link} = req.body;
+    if (!isLinkValid(link)) {
+      res.status(400).json(
+        "Please enter a valid link."
+      );
+      return;
     }
     // post to recommendations
     const { id } = await db.collection("recommendations").add({
