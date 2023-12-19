@@ -64,14 +64,14 @@ export default function LoginButton({ asLink, customText }) {
               router.push("/welcome");
             }
           } else {
-            if (!error){
+            if (!error) {
               // new user - data not in db
               dispatch(setUser(user));
-              router.push("/welcome");}
-              else {
-                setSnackbarMessage(error);
-                setSnackbarOpen(true);
-              }
+              router.push("/welcome");
+            } else {
+              setSnackbarMessage(error);
+              setSnackbarOpen(true);
+            }
           }
         }
       }}
@@ -81,7 +81,7 @@ export default function LoginButton({ asLink, customText }) {
         open={snackbarOpen}
         message={snackbarMessage}
         handleClose={handleSnackbarClose}
-    />
+      />
     </Button>
   );
 }
