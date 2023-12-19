@@ -1,18 +1,17 @@
-import styles from "@/styles/Welcome.module.css";
-import { useRouter } from "next/router";
-import { Typography, TextField, InputAdornment, Button } from "@mui/material";
-import { fontStyles } from "@/utils/fonts";
-import { useDispatch, useSelector } from "react-redux";
-import { useEffect, useState } from "react";
-import { isUsernameValid } from "@/utils/validationHelper";
-import { setUserInfo, verifyCode } from "@/utils/db/user";
-import { setUser, setId } from "@/utils/redux/userSlice";
-import LoginButton from "@/components/LoginButton";
 import ErrorSnackbar from "@/components/ErrorSnackbar";
+import LoginButton from "@/components/LoginButton";
+import styles from "@/styles/Welcome.module.css";
+import { setUserInfo, verifyCode } from "@/utils/db/user";
+import { fontStyles } from "@/utils/fonts";
+import { setUser } from "@/utils/redux/userSlice";
+import { isUsernameValid } from "@/utils/validationHelper";
+import { Button, InputAdornment, TextField, Typography } from "@mui/material";
+import { useRouter } from "next/router";
+import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 
 export default function Welcome() {
   const user = useSelector((state) => state.user.value); // auth user object or full db user object
-  const userId = useSelector((state) => state.user.id);
   const userLoaded = useSelector((state) => state.user.loaded);
   const dispatch = useDispatch();
 
@@ -62,8 +61,7 @@ export default function Welcome() {
     const { data, error } = await verifyCode(user, code);
     if (data) {
       // code verified, added user into db
-      dispatch(setUser(data)); // context user will not update until refresh
-      dispatch(setId(data.id));
+      dispatch(setUser(data));
     } else if (error) {
       setCodeError(true);
       setCodeErrorHelperText(error);
@@ -81,7 +79,7 @@ export default function Welcome() {
       updatedUsername,
       updatedAffiliation,
       undefined,
-      userId
+      user.id
     );
     if (data) {
       dispatch(setUser({ ...user, ...data }));
@@ -204,7 +202,6 @@ export default function Welcome() {
           </div>
         )}
         <LoginButton asLink customText="use another account" />
-        
         <ErrorSnackbar
           open={snackbarOpen}
           message={snackbarMessage}

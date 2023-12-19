@@ -15,7 +15,7 @@ import { Avatar, Button, Dialog, Typography } from "@mui/material";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { setUser as setCurrUser} from "@/utils/redux/userSlice";
+import { setUser as setCurrUser } from "@/utils/redux/userSlice";
 
 export default function ProfilePage() {
   const router = useRouter();
@@ -49,7 +49,6 @@ export default function ProfilePage() {
     setSnackbarOpen(false);
   };
 
-
   useEffect(() => {
     async function getPosts(id) {
       const { data, error } = await getPostsByUser(id, false);
@@ -69,7 +68,7 @@ export default function ProfilePage() {
       } else {
         if (currentUser && currentUser.id === data.id) {
           dispatch(setCurrUser(data));
-          }
+        }
         setUser(data);
         return data;
       }
@@ -79,7 +78,7 @@ export default function ProfilePage() {
     if (username) {
       getUser(username)
         .then((user) => {
-          if (user)
+          if (user) {
             getPosts(user.id)
               .then(() => {
                 setIsLoading(false);
@@ -87,6 +86,10 @@ export default function ProfilePage() {
               .catch((error) => {
                 console.log(error);
               });
+          } else {
+            // user not found
+            setIsLoading(false);
+          }
         })
         .catch((error) => {
           console.log(error);
@@ -143,12 +146,15 @@ export default function ProfilePage() {
               currentUser={currentUser}
               onFollowingClick={handleFollowingPageOpen}
             />
+
             {/* Follow button */}
             {currentUser &&
               currentUser.username &&
               user.id !== currentUser.id && (
                 <FollowButton
-                  unFollow={user.followers && user.followers.includes(currentUser.id)}
+                  unFollow={
+                    user.followers && user.followers.includes(currentUser.id)
+                  }
                   userId={user.id}
                   currentUserId={currentUser.id}
                   additionalCallback={(error) => {
@@ -158,16 +164,17 @@ export default function ProfilePage() {
                     } else {
                       setUser({
                         ...user,
-                        followers: user.followers && user.followers.includes(currentUser.id)
-                          ? user.followers.filter((u) => u !== currentUser.id)
-                          : (user.followers || []).concat([currentUser.id]),
+                        followers:
+                          user.followers &&
+                          user.followers.includes(currentUser.id)
+                            ? user.followers.filter((u) => u !== currentUser.id)
+                            : (user.followers || []).concat([currentUser.id]),
                       });
                     }
                   }}
                   style={{ marginTop: "1%", marginBottom: "1%" }}
                 />
-              )
-            }
+              )}
 
             {/* Edit profile */}
             {currentUser && user.id === currentUser.id && (
