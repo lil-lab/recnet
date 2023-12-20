@@ -36,7 +36,7 @@ export default function About() {
       <Typography variant="h3" color="primary" sx={{ marginBottom: "3%" }}>
         Cutoff
       </Typography>
-      <Typography variant="body1">{`Every Tuesday 11:59:59PM UTC. The next cutoff in your local time: ${formatDateVerbose(
+      <Typography variant="body1">{`Every Tuesday 11:59:59 PM GMT. The next cutoff in your local time: ${formatDateVerbose(
         getNextCutoff()
       )}.`}</Typography>
     </main>

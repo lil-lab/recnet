@@ -53,8 +53,8 @@ export function formatDateVerbose(date, excludeDate) {
       hour: "2-digit",
       minute: "2-digit",
       second: "2-digit",
-      hour12: false,
       timeZoneName: "short",
+      hourCycle: 'h11',
     };
   } else {
     options = {
@@ -64,8 +64,8 @@ export function formatDateVerbose(date, excludeDate) {
       hour: "2-digit",
       minute: "2-digit",
       second: "2-digit",
-      hour12: false,
       timeZoneName: "short",
+      hourCycle: 'h11',
     };
   }
 
