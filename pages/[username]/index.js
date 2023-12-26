@@ -14,10 +14,12 @@ import SettingsIcon from "@mui/icons-material/Settings";
 import { Avatar, Button, Dialog, Typography } from "@mui/material";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { setUser as setCurrUser } from "@/utils/redux/userSlice";
 
 export default function ProfilePage() {
   const router = useRouter();
+  const dispatch = useDispatch();
   const { username } = router.query;
   const [user, setUser] = useState(undefined); // profile user
   const currentUser = useSelector((state) => state.user.value);
@@ -64,6 +66,9 @@ export default function ProfilePage() {
         setSnackbarOpen(true);
         setSnackbarMessage(error);
       } else {
+        if (currentUser && currentUser.id === data.id) {
+          dispatch(setCurrUser(data));
+        }
         setUser(data);
         return data;
       }
@@ -81,7 +86,8 @@ export default function ProfilePage() {
               .catch((error) => {
                 console.log(error);
               });
-          } else { // user not found
+          } else {
+            // user not found
             setIsLoading(false);
           }
         })

@@ -202,7 +202,6 @@ export default function Welcome() {
           </div>
         )}
         <LoginButton asLink customText="use another account" />
-
         <ErrorSnackbar
           open={snackbarOpen}
           message={snackbarMessage}
