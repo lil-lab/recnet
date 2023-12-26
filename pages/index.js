@@ -38,8 +38,24 @@ export default function Home() {
         setSnackbarOpen(true);
         setSnackbarMessage(error);
       } else {
-        setPosts(data);
+        if (user.seed) {
+          const Chance = require("chance");
+          const chance = new Chance(user.seed);
+          const shuffledData = shuffleArray(data, chance);
+          setPosts(shuffledData);
+        } else {
+          setPosts(data);
+        }
       }
+    }
+
+    function shuffleArray(array, chance) {
+      const shuffled = array.slice();
+      for (let i = shuffled.length - 1; i > 0; i--) {
+        const j = chance.integer({ min: 0, max: i });
+        [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+      }
+      return shuffled;
     }
 
     async function getPostInProgress() {

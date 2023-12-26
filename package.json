@@ -18,6 +18,7 @@
     "@react-oauth/google": "^0.11.1",
     "@reduxjs/toolkit": "^1.9.5",
     "axios": "^1.4.0",
+    "chance": "^1.1.11",
     "cheerio": "^1.0.0-rc.12",
     "eslint": "8.47.0",
     "eslint-config-next": "13.4.19",
