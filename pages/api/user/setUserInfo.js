@@ -17,10 +17,8 @@ export default async function setUserInfoHandler(req, res) {
       // validate username
       if (!isUsernameValid(username)) {
         res.status(400).json({
-          error: {
-            usernameError:
-              "Username should be between 4 to 15 characters and contain only letters (A-Z, a-z), numbers, and underscores (_).",
-          },
+          usernameError:
+            "Username should be between 4 to 15 characters and contain only letters (A-Z, a-z), numbers, and underscores (_).",
         });
         return;
       }
