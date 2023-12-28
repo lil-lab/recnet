@@ -1,35 +1,27 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+Recnet is a human-driven recommendation system for academic readings. This project is built with Next.js (React) and Firebase in Javascript, deployed with Vercel.
 
 ## Getting Started
 
-First, run the development server:
+First, create a `.env.local` file and put in the Firebase project credentials for local testing. Template can be found in `.env.local.example`.
+
+
+Install dependencies and run the development server:
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-You can start editing the page by modifying `pages/index.js`. The page auto-updates as you edit the file.
+## API
 
-[API routes](https://nextjs.org/docs/api-routes/introduction) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.js`.
+[API routes](https://nextjs.org/docs/api-routes/introduction) can be accessed on `http://localhost:3000/api/...`.
 
 The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/api-routes/introduction) instead of React pages.
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+### Documentation
+Node.js Server SDK: https://googleapis.dev/nodejs/firestore/latest/index.html
 
 ## Deploy on Vercel
 
@@ -37,5 +29,22 @@ The easiest way to deploy your Next.js app is to use the [Vercel Platform](https
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
 
-## Firestore Documentation
-Node.js Server SDK: https://googleapis.dev/nodejs/firestore/latest/index.html
+## Firebase Cloud Functions
+Cloud function is used for scheduling email digest: `utils/cloud_functions`.
+
+### Deploy Functions
+```bash
+firebase login
+firebase deploy --only functions:myFunction
+```
+
+### Delete Function
+```bash
+firebase functions:delete myFunction
+```
+
+### Documentations
+https://firebase.google.com/docs/extensions/official/firestore-send-email
+https://firebase.google.com/docs/functions/schedule-functions?gen=2nd#node.js
+https://firebase.google.com/docs/functions/manage-functions?gen=2nd
+
