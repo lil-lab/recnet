@@ -5,6 +5,7 @@ const admin = require("firebase-admin");
 const { Timestamp } = require("firebase-admin/firestore");
 
 const Email = require("./emailTemplate.js");
+const TempGroup = require("./tempEmails.js");
 admin.initializeApp();
 const db = admin.firestore();
 
@@ -16,6 +17,7 @@ function getLastCutoff(dueDay) {
   const currentDate = new Date();
   const currentDay = currentDate.getUTCDay();
   const daysSinceLastCutoff = 7 - ((dueDay + 7 - currentDay) % 7);
+  logger.log(`days since last cutoff: ${daysSinceLastCutoff}`);
   currentDate.setUTCDate(currentDate.getUTCDate() - daysSinceLastCutoff);
   currentDate.setUTCHours(23, 59, 59, 999);
   return currentDate;
@@ -56,7 +58,7 @@ exports.sendWeeklyDigest = onSchedule(
       userDocs.forEach(async (userDoc) => {
         const userData = userDoc.data();
 
-        if (userData["email"] !== "anyaj0109@gmail.com") {
+        if (!TempGroup.test.includes(userData["email"])) {
           return;
         }
 
@@ -69,16 +71,30 @@ exports.sendWeeklyDigest = onSchedule(
           .get();
 
         const recommendations = [];
-        recDocs.forEach((doc) => {
-          recommendations.push({ ...doc.data(), id: doc.id });
-        });
+
+        await Promise.all(
+          recDocs.docs.map(async (recDoc) => {
+            const data = recDoc.data();
+            const recommenderDoc = await db
+              .doc(`users/${data["userId"]}`)
+              .get();
+            let recommenderName;
+            if (recommenderDoc.exists) {
+              recommenderName = recommenderDoc.data()["displayName"];
+            }
+            recommendations.push({
+              ...data,
+              recommenderName: recommenderName,
+            });
+          })
+        );
 
         const dateText = formatDate(cutoff);
 
         const digest = {
-          to: ["anyaj0109@gmail.com"], // userData["email"]
+          to: userData["email"],
           message: {
-            subject: `[Week of ${dateText}] Paper Recommendations For You`,
+            subject: `[Recnet] Your Weekly Digest for ${dateText}`,
             html: Email.formatHTML(recommendations),
           },
         };
