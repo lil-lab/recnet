@@ -35,6 +35,7 @@ Cloud function is used for scheduling email digest: `utils/cloud_functions`.
 ### Deploy Functions
 ```bash
 firebase login
+firebase use --add # to add a Firebase project to use (creates a .firebaserc file)
 firebase deploy --only functions:myFunction
 ```
 
