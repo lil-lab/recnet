@@ -64,7 +64,7 @@ exports.formatHTML = function (recommendations) {
     <mj-section>
       <mj-column>
         <mj-divider border-color="#1A2930"></mj-divider>
-        <mj-text font-size="12px" color="grey" font-family="helvetica">Note: This is the very first Recnet weekly email digest :) Please reply directly to this email if you see an error. Thank you! </mj-text>
+        <mj-text font-size="12px" color="grey" font-family="helvetica">*Please reply directly to this email if you see an error. Thank you! </mj-text>
       </mj-column>
     </mj-section>
     </mj-body>

@@ -5,7 +5,7 @@ const admin = require("firebase-admin");
 const { Timestamp } = require("firebase-admin/firestore");
 
 const Email = require("./emailTemplate.js");
-const TempGroup = require("./tempEmails.js");
+// const TempGroup = require("./tempEmails.js");
 admin.initializeApp();
 const db = admin.firestore();
 
@@ -35,7 +35,7 @@ function formatDate(d) {
   return `${month}/${date}/${year}`;
 }
 
-// every wednesday 00:00
+/** Schedules a weekly digest email sent to all users. */
 exports.sendWeeklyDigest = onSchedule(
   "every wednesday 00:01",
   async (event) => {
@@ -55,52 +55,55 @@ exports.sendWeeklyDigest = onSchedule(
       // map over users
       const userDocs = await db.collection("users").get();
 
-      userDocs.forEach(async (userDoc) => {
-        const userData = userDoc.data();
+      await Promise.all(
+        userDocs.docs.map(async (userDoc) => {
+          const userData = userDoc.data();
 
-        if (!TempGroup.test.includes(userData["email"])) {
-          return;
-        }
+          // test within user group
+          // if (!TempGroup.test.includes(userData["email"])) {
+          //   return;
+          // }
 
-        const following = userData["following"];
+          const following = userData["following"];
 
-        const recDocs = await db
-          .collection("recommendations")
-          .where("userId", "in", following)
-          .where("cutoff", "==", Timestamp.fromMillis(cutoff))
-          .get();
+          const recDocs = await db
+            .collection("recommendations")
+            .where("userId", "in", following)
+            .where("cutoff", "==", Timestamp.fromMillis(cutoff))
+            .get();
 
-        const recommendations = [];
+          const recommendations = [];
 
-        await Promise.all(
-          recDocs.docs.map(async (recDoc) => {
-            const data = recDoc.data();
-            const recommenderDoc = await db
-              .doc(`users/${data["userId"]}`)
-              .get();
-            let recommenderName;
-            if (recommenderDoc.exists) {
-              recommenderName = recommenderDoc.data()["displayName"];
-            }
-            recommendations.push({
-              ...data,
-              recommenderName: recommenderName,
-            });
-          })
-        );
+          await Promise.all(
+            recDocs.docs.map(async (recDoc) => {
+              const data = recDoc.data();
+              const recommenderDoc = await db
+                .doc(`users/${data["userId"]}`)
+                .get();
+              let recommenderName;
+              if (recommenderDoc.exists) {
+                recommenderName = recommenderDoc.data()["displayName"];
+              }
+              recommendations.push({
+                ...data,
+                recommenderName: recommenderName,
+              });
+            })
+          );
 
-        const dateText = formatDate(cutoff);
+          const dateText = formatDate(cutoff);
 
-        const digest = {
-          to: userData["email"],
-          message: {
-            subject: `[Recnet] Your Weekly Digest for ${dateText}`,
-            html: Email.formatHTML(recommendations),
-          },
-        };
+          const digest = {
+            to: userData["email"],
+            message: {
+              subject: `[Recnet] Your Weekly Digest for ${dateText}`,
+              html: Email.formatHTML(recommendations),
+            },
+          };
 
-        await db.collection("mails").add(digest);
-      });
+          await db.collection("mails").add(digest);
+        })
+      );
     } catch (error) {
       logger.error("Error:", error);
     }
