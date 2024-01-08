@@ -41,7 +41,6 @@ export default function Home() {
         setPosts(data);
       }
     }
-
     async function getPostInProgress() {
       const { data, error } = await getPostInProgressByUser(user.id);
       if (error) {
