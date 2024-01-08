@@ -86,6 +86,7 @@ function PaperForm({ postInProgress }) {
   const [year, setYear] = useState("");
   const [month, setMonth] = useState("");
 
+  const [titleFormatted, setTitleFormatted] = useState(false);
   const [titleError, setTitleError] = useState(false);
   const [linkError, setLinkError] = useState(false);
   const [linkErrorHelper, setLinkErrorHelper] = useState("");
@@ -144,8 +145,15 @@ function PaperForm({ postInProgress }) {
   };
 
   const handleTitleChange = (event) => {
-    setTitleError(event.target.value.length === 0);
-    setTitle(fixTitleFormat(event.target.value));
+    const newTitle = event.target.value;
+
+    if (!titleFormatted) {
+      setTitle(fixTitleFormat(newTitle));
+      setTitleFormatted(true);
+    } else {
+      setTitle(newTitle);
+    }
+    setTitleError(newTitle.length === 0);
   };
 
   const handleAuthorChange = (event) => {
@@ -155,10 +163,11 @@ function PaperForm({ postInProgress }) {
     );
     if (authorError) {
       setAuthorErrorHelper(
-        `Please enter the author names correctly. For multiple authors, separate each name with a comma and a space (, ), such as "First M. Last, F. Last".`
+        `Please enter the author names correctly. For multiple authors,` +
+          `separate each name with a comma and a space (, ), such as` +
+          `"First M. Last, F. Last".`
       );
     } else {
-      console.log(authorError);
       setAuthorErrorHelper("");
     }
   };
@@ -181,7 +190,6 @@ function PaperForm({ postInProgress }) {
 
   const handleSubmit = async () => {
     setLoading(true);
-    console.log(fixTitleFormat(title));
 
     if (postInProgress) {
       const { data, error } = await updatePost(
@@ -376,7 +384,8 @@ function PaperForm({ postInProgress }) {
             }}
             text={"Are you sure you want to delete this post?"}
             contentText={
-              "Once deleted, this post will not appear in the recommendation list for you and your network this week."
+              "Once deleted, this post will not appear in the recommendation" +
+              "list for you and your network this week."
             }
             confirmButtonText={"Delete"}
           ></AlertDialog>

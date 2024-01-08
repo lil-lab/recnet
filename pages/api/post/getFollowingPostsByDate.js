@@ -14,6 +14,7 @@ export default async function getFollowingPostsByDateHandler(req, res) {
     const docSnap = await docRef.get();
     const data = docSnap.data();
     let following = [];
+
     if (data) {
       following = data.following;
       // following.push(userId); // include self
@@ -33,14 +34,30 @@ export default async function getFollowingPostsByDateHandler(req, res) {
       .where("cutoff", "==", Timestamp.fromMillis(cutoff))
       .get();
 
-    let recommendations = [];
-    querySnapshot.forEach((doc) => {
-      recommendations.push({ ...doc.data(), id: doc.id });
-    });
+    let recommendations = querySnapshot.docs.map((doc) => ({
+      ...doc.data(),
+      id: doc.id,
+    }));
 
-    res.status(200).json(recommendations);
+    if (data.seed) {
+      const Chance = require("chance");
+      const chance = new Chance(data.seed);
+      const shuffledRecommendations = shuffleArray(recommendations, chance);
+      res.status(200).json(shuffledRecommendations);
+    } else {
+      res.status(200).json(recommendations);
+    }
   } catch (error) {
     console.error(error);
     res.status(500).json(error.message);
   }
+}
+
+function shuffleArray(array, chance) {
+  const shuffled = array.slice();
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = chance.integer({ min: 0, max: i });
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+  }
+  return shuffled;
 }
