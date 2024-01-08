@@ -23,7 +23,6 @@ import MonthPicker from "@/components/MonthPicker";
 import {
   isYearValid,
   isLinkValid,
-  fixTitleFormat,
   isAuthorValid,
 } from "@/utils/validationHelper";
 import { getPostInProgressByUser } from "../utils/db/post";
@@ -86,8 +85,8 @@ function PaperForm({ postInProgress }) {
   const [year, setYear] = useState("");
   const [month, setMonth] = useState("");
 
-  const [titleFormatted, setTitleFormatted] = useState(false);
   const [titleError, setTitleError] = useState(false);
+  const [titleErrorHelper, setTitleErrorHelper] = useState("");
   const [linkError, setLinkError] = useState(false);
   const [linkErrorHelper, setLinkErrorHelper] = useState("");
   const [authorError, setAuthorError] = useState(false);
@@ -145,15 +144,14 @@ function PaperForm({ postInProgress }) {
   };
 
   const handleTitleChange = (event) => {
-    const newTitle = event.target.value;
+    setTitle(event.target.value);
+    setTitleError(event.target.value.trim().length === 0);
 
-    if (!titleFormatted) {
-      setTitle(fixTitleFormat(newTitle));
-      setTitleFormatted(true);
+    if (titleError) {
+      setTitleErrorHelper(`Title cannot be blank. Please enter a title.`);
     } else {
-      setTitle(newTitle);
+      setTitleErrorHelper("");
     }
-    setTitleError(newTitle.length === 0);
   };
 
   const handleAuthorChange = (event) => {
@@ -291,6 +289,7 @@ function PaperForm({ postInProgress }) {
         value={title}
         error={titleError}
         onChange={handleTitleChange}
+        helperText={titleErrorHelper}
       />
       <Box
         display="flex"
