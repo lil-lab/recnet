@@ -23,10 +23,10 @@ import MonthPicker from "@/components/MonthPicker";
 import {
   isYearValid,
   isLinkValid,
-  fixTitleFormat,
   isAuthorValid,
 } from "@/utils/validationHelper";
 import { getPostInProgressByUser } from "../utils/db/post";
+import { isNotFoundError } from "next/dist/client/components/not-found";
 
 export default function Edit() {
   const { user } = useCheckUser();
@@ -87,6 +87,7 @@ function PaperForm({ postInProgress }) {
   const [month, setMonth] = useState("");
 
   const [titleError, setTitleError] = useState(false);
+  const [titleErrorHelper, setTitleErrorHelper] = useState("");
   const [linkError, setLinkError] = useState(false);
   const [linkErrorHelper, setLinkErrorHelper] = useState("");
   const [authorError, setAuthorError] = useState(false);
@@ -144,21 +145,29 @@ function PaperForm({ postInProgress }) {
   };
 
   const handleTitleChange = (event) => {
-    setTitleError(event.target.value.length === 0);
-    setTitle(fixTitleFormat(event.target.value));
+    setTitle(event.target.value);
+    const isError = event.target.value.trim().length === 0;
+    setTitleError(isError);
+
+    if (isError) {
+      setTitleErrorHelper(`Title cannot be blank. Please enter a title.`);
+    } else {
+      setTitleErrorHelper("");
+    }
   };
 
   const handleAuthorChange = (event) => {
     setAuthor(event.target.value);
-    setAuthorError(
-      event.target.value.length === 0 || !isAuthorValid(event.target.value)
-    );
-    if (authorError) {
+    const isError =
+      event.target.value.length === 0 || !isAuthorValid(event.target.value);
+    setAuthorError(isError);
+    if (isError) {
       setAuthorErrorHelper(
-        `Please enter the author names correctly. For multiple authors, separate each name with a comma and a space (, ), such as "First M. Last, F. Last".`
+        `Please enter the author names correctly. For multiple authors,` +
+          `separate each name with a comma and a space (, ), such as` +
+          `"First M. Last, F. Last".`
       );
     } else {
-      console.log(authorError);
       setAuthorErrorHelper("");
     }
   };
@@ -181,7 +190,6 @@ function PaperForm({ postInProgress }) {
 
   const handleSubmit = async () => {
     setLoading(true);
-    console.log(fixTitleFormat(title));
 
     if (postInProgress) {
       const { data, error } = await updatePost(
@@ -283,6 +291,7 @@ function PaperForm({ postInProgress }) {
         value={title}
         error={titleError}
         onChange={handleTitleChange}
+        helperText={titleErrorHelper}
       />
       <Box
         display="flex"
@@ -376,7 +385,8 @@ function PaperForm({ postInProgress }) {
             }}
             text={"Are you sure you want to delete this post?"}
             contentText={
-              "Once deleted, this post will not appear in the recommendation list for you and your network this week."
+              "Once deleted, this post will not appear in the recommendation" +
+              "list for you and your network this week."
             }
             confirmButtonText={"Delete"}
           ></AlertDialog>
