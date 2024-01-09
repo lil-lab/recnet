@@ -26,6 +26,7 @@ import {
   isAuthorValid,
 } from "@/utils/validationHelper";
 import { getPostInProgressByUser } from "../utils/db/post";
+import { isNotFoundError } from "next/dist/client/components/not-found";
 
 export default function Edit() {
   const { user } = useCheckUser();
@@ -145,9 +146,10 @@ function PaperForm({ postInProgress }) {
 
   const handleTitleChange = (event) => {
     setTitle(event.target.value);
-    setTitleError(event.target.value.trim().length === 0);
+    const isError = event.target.value.trim().length === 0;
+    setTitleError(isError);
 
-    if (titleError) {
+    if (isError) {
       setTitleErrorHelper(`Title cannot be blank. Please enter a title.`);
     } else {
       setTitleErrorHelper("");
@@ -156,10 +158,10 @@ function PaperForm({ postInProgress }) {
 
   const handleAuthorChange = (event) => {
     setAuthor(event.target.value);
-    setAuthorError(
-      event.target.value.length === 0 || !isAuthorValid(event.target.value)
-    );
-    if (authorError) {
+    const isError =
+      event.target.value.length === 0 || !isAuthorValid(event.target.value);
+    setAuthorError(isError);
+    if (isError) {
       setAuthorErrorHelper(
         `Please enter the author names correctly. For multiple authors,` +
           `separate each name with a comma and a space (, ), such as` +
