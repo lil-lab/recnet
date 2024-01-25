@@ -1,3 +1,8 @@
+"use client";
+
+import { useAuth } from "@/app/AuthContext";
+
 export default function Home() {
-  return <div>123</div>;
+  const { user } = useAuth();
+  return <div>{user ? `Hi, ${user.displayName}` : "Not Logged In "}</div>;
 }

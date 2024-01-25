@@ -3,8 +3,27 @@
 import { cn } from "@/utils/cn";
 import { Button, Flex, Text, TextField } from "@radix-ui/themes";
 import Link from "next/link";
+import { loginWithProvider, logout, useGoogleProvider } from "@/firebase/auth";
+import { getFirebaseAuth } from "@/firebase/client";
+import { useAuth } from "@/app/AuthContext";
 
 export function Headerbar() {
+  const auth = getFirebaseAuth();
+  const GoogleProvider = useGoogleProvider(auth);
+
+  const { user } = useAuth();
+
+  const handleLogin = async () => {
+    await loginWithProvider(auth, GoogleProvider);
+  };
+
+  const handleLogout = async () => {
+    await logout(auth);
+
+    await fetch("/api/logout");
+    window.location.reload();
+  };
+
   return (
     <div
       className={cn(
@@ -37,7 +56,11 @@ export function Headerbar() {
             FAQ
           </Text>
         </Link>
-        <Button>Log In</Button>
+        {user ? (
+          <Button onClick={handleLogout}>Log Out</Button>
+        ) : (
+          <Button onClick={handleLogin}>Log In</Button>
+        )}
       </Flex>
     </div>
   );
