@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import "@radix-ui/themes/styles.css";
 import { Theme } from "@radix-ui/themes";
+import { Headerbar } from "@/app/Headerbar";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -19,7 +20,10 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <Theme accentColor="blue">{children}</Theme>
+        <Theme accentColor="blue">
+          <Headerbar />
+          {children}
+        </Theme>
       </body>
     </html>
   );
