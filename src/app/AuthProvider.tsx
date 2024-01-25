@@ -9,7 +9,7 @@ import {
 } from "firebase/auth";
 import { filterStandardClaims } from "next-firebase-auth-edge/lib/auth/claims";
 import { AuthContext, User } from "./AuthContext";
-import { app } from "@/firebase/client";
+import { getFirebaseApp } from "@/firebase/client";
 
 export interface AuthProviderProps {
   serverUser: User | null;
@@ -49,7 +49,7 @@ export const AuthProvider: React.FunctionComponent<AuthProviderProps> = ({
   };
 
   React.useEffect(() => {
-    return onIdTokenChanged(getAuth(app), handleIdTokenChanged);
+    return onIdTokenChanged(getAuth(getFirebaseApp()), handleIdTokenChanged);
   }, []);
 
   return (
