@@ -1,9 +1,0 @@
-.main {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    padding: 7rem;
-    min-height: 100vh;
-    text-align: center;
-  }
