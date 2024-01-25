@@ -5,7 +5,7 @@ export default function Home() {
     <div>
       <Flex direction="column" gap="2">
         <Text>Hello from Radix Themes :)</Text>
-        <Button>Lets go</Button>
+        <Button className="hover:scale-150">Lets go</Button>
       </Flex>
     </div>
   );
