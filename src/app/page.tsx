@@ -46,8 +46,10 @@ export default function Home() {
       >
         <Text
           className={cn(
-            "text-[72px]",
-            "leading-[60px]",
+            "text-[60px]",
+            "leading-[48px]",
+            "md:text-[72px]",
+            "md:leading-[60px]",
             "font-bold",
             "w-fit",
             "h-fit",
@@ -62,7 +64,13 @@ export default function Home() {
         >
           Welcome to RecNet
         </Text>
-        <Text size="7" className="text-gray-11 text-center">
+        <Text
+          size={{
+            initial: "5",
+            md: "6",
+          }}
+          className="text-gray-11 text-center w-[80%]"
+        >
           Receive weekly paper recs from researchers you followed.
         </Text>
         <div className="flex flex-row gap-x-3 px-3">
