@@ -29,12 +29,14 @@ export function Headerbar() {
       className={cn(
         "flex",
         "w-full",
-        "h-[64px]",
+        `h-[64px]`,
         "justify-between",
         "px-16",
         "py-[10px]",
         "shadow-4",
-        "bg-white"
+        "bg-white",
+        "border-b-[1px]",
+        "border-slate-8"
       )}
     >
       <Flex className="items-center" gap="4">
