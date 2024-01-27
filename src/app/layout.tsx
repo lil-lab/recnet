@@ -6,6 +6,7 @@ import { Theme } from "@radix-ui/themes";
 import { Headerbar } from "@/app/Headerbar";
 import { AuthProvider } from "./AuthProvider";
 import { getUserServerSide } from "@/utils/getUserServerSide";
+import { Footer } from "@/app/Footer";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -26,7 +27,8 @@ export default async function RootLayout({
         <AuthProvider serverUser={user}>
           <Theme accentColor="blue">
             <Headerbar />
-            {children}
+            <div className="min-h-[90svh]">{children}</div>
+            <Footer />
           </Theme>
         </AuthProvider>
       </body>
