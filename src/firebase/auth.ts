@@ -6,13 +6,17 @@ import {
   signOut,
   useDeviceLanguage,
 } from "firebase/auth";
+import { getFirebaseAuth } from "@/firebase/client";
 
 const CREDENTIAL_ALREADY_IN_USE_ERROR = "auth/credential-already-in-use";
 export const isCredentialAlreadyInUseError = (e: AuthError) =>
   e?.code === CREDENTIAL_ALREADY_IN_USE_ERROR;
 
-export const logout = async (auth: Auth): Promise<void> => {
-  return signOut(auth);
+export const logout = async (): Promise<void> => {
+  const auth = getFirebaseAuth();
+  signOut(auth);
+  // since we use next-firebase-auth-edge, need to hit the logout endpoint to clear cookies
+  await fetch("/api/logout");
 };
 
 export const useGoogleProvider = (auth: Auth) => {
@@ -39,3 +43,14 @@ export const loginWithProvider = async (
 
   return result.user;
 };
+
+export function useGoogleLogin() {
+  const auth = getFirebaseAuth();
+  const GoogleProvider = useGoogleProvider(auth);
+
+  const login = async () => {
+    await loginWithProvider(auth, GoogleProvider);
+  };
+
+  return { login };
+}
