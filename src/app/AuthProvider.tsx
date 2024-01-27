@@ -7,20 +7,21 @@ import {
   onIdTokenChanged,
   User as FirebaseUser,
 } from "firebase/auth";
-import { filterStandardClaims } from "next-firebase-auth-edge/lib/auth/claims";
-import { AuthContext, User } from "./AuthContext";
+import { AuthContext } from "./AuthContext";
 import { getFirebaseApp } from "@/firebase/client";
+import { User, UserSchema } from "@/types/user";
+import { fetchWithZod } from "@/utils/zodFetch";
 
 export interface AuthProviderProps {
   serverUser: User | null;
   children: React.ReactNode;
 }
 
-function toUser(user: FirebaseUser, idTokenResult: IdTokenResult): User {
-  return {
-    ...user,
-    customClaims: filterStandardClaims(idTokenResult.claims),
-  };
+async function toUser(firebaseUser: FirebaseUser): Promise<User | null> {
+  if (!firebaseUser.email) {
+    return null;
+  }
+  return fetchWithZod(UserSchema, `/api/user?email=${firebaseUser.email}`);
 }
 
 export const AuthProvider: React.FunctionComponent<AuthProviderProps> = ({
@@ -39,7 +40,8 @@ export const AuthProvider: React.FunctionComponent<AuthProviderProps> = ({
           Authorization: `Bearer ${idTokenResult.token}`,
         },
       });
-      setUser(toUser(firebaseUser, idTokenResult));
+      const user = await toUser(firebaseUser);
+      setUser(user);
       return;
     }
 

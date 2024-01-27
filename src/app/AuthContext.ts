@@ -1,11 +1,5 @@
 import { createContext, useContext } from "react";
-import { UserInfo } from "firebase/auth";
-import { Claims } from "next-firebase-auth-edge/lib/auth/claims";
-
-export interface User extends Omit<UserInfo, "providerId"> {
-  emailVerified: boolean;
-  customClaims: Claims;
-}
+import { User } from "@/types/user";
 
 export interface AuthContextValue {
   user: User | null;
