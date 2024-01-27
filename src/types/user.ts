@@ -12,6 +12,7 @@ export const UserSchema = z.object({
   photoURL: z.string(),
   postIds: z.array(z.string()),
   uid: z.string(),
+  username: z.string(),
 });
 
 export type User = z.infer<typeof UserSchema>;
