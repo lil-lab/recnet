@@ -27,7 +27,7 @@ export default async function RootLayout({
         <AuthProvider serverUser={user}>
           <Theme accentColor="blue">
             <Headerbar />
-            <div className="min-h-[90svh]">{children}</div>
+            <div className="min-h-[90svh] flex justify-center">{children}</div>
             <Footer />
           </Theme>
         </AuthProvider>
