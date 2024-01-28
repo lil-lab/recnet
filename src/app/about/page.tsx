@@ -1,6 +1,6 @@
+import { RecNetLink } from "@/components/Link";
 import { cn } from "@/utils/cn";
 import { Flex, Text, Link as RadixLink } from "@radix-ui/themes";
-import Link from "next/link";
 
 const teamMembers: {
   name: string;
@@ -79,17 +79,19 @@ export default function AboutPage() {
             <Text size="3" className="text-gray-12" weight="medium">
               {member.name}
             </Text>
-            <RadixLink asChild underline="always">
-              <Link href={member.website} target="_blank">
-                <Text>website</Text>
-              </Link>
-            </RadixLink>
+            <RecNetLink
+              href={member.website}
+              radixLinkProps={{ underline: "always", target: "_blank" }}
+            >
+              <Text>website</Text>
+            </RecNetLink>
             {member.username ? (
-              <RadixLink asChild underline="always">
-                <Link href={`/user/${member.username}`}>
-                  <Text>profile</Text>
-                </Link>
-              </RadixLink>
+              <RecNetLink
+                href={`/user/${member.username}`}
+                radixLinkProps={{ underline: "always" }}
+              >
+                <Text>profile</Text>
+              </RecNetLink>
             ) : null}
           </Flex>
         ))}

@@ -6,9 +6,9 @@ import { notEmpty } from "@/utils/notEmpty";
 import { UserCard } from "@/components/UserCard";
 import { DocumentData } from "firebase-admin/firestore";
 import { cn } from "@/utils/cn";
-import Link from "next/link";
-import { Flex, Grid, Link as RadixLink, Text } from "@radix-ui/themes";
+import { Flex, Grid, Text } from "@radix-ui/themes";
 import { ChevronLeftIcon } from "@radix-ui/react-icons";
+import { RecNetLink } from "@/components/Link";
 
 const capitalize = (s: string) => {
   const words = s.split(" ");
@@ -93,8 +93,6 @@ export default async function SearchResultPage({
 }) {
   const query = searchParams["q"];
   const results = await getSearchResults(query);
-  console.log(results);
-  console.log(results.length);
   return (
     <div
       className={cn(
@@ -107,18 +105,16 @@ export default async function SearchResultPage({
         "gap-y-6"
       )}
     >
-      <RadixLink asChild>
-        <Link href="/">
-          <Flex className="items-center gap-x-1 p-1 group">
-            <ChevronLeftIcon
-              width="16"
-              height="16"
-              className="relative right-0 group-hover:right-1 transition-all ease-in-out"
-            />
-            Back to homepage
-          </Flex>
-        </Link>
-      </RadixLink>
+      <RecNetLink href="/">
+        <Flex className="items-center gap-x-1 p-1 group">
+          <ChevronLeftIcon
+            width="16"
+            height="16"
+            className="relative right-0 group-hover:right-1 transition-all ease-in-out"
+          />
+          Back to homepage
+        </Flex>
+      </RecNetLink>
       <Text
         size="7"
         className="text-gray-12 font-medium"
