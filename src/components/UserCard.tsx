@@ -9,7 +9,7 @@ import { useAuth } from "@/app/AuthContext";
 import { toast } from "sonner";
 import { follow, unfollow } from "@/utils/follow";
 import { useState } from "react";
-import { LineWave, TailSpin } from "react-loader-spinner";
+import { TailSpin } from "react-loader-spinner";
 
 export function UserCard({ user }: { user: User }) {
   const [isLoading, setIsLoading] = useState(false);
