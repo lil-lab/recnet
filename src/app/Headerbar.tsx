@@ -18,6 +18,13 @@ import { useState, useRef, useEffect } from "react";
 import { User } from "@/types/user";
 import { useRouter } from "next/navigation";
 
+export function getFallbackDisplayName(user: User) {
+  return user.displayName
+    .split(" ")
+    .map((w) => w[0])
+    .join("");
+}
+
 function UserDropdown({ user }: { user: User }) {
   const handleLogout = async () => {
     await logout();
@@ -28,10 +35,7 @@ function UserDropdown({ user }: { user: User }) {
       <DropdownMenu.Trigger>
         <Avatar
           src={user.photoURL}
-          fallback={user.displayName
-            .split(" ")
-            .map((w) => w[0])
-            .join("")}
+          fallback={getFallbackDisplayName(user)}
           className="rounded-[9999px] border-[1px] border-slate-6"
         />
       </DropdownMenu.Trigger>
