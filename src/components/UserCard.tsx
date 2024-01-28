@@ -8,8 +8,11 @@ import { HomeIcon, PersonIcon } from "@radix-ui/react-icons";
 import { useAuth } from "@/app/AuthContext";
 import { toast } from "sonner";
 import { follow, unfollow } from "@/utils/follow";
+import { useState } from "react";
+import { LineWave, TailSpin } from "react-loader-spinner";
 
 export function UserCard({ user }: { user: User }) {
+  const [isLoading, setIsLoading] = useState(false);
   const { user: me, revalidateUser } = useAuth();
   const isFollowing = me?.following.includes(user.seed);
 
@@ -55,12 +58,14 @@ export function UserCard({ user }: { user: User }) {
       </Flex>
       <Button
         variant={isFollowing ? "outline" : "solid"}
+        className="transition-all ease-in-out"
         color={!me ? "gray" : "blue"}
         onClick={async () => {
           if (!me) {
             toast.error("You must be logged in to follow someone.");
             return;
           }
+          setIsLoading(true);
           if (isFollowing) {
             try {
               await unfollow(me.seed, user.seed);
@@ -69,7 +74,6 @@ export function UserCard({ user }: { user: User }) {
             } catch (e) {
               toast.error("Something went wrong.");
             }
-            return;
           } else {
             try {
               await follow(me.seed, user.seed);
@@ -78,11 +82,25 @@ export function UserCard({ user }: { user: User }) {
             } catch (e) {
               toast.error("Something went wrong.");
             }
-            return;
           }
+          setIsLoading(false);
         }}
       >
-        {isFollowing ? "Unfollow" : "Follow"}
+        {isLoading ? (
+          <TailSpin
+            radius={"1"}
+            visible={true}
+            height="20"
+            width="20"
+            color={isFollowing ? "#2191FF" : "#ffffff"}
+            ariaLabel="line-wave-loading"
+            wrapperClass="w-fit h-fit"
+          />
+        ) : isFollowing ? (
+          "Unfollow"
+        ) : (
+          "Follow"
+        )}
       </Button>
     </div>
   );
