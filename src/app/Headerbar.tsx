@@ -77,11 +77,20 @@ export function Headerbar() {
             RecNet
           </Text>
         </Link>
-        <TextField.Root className="hidden md:inline-block">
+        <TextField.Root className="hidden md:flex">
+          <TextField.Slot>
+            <MagnifyingGlassIcon width="16" height="16" />
+          </TextField.Slot>
           <TextField.Input placeholder="Search the users..." size="2" />
         </TextField.Root>
       </Flex>
-      <Flex className="items-center" gap="5">
+      <Flex
+        className="items-center"
+        gap={{
+          initial: "3",
+          md: "5",
+        }}
+      >
         <MagnifyingGlassIcon
           width="20"
           height="20"
