@@ -1,6 +1,7 @@
 import { cn } from "@/utils/cn";
 import { getNextCutOff, getVerboseDateString } from "@/utils/date";
 import { Text } from "@radix-ui/themes";
+import * as React from "react";
 
 const faqs: {
   title: string;
@@ -37,14 +38,14 @@ export default function AboutPage() {
         FAQ
       </Text>
       {faqs.map((faq) => (
-        <>
+        <React.Fragment key={faq.title}>
           <Text className="text-gray-12" size="7" weight="medium">
             {faq.title}
           </Text>
           <Text className="text-gray-11" size="4">
             {typeof faq.content === "string" ? faq.content : faq.content()}
           </Text>
-        </>
+        </React.Fragment>
       ))}
     </div>
   );
