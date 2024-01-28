@@ -6,6 +6,7 @@ import { getFallbackDisplayName } from "@/app/Headerbar";
 import { RecNetLink } from "./Link";
 import { HomeIcon, PersonIcon } from "@radix-ui/react-icons";
 import { useAuth } from "@/app/AuthContext";
+import { toast } from "sonner";
 
 export function UserCard({ user }: { user: User }) {
   const { user: me } = useAuth();
@@ -51,7 +52,18 @@ export function UserCard({ user }: { user: User }) {
           <Text size="1">{user.followers.length}</Text>
         </Flex>
       </Flex>
-      <Button disabled={!me} variant={isFollowing ? "outline" : "solid"}>
+      <Button
+        variant={isFollowing ? "outline" : "solid"}
+        color={!me ? "gray" : "blue"}
+        onClick={() => {
+          if (!me) {
+            toast.error("You must be logged in to follow someone.");
+            return;
+          }
+          // TODO: follow/unfollow
+          toast.info("Dev");
+        }}
+      >
         {isFollowing ? "Unfollow" : "Follow"}
       </Button>
     </div>

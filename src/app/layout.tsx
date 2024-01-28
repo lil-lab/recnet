@@ -7,6 +7,7 @@ import { Headerbar } from "@/app/Headerbar";
 import { AuthProvider } from "./AuthProvider";
 import { getUserServerSide } from "@/utils/getUserServerSide";
 import { Footer } from "@/app/Footer";
+import { Toaster } from "sonner";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -27,6 +28,7 @@ export default async function RootLayout({
         <AuthProvider serverUser={user}>
           <Theme accentColor="blue">
             <Headerbar />
+            <Toaster position="bottom-right" richColors offset={48} />
             <div className="min-h-[90svh] flex justify-center">{children}</div>
             <Footer />
           </Theme>
