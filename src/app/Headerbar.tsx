@@ -16,6 +16,7 @@ import { useAuth } from "@/app/AuthContext";
 import { MagnifyingGlassIcon, Cross1Icon } from "@radix-ui/react-icons";
 import { useState, useRef, useEffect } from "react";
 import { User } from "@/types/user";
+import { useRouter } from "next/navigation";
 
 function UserDropdown({ user }: { user: User }) {
   const handleLogout = async () => {
@@ -47,13 +48,17 @@ function UserDropdown({ user }: { user: User }) {
 }
 
 export function Headerbar() {
+  const router = useRouter();
   const { login } = useGoogleLogin();
   const { user } = useAuth();
   const [enableSearch, setEnableSearch] = useState(false);
+
   const [isAppleDevice, setIsAppleDevice] = useState<boolean | undefined>(
     undefined
   );
   const searchInputRef = useRef<HTMLInputElement>(null);
+  const [isSearchFocused, setIsSearchFocused] = useState<boolean>(false);
+  const [searchQuery, setSearchQuery] = useState<string>("");
 
   const handleLogin = async () => {
     await login();
@@ -84,13 +89,20 @@ export function Headerbar() {
         event.preventDefault();
         searchInputRef?.current?.blur?.();
       }
+      // Enter to submit search
+      else if (event.key?.toLowerCase() === "enter") {
+        if (isSearchFocused) {
+          router.push(`/search?q=${searchQuery}`);
+          event.preventDefault();
+        }
+      }
     };
 
     window.addEventListener("keydown", handleCk);
     return () => {
       window.removeEventListener("keydown", handleCk);
     };
-  }, []);
+  }, [isSearchFocused, router, searchQuery]);
 
   return (
     <div
@@ -122,6 +134,16 @@ export function Headerbar() {
             placeholder="Search the users..."
             size="2"
             ref={searchInputRef}
+            value={searchQuery}
+            onChange={(event) => {
+              setSearchQuery(event.target.value);
+            }}
+            onFocus={() => {
+              setIsSearchFocused(true);
+            }}
+            onBlur={() => {
+              setIsSearchFocused(false);
+            }}
           />
           <TextField.Slot>
             <Kbd size="1">{isAppleDevice ? `⌘ K` : "Ctrl+K"}</Kbd>
