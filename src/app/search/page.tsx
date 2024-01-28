@@ -6,9 +6,13 @@ import { notEmpty } from "@/utils/notEmpty";
 import { UserCard } from "@/components/UserCard";
 import { DocumentData } from "firebase-admin/firestore";
 import { cn } from "@/utils/cn";
-import { Flex, Grid, Text } from "@radix-ui/themes";
-import { ChevronLeftIcon } from "@radix-ui/react-icons";
+import { Callout, Flex, Grid, Text } from "@radix-ui/themes";
+import {
+  ChevronLeftIcon,
+  QuestionMarkCircledIcon,
+} from "@radix-ui/react-icons";
 import { RecNetLink } from "@/components/Link";
+import { NotFoundBlock } from "./NotFound";
 
 const capitalize = (s: string) => {
   const words = s.split(" ");
@@ -119,18 +123,22 @@ export default async function SearchResultPage({
         size="7"
         className="text-gray-12 font-medium"
       >{`${results.length} result${results.length > 1 ? "s" : ""}`}</Text>
-      <Grid
-        columns={{
-          initial: "1",
-          md: "2",
-          lg: "3",
-        }}
-        gap="4"
-      >
-        {results.map((user, idx) => (
-          <UserCard key={`${user.username}-${idx}`} user={user} />
-        ))}
-      </Grid>
+      {results.length === 0 ? (
+        <NotFoundBlock />
+      ) : (
+        <Grid
+          columns={{
+            initial: "1",
+            md: "2",
+            lg: "3",
+          }}
+          gap="4"
+        >
+          {results.map((user, idx) => (
+            <UserCard key={`${user.username}-${idx}`} user={user} />
+          ))}
+        </Grid>
+      )}
     </div>
   );
 }
