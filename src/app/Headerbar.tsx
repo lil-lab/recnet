@@ -6,6 +6,7 @@ import {
   Button,
   DropdownMenu,
   Flex,
+  Kbd,
   Text,
   TextField,
 } from "@radix-ui/themes";
@@ -13,7 +14,7 @@ import Link from "next/link";
 import { logout, useGoogleLogin } from "@/firebase/auth";
 import { useAuth } from "@/app/AuthContext";
 import { MagnifyingGlassIcon, Cross1Icon } from "@radix-ui/react-icons";
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { User } from "@/types/user";
 
 function UserDropdown({ user }: { user: User }) {
@@ -49,10 +50,47 @@ export function Headerbar() {
   const { login } = useGoogleLogin();
   const { user } = useAuth();
   const [enableSearch, setEnableSearch] = useState(false);
+  const [isAppleDevice, setIsAppleDevice] = useState<boolean | undefined>(
+    undefined
+  );
+  const searchInputRef = useRef<HTMLInputElement>(null);
 
   const handleLogin = async () => {
     await login();
   };
+
+  function getIsAppleDevice() {
+    if (navigator === undefined || navigator.userAgent === undefined) {
+      return;
+    }
+    return /(iPod|iPad|iPhone|Mac)/i.test(navigator.userAgent);
+  }
+
+  useEffect(() => {
+    setIsAppleDevice(getIsAppleDevice());
+  }, []);
+
+  useEffect(() => {
+    const handleCk = (event: KeyboardEvent) => {
+      // Ctrl+K or ⌘ K to focus on search input
+      if (event.ctrlKey || event.metaKey) {
+        if (event.key?.toLowerCase() === "k") {
+          event.preventDefault();
+          searchInputRef?.current?.focus?.();
+        }
+      }
+      // Esc to blur search input
+      else if (event.key?.toLowerCase() === "escape") {
+        event.preventDefault();
+        searchInputRef?.current?.blur?.();
+      }
+    };
+
+    window.addEventListener("keydown", handleCk);
+    return () => {
+      window.removeEventListener("keydown", handleCk);
+    };
+  }, []);
 
   return (
     <div
@@ -80,7 +118,14 @@ export function Headerbar() {
           <TextField.Slot>
             <MagnifyingGlassIcon width="16" height="16" />
           </TextField.Slot>
-          <TextField.Input placeholder="Search the users..." size="2" />
+          <TextField.Input
+            placeholder="Search the users..."
+            size="2"
+            ref={searchInputRef}
+          />
+          <TextField.Slot>
+            <Kbd size="1">{isAppleDevice ? `⌘ K` : "Ctrl+K"}</Kbd>
+          </TextField.Slot>
         </TextField.Root>
       </Flex>
       <Flex
