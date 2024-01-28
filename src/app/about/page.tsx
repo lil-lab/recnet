@@ -56,8 +56,9 @@ export default function AboutPage() {
         information bottlenecks that increase communication cost. This is
         intended to limit the amount of time the system consumes from its users,
         while increasing the quality of information passed. The Recnet mechanism
-        was initially outlined by Yoav Artzi in a Substack post. Recnet is
-        currently in initial development stages.
+        was initially outlined by Yoav Artzi in a{" "}
+        <RadixLink>Substack post</RadixLink>. Recnet is currently in initial
+        development stages.
       </Text>
       <div className="w-full flex justify-start">
         <iframe

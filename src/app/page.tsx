@@ -82,11 +82,9 @@ export default function Home() {
           >
             Log In
           </Button>
-          <Link href="/about">
-            <Button size="4" variant="outline">
-              Learn more
-            </Button>
-          </Link>
+          <Button size="4" variant="outline" asChild>
+            <Link href="/about">Learn more</Link>
+          </Button>
         </div>
         <div
           className={cn(
