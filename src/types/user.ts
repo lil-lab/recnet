@@ -10,7 +10,7 @@ export const UserSchema = z.object({
   following: z.array(z.string()),
   isAnnonymous: z.boolean().optional(),
   photoURL: z.string(),
-  postIds: z.array(z.string()),
+  postIds: z.array(z.string()).optional(),
   uid: z.string(),
   username: z.string(),
 });
