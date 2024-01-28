@@ -6,11 +6,8 @@ import { notEmpty } from "@/utils/notEmpty";
 import { UserCard } from "@/components/UserCard";
 import { DocumentData } from "firebase-admin/firestore";
 import { cn } from "@/utils/cn";
-import { Callout, Flex, Grid, Text } from "@radix-ui/themes";
-import {
-  ChevronLeftIcon,
-  QuestionMarkCircledIcon,
-} from "@radix-ui/react-icons";
+import { Flex, Grid, Text } from "@radix-ui/themes";
+import { ChevronLeftIcon } from "@radix-ui/react-icons";
 import { RecNetLink } from "@/components/Link";
 import { NotFoundBlock } from "./NotFound";
 
