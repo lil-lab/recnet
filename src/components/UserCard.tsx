@@ -7,9 +7,10 @@ import { RecNetLink } from "./Link";
 import { HomeIcon, PersonIcon } from "@radix-ui/react-icons";
 import { useAuth } from "@/app/AuthContext";
 import { toast } from "sonner";
+import { follow, unfollow } from "@/utils/follow";
 
 export function UserCard({ user }: { user: User }) {
-  const { user: me } = useAuth();
+  const { user: me, revalidateUser } = useAuth();
   const isFollowing = me?.following.includes(user.seed);
 
   return (
@@ -55,13 +56,30 @@ export function UserCard({ user }: { user: User }) {
       <Button
         variant={isFollowing ? "outline" : "solid"}
         color={!me ? "gray" : "blue"}
-        onClick={() => {
+        onClick={async () => {
           if (!me) {
             toast.error("You must be logged in to follow someone.");
             return;
           }
-          // TODO: follow/unfollow
-          toast.info("Dev");
+          if (isFollowing) {
+            try {
+              await unfollow(me.seed, user.seed);
+              await revalidateUser();
+              toast.success(`Successfully unfollowed ${user.displayName}`);
+            } catch (e) {
+              toast.error("Something went wrong.");
+            }
+            return;
+          } else {
+            try {
+              await follow(me.seed, user.seed);
+              await revalidateUser();
+              toast.success(`You're following ${user.displayName}`);
+            } catch (e) {
+              toast.error("Something went wrong.");
+            }
+            return;
+          }
         }}
       >
         {isFollowing ? "Unfollow" : "Follow"}

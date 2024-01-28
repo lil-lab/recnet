@@ -1,12 +1,7 @@
 "use client";
 
 import * as React from "react";
-import {
-  getAuth,
-  IdTokenResult,
-  onIdTokenChanged,
-  User as FirebaseUser,
-} from "firebase/auth";
+import { getAuth, onIdTokenChanged, User as FirebaseUser } from "firebase/auth";
 import { AuthContext } from "./AuthContext";
 import { getFirebaseApp } from "@/firebase/client";
 import { User, UserSchema } from "@/types/user";
@@ -29,6 +24,16 @@ export const AuthProvider: React.FunctionComponent<AuthProviderProps> = ({
   children,
 }) => {
   const [user, setUser] = React.useState(serverUser);
+
+  async function revalidateUser() {
+    const firebaseUser = getAuth(getFirebaseApp()).currentUser;
+    if (!firebaseUser) {
+      setUser(null);
+      return;
+    }
+    const user = await toUser(firebaseUser);
+    setUser(user);
+  }
 
   const handleIdTokenChanged = async (firebaseUser: FirebaseUser | null) => {
     if (firebaseUser) {
@@ -58,6 +63,7 @@ export const AuthProvider: React.FunctionComponent<AuthProviderProps> = ({
     <AuthContext.Provider
       value={{
         user,
+        revalidateUser,
       }}
     >
       {children}
