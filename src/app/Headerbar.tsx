@@ -21,7 +21,6 @@ function UserDropdown({ user }: { user: User }) {
     await logout();
     window.location.reload();
   };
-  console.log(user);
   return (
     <DropdownMenu.Root>
       <DropdownMenu.Trigger>
