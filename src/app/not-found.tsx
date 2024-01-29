@@ -31,7 +31,7 @@ export default function NotFoundPage() {
           <Text className="text-gray-10 text-[16px]">
             The page you are looking for does not exist.
           </Text>
-          <Flex className="items-center gap-x-2 text-gray-10 text-[16px]">
+          <Flex className="items-center gap-x-2 text-gray-10 text-[16px] flex-wrap">
             <Text>Go back to </Text>
             <RecNetLink href="/">
               <Text className="text-blue-9 text-[16px]">home</Text>
