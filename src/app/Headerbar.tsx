@@ -14,7 +14,7 @@ import Link from "next/link";
 import { logout, useGoogleLogin } from "@/firebase/auth";
 import { useAuth } from "@/app/AuthContext";
 import { MagnifyingGlassIcon, Cross1Icon } from "@radix-ui/react-icons";
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import { User } from "@/types/user";
 import { useRouter } from "next/navigation";
 
@@ -61,12 +61,15 @@ export function Headerbar() {
     undefined
   );
   const searchInputRef = useRef<HTMLInputElement>(null);
-  const [isSearchFocused, setIsSearchFocused] = useState<boolean>(false);
   const [searchQuery, setSearchQuery] = useState<string>("");
 
   const handleLogin = async () => {
     await login();
   };
+
+  const handleSearch = useCallback(() => {
+    router.push(`/search?q=${searchQuery}`);
+  }, [searchQuery, router]);
 
   function getIsAppleDevice() {
     if (navigator === undefined || navigator.userAgent === undefined) {
@@ -93,20 +96,13 @@ export function Headerbar() {
         event.preventDefault();
         searchInputRef?.current?.blur?.();
       }
-      // Enter to submit search
-      else if (event.key?.toLowerCase() === "enter") {
-        if (isSearchFocused) {
-          router.push(`/search?q=${searchQuery}`);
-          event.preventDefault();
-        }
-      }
     };
 
     window.addEventListener("keydown", handleCk);
     return () => {
       window.removeEventListener("keydown", handleCk);
     };
-  }, [isSearchFocused, router, searchQuery]);
+  }, []);
 
   return (
     <div
@@ -142,11 +138,10 @@ export function Headerbar() {
             onChange={(event) => {
               setSearchQuery(event.target.value);
             }}
-            onFocus={() => {
-              setIsSearchFocused(true);
-            }}
-            onBlur={() => {
-              setIsSearchFocused(false);
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                handleSearch();
+              }
             }}
           />
           <TextField.Slot>
@@ -186,7 +181,19 @@ export function Headerbar() {
             "duration-200"
           )}
         >
-          <TextField.Input placeholder="Search the users..." size="2" />
+          <TextField.Input
+            placeholder="Search the users..."
+            size="2"
+            value={searchQuery}
+            onChange={(event) => {
+              setSearchQuery(event.target.value);
+            }}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                handleSearch();
+              }
+            }}
+          />
           <TextField.Slot>
             <Cross1Icon
               width="16"
