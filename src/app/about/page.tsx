@@ -57,8 +57,13 @@ export default function AboutPage() {
         intended to limit the amount of time the system consumes from its users,
         while increasing the quality of information passed. The Recnet mechanism
         was initially outlined by Yoav Artzi in a{" "}
-        <RadixLink>Substack post</RadixLink>. Recnet is currently in initial
-        development stages.
+        <RadixLink
+          href="https://yoavartzi.substack.com/p/a-quick-sketch-of-a-human-based-paper"
+          target="_blank"
+        >
+          Substack post
+        </RadixLink>
+        . Recnet is currently in initial development stages.
       </Text>
       <div className="w-full flex justify-start">
         <iframe
