@@ -30,3 +30,15 @@ export async function unfollow(userId: string, targetUserId: string) {
     following: FieldValue.arrayRemove(targetUserId),
   });
 }
+
+export async function getUserByUsername(username: string) {
+  const querySnapshot = await db
+    .collection("users")
+    .where("username", "==", username)
+    .limit(1)
+    .get();
+  if (querySnapshot.empty) {
+    null;
+  }
+  return querySnapshot.docs[0].data();
+}
