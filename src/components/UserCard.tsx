@@ -7,7 +7,7 @@ import { RecNetLink } from "./Link";
 import { HomeIcon, PersonIcon } from "@radix-ui/react-icons";
 import { useAuth } from "@/app/AuthContext";
 import { toast } from "sonner";
-import { follow, unfollow } from "@/utils/follow";
+import { follow, unfollow } from "@/server/user";
 import { useState } from "react";
 import { TailSpin } from "react-loader-spinner";
 
