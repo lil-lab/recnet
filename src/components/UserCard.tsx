@@ -58,6 +58,7 @@ export function UserCard({ user }: { user: User }) {
       </Flex>
       <Button
         variant={isFollowing ? "outline" : "solid"}
+        disabled={!!me && me.seed === user.seed}
         className="transition-all ease-in-out"
         color={!me ? "gray" : "blue"}
         onClick={async () => {
