@@ -7,18 +7,12 @@ import { Avatar } from "@/components/Avatar";
 import { HomeIcon } from "@radix-ui/react-icons";
 import { RecNetLink } from "@/components/Link";
 import { useAuth } from "@/app/AuthContext";
-import { useState } from "react";
-import { toast } from "sonner";
-import { follow, unfollow } from "@/server/user";
-import { TailSpin } from "react-loader-spinner";
+import { FollowButton } from "@/components/FollowButton";
 
 export function Profile(props: { user: User }) {
   const { user } = props;
-  const { user: me, revalidateUser } = useAuth();
+  const { user: me } = useAuth();
   const isMe = me?.username === user.username;
-  const isFollowing = me?.following.includes(user.seed);
-
-  const [isLoading, setIsLoading] = useState(false);
 
   return (
     <div className={cn("flex-col", "gap-y-6", "flex")}>
@@ -77,51 +71,7 @@ export function Profile(props: { user: User }) {
             Edit
           </Button>
         ) : (
-          <Button
-            className="w-full transition-all ease-in-out"
-            variant={isFollowing ? "outline" : "solid"}
-            onClick={async () => {
-              if (!me) {
-                toast.error("You must be logged in to follow someone.");
-                return;
-              }
-              setIsLoading(true);
-              if (isFollowing) {
-                try {
-                  await unfollow(me.seed, user.seed);
-                  await revalidateUser();
-                  toast.success(`Successfully unfollowed ${user.displayName}`);
-                } catch (e) {
-                  toast.error("Something went wrong.");
-                }
-              } else {
-                try {
-                  await follow(me.seed, user.seed);
-                  await revalidateUser();
-                  toast.success(`You're following ${user.displayName}`);
-                } catch (e) {
-                  toast.error("Something went wrong.");
-                }
-              }
-              setIsLoading(false);
-            }}
-          >
-            {isLoading ? (
-              <TailSpin
-                radius={"1"}
-                visible={true}
-                height="20"
-                width="20"
-                color={isFollowing ? "#2191FF" : "#ffffff"}
-                ariaLabel="line-wave-loading"
-                wrapperClass="w-fit h-fit"
-              />
-            ) : isFollowing ? (
-              "Unfollow"
-            ) : (
-              "Follow"
-            )}
-          </Button>
+          <FollowButton user={user} />
         )}
       </Flex>
     </div>
