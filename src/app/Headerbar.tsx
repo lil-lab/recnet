@@ -178,7 +178,8 @@ export function Headerbar() {
             },
             "transition-all",
             "ease-in-out",
-            "duration-200"
+            "duration-200",
+            "md:hidden"
           )}
         >
           <TextField.Input
