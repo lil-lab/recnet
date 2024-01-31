@@ -49,6 +49,8 @@ export function FollowButton(props: FollowButtonProps) {
         }
         setIsLoading(false);
       }}
+      color={me ? "blue" : "gray"}
+      disabled={!!me && me.seed === user.seed}
       {...rest}
     >
       {isLoading ? (
