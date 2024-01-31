@@ -41,7 +41,7 @@ export async function getUserByUsername(username: string) {
   if (querySnapshot.empty) {
     null;
   }
-  return querySnapshot.docs[0].data();
+  return UserSchema.parse(querySnapshot.docs[0].data());
 }
 
 export async function getUsersByIds(ids: string[]): Promise<User[]> {

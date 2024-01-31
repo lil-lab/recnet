@@ -1,5 +1,4 @@
 import { getUserByUsername } from "@/server/user";
-import { UserSchema } from "@/types/user";
 import { cn } from "@/utils/cn";
 import { notFound } from "next/navigation";
 import { Profile } from "./Profile";
@@ -10,13 +9,11 @@ export default async function UserProfilePage({
   params: { username: string };
 }) {
   const { username } = params;
-  const user = await getUserByUsername(username)
-    .then((res) => UserSchema.parse(res))
-    .catch((e) => {
-      console.error(e);
-      // redirect to 404
-      notFound();
-    });
+  const user = await getUserByUsername(username).catch((e) => {
+    console.error(e);
+    // redirect to 404
+    notFound();
+  });
 
   return (
     <div
