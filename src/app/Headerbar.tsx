@@ -15,7 +15,7 @@ import { useAuth } from "@/app/AuthContext";
 import { MagnifyingGlassIcon, Cross1Icon } from "@radix-ui/react-icons";
 import { useState, useRef, useEffect, useCallback } from "react";
 import { User } from "@/types/user";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { Avatar } from "@/components/Avatar";
 
 function UserDropdown({ user }: { user: User }) {
@@ -43,6 +43,7 @@ function UserDropdown({ user }: { user: User }) {
 }
 
 export function Headerbar() {
+  const pathname = usePathname();
   const router = useRouter();
   const { login } = useGoogleLogin();
   const { user } = useAuth();
@@ -59,8 +60,12 @@ export function Headerbar() {
   };
 
   const handleSearch = useCallback(() => {
-    router.push(`/search?q=${searchQuery}`);
-  }, [searchQuery, router]);
+    if (pathname === "/search") {
+      router.replace(`/search?q=${searchQuery}`);
+    } else {
+      router.push(`/search?q=${searchQuery}`);
+    }
+  }, [searchQuery, router, pathname]);
 
   function getIsAppleDevice() {
     if (navigator === undefined || navigator.userAgent === undefined) {
