@@ -2,7 +2,6 @@
 
 import { cn } from "@/utils/cn";
 import {
-  Avatar,
   Button,
   DropdownMenu,
   Flex,
@@ -17,13 +16,7 @@ import { MagnifyingGlassIcon, Cross1Icon } from "@radix-ui/react-icons";
 import { useState, useRef, useEffect, useCallback } from "react";
 import { User } from "@/types/user";
 import { useRouter } from "next/navigation";
-
-export function getFallbackDisplayName(user: User) {
-  return user.displayName
-    .split(" ")
-    .map((w) => w[0])
-    .join("");
-}
+import { Avatar } from "@/components/Avatar";
 
 function UserDropdown({ user }: { user: User }) {
   const handleLogout = async () => {
@@ -33,11 +26,7 @@ function UserDropdown({ user }: { user: User }) {
   return (
     <DropdownMenu.Root>
       <DropdownMenu.Trigger>
-        <Avatar
-          src={user.photoURL}
-          fallback={getFallbackDisplayName(user)}
-          className="rounded-[9999px] border-[1px] border-slate-6"
-        />
+        <Avatar user={user} />
       </DropdownMenu.Trigger>
       <DropdownMenu.Content align="center" className="mt-1 md:w-[120px]">
         <DropdownMenu.Item>

@@ -1,8 +1,7 @@
 "use client";
 import { User } from "@/types/user";
 import { cn } from "@/utils/cn";
-import { Avatar, Button, Flex, Text } from "@radix-ui/themes";
-import { getFallbackDisplayName } from "@/app/Headerbar";
+import { Button, Flex, Text } from "@radix-ui/themes";
 import { RecNetLink } from "./Link";
 import { HomeIcon, PersonIcon } from "@radix-ui/react-icons";
 import { useAuth } from "@/app/AuthContext";
@@ -10,6 +9,7 @@ import { toast } from "sonner";
 import { follow, unfollow } from "@/server/user";
 import { useState } from "react";
 import { TailSpin } from "react-loader-spinner";
+import { Avatar } from "@/components/Avatar";
 
 export function UserCard({ user }: { user: User }) {
   const [isLoading, setIsLoading] = useState(false);
@@ -28,11 +28,7 @@ export function UserCard({ user }: { user: User }) {
         "gap-4"
       )}
     >
-      <Avatar
-        src={user.photoURL}
-        fallback={getFallbackDisplayName(user)}
-        className="rounded-[999px]"
-      />
+      <Avatar user={user} />
       <Flex className="flex-col gap-y-1">
         <RecNetLink href={`/user/${user.username}`}>
           <Text>{user.displayName}</Text>
