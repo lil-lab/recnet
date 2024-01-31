@@ -1,7 +1,5 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
-import "./globals.css";
-import "@radix-ui/themes/styles.css";
 import { Theme } from "@radix-ui/themes";
 import { Headerbar } from "@/app/Headerbar";
 import { AuthProvider } from "./AuthProvider";
@@ -9,6 +7,8 @@ import { getUserServerSide } from "@/utils/getUserServerSide";
 import { Footer } from "@/app/Footer";
 import { Toaster } from "sonner";
 import { HistoryProvider } from "./HistoryProvider";
+import "@radix-ui/themes/styles.css";
+import "./globals.css";
 
 const inter = Inter({ subsets: ["latin"] });
 
