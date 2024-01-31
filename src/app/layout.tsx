@@ -8,6 +8,7 @@ import { AuthProvider } from "./AuthProvider";
 import { getUserServerSide } from "@/utils/getUserServerSide";
 import { Footer } from "@/app/Footer";
 import { Toaster } from "sonner";
+import { HistoryProvider } from "./HistoryProvider";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -26,12 +27,16 @@ export default async function RootLayout({
     <html lang="en">
       <body className={inter.className}>
         <AuthProvider serverUser={user}>
-          <Theme accentColor="blue">
-            <Headerbar />
-            <Toaster position="bottom-right" richColors offset={48} />
-            <div className="min-h-[90svh] flex justify-center">{children}</div>
-            <Footer />
-          </Theme>
+          <HistoryProvider>
+            <Theme accentColor="blue">
+              <Headerbar />
+              <Toaster position="bottom-right" richColors offset={48} />
+              <div className="min-h-[90svh] flex justify-center">
+                {children}
+              </div>
+              <Footer />
+            </Theme>
+          </HistoryProvider>
         </AuthProvider>
       </body>
     </html>
