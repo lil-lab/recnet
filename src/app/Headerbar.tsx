@@ -26,7 +26,9 @@ function UserDropdown({ user }: { user: User }) {
   return (
     <DropdownMenu.Root>
       <DropdownMenu.Trigger>
-        <Avatar user={user} />
+        <div>
+          <Avatar user={user} />
+        </div>
       </DropdownMenu.Trigger>
       <DropdownMenu.Content align="center" className="mt-1 md:w-[120px]">
         <DropdownMenu.Item>
