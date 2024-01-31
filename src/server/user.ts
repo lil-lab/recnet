@@ -1,5 +1,6 @@
 "use server";
 import { db } from "@/firebase/admin";
+import { User, UserSchema } from "@/types/user";
 import { FieldValue } from "firebase-admin/firestore";
 
 export async function follow(userId: string, targetUserId: string) {
@@ -41,4 +42,18 @@ export async function getUserByUsername(username: string) {
     null;
   }
   return querySnapshot.docs[0].data();
+}
+
+export async function getUsersByIds(ids: string[]): Promise<User[]> {
+  const users = [];
+  for (const userId of ids) {
+    const docSnap = await db.doc(`users/${userId}`).get();
+    if (docSnap.exists) {
+      const res = UserSchema.safeParse(docSnap.data());
+      if (res.success) {
+        users.push({ ...res.data, id: docSnap.id });
+      }
+    }
+  }
+  return users;
 }

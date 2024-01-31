@@ -51,7 +51,7 @@ export function Profile(props: { user: User }) {
                     underline: "always",
                   }}
                 >
-                  <Text size="3">{`${user.following.length} Following${user.following.length > 1 ? "s" : ""}`}</Text>
+                  <Text size="3">{`${me.following.length} Following${me.following.length > 1 ? "s" : ""}`}</Text>
                 </RecNetLink>
               </Flex>
             ) : null}
