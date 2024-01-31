@@ -14,7 +14,10 @@ const toUser = async (tokens: Tokens | null): Promise<User | null> => {
     return null;
   }
   try {
-    const res = await fetchWithZod(UserSchema, `/api/user?email=${email}`);
+    const res = await fetchWithZod(
+      UserSchema,
+      `/api/userByEmail?email=${email}`
+    );
     return res;
   } catch (e) {
     console.log("Error fetching user", e);

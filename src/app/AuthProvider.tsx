@@ -16,7 +16,10 @@ async function toUser(firebaseUser: FirebaseUser): Promise<User | null> {
   if (!firebaseUser.email) {
     return null;
   }
-  return fetchWithZod(UserSchema, `/api/user?email=${firebaseUser.email}`);
+  return fetchWithZod(
+    UserSchema,
+    `/api/userByEmail?email=${firebaseUser.email}`
+  );
 }
 
 export const AuthProvider: React.FunctionComponent<AuthProviderProps> = ({
