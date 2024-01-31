@@ -6,10 +6,9 @@ import { notEmpty } from "@/utils/notEmpty";
 import { UserCard } from "@/components/UserCard";
 import { DocumentData } from "firebase-admin/firestore";
 import { cn } from "@/utils/cn";
-import { Flex, Grid, Text } from "@radix-ui/themes";
-import { ChevronLeftIcon } from "@radix-ui/react-icons";
-import { RecNetLink } from "@/components/Link";
+import { Grid, Text } from "@radix-ui/themes";
 import { NotFoundBlock } from "./NotFound";
+import { GoBackButton } from "@/components/GoBackButton";
 
 const capitalize = (s: string) => {
   const words = s.split(" ");
@@ -106,16 +105,7 @@ export default async function SearchResultPage({
         "gap-y-6"
       )}
     >
-      <RecNetLink href="/">
-        <Flex className="items-center gap-x-1 p-1 group">
-          <ChevronLeftIcon
-            width="16"
-            height="16"
-            className="relative right-0 group-hover:right-1 transition-all ease-in-out"
-          />
-          Back to homepage
-        </Flex>
-      </RecNetLink>
+      <GoBackButton />
       <Text
         size="7"
         className="text-gray-12 font-medium"
