@@ -1,6 +1,5 @@
 "use client";
 
-import { User } from "@/types/user";
 import { cn } from "@/utils/cn";
 import { Button, Flex, Text } from "@radix-ui/themes";
 import { Avatar } from "@/components/Avatar";
@@ -8,11 +7,30 @@ import { HomeIcon } from "@radix-ui/react-icons";
 import { RecNetLink } from "@/components/Link";
 import { useAuth } from "@/app/AuthContext";
 import { FollowButton } from "@/components/FollowButton";
+import { useUser } from "@/hooks/useUser";
+import { useRouter } from "next/navigation";
 
-export function Profile(props: { user: User }) {
-  const { user } = props;
+export function Profile(props: { username: string }) {
+  const router = useRouter();
+  const { username } = props;
+  const { user, isLoading } = useUser(username, {
+    onErrorCallback: () => {
+      // redirect to 404 page
+      router.replace("/404");
+    },
+  });
   const { user: me } = useAuth();
-  const isMe = me?.username === user.username;
+  const isMe = !!me && !!user && me.username === user.username;
+
+  if (isLoading) {
+    // TODO: finish skeleton loader
+    return <Text>Loading...</Text>;
+  }
+
+  if (!user) {
+    router.replace("/404");
+    return null;
+  }
 
   return (
     <div className={cn("flex-col", "gap-y-6", "flex")}>
