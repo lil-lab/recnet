@@ -1,7 +1,7 @@
 "use client";
 
 import { cn } from "@/utils/cn";
-import { Button, Flex, Text } from "@radix-ui/themes";
+import { Button, Flex, Text, Dialog, TextField } from "@radix-ui/themes";
 import { Avatar } from "@/components/Avatar";
 import { HomeIcon } from "@radix-ui/react-icons";
 import { RecNetLink } from "@/components/Link";
@@ -10,6 +10,78 @@ import { FollowButton } from "@/components/FollowButton";
 import { useUser } from "@/hooks/useUser";
 import { useRouter } from "next/navigation";
 import { Skeleton } from "@/components/Skeleton";
+import { useState } from "react";
+
+function EditProfileDialog() {
+  const [open, setOpen] = useState(false);
+  const { user } = useAuth();
+  // TODO: implement edit profile
+  // use react-hook-form to validate and add submit form api or server action
+
+  return (
+    <Dialog.Root open={open} onOpenChange={setOpen}>
+      <Dialog.Trigger>
+        <Button className="w-full" variant="surface">
+          Edit profile
+        </Button>
+      </Dialog.Trigger>
+
+      <Dialog.Content style={{ maxWidth: 450 }}>
+        <Dialog.Title>Edit profile</Dialog.Title>
+        <Dialog.Description size="2" mb="4">
+          Make changes to your profile.
+        </Dialog.Description>
+
+        <Flex direction="column" gap="3">
+          <label>
+            <Text as="div" size="2" mb="1" weight="medium">
+              Name
+            </Text>
+            <TextField.Input
+              defaultValue={user?.displayName}
+              placeholder="Enter your name"
+            />
+          </label>
+          <label>
+            <Text as="div" size="2" mb="1" weight="medium">
+              User Handle
+            </Text>
+            <TextField.Input
+              defaultValue={user?.username}
+              placeholder="Enter user handle"
+            />
+          </label>
+          <label>
+            <Text as="div" size="2" mb="1" weight="medium">
+              Affiliation
+            </Text>
+            <TextField.Input
+              defaultValue={user?.affiliation}
+              placeholder="Enter your affiliation"
+            />
+          </label>
+        </Flex>
+
+        <Flex gap="3" mt="4" justify="end">
+          <Dialog.Close>
+            <Button variant="soft" color="gray">
+              Cancel
+            </Button>
+          </Dialog.Close>
+          <Button
+            variant="solid"
+            color="blue"
+            onClick={() => {
+              setOpen(false);
+            }}
+          >
+            Save
+          </Button>
+        </Flex>
+      </Dialog.Content>
+    </Dialog.Root>
+  );
+}
 
 export function Profile(props: { username: string }) {
   const router = useRouter();
@@ -111,20 +183,7 @@ export function Profile(props: { username: string }) {
         </Flex>
       </Flex>
       <Flex className="w-full">
-        {isMe ? (
-          <Button
-            className="w-full"
-            variant="surface"
-            onClick={() => {
-              console.log("Edit button clicked");
-              // TODO: Implement edit profile
-            }}
-          >
-            Edit
-          </Button>
-        ) : (
-          <FollowButton user={user} />
-        )}
+        {isMe ? <EditProfileDialog /> : <FollowButton user={user} />}
       </Flex>
     </div>
   );
