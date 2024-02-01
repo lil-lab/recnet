@@ -32,14 +32,14 @@ export function Profile(props: { username: string }) {
           </Flex>
           <Flex className="flex-grow flex-col justify-between h-full">
             <Flex className="p-2 items-center gap-x-4 text-gray-11">
-              <Skeleton className="h-fit w-[200px]">
+              <Skeleton className="h-fit min-w-[200px]">
                 <Text size="6" weight="medium">
                   skeleton placeholder
                 </Text>
               </Skeleton>
             </Flex>
             <Flex className="items-center gap-x-[10px] p-1">
-              <Skeleton className="h-fit w-[300px]">
+              <Skeleton className="h-fit min-w-[300px]">
                 <Text size="3" weight="medium">
                   skeleton placeholder
                 </Text>

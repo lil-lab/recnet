@@ -11,7 +11,7 @@ export function Skeleton(props: SkeletonProps) {
   const { children, className, ...rest } = props;
   return (
     <div className={cn("bg-gray-5", "animate-skeleton", className)} {...rest}>
-      <div className="invisible">{children}</div>
+      <div className="invisible overflow-hidden">{children}</div>
     </div>
   );
 }
