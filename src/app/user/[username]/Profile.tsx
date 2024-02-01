@@ -9,6 +9,7 @@ import { useAuth } from "@/app/AuthContext";
 import { FollowButton } from "@/components/FollowButton";
 import { useUser } from "@/hooks/useUser";
 import { useRouter } from "next/navigation";
+import { Skeleton } from "@/components/Skeleton";
 
 export function Profile(props: { username: string }) {
   const router = useRouter();
@@ -23,8 +24,41 @@ export function Profile(props: { username: string }) {
   const isMe = !!me && !!user && me.username === user.username;
 
   if (isLoading) {
-    // TODO: finish skeleton loader
-    return <Text>Loading...</Text>;
+    return (
+      <div className={cn("flex-col", "gap-y-6", "flex")}>
+        <Flex className="items-center p-3 gap-x-6">
+          <Flex>
+            <Skeleton className="w-[80px] h-[80px] rounded-[999px]" />
+          </Flex>
+          <Flex className="flex-grow flex-col justify-between h-full">
+            <Flex className="p-2 items-center gap-x-4 text-gray-11">
+              <Skeleton className="h-fit w-[200px]">
+                <Text size="6" weight="medium">
+                  skeleton placeholder
+                </Text>
+              </Skeleton>
+            </Flex>
+            <Flex className="items-center gap-x-[10px] p-1">
+              <Skeleton className="h-fit w-[300px]">
+                <Text size="3" weight="medium">
+                  skeleton placeholder
+                </Text>
+              </Skeleton>
+            </Flex>
+          </Flex>
+        </Flex>
+        <Flex className="w-full">
+          <Button
+            className="w-full p-0 overflow-hidden"
+            radius="medium"
+            variant="surface"
+            disabled
+          >
+            <Skeleton className="h-full w-full" />
+          </Button>
+        </Flex>
+      </div>
+    );
   }
 
   if (!user) {

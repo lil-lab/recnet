@@ -18,6 +18,16 @@ const config: Config = {
         white: "#ffffff",
         black: "#000000",
       },
+      animation: {
+        skeleton: "skeleton 1.5s ease-in-out infinite",
+      },
+      keyframes: {
+        skeleton: {
+          "0%": { backgroundPosition: "right", opacity: "1" },
+          "50%": { backgroundPosition: "left", opacity: "0.5" },
+          "100%": { backgroundPosition: "right", opacity: "1" },
+        },
+      },
     },
   },
   plugins: [],
