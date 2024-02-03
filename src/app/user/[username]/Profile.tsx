@@ -15,6 +15,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { updateUser } from "@/server/user";
+import { getErrorMessage, isErrorWithMessage } from "@/utils/error";
 
 const EditUserProfileSchema = z.object({
   name: z.string().min(1, "Name cannot be blank."),
@@ -35,9 +36,8 @@ function EditProfileDialog(props: { username: string }) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const { user, revalidateUser } = useAuth();
-  // TODO: implement edit profile
-  // use react-hook-form to validate and add submit form api or server action
-  const { register, handleSubmit, formState } = useForm({
+
+  const { register, handleSubmit, formState, setError } = useForm({
     resolver: zodResolver(EditUserProfileSchema),
     defaultValues: {
       name: user?.displayName,
@@ -64,17 +64,37 @@ function EditProfileDialog(props: { username: string }) {
               console.error("Invalid form data.");
               return;
             }
-
-            const newUserName = await updateUser(res.data, user.seed);
-            // revaildate user profile
-            const oldUserName = user.username;
-            revalidateUser();
-            if (newUserName !== oldUserName) {
-              // if user change username, redirect to new user profile
-              router.replace(`/user/${newUserName}`);
-            } else {
-              mutate();
+            // if no changes, close dialog
+            if (
+              res.data.name === user.displayName &&
+              res.data.username === user.username &&
+              res.data.affiliation === user.affiliation
+            ) {
               setOpen(false);
+              return;
+            }
+            try {
+              const newUserName = await updateUser(res.data, user.seed);
+              // revaildate user profile
+              const oldUserName = user.username;
+              revalidateUser();
+              if (newUserName !== oldUserName) {
+                // if user change username, redirect to new user profile
+                router.replace(`/user/${newUserName}`);
+              } else {
+                mutate();
+                setOpen(false);
+              }
+            } catch (error) {
+              if (
+                isErrorWithMessage(error) &&
+                getErrorMessage(error) === "Username already exists."
+              ) {
+                setError("username", {
+                  type: "manual",
+                  message: "Username already exists.",
+                });
+              }
             }
           })}
         >
@@ -92,6 +112,11 @@ function EditProfileDialog(props: { username: string }) {
                 placeholder="Enter your name"
                 {...register("name")}
               />
+              {formState.errors.name ? (
+                <Text size="1" color="red">
+                  {formState.errors.name.message}
+                </Text>
+              ) : null}
             </label>
             <label>
               <Text as="div" size="2" mb="1" weight="medium">
@@ -101,6 +126,11 @@ function EditProfileDialog(props: { username: string }) {
                 placeholder="Enter user handle"
                 {...register("username")}
               />
+              {formState.errors.username ? (
+                <Text size="1" color="red">
+                  {formState.errors.username.message}
+                </Text>
+              ) : null}
             </label>
             <label>
               <Text as="div" size="2" mb="1" weight="medium">
