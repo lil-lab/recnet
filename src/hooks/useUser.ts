@@ -20,7 +20,7 @@ export function useUser(
 ) {
   const onSuccessCallback = options?.onSuccessCallback;
   const onErrorCallback = options?.onErrorCallback;
-  const { data, error } = useSWR(
+  const { data, error, mutate } = useSWR(
     username ? `/api/userByUsername?username=${username}` : null,
     async (url) => {
       const res = await fetchWithZod(UserSchema, url);
@@ -42,5 +42,6 @@ export function useUser(
     isLoading:
       !error && !data && !(username === null || username === undefined),
     isError: error,
+    mutate,
   };
 }

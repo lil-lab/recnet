@@ -45,3 +45,41 @@ export async function getUsersByIds(ids: string[]): Promise<User[]> {
   }
   return users;
 }
+
+export async function updateUser(
+  newUser: {
+    username: string;
+    name: string;
+    affiliation?: string;
+  },
+  userId: string
+) {
+  const { username, name, affiliation } = newUser;
+  const docRef = db.doc(`users/${userId}`);
+  const docSnap = await docRef.get();
+
+  if (!docSnap.exists) {
+    throw new Error("User does not exist.");
+  }
+
+  if (username != docSnap?.data?.()?.username) {
+    if (username) {
+      // check if username is unique
+      const snapshot = await db
+        .collection("users")
+        .where("username", "==", username)
+        .get();
+      if (!snapshot.empty) {
+        throw new Error("Username already exists.");
+      }
+    }
+  }
+
+  const data = {
+    username: username,
+    displayName: name,
+    affiliation: affiliation,
+  };
+  await docRef.set(data, { merge: true });
+  return username;
+}

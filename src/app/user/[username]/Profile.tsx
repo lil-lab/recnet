@@ -11,12 +11,41 @@ import { useUser } from "@/hooks/useUser";
 import { useRouter } from "next/navigation";
 import { Skeleton } from "@/components/Skeleton";
 import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
+import { updateUser } from "@/server/user";
 
-function EditProfileDialog() {
+const EditUserProfileSchema = z.object({
+  name: z.string().min(1, "Name cannot be blank."),
+  username: z
+    .string()
+    .min(4)
+    .max(15)
+    .regex(
+      /^[A-Za-z0-9_]+$/,
+      "Username should be between 4 to 15 characters and contain only letters (A-Z, a-z), numbers, and underscores (_)."
+    ),
+  affiliation: z.string().optional(),
+});
+
+function EditProfileDialog(props: { username: string }) {
+  const { username } = props;
+  const { mutate } = useUser(username);
+  const router = useRouter();
   const [open, setOpen] = useState(false);
-  const { user } = useAuth();
+  const { user, revalidateUser } = useAuth();
   // TODO: implement edit profile
   // use react-hook-form to validate and add submit form api or server action
+  const { register, handleSubmit, formState } = useForm({
+    resolver: zodResolver(EditUserProfileSchema),
+    defaultValues: {
+      name: user?.displayName,
+      username: user?.username,
+      affiliation: user?.affiliation,
+    },
+    mode: "onBlur",
+  });
 
   return (
     <Dialog.Root open={open} onOpenChange={setOpen}>
@@ -25,59 +54,85 @@ function EditProfileDialog() {
           Edit profile
         </Button>
       </Dialog.Trigger>
-
       <Dialog.Content style={{ maxWidth: 450 }}>
-        <Dialog.Title>Edit profile</Dialog.Title>
-        <Dialog.Description size="2" mb="4">
-          Make changes to your profile.
-        </Dialog.Description>
+        <form
+          onSubmit={handleSubmit(async (data, e) => {
+            e?.preventDefault();
+            const res = EditUserProfileSchema.safeParse(data);
+            if (!res.success || !user?.seed) {
+              // should not happen, just in case and for typescript to narrow down type
+              console.error("Invalid form data.");
+              return;
+            }
 
-        <Flex direction="column" gap="3">
-          <label>
-            <Text as="div" size="2" mb="1" weight="medium">
-              Name
-            </Text>
-            <TextField.Input
-              defaultValue={user?.displayName}
-              placeholder="Enter your name"
-            />
-          </label>
-          <label>
-            <Text as="div" size="2" mb="1" weight="medium">
-              User Handle
-            </Text>
-            <TextField.Input
-              defaultValue={user?.username}
-              placeholder="Enter user handle"
-            />
-          </label>
-          <label>
-            <Text as="div" size="2" mb="1" weight="medium">
-              Affiliation
-            </Text>
-            <TextField.Input
-              defaultValue={user?.affiliation}
-              placeholder="Enter your affiliation"
-            />
-          </label>
-        </Flex>
-
-        <Flex gap="3" mt="4" justify="end">
-          <Dialog.Close>
-            <Button variant="soft" color="gray">
-              Cancel
-            </Button>
-          </Dialog.Close>
-          <Button
-            variant="solid"
-            color="blue"
-            onClick={() => {
+            const newUserName = await updateUser(res.data, user.seed);
+            // revaildate user profile
+            const oldUserName = user.username;
+            revalidateUser();
+            if (newUserName !== oldUserName) {
+              // if user change username, redirect to new user profile
+              router.replace(`/user/${newUserName}`);
+            } else {
+              mutate();
               setOpen(false);
-            }}
-          >
-            Save
-          </Button>
-        </Flex>
+            }
+          })}
+        >
+          <Dialog.Title>Edit profile</Dialog.Title>
+          <Dialog.Description size="2" mb="4">
+            Make changes to your profile.
+          </Dialog.Description>
+
+          <Flex direction="column" gap="3">
+            <label>
+              <Text as="div" size="2" mb="1" weight="medium">
+                Name
+              </Text>
+              <TextField.Input
+                placeholder="Enter your name"
+                {...register("name")}
+              />
+            </label>
+            <label>
+              <Text as="div" size="2" mb="1" weight="medium">
+                User Handle
+              </Text>
+              <TextField.Input
+                placeholder="Enter user handle"
+                {...register("username")}
+              />
+            </label>
+            <label>
+              <Text as="div" size="2" mb="1" weight="medium">
+                Affiliation
+              </Text>
+              <TextField.Input
+                placeholder="Enter your affiliation"
+                {...register("affiliation")}
+              />
+            </label>
+          </Flex>
+
+          <Flex gap="3" mt="4" justify="end">
+            <Dialog.Close>
+              <Button variant="soft" color="gray">
+                Cancel
+              </Button>
+            </Dialog.Close>
+            <Button
+              variant="solid"
+              color="blue"
+              className={cn({
+                "bg-blue-10": formState.isValid,
+                "bg-gray-5": !formState.isValid,
+              })}
+              type="submit"
+              disabled={!formState.isValid}
+            >
+              Save
+            </Button>
+          </Flex>
+        </form>
       </Dialog.Content>
     </Dialog.Root>
   );
@@ -183,7 +238,11 @@ export function Profile(props: { username: string }) {
         </Flex>
       </Flex>
       <Flex className="w-full">
-        {isMe ? <EditProfileDialog /> : <FollowButton user={user} />}
+        {isMe ? (
+          <EditProfileDialog username={username} />
+        ) : (
+          <FollowButton user={user} />
+        )}
       </Flex>
     </div>
   );
