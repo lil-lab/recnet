@@ -1,7 +1,7 @@
 import { getUserById } from "@/server/user";
 import { Rec } from "@/types/rec";
 import { cn } from "@/utils/cn";
-import { Flex, Link, Text } from "@radix-ui/themes";
+import { Flex, Text } from "@radix-ui/themes";
 import { Avatar } from "./Avatar";
 import { RecNetLink } from "./Link";
 import { formatDate, getDateFromFirebaseTimestamp } from "@/utils/date";
