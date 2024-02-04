@@ -3,6 +3,7 @@ import { Profile } from "./Profile";
 import { getUserByUsername } from "@/server/user";
 import { notFound } from "next/navigation";
 import { getRecsByUserId } from "@/server/rec";
+import { RecCard } from "@/components/RecCard";
 
 export default async function UserProfilePage({
   params,
@@ -34,8 +35,8 @@ export default async function UserProfilePage({
       <Profile username={username} />
       <div className="w-full h-[1px] bg-gray-8" />
       {/* TODO: render user old recs */}
-      {recs.map((rec) => {
-        return <div key={rec.title}>{rec.title}</div>;
+      {recs.map((rec, idx) => {
+        return <RecCard key={`${rec.title}-${rec.userId}-${idx}`} rec={rec} />;
       })}
     </div>
   );

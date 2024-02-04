@@ -1,3 +1,6 @@
+import { FirebaseTs } from "@/types/rec";
+import { Timestamp } from "firebase/firestore";
+
 const CYCLE_DUE_DAY = 2;
 
 export const getNextCutOff = (): Date => {
@@ -28,4 +31,14 @@ export const getVerboseDateString = (date: Date): string => {
   })
     .format(date)
     .replaceAll(",", " ");
+};
+
+export const getDateFromFirebaseTimestamp = (ts: FirebaseTs): Date => {
+  const timestamp = new Timestamp(ts._seconds, ts._nanoseconds);
+  return timestamp.toDate();
+};
+
+export const formatDate = (date: Date): string => {
+  // return MM/DD/YYYY
+  return date.toLocaleDateString("en-US");
 };

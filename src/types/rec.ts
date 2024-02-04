@@ -5,6 +5,8 @@ export const FirebaseTsSchema = z.object({
   _nanoseconds: z.number(),
 });
 
+export type FirebaseTs = z.infer<typeof FirebaseTsSchema>;
+
 export const RecSchema = z.object({
   author: z.string(),
   createdAt: FirebaseTsSchema,
