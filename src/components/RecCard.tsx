@@ -59,11 +59,9 @@ export async function RecCard(props: { rec: Rec }) {
           direction={"column"}
           className={cn("p-4", "gap-y-3", "bg-gray-3", "rounded-2")}
         >
-          <Link href={rec.link}>
-            <Text size="5" weight="medium">
-              {rec.title}
-            </Text>
-          </Link>
+          <Text size="5" className="text-accent-11 font-medium">
+            {rec.title}
+          </Text>
           <Text size="2" className="text-gray-10">
             {rec.author}
           </Text>
@@ -72,15 +70,13 @@ export async function RecCard(props: { rec: Rec }) {
               <CalendarIcon width={16} height={16} />
               <Text size="2">{`${!rec.month ? "" : `${rec.month}, `}${rec.year}`}</Text>
             </Flex>
-            <Link href={rec.link} className="no-underline">
-              <Flex className="items-center gap-x-1">
-                <Text size="1">Read</Text>{" "}
-                <ChevronRight
-                  size="16"
-                  className="relative left-0 group-hover:left-[4px] transition-all duration-200 ease-in-out"
-                />
-              </Flex>
-            </Link>
+            <Flex className="items-center gap-x-1 text-accent-11">
+              <Text size="1">Read</Text>{" "}
+              <ChevronRight
+                size="16"
+                className="relative left-0 group-hover:left-[4px] transition-all duration-200 ease-in-out"
+              />
+            </Flex>
           </Flex>
         </Flex>
       </a>
