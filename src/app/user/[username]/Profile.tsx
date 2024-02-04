@@ -230,13 +230,13 @@ export function Profile(props: { username: string }) {
           <Avatar user={user} className={cn("w-[80px]", "h-[80px]")} />
         </Flex>
         <Flex className="flex-grow flex-col justify-between h-full">
-          <Flex className="p-2 items-center gap-x-4 text-gray-11">
+          <Flex className="p-2 items-center gap-x-4 text-gray-11 flex-wrap">
             <Text size="6" weight="medium">
               {user.displayName}
             </Text>
             <Text size="4">{"@" + user.username}</Text>
           </Flex>
-          <Flex className="items-center gap-x-[10px] p-1">
+          <Flex className="items-center gap-x-[10px] p-1 flex-wrap">
             {user.affiliation ? (
               <Flex className="items-center gap-x-1 text-gray-11">
                 <HomeIcon width="16" height="16" />
