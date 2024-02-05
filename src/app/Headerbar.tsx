@@ -118,7 +118,7 @@ export function Headerbar() {
       )}
     >
       <Flex className="items-center" gap="4">
-        <Link href="/">
+        <Link href={user ? "/feeds" : "/"}>
           <Text className={cn("text-blue-10", "font-bold")} size="8">
             RecNet
           </Text>
