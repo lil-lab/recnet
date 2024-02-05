@@ -19,7 +19,7 @@ export default async function UserProfilePage({
     }
     return user;
   });
-  const recs = await getRecsByUserId(user.seed);
+  const recs = await getRecsByUserId(user.id);
 
   return (
     <div

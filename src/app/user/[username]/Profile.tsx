@@ -59,7 +59,7 @@ function EditProfileDialog(props: { username: string }) {
           onSubmit={handleSubmit(async (data, e) => {
             e?.preventDefault();
             const res = EditUserProfileSchema.safeParse(data);
-            if (!res.success || !user?.seed) {
+            if (!res.success || !user?.id) {
               // should not happen, just in case and for typescript to narrow down type
               console.error("Invalid form data.");
               return;
@@ -74,7 +74,7 @@ function EditProfileDialog(props: { username: string }) {
               return;
             }
             try {
-              const newUserName = await updateUser(res.data, user.seed);
+              const newUserName = await updateUser(res.data, user.id);
               // revaildate user profile
               const oldUserName = user.username;
               revalidateUser();

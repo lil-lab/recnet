@@ -16,7 +16,7 @@ interface FollowButtonProps extends Omit<RadixButtonProps, "variant"> {
 export function FollowButton(props: FollowButtonProps) {
   const { user, ...rest } = props;
   const { user: me, revalidateUser } = useAuth();
-  const isFollowing = me?.following.includes(user.seed);
+  const isFollowing = me?.following.includes(user.id);
 
   const [isLoading, setIsLoading] = useState(false);
 
@@ -32,7 +32,7 @@ export function FollowButton(props: FollowButtonProps) {
         setIsLoading(true);
         if (isFollowing) {
           try {
-            await unfollow(me.seed, user.seed);
+            await unfollow(me.id, user.id);
             await revalidateUser();
             toast.success(`Successfully unfollowed ${user.displayName}`);
           } catch (e) {
@@ -40,7 +40,7 @@ export function FollowButton(props: FollowButtonProps) {
           }
         } else {
           try {
-            await follow(me.seed, user.seed);
+            await follow(me.id, user.id);
             await revalidateUser();
             toast.success(`You're following ${user.displayName}`);
           } catch (e) {
@@ -50,7 +50,7 @@ export function FollowButton(props: FollowButtonProps) {
         setIsLoading(false);
       }}
       color={me ? "blue" : "gray"}
-      disabled={!!me && me.seed === user.seed}
+      disabled={!!me && me.id === user.id}
       {...rest}
     >
       {isLoading ? (
