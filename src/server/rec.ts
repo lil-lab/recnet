@@ -27,7 +27,7 @@ export async function getRecsByUserId(
 
   const recs: Rec[] = [];
   querySnapshot.forEach((doc) => {
-    const res = RecSchema.safeParse(doc.data());
+    const res = RecSchema.safeParse({ ...doc.data(), id: doc.id });
     if (res.success) {
       recs.push(res.data);
     } else {

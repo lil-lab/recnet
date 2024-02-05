@@ -18,6 +18,7 @@ export const RecSchema = z.object({
   month: z.string(), // can be empty string if not provided now, will refactor in the future
   title: z.string(),
   userId: z.string(),
+  id: z.string(),
 });
 
 export type Rec = z.infer<typeof RecSchema>;
