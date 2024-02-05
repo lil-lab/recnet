@@ -2,14 +2,20 @@ import { FirebaseTs } from "@/types/rec";
 import { Timestamp } from "firebase/firestore";
 
 const CYCLE_DUE_DAY = 2;
+export const START_DATE = new Date(2023, 9, 24);
+
+export const getCutOff = (_date: Date): Date => {
+  const date = new Date(_date.getTime());
+  const currentDay = date.getUTCDay();
+  const daysUntilNextCutoff = (CYCLE_DUE_DAY + 7 - currentDay) % 7;
+  date.setUTCDate(date.getUTCDate() + daysUntilNextCutoff);
+  date.setUTCHours(23, 59, 59, 999);
+  return date;
+};
 
 export const getNextCutOff = (): Date => {
   const currentDate = new Date();
-  const currentDay = currentDate.getUTCDay();
-  const daysUntilNextCutoff = (CYCLE_DUE_DAY + 7 - currentDay) % 7;
-  currentDate.setUTCDate(currentDate.getUTCDate() + daysUntilNextCutoff);
-  currentDate.setUTCHours(23, 59, 59, 999);
-  return currentDate;
+  return getCutOff(currentDate);
 };
 
 export const getLatestCutOff = (): Date => {
