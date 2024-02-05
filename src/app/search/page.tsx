@@ -51,7 +51,9 @@ async function getSearchResults(query: string): Promise<User[]> {
   // return all users
   if (query.length === 0) {
     const allUsers = await db.collection("users").get();
-    return checkUsers(allUsers.docs.map((doc) => doc.data()));
+    return checkUsers(
+      allUsers.docs.map((doc) => ({ ...doc.data(), id: doc.id }))
+    );
   }
   //search by username
   const usernameQuerySnapshot = await db
@@ -77,8 +79,8 @@ async function getSearchResults(query: string): Promise<User[]> {
     .get();
 
   const results = [
-    ...usernameQuerySnapshot.docs.map((doc) => doc.data()),
-    ...nameQuerySnapshot.docs.map((doc) => doc.data()),
+    ...usernameQuerySnapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id })),
+    ...nameQuerySnapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id })),
   ];
 
   return checkUsers(results);

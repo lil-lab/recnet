@@ -15,7 +15,10 @@ export async function GET(request: NextRequest) {
         status: 404,
       });
     }
-    return Response.json(querySnapshot.docs[0].data());
+    return Response.json({
+      ...querySnapshot.docs[0].data(),
+      id: querySnapshot.docs[0].id,
+    });
   } catch (error) {
     return Response.json(null, {
       status: 500,

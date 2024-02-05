@@ -51,7 +51,7 @@ export async function getUserById(userId: string): Promise<User | null> {
   if (docSnap.exists) {
     const res = UserSchema.safeParse(docSnap.data());
     if (res.success) {
-      return UserSchema.parse(docSnap.data());
+      return UserSchema.parse({ ...docSnap.data(), id: docSnap.id });
     }
   }
   return null;
@@ -68,7 +68,10 @@ export async function getUserByUsername(
   if (querySnapshot.empty) {
     null;
   }
-  return UserSchema.parse(querySnapshot.docs[0].data());
+  return UserSchema.parse({
+    ...querySnapshot.docs[0].data(),
+    id: querySnapshot.docs[0].id,
+  });
 }
 
 export async function updateUser(
@@ -78,7 +81,7 @@ export async function updateUser(
     affiliation?: string;
   },
   userId: string
-) {
+): Promise<string> {
   const { username, name, affiliation } = newUser;
   const docRef = db.doc(`users/${userId}`);
   const docSnap = await docRef.get();

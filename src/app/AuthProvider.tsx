@@ -28,6 +28,8 @@ export const AuthProvider: React.FunctionComponent<AuthProviderProps> = ({
 }) => {
   const [user, setUser] = React.useState(serverUser);
 
+  console.log({ user });
+
   async function revalidateUser() {
     const firebaseUser = getAuth(getFirebaseApp()).currentUser;
     if (!firebaseUser) {
