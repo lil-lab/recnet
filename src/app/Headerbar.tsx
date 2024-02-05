@@ -114,7 +114,9 @@ export function Headerbar() {
         "shadow-4",
         "bg-white",
         "border-b-[1px]",
-        "border-slate-8"
+        "border-slate-8",
+        "sticky",
+        "top-0"
       )}
     >
       <Flex className="items-center" gap="4">

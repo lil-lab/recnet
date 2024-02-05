@@ -49,7 +49,7 @@ export default async function FeedPage({
         "flex-col",
         "gap-y-4",
         "mx-auto",
-        "pt-12"
+        "py-12"
       )}
     >
       {recs.length > 0 ? (
