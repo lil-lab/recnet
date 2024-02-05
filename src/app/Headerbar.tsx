@@ -19,9 +19,10 @@ import { useRouter, usePathname } from "next/navigation";
 import { Avatar } from "@/components/Avatar";
 
 function UserDropdown({ user }: { user: User }) {
+  const router = useRouter();
   const handleLogout = async () => {
     await logout();
-    window.location.reload();
+    router.push("/");
   };
   return (
     <DropdownMenu.Root>
