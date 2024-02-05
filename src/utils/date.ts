@@ -48,3 +48,16 @@ export const formatDate = (date: Date): string => {
   // return MM/DD/YYYY
   return date.toLocaleDateString("en-US");
 };
+
+export const getCutOffFromStartDate = (_startDate?: Date): Date[] => {
+  const startDate = _startDate || START_DATE;
+  const cutOffs: Date[] = [];
+  let curr = getCutOff(startDate);
+  const now = new Date();
+  while (curr.getTime() < now.getTime()) {
+    cutOffs.push(curr);
+    curr = new Date(curr.getTime());
+    curr.setUTCDate(curr.getUTCDate() + 7);
+  }
+  return cutOffs.reverse();
+};
