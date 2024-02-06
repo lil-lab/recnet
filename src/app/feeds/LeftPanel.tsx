@@ -6,15 +6,36 @@ import {
   getCutOffFromStartDate,
   getCutOff,
   getLatestCutOff,
+  getNextCutOff,
+  getDateFromFirebaseTimestamp,
+  getVerboseDateString,
 } from "@/utils/date";
-import { Text } from "@radix-ui/themes";
+import { Text, Flex, Button } from "@radix-ui/themes";
 import { useSearchParams } from "next/navigation";
+import { useAuth } from "@/app/AuthContext";
+import { useRec } from "@/hooks/useRec";
+import { Pencil1Icon } from "@radix-ui/react-icons";
 
 export function LeftPanel() {
   const searchParams = useSearchParams();
   const date = searchParams.get("date");
   const cutoff = date ? getCutOff(new Date(date)) : getLatestCutOff();
   const cutoffs = getCutOffFromStartDate();
+  const { user } = useAuth();
+  const lastPostId = user?.postIds
+    ? user.postIds[user.postIds.length - 1]
+    : null;
+  const { rec } = useRec(lastPostId);
+  const hasRecInThisCycle =
+    rec &&
+    getDateFromFirebaseTimestamp(rec.cutoff).getTime() ===
+      getNextCutOff().getTime();
+
+  if (!user) {
+    // his should never happen, since the user should be authenticated to be here
+    // just for narrowing the type
+    return null;
+  }
 
   return (
     <div
@@ -29,14 +50,27 @@ export function LeftPanel() {
       <div
         className={cn("flex", "flex-col", "gap-y-3", "sticky", "top-[80px]")}
       >
-        <Text size="2" className="text-gray-10">
-          Left bar: under construction 🚧
+        <Text size="2" className="text-gray-11 p-1" weight="medium">
+          {hasRecInThisCycle ? "PLACEHOLDER" : `Hi, ${user.displayName} 👋`}
         </Text>
-        <Text size="2" className="text-gray-10">
-          Left bar: under construction 🚧
+        <Text size="2" className="text-gray-11 p-1" weight="medium">
+          {hasRecInThisCycle
+            ? "PLACEHOLDER"
+            : `Anything interesting this week?`}
         </Text>
-        <Text size="2" className="text-gray-10">
-          Left bar: under construction 🚧
+        <Flex className="w-full">
+          {hasRecInThisCycle ? (
+            "PLACEHOLDER"
+          ) : (
+            <Button size="3" className="w-full">
+              <Pencil1Icon width="16" height="16" />
+              Recommend a paper
+            </Button>
+          )}
+        </Flex>
+        <Text size="1" weight="medium" className="text-gray-9 p-1">
+          {`This cycle concludes on ${getVerboseDateString(getNextCutOff())}
+          time.`}
         </Text>
         <div className="w-full h-[1px] bg-gray-8" />
         <div className="w-full p-2 flex flex-col gap-y-2">
