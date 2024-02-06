@@ -86,18 +86,10 @@ function RecForm(props: {
           currentRec?.year && !Number.isNaN(parseInt(currentRec.year))
             ? parseInt(currentRec.year)
             : undefined,
-        month:
-          currentRec?.month !== undefined && currentRec.month !== ""
-            ? currentRec.month
-            : undefined,
+        month: currentRec?.month,
       },
       mode: "onBlur",
     });
-
-  console.log("curr", currentRec);
-  console.log(watch());
-  // console.log(formState.errors);
-  // console.log(formState.isValid);
 
   return (
     <motion.div
@@ -130,7 +122,6 @@ function RecForm(props: {
           const res = RecFormSchema.safeParse(data);
           if (!res.success) {
             // should not happen, just in case and for typescript to narrow down type
-            console.log(res.error);
             console.error("Invalid form data.");
             return;
           }
@@ -153,7 +144,6 @@ function RecForm(props: {
             setIsRecFormOpen(false);
             return;
           }
-          console.log("res.data", res.data);
           try {
             // if currentRec exists, update, else insert new rec
             if (currentRec) {
@@ -247,14 +237,13 @@ function RecForm(props: {
           </div>
           <div className="min-w-[50%] w-[60%]">
             <Controller
-              key={watch("month")}
               control={control}
               name="month"
               render={({ field }) => {
                 return (
                   <Select.Root
                     key={watch("month")}
-                    value={field.value}
+                    value={getValues("month")}
                     onValueChange={(value) => {
                       if (value === "empty") {
                         field.onChange(undefined);
@@ -279,9 +268,7 @@ function RecForm(props: {
                       <Select.Value
                         placeholder="Month(optional)"
                         className="h-fi"
-                      >
-                        {field.value}
-                      </Select.Value>
+                      />
                       <Select.Icon className="pl-2 absolute right-2">
                         <ChevronDownIcon />
                       </Select.Icon>
