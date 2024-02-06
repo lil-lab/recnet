@@ -3,6 +3,20 @@ import { Timestamp } from "firebase/firestore";
 
 const CYCLE_DUE_DAY = 2;
 export const START_DATE = new Date(2023, 9, 24);
+export const Months = [
+  "Jan",
+  "Feb",
+  "Mar",
+  "Apr",
+  "May",
+  "Jun",
+  "Jul",
+  "Aug",
+  "Sep",
+  "Oct",
+  "Nov",
+  "Dec",
+];
 
 export const getCutOff = (_date: Date): Date => {
   const date = new Date(_date.getTime());
