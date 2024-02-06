@@ -22,13 +22,19 @@ import {
   PersonIcon,
   SewingPinIcon,
 } from "@radix-ui/react-icons";
-import { useState } from "react";
+import { forwardRef, useState } from "react";
 import { ChevronLeft } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Rec } from "@/types/rec";
-import { useForm } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
+import * as Select from "@radix-ui/react-select";
+import {
+  CheckIcon,
+  ChevronDownIcon,
+  ChevronUpIcon,
+} from "@radix-ui/react-icons";
 
 const RecFormSchema = z.object({
   link: z.string().url(),
@@ -54,23 +60,24 @@ function RecForm(props: {
 }) {
   const { setIsRecFormOpen, currentRec } = props;
 
-  const { register, handleSubmit, formState, getValues } = useForm({
-    resolver: zodResolver(RecFormSchema),
-    defaultValues: {
-      link: currentRec?.link,
-      title: currentRec?.title,
-      author: currentRec?.author,
-      description: currentRec?.description,
-      year:
-        currentRec?.year && !Number.isNaN(parseInt(currentRec.year))
-          ? parseInt(currentRec.year)
-          : undefined,
-      month: currentRec?.month ? Months.indexOf(currentRec.month) : undefined,
-    },
-    mode: "onBlur",
-  });
+  const { register, watch, handleSubmit, formState, getValues, control } =
+    useForm({
+      resolver: zodResolver(RecFormSchema),
+      defaultValues: {
+        link: currentRec?.link,
+        title: currentRec?.title,
+        author: currentRec?.author,
+        description: currentRec?.description,
+        year:
+          currentRec?.year && !Number.isNaN(parseInt(currentRec.year))
+            ? parseInt(currentRec.year)
+            : undefined,
+        month: currentRec?.month ? Months.indexOf(currentRec.month) : undefined,
+      },
+      mode: "onBlur",
+    });
 
-  console.log(getValues());
+  console.log(watch("month"));
   console.log(formState.errors);
 
   return (
@@ -140,7 +147,7 @@ function RecForm(props: {
           </TextField.Root>
         </div>
         <Flex className="gap-x-[10px]">
-          <div>
+          <div className="w-[40%]">
             <TextField.Root>
               <TextField.Slot>
                 <CalendarIcon width="16" height="16" />
@@ -152,17 +159,74 @@ function RecForm(props: {
               />
             </TextField.Root>
           </div>
-          <div>
-            <TextField.Root>
-              <TextField.Slot>
-                <CalendarIcon width="16" height="16" />
-              </TextField.Slot>
-              <TextField.Input
-                placeholder="Month(optional)"
-                className="w-full"
-                {...register("month")}
-              />
-            </TextField.Root>
+          <div className="min-w-[50%] w-[60%]">
+            <Controller
+              control={control}
+              name="month"
+              render={({ field }) => {
+                return (
+                  <Select.Root
+                    key={watch("month")}
+                    value={field.value ? `${field.value}` : undefined}
+                    onValueChange={(value) => {
+                      if (value === "empty") {
+                        field.onChange(undefined);
+                      } else {
+                        field.onChange(value);
+                      }
+                    }}
+                  >
+                    <Select.Trigger
+                      className={cn(
+                        "inline-flex items-center justify-start h-[32px] bg-white outline-none border-[1px] rounded-2 border-gray-6 text-[14px] leading-[14px] px-2",
+                        "data-[placeholder]:text-gray-9",
+                        "w-full",
+                        "relative",
+                        "placeholder:text-gray-2 text-gray-12"
+                      )}
+                      aria-label="Food"
+                    >
+                      <Select.Icon className="pr-2">
+                        <CalendarIcon width="16" height="16" />
+                      </Select.Icon>
+                      <Select.Value
+                        placeholder="Month(optional)"
+                        className="h-fi"
+                      />
+                      <Select.Icon className="pl-2 absolute right-2">
+                        <ChevronDownIcon />
+                      </Select.Icon>
+                    </Select.Trigger>
+
+                    <Select.Portal>
+                      <Select.Content
+                        className={cn(
+                          "overflow-hidden bg-white rounded-[8px] border-[1px] border-gray-6",
+                          "shadow-[0px_10px_38px_-10px_rgba(22,_23,_24,_0.35),0px_10px_20px_-15px_rgba(22,_23,_24,_0.2)]"
+                        )}
+                      >
+                        <Select.ScrollUpButton className="flex items-center justify-center h-[25px] bg-white text-blue-10 cursor-default">
+                          <ChevronUpIcon />
+                        </Select.ScrollUpButton>
+                        <Select.Viewport className="p-1">
+                          <SelectItem value={`empty`}>Select...</SelectItem>
+                          {Months.map((month, idx) => {
+                            return (
+                              <SelectItem key={idx} value={`${idx}`}>
+                                {month}
+                              </SelectItem>
+                            );
+                          })}
+                        </Select.Viewport>
+                        <Select.ScrollDownButton className="flex items-center justify-center h-[25px] bg-white text-blue-10 cursor-default">
+                          <ChevronDownIcon />
+                        </Select.ScrollDownButton>
+                      </Select.Content>
+                    </Select.Portal>
+                  </Select.Root>
+                );
+              }}
+            />
           </div>
         </Flex>
         <div>
@@ -177,6 +241,29 @@ function RecForm(props: {
     </motion.div>
   );
 }
+
+const SelectItem = forwardRef<HTMLDivElement, Select.SelectItemProps>(
+  ({ children, className, ...props }, forwardedRef) => {
+    return (
+      <Select.Item
+        className={cn(
+          "text-[14px] text-gray-9 rounded-[3px] flex items-center relative select-none py-1",
+          "data-[highlighted]:outline-none data-[highlighted]:bg-blue-9 data-[highlighted]:text-blue-2",
+          "pl-[25px]",
+          className
+        )}
+        {...props}
+        ref={forwardedRef}
+      >
+        <Select.ItemText>{children}</Select.ItemText>
+        <Select.ItemIndicator className="absolute left-0 w-[25px] inline-flex items-center justify-center">
+          <CheckIcon />
+        </Select.ItemIndicator>
+      </Select.Item>
+    );
+  }
+);
+SelectItem.displayName = "SelectItem";
 
 export function LeftPanel() {
   const searchParams = useSearchParams();
