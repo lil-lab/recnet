@@ -121,3 +121,23 @@ export async function insertRec(data: Partial<Rec>, user: User): Promise<void> {
     { merge: true }
   );
 }
+
+export async function deleteRec(recId: string, userId: string): Promise<void> {
+  const docRef = db.doc(`recommendations/${recId}`);
+  const docSnap = await docRef.get();
+  if (docSnap.exists) {
+    // delete from user postIds
+    const userRef = db.doc(`users/${userId}`);
+    await userRef.set(
+      {
+        postIds: FieldValue.arrayRemove(recId),
+      },
+      { merge: true }
+    );
+    // delete post
+    await docRef.delete();
+  } else {
+    // post doens't exist
+    throw new Error("Post doesn't exist");
+  }
+}

@@ -36,7 +36,7 @@ import {
   ChevronUpIcon,
 } from "@radix-ui/react-icons";
 import { toast } from "sonner";
-import { insertRec, updateRec } from "@/server/rec";
+import { insertRec, updateRec, deleteRec } from "@/server/rec";
 import { User } from "@/types/user";
 
 const RecFormSchema = z.object({
@@ -66,12 +66,14 @@ function RecForm(props: {
   currentRec: Rec | null;
   user: User;
   onUpdateSuccess?: () => void;
+  onDeleteSuccess?: () => void;
 }) {
   const {
     setIsRecFormOpen,
     currentRec,
     user,
     onUpdateSuccess = () => {},
+    onDeleteSuccess = () => {},
   } = props;
 
   const { register, watch, handleSubmit, formState, getValues, control } =
@@ -336,6 +338,25 @@ function RecForm(props: {
         >
           Save
         </Button>
+        {currentRec ? (
+          <Button
+            variant="outline"
+            color="red"
+            onClick={async () => {
+              try {
+                await deleteRec(currentRec.id, user.id);
+                await onDeleteSuccess();
+                setIsRecFormOpen(false);
+              } catch (error) {
+                console.error(error);
+                toast.error("Failed to delete rec.");
+                return;
+              }
+            }}
+          >
+            Delete
+          </Button>
+        ) : null}
       </form>
     </motion.div>
   );
@@ -373,7 +394,9 @@ export function LeftPanel() {
   const lastPostId = user?.postIds
     ? user.postIds[user.postIds.length - 1]
     : null;
-  const { rec, mutate } = useRec(lastPostId);
+  const { rec, mutate } = useRec(lastPostId, {
+    onErrorCallback: () => {}, // After deleting rec, the hook wil fetch again and throw a not-found error due to a time difference
+  });
   const hasRecInThisCycle =
     rec &&
     getDateFromFirebaseTimestamp(rec.cutoff).getTime() ===
@@ -412,6 +435,10 @@ export function LeftPanel() {
             onUpdateSuccess={async () => {
               await revalidateUser();
               mutate();
+            }}
+            onDeleteSuccess={async () => {
+              await revalidateUser();
+              await mutate();
             }}
           />
         ) : (

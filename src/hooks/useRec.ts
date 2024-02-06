@@ -20,7 +20,7 @@ export function useRec(
 ) {
   const onSuccessCallback = options?.onSuccessCallback;
   const onErrorCallback = options?.onErrorCallback;
-  const { data, error, mutate } = useSWR(
+  const { data, error, mutate, isValidating } = useSWR(
     recId ? `/api/recById?id=${recId}` : null,
     async (url) => {
       const res = await fetchWithZod(RecSchema, url);
@@ -31,9 +31,11 @@ export function useRec(
         await onSuccessCallback?.(data, key, config);
       },
       onError: (error, key, config) => {
-        toast.error("Error fetching Rec");
-        console.log("Error fetching Rec: ", error);
-        onErrorCallback?.(error, key, config);
+        if (onErrorCallback === undefined) {
+          toast.error("Error fetching Rec");
+        } else {
+          onErrorCallback(error, key, config);
+        }
       },
     }
   );
@@ -43,5 +45,6 @@ export function useRec(
     isLoading: !error && !data && !(recId === null || recId === undefined),
     isError: error,
     mutate,
+    isValidating,
   };
 }
