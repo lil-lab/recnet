@@ -38,6 +38,7 @@ import {
 import { toast } from "sonner";
 import { insertRec, updateRec, deleteRec } from "@/server/rec";
 import { User } from "@/types/user";
+import { Skeleton } from "@/components/Skeleton";
 
 const RecFormSchema = z.object({
   link: z.string().url(),
@@ -385,6 +386,103 @@ const SelectItem = forwardRef<HTMLDivElement, Select.SelectItemProps>(
 );
 SelectItem.displayName = "SelectItem";
 
+function RecStatusPanel(props: {
+  setIsRecFormOpen: (open: boolean) => void;
+  hasRecInThisCycle: boolean;
+  user: User;
+  rec: Rec | null;
+  isLoading: boolean;
+}) {
+  const { setIsRecFormOpen, hasRecInThisCycle, user, rec, isLoading } = props;
+
+  if (isLoading) {
+    return (
+      <div className={cn("flex", "flex-col", "gap-y-3")}>
+        <Skeleton className="h-fit w-fit">
+          <Text size="2" className="text-gray-11 p-1" weight="medium">
+            skeleton placeholder
+          </Text>
+        </Skeleton>
+        <Skeleton className="h-fit w-fit">
+          <Text size="2" className="text-gray-11 p-1" weight="medium">
+            skeleton placeholder
+          </Text>
+        </Skeleton>
+        <Flex className="w-full">
+          <Button
+            size={{
+              initial: "2",
+              lg: "3",
+            }}
+            className="w-full px-0"
+            variant={"surface"}
+            disabled
+          >
+            <Skeleton className="h-full w-full" />
+          </Button>
+        </Flex>
+        <Text size="1" weight="medium" className="text-gray-9 p-1">
+          {`This cycle concludes on ${getVerboseDateString(getNextCutOff())}
+time.`}
+        </Text>
+      </div>
+    );
+  }
+
+  return (
+    <div className={cn("flex", "flex-col", "gap-y-3")}>
+      <Text
+        size="2"
+        className="text-gray-11 p-1"
+        weight="medium"
+        asChild={hasRecInThisCycle ?? undefined}
+      >
+        {hasRecInThisCycle ? (
+          <div className="flex flex-row">
+            Your pick:{" "}
+            <div
+              className="px-1 text-blue-11 cursor-pointer"
+              onClick={() => {
+                // open window
+                window.open(rec?.link, "_blank");
+              }}
+            >
+              {rec?.title}
+            </div>
+          </div>
+        ) : (
+          `Hi, ${user.displayName} 👋`
+        )}
+      </Text>
+      <Text size="2" className="text-gray-11 p-1" weight="medium">
+        {hasRecInThisCycle
+          ? "You can modify at anytime you want before this cycle ends."
+          : `Anything interesting this week?`}
+      </Text>
+      <Flex className="w-full">
+        <Button
+          size={{
+            initial: "2",
+            lg: "3",
+          }}
+          className="w-full"
+          onClick={() => {
+            setIsRecFormOpen(true);
+          }}
+          variant={hasRecInThisCycle ? "outline" : "solid"}
+        >
+          <Pencil1Icon width="16" height="16" />
+          {hasRecInThisCycle ? "Edit your pick" : "Recommend a paper"}
+        </Button>
+      </Flex>
+      <Text size="1" weight="medium" className="text-gray-9 p-1">
+        {`This cycle concludes on ${getVerboseDateString(getNextCutOff())}
+time.`}
+      </Text>
+    </div>
+  );
+}
+
 export function LeftPanel() {
   const searchParams = useSearchParams();
   const date = searchParams.get("date");
@@ -394,17 +492,17 @@ export function LeftPanel() {
   const lastPostId = user?.postIds
     ? user.postIds[user.postIds.length - 1]
     : null;
-  const { rec, mutate } = useRec(lastPostId, {
+  const { rec, mutate, isLoading, isValidating } = useRec(lastPostId, {
     onErrorCallback: () => {}, // After deleting rec, the hook wil fetch again and throw a not-found error due to a time difference
   });
   const hasRecInThisCycle =
-    rec &&
+    !!rec &&
     getDateFromFirebaseTimestamp(rec.cutoff).getTime() ===
       getNextCutOff().getTime();
   const [isRecFormOpen, setIsRecFormOpen] = useState(false);
 
   if (!user) {
-    // his should never happen, since the user should be authenticated to be here
+    // this should never happen, since the user should be authenticated to be here
     // just for narrowing the type
     return null;
   }
@@ -426,7 +524,7 @@ export function LeftPanel() {
         "ease-in-out"
       )}
     >
-      <AnimatePresence mode="wait">
+      <AnimatePresence mode="wait" initial={false}>
         {isRecFormOpen ? (
           <RecForm
             setIsRecFormOpen={setIsRecFormOpen}
@@ -458,54 +556,13 @@ export function LeftPanel() {
               duration: 0.2,
             }}
           >
-            <Text
-              size="2"
-              className="text-gray-11 p-1"
-              weight="medium"
-              asChild={hasRecInThisCycle ?? undefined}
-            >
-              {hasRecInThisCycle ? (
-                <div className="flex flex-row">
-                  Your pick:{" "}
-                  <div
-                    className="px-1 text-blue-11 cursor-pointer"
-                    onClick={() => {
-                      // open window
-                      window.open(rec.link, "_blank");
-                    }}
-                  >
-                    {rec.title}
-                  </div>
-                </div>
-              ) : (
-                `Hi, ${user.displayName} 👋`
-              )}
-            </Text>
-            <Text size="2" className="text-gray-11 p-1" weight="medium">
-              {hasRecInThisCycle
-                ? "You can modify at anytime you want before this cycle ends."
-                : `Anything interesting this week?`}
-            </Text>
-            <Flex className="w-full">
-              <Button
-                size={{
-                  initial: "2",
-                  lg: "3",
-                }}
-                className="w-full"
-                onClick={() => {
-                  setIsRecFormOpen(true);
-                }}
-                variant={hasRecInThisCycle ? "outline" : "solid"}
-              >
-                <Pencil1Icon width="16" height="16" />
-                {hasRecInThisCycle ? "Edit your pick" : "Recommend a paper"}
-              </Button>
-            </Flex>
-            <Text size="1" weight="medium" className="text-gray-9 p-1">
-              {`This cycle concludes on ${getVerboseDateString(getNextCutOff())}
-          time.`}
-            </Text>
+            <RecStatusPanel
+              setIsRecFormOpen={setIsRecFormOpen}
+              user={user}
+              rec={rec}
+              hasRecInThisCycle={hasRecInThisCycle}
+              isLoading={isLoading || isValidating}
+            />
             <div className="w-full h-[1px] bg-gray-8" />
             <div className="w-full p-2 flex flex-col gap-y-2">
               <Text size="1" weight={"medium"} className="text-gray-11">
