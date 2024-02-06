@@ -430,7 +430,7 @@ export function LeftPanel() {
         {isRecFormOpen ? (
           <RecForm
             setIsRecFormOpen={setIsRecFormOpen}
-            currentRec={rec}
+            currentRec={hasRecInThisCycle ? rec : null}
             user={user}
             onUpdateSuccess={async () => {
               await revalidateUser();
