@@ -35,30 +35,44 @@ import {
   ChevronDownIcon,
   ChevronUpIcon,
 } from "@radix-ui/react-icons";
+import { toast } from "sonner";
+import { insertRec, updateRec } from "@/server/rec";
+import { User } from "@/types/user";
 
 const RecFormSchema = z.object({
   link: z.string().url(),
   title: z.string(),
   author: z.string(),
-  description: z.string(),
-  year: z
-    .number()
-    .int()
-    .max(new Date().getUTCFullYear())
-    .transform((val) => val.toString()),
-  month: z
-    .number()
-    .min(0)
-    .max(11)
-    .transform((idx) => Months[idx])
-    .optional(),
+  description: z
+    .string()
+    .max(280, "Description should be less than 280 chars")
+    .min(1, "Description cannot be blank"),
+  year: z.coerce
+    .string()
+    .refine((val) => !Number.isNaN(parseInt(val)), "Year should be a number")
+    .refine((val) => {
+      const year = parseInt(val);
+      return year <= new Date().getUTCFullYear();
+    }, "Year should be less than or equal to the current year")
+    .refine((val) => {
+      const year = parseInt(val);
+      return year >= 0;
+    }, "Year should be a positive number"),
+  month: z.coerce.string().optional(),
 });
 
 function RecForm(props: {
   setIsRecFormOpen: (open: boolean) => void;
   currentRec: Rec | null;
+  user: User;
+  onUpdateSuccess?: () => void;
 }) {
-  const { setIsRecFormOpen, currentRec } = props;
+  const {
+    setIsRecFormOpen,
+    currentRec,
+    user,
+    onUpdateSuccess = () => {},
+  } = props;
 
   const { register, watch, handleSubmit, formState, getValues, control } =
     useForm({
@@ -72,13 +86,18 @@ function RecForm(props: {
           currentRec?.year && !Number.isNaN(parseInt(currentRec.year))
             ? parseInt(currentRec.year)
             : undefined,
-        month: currentRec?.month ? Months.indexOf(currentRec.month) : undefined,
+        month:
+          currentRec?.month !== undefined && currentRec.month !== ""
+            ? currentRec.month
+            : undefined,
       },
       mode: "onBlur",
     });
 
-  console.log(watch("month"));
-  console.log(formState.errors);
+  console.log("curr", currentRec);
+  console.log(watch());
+  // console.log(formState.errors);
+  // console.log(formState.isValid);
 
   return (
     <motion.div
@@ -103,7 +122,59 @@ function RecForm(props: {
       <Text size="2" className="text-gray-11 p-1" weight="medium">
         {`Anything interesting this week?`}
       </Text>
-      <form className="flex flex-col gap-y-[10px]">
+      <form
+        className="flex flex-col gap-y-[10px]"
+        onSubmit={handleSubmit(async (data, e) => {
+          e?.preventDefault();
+          // parse using zod schema
+          const res = RecFormSchema.safeParse(data);
+          if (!res.success) {
+            // should not happen, just in case and for typescript to narrow down type
+            console.log(res.error);
+            console.error("Invalid form data.");
+            return;
+          }
+          // if no changes, close dialog
+          if (
+            currentRec &&
+            (
+              [
+                "link",
+                "title",
+                "author",
+                "year",
+                "month",
+                "description",
+              ] as const
+            ).every((key) => {
+              return res.data[key] === currentRec[key];
+            })
+          ) {
+            setIsRecFormOpen(false);
+            return;
+          }
+          console.log("res.data", res.data);
+          try {
+            // if currentRec exists, update, else insert new rec
+            if (currentRec) {
+              // update
+              // await updateRec(res.data, currentRec.id);
+              await updateRec(currentRec.id, res.data);
+              toast.success("Rec updated successfully.");
+            } else {
+              // insert
+              // await insertRec(res.data);
+              await insertRec(res.data, user);
+              toast.success("We got your rec! 🎉");
+            }
+            onUpdateSuccess();
+            setIsRecFormOpen(false);
+          } catch (error) {
+            console.error(error);
+            toast.error("Failed to update/insert new rec.");
+          }
+        })}
+      >
         <div>
           <TextField.Root>
             <TextField.Slot>
@@ -133,6 +204,11 @@ function RecForm(props: {
               {...register("title", { required: true })}
             />
           </TextField.Root>
+          {formState.errors.title ? (
+            <Text size="1" color="red">
+              {formState.errors.title.message}
+            </Text>
+          ) : null}
         </div>
         <div>
           <TextField.Root>
@@ -145,6 +221,11 @@ function RecForm(props: {
               {...register("author", { required: true })}
             />
           </TextField.Root>
+          {formState.errors.author ? (
+            <Text size="1" color="red">
+              {formState.errors.author.message}
+            </Text>
+          ) : null}
         </div>
         <Flex className="gap-x-[10px]">
           <div className="w-[40%]">
@@ -158,16 +239,22 @@ function RecForm(props: {
                 {...register("year", { required: true })}
               />
             </TextField.Root>
+            {formState.errors.year ? (
+              <Text size="1" color="red">
+                {formState.errors.year.message}
+              </Text>
+            ) : null}
           </div>
           <div className="min-w-[50%] w-[60%]">
             <Controller
+              key={watch("month")}
               control={control}
               name="month"
               render={({ field }) => {
                 return (
                   <Select.Root
                     key={watch("month")}
-                    value={field.value ? `${field.value}` : undefined}
+                    value={field.value}
                     onValueChange={(value) => {
                       if (value === "empty") {
                         field.onChange(undefined);
@@ -192,7 +279,9 @@ function RecForm(props: {
                       <Select.Value
                         placeholder="Month(optional)"
                         className="h-fi"
-                      />
+                      >
+                        {field.value}
+                      </Select.Value>
                       <Select.Icon className="pl-2 absolute right-2">
                         <ChevronDownIcon />
                       </Select.Icon>
@@ -212,7 +301,7 @@ function RecForm(props: {
                           <SelectItem value={`empty`}>Select...</SelectItem>
                           {Months.map((month, idx) => {
                             return (
-                              <SelectItem key={idx} value={`${idx}`}>
+                              <SelectItem key={idx} value={`${Months[idx]}`}>
                                 {month}
                               </SelectItem>
                             );
@@ -236,7 +325,30 @@ function RecForm(props: {
             autoFocus={false}
             {...register("description", { required: true })}
           />
+          <div className="w-full flex flex-row justify-between mt-1">
+            {formState.errors.description ? (
+              <Text size="1" color="red">
+                {formState.errors.description.message}
+              </Text>
+            ) : (
+              <div />
+            )}
+            <Text size="1" className="text-gray-11">
+              {`${getValues("description")?.length ?? 0}/280`}
+            </Text>
+          </div>
         </div>
+        <Text size="1" weight="medium" className="text-gray-9 p-1">
+          {`You can edit as many times as you want before this week's cutoff: ${getVerboseDateString(getNextCutOff())}.`}
+        </Text>
+        <Button
+          variant="solid"
+          color="blue"
+          className={cn("bg-blue-10")}
+          type="submit"
+        >
+          Save
+        </Button>
       </form>
     </motion.div>
   );
@@ -270,11 +382,11 @@ export function LeftPanel() {
   const date = searchParams.get("date");
   const cutoff = date ? getCutOff(new Date(date)) : getLatestCutOff();
   const cutoffs = getCutOffFromStartDate();
-  const { user } = useAuth();
+  const { user, revalidateUser } = useAuth();
   const lastPostId = user?.postIds
     ? user.postIds[user.postIds.length - 1]
     : null;
-  const { rec } = useRec(lastPostId);
+  const { rec, mutate } = useRec(lastPostId);
   const hasRecInThisCycle =
     rec &&
     getDateFromFirebaseTimestamp(rec.cutoff).getTime() ===
@@ -306,7 +418,15 @@ export function LeftPanel() {
     >
       <AnimatePresence mode="wait">
         {isRecFormOpen ? (
-          <RecForm setIsRecFormOpen={setIsRecFormOpen} currentRec={rec} />
+          <RecForm
+            setIsRecFormOpen={setIsRecFormOpen}
+            currentRec={rec}
+            user={user}
+            onUpdateSuccess={async () => {
+              await revalidateUser();
+              mutate();
+            }}
+          />
         ) : (
           <motion.div
             key="left-panel"
@@ -324,32 +444,49 @@ export function LeftPanel() {
               duration: 0.2,
             }}
           >
-            <Text size="2" className="text-gray-11 p-1" weight="medium">
-              {hasRecInThisCycle ? "PLACEHOLDER" : `Hi, ${user.displayName} 👋`}
+            <Text
+              size="2"
+              className="text-gray-11 p-1"
+              weight="medium"
+              asChild={hasRecInThisCycle ?? undefined}
+            >
+              {hasRecInThisCycle ? (
+                <div className="flex flex-row">
+                  Your pick:{" "}
+                  <div
+                    className="px-1 text-blue-11 cursor-pointer"
+                    onClick={() => {
+                      // open window
+                      window.open(rec.link, "_blank");
+                    }}
+                  >
+                    {rec.title}
+                  </div>
+                </div>
+              ) : (
+                `Hi, ${user.displayName} 👋`
+              )}
             </Text>
             <Text size="2" className="text-gray-11 p-1" weight="medium">
               {hasRecInThisCycle
-                ? "PLACEHOLDER"
+                ? "You can modify at anytime you want before this cycle ends."
                 : `Anything interesting this week?`}
             </Text>
             <Flex className="w-full">
-              {hasRecInThisCycle ? (
-                "PLACEHOLDER"
-              ) : (
-                <Button
-                  size={{
-                    initial: "2",
-                    lg: "3",
-                  }}
-                  className="w-full"
-                  onClick={() => {
-                    setIsRecFormOpen(true);
-                  }}
-                >
-                  <Pencil1Icon width="16" height="16" />
-                  Recommend a paper
-                </Button>
-              )}
+              <Button
+                size={{
+                  initial: "2",
+                  lg: "3",
+                }}
+                className="w-full"
+                onClick={() => {
+                  setIsRecFormOpen(true);
+                }}
+                variant={hasRecInThisCycle ? "outline" : "solid"}
+              >
+                <Pencil1Icon width="16" height="16" />
+                {hasRecInThisCycle ? "Edit your pick" : "Recommend a paper"}
+              </Button>
             </Flex>
             <Text size="1" weight="medium" className="text-gray-9 p-1">
               {`This cycle concludes on ${getVerboseDateString(getNextCutOff())}

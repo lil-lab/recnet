@@ -31,7 +31,8 @@ export function useRec(
         await onSuccessCallback?.(data, key, config);
       },
       onError: (error, key, config) => {
-        toast.error("Error fetching user");
+        toast.error("Error fetching Rec");
+        console.log("Error fetching Rec: ", error);
         onErrorCallback?.(error, key, config);
       },
     }

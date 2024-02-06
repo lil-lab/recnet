@@ -4,6 +4,8 @@ import { RecSchema, Rec } from "@/types/rec";
 import { Timestamp } from "firebase-admin/firestore";
 import { getNextCutOff } from "@/utils/date";
 import { notEmpty } from "@/utils/notEmpty";
+import { FieldValue } from "firebase-admin/firestore";
+import { User } from "@/types/user";
 
 export async function getRecsByUserId(
   userId: string,
@@ -83,4 +85,39 @@ export async function getFeedsRecs(
     .filter(notEmpty);
 
   return shuffleArray(recs);
+}
+
+export async function updateRec(
+  recId: string,
+  data: Partial<Rec>
+): Promise<void> {
+  const postRef = db.doc(`recommendations/${recId}`);
+  await postRef.set(
+    {
+      ...data,
+      month: data.month || "",
+      updatedAt: FieldValue.serverTimestamp(),
+    },
+    { merge: true }
+  );
+}
+
+export async function insertRec(data: Partial<Rec>, user: User): Promise<void> {
+  // add rec to recommendations collection
+  const { id } = await db.collection("recommendations").add({
+    ...data,
+    createdAt: FieldValue.serverTimestamp(),
+    cutoff: Timestamp.fromMillis(getNextCutOff().getTime()),
+    email: user.email,
+    userId: user.id,
+    month: data.month || "",
+  });
+  // update user's recs
+  const userRef = db.doc(`users/${user.id}`);
+  await userRef.set(
+    {
+      postIds: FieldValue.arrayUnion(id),
+    },
+    { merge: true }
+  );
 }

@@ -15,7 +15,15 @@ export const RecSchema = z.object({
   email: z.string().email(),
   link: z.string().url(),
   year: z.string(),
-  month: z.string(), // can be empty string if not provided now, will refactor in the future
+  month: z
+    .string()
+    .transform((val) => {
+      if (val === "") {
+        return undefined;
+      }
+      return val;
+    })
+    .optional(), // can be empty string if not provided now, will refactor in the future
   title: z.string(),
   userId: z.string(),
   id: z.string(),
