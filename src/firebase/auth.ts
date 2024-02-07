@@ -7,6 +7,7 @@ import {
   useDeviceLanguage,
 } from "firebase/auth";
 import { getFirebaseAuth } from "@/firebase/client";
+import { useRouter } from "next/navigation";
 
 const CREDENTIAL_ALREADY_IN_USE_ERROR = "auth/credential-already-in-use";
 export const isCredentialAlreadyInUseError = (e: AuthError) =>
@@ -47,9 +48,13 @@ export const loginWithProvider = async (
 export function useGoogleLogin() {
   const auth = getFirebaseAuth();
   const GoogleProvider = useGoogleProvider(auth);
+  const router = useRouter();
 
   const login = async () => {
-    await loginWithProvider(auth, GoogleProvider);
+    await loginWithProvider(auth, GoogleProvider).then(() => {
+      // Redirect to feeds page after login
+      router.push("/feeds");
+    });
   };
 
   return { login };
