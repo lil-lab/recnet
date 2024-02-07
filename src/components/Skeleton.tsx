@@ -20,9 +20,10 @@ export function Skeleton(props: SkeletonProps) {
 type SkeletonTextProps = ComponentProps<typeof Text>;
 
 export function SkeletonText(props: SkeletonTextProps) {
+  const { className, children, ...rest } = props;
   return (
-    <Skeleton>
-      <Text {...props}>Skeleton</Text>
+    <Skeleton className={className}>
+      <Text {...rest}>{children ?? "Skeleton"}</Text>
     </Skeleton>
   );
 }

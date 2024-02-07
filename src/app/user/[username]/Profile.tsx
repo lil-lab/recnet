@@ -9,7 +9,7 @@ import { useAuth } from "@/app/AuthContext";
 import { FollowButton } from "@/components/FollowButton";
 import { useUser } from "@/hooks/useUser";
 import { useRouter } from "next/navigation";
-import { Skeleton } from "@/components/Skeleton";
+import { Skeleton, SkeletonText } from "@/components/Skeleton";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -189,18 +189,10 @@ export function Profile(props: { username: string }) {
           </Flex>
           <Flex className="flex-grow flex-col justify-between h-full">
             <Flex className="p-2 items-center gap-x-4 text-gray-11">
-              <Skeleton className="h-fit min-w-[200px]">
-                <Text size="6" weight="medium">
-                  skeleton placeholder
-                </Text>
-              </Skeleton>
+              <SkeletonText size="6" />
             </Flex>
             <Flex className="items-center gap-x-[10px] p-1">
-              <Skeleton className="h-fit min-w-[300px]">
-                <Text size="3" weight="medium">
-                  skeleton placeholder
-                </Text>
-              </Skeleton>
+              <SkeletonText className="h-fit min-w-[300px]" size="3" />
             </Flex>
           </Flex>
         </Flex>

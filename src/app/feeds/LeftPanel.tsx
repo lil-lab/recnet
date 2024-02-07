@@ -38,7 +38,7 @@ import {
 import { toast } from "sonner";
 import { insertRec, updateRec, deleteRec } from "@/server/rec";
 import { User } from "@/types/user";
-import { Skeleton } from "@/components/Skeleton";
+import { Skeleton, SkeletonText } from "@/components/Skeleton";
 
 const RecFormSchema = z.object({
   link: z.string().url(),
@@ -398,16 +398,8 @@ function RecStatusPanel(props: {
   if (isLoading) {
     return (
       <div className={cn("flex", "flex-col", "gap-y-3")}>
-        <Skeleton className="h-fit w-fit">
-          <Text size="2" className="text-gray-11 p-1" weight="medium">
-            skeleton placeholder
-          </Text>
-        </Skeleton>
-        <Skeleton className="h-fit w-fit">
-          <Text size="2" className="text-gray-11 p-1" weight="medium">
-            skeleton placeholder
-          </Text>
-        </Skeleton>
+        <SkeletonText size="2" className="w-[100px]" />
+        <SkeletonText size="2" />
         <Flex className="w-full">
           <Button
             size={{
