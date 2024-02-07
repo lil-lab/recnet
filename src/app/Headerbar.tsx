@@ -17,6 +17,7 @@ import { useState, useRef, useEffect, useCallback } from "react";
 import { User } from "@/types/user";
 import { useRouter, usePathname } from "next/navigation";
 import { Avatar } from "@/components/Avatar";
+import { AnimatePresence, motion } from "framer-motion";
 
 function UserDropdown({ user }: { user: User }) {
   const router = useRouter();
@@ -155,84 +156,101 @@ export function Headerbar() {
           md: "5",
         }}
       >
-        <MagnifyingGlassIcon
-          width="20"
-          height="20"
-          onClick={() => {
-            setEnableSearch(!enableSearch);
-          }}
-          className={cn(
-            {
-              hidden: enableSearch,
-              "inline-block": !enableSearch,
-            },
-            "md:hidden"
+        <AnimatePresence initial={false} mode="wait">
+          {!enableSearch ? (
+            <motion.div
+              key="search-icon"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+            >
+              <MagnifyingGlassIcon
+                width="20"
+                height="20"
+                onClick={() => {
+                  setEnableSearch(!enableSearch);
+                }}
+                className={cn("inline-block", "md:hidden")}
+              />
+            </motion.div>
+          ) : (
+            <motion.div
+              key="search"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+            >
+              <TextField.Root
+                className={cn(
+                  "flex",
+                  "transition-all",
+                  "ease-in-out",
+                  "duration-200",
+                  "md:hidden"
+                )}
+              >
+                <TextField.Input
+                  placeholder="Search the users..."
+                  size="2"
+                  value={searchQuery}
+                  onChange={(event) => {
+                    setSearchQuery(event.target.value);
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      handleSearch();
+                    }
+                  }}
+                />
+                <TextField.Slot>
+                  <Cross1Icon
+                    width="16"
+                    height="16"
+                    onClick={() => {
+                      setEnableSearch(false);
+                    }}
+                    className={cn(
+                      {
+                        hidden: !enableSearch,
+                        "inline-block": enableSearch,
+                      },
+                      "md:hidden"
+                    )}
+                  />
+                </TextField.Slot>
+              </TextField.Root>
+            </motion.div>
           )}
-        />
-        <TextField.Root
-          className={cn(
-            {
-              hidden: !enableSearch,
-              flex: enableSearch,
-            },
-            "transition-all",
-            "ease-in-out",
-            "duration-200",
-            "md:hidden"
-          )}
-        >
-          <TextField.Input
-            placeholder="Search the users..."
-            size="2"
-            value={searchQuery}
-            onChange={(event) => {
-              setSearchQuery(event.target.value);
-            }}
-            onKeyDown={(e) => {
-              if (e.key === "Enter") {
-                handleSearch();
-              }
-            }}
-          />
-          <TextField.Slot>
-            <Cross1Icon
-              width="16"
-              height="16"
-              onClick={() => {
-                setEnableSearch(false);
-              }}
-              className={cn(
-                {
-                  hidden: !enableSearch,
-                  "inline-block": enableSearch,
-                },
-                "md:hidden"
-              )}
+        </AnimatePresence>
+        <AnimatePresence initial={false} mode="wait">
+          {enableSearch ? (
+            <motion.div
+              key="empty"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
             />
-          </TextField.Slot>
-        </TextField.Root>
-        <Link
-          href="/about"
-          className={cn({
-            hidden: enableSearch,
-            "inline-block": !enableSearch,
-          })}
-        >
-          <Text size="3" weight="medium">
-            About
-          </Text>
-        </Link>
-        <Link
-          href="/faq"
-          className={cn({
-            hidden: enableSearch,
-            "inline-block": !enableSearch,
-          })}
-        >
-          <Text size="3" weight="medium">
-            FAQ
-          </Text>
-        </Link>
+          ) : (
+            <motion.div
+              key="about-faq-group"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="flex flex-row gap-x-3 md:gap-x-5"
+            >
+              <Link href="/about">
+                <Text size="3" weight="medium">
+                  About
+                </Text>
+              </Link>
+              <Link href="/faq">
+                <Text size="3" weight="medium">
+                  FAQ
+                </Text>
+              </Link>
+            </motion.div>
+          )}
+        </AnimatePresence>
         {user ? (
           <UserDropdown user={user} />
         ) : (
