@@ -241,7 +241,7 @@ export function Profile(props: { username: string }) {
               {"@" + user.username}
             </Text>
           </Flex>
-          <Flex className="md:items-center gap-x-[10px] p-1 flex-wrap flex-col md:flex-row">
+          <Flex className="md:items-center gap-x-[10px] p-2 md:p-1 flex-wrap flex-col md:flex-row">
             {user.affiliation ? (
               <Flex className="items-center gap-x-1 text-gray-11">
                 <HomeIcon width="16" height="16" />
