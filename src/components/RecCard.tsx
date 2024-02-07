@@ -7,6 +7,49 @@ import { RecNetLink } from "./Link";
 import { formatDate, getDateFromFirebaseTimestamp } from "@/utils/date";
 import { ChevronRight } from "lucide-react";
 import { CalendarIcon } from "@radix-ui/react-icons";
+import { Skeleton, SkeletonText } from "@/components/Skeleton";
+
+export function RecCardSkeleton() {
+  return (
+    <div
+      className={cn(
+        "flex",
+        "flex-col",
+        "p-3",
+        "gap-y-2",
+        "border-[1px]",
+        "border-gray-6",
+        "rounded-[8px]",
+        "shadow-2"
+      )}
+    >
+      <Flex className="items-center gap-x-3 p-2">
+        <Skeleton className="w-[40px] aspect-square rounded-[999px]" />
+        <Flex className="items-end">
+          <SkeletonText size="2" />
+        </Flex>
+      </Flex>
+      <Flex className="p-2">
+        <SkeletonText size="3" />
+      </Flex>
+      <Flex
+        direction={"column"}
+        className={cn("p-4", "gap-y-3", "bg-gray-3", "rounded-2")}
+      >
+        <SkeletonText size="5" />
+        <SkeletonText size="2" />
+        <Flex className="items-center justify-between p-1">
+          <Flex className="items-center gap-x-2 text-gray-10">
+            <SkeletonText size="2" />
+          </Flex>
+          <Flex className="items-center gap-x-1 text-accent-11">
+            <SkeletonText size="1" />
+          </Flex>
+        </Flex>
+      </Flex>
+    </div>
+  );
+}
 
 // server component
 export async function RecCard(props: { rec: Rec }) {

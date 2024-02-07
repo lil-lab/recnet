@@ -1,5 +1,6 @@
 import { cn } from "@/utils/cn";
-import React from "react";
+import React, { ComponentProps } from "react";
+import { Text } from "@radix-ui/themes";
 
 type SkeletonProps = React.PropsWithChildren<
   React.HTMLAttributes<HTMLDivElement> & {
@@ -13,5 +14,15 @@ export function Skeleton(props: SkeletonProps) {
     <div className={cn("bg-gray-5", "animate-skeleton", className)} {...rest}>
       <div className="invisible overflow-hidden">{children}</div>
     </div>
+  );
+}
+
+type SkeletonTextProps = ComponentProps<typeof Text>;
+
+export function SkeletonText(props: SkeletonTextProps) {
+  return (
+    <Skeleton>
+      <Text {...props}>Skeleton</Text>
+    </Skeleton>
   );
 }
