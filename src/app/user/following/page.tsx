@@ -5,10 +5,15 @@ import { Grid } from "@radix-ui/themes";
 import { NotFoundBlock } from "@/app/search/NotFound";
 import { UserCard } from "@/components/UserCard";
 import { GoBackButton } from "@/components/GoBackButton";
+import { redirect } from "next/navigation";
 
 export default async function FollowingPage() {
   const user = await getUserServerSide();
-  const results = !user ? [] : await getUsersByIds(user.following);
+  if (!user) {
+    // if not logged in, redirect to home
+    redirect("/");
+  }
+  const results = await getUsersByIds(user.following);
   return (
     <div
       className={cn(

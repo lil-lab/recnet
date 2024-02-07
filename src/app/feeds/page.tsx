@@ -1,7 +1,7 @@
 import { getFeedsRecs } from "@/server/rec";
 import { getCutOff, getLatestCutOff, START_DATE } from "@/utils/date";
 import { getUserServerSide } from "@/utils/getUserServerSide";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { RecCard } from "@/components/RecCard";
 import { Text } from "@radix-ui/themes";
 import { cn } from "@/utils/cn";
@@ -31,7 +31,8 @@ export default async function FeedPage({
 }) {
   const user = await getUserServerSide();
   if (!user) {
-    notFound();
+    // if not logged in, redirect to home
+    redirect("/");
   }
   const date = searchParams["date"];
   // verify that date is a valid date
