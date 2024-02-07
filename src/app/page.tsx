@@ -1,11 +1,9 @@
-"use client";
-
-import { useAuth } from "@/app/AuthContext";
 import { cn } from "@/utils/cn";
 import { Text, Button } from "@radix-ui/themes";
-import { useGoogleLogin } from "@/firebase/auth";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { LoginButton } from "./LoginButton";
+import { getUserServerSide } from "@/utils/getUserServerSide";
+import { redirect } from "next/navigation";
 
 const cards = [
   {
@@ -25,14 +23,11 @@ const cards = [
   },
 ];
 
-export default function Home() {
-  const { user } = useAuth();
-  const { login } = useGoogleLogin();
-  const router = useRouter();
+export default async function Home() {
+  const user = await getUserServerSide();
   if (user) {
-    router.replace("/feeds");
+    redirect("/feeds");
   }
-
   return (
     <div
       className={cn(
@@ -78,14 +73,7 @@ export default function Home() {
         Receive weekly paper recs from researchers you followed.
       </Text>
       <div className="flex flex-row gap-x-3 px-3">
-        <Button
-          size="4"
-          onClick={async () => {
-            await login();
-          }}
-        >
-          Log In
-        </Button>
+        <LoginButton />
         <Button size="4" variant="outline" asChild>
           <Link href="/about">Learn more</Link>
         </Button>
