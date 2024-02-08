@@ -163,6 +163,7 @@ export function Headerbar() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
             >
               <MagnifyingGlassIcon
                 width="20"
@@ -179,6 +180,7 @@ export function Headerbar() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
             >
               <TextField.Root
                 className={cn(
@@ -229,6 +231,7 @@ export function Headerbar() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
             />
           ) : (
             <motion.div
@@ -236,6 +239,7 @@ export function Headerbar() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
               className="flex flex-row gap-x-3 sm:gap-x-5"
             >
               <Link href="/about">
