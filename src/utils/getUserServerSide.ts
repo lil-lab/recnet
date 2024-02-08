@@ -1,6 +1,6 @@
 import { Tokens, getTokens } from "next-firebase-auth-edge";
 import { cookies } from "next/headers";
-import { authConfig } from "@/config";
+import { authConfig } from "@/serverConfig";
 import { User, UserSchema } from "@/types/user";
 import { db } from "@/firebase/admin";
 import { getUserByEmail } from "@/server/user";

@@ -1,6 +1,6 @@
 import { NextRequest } from "next/server";
 import { authMiddleware } from "next-firebase-auth-edge";
-import { authConfig } from "./config";
+import { authConfig } from "./serverConfig";
 
 export async function middleware(request: NextRequest) {
   return authMiddleware(request, {
