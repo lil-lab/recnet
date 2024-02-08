@@ -9,6 +9,7 @@ import { Toaster } from "sonner";
 import { HistoryProvider } from "./HistoryProvider";
 import "@radix-ui/themes/styles.css";
 import "./globals.css";
+import { MobileNavigator } from "./MobileNavigator";
 
 const sfpro = localFont({
   src: [
@@ -124,11 +125,12 @@ export default async function RootLayout({
           <HistoryProvider>
             <Theme accentColor="blue">
               <Headerbar />
-              <Toaster position="bottom-right" richColors offset={48} />
+              <Toaster position="top-right" richColors offset={80} />
               <div className="min-h-[90svh] flex justify-center">
                 {children}
               </div>
               <Footer />
+              <MobileNavigator />
             </Theme>
           </HistoryProvider>
         </AuthProvider>

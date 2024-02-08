@@ -6,7 +6,8 @@ function Footer() {
     <div
       className={cn(
         "w-full",
-        "border-t-[1px]",
+        "border-0",
+        "md:border-t-[1px]",
         "border-slate-6",
         "flex",
         "justify-center",

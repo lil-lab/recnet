@@ -19,7 +19,7 @@ import { useRouter, usePathname } from "next/navigation";
 import { Avatar } from "@/components/Avatar";
 import { AnimatePresence, motion } from "framer-motion";
 
-function UserDropdown({ user }: { user: User }) {
+export function UserDropdown({ user }: { user: User }) {
   const router = useRouter();
   const handleLogout = async () => {
     await logout();
@@ -251,11 +251,13 @@ export function Headerbar() {
             </motion.div>
           )}
         </AnimatePresence>
-        {user ? (
-          <UserDropdown user={user} />
-        ) : (
-          <Button onClick={handleLogin}>Log In</Button>
-        )}
+        <div className="hidden md:flex">
+          {user ? (
+            <UserDropdown user={user} />
+          ) : (
+            <Button onClick={handleLogin}>Log In</Button>
+          )}
+        </div>
       </Flex>
     </div>
   );
