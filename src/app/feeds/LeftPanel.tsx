@@ -63,15 +63,15 @@ const RecFormSchema = z.object({
   month: z.coerce.string().optional(),
 });
 
-function RecForm(props: {
-  setIsRecFormOpen: (open: boolean) => void;
+export function RecForm(props: {
+  onFinish?: () => void;
   currentRec: Rec | null;
   user: User;
   onUpdateSuccess?: () => void;
   onDeleteSuccess?: () => void;
 }) {
   const {
-    setIsRecFormOpen,
+    onFinish = () => {},
     currentRec,
     user,
     onUpdateSuccess = () => {},
@@ -96,271 +96,242 @@ function RecForm(props: {
     });
 
   return (
-    <motion.div
-      key="rec-form"
-      className={cn("flex", "flex-col", "gap-y-3", "sticky", "top-[80px]")}
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      transition={{
-        duration: 0.2,
-      }}
+    <form
+      className="flex flex-col gap-y-[10px]"
+      onSubmit={handleSubmit(async (data, e) => {
+        e?.preventDefault();
+        // parse using zod schema
+        const res = RecFormSchema.safeParse(data);
+        if (!res.success) {
+          // should not happen, just in case and for typescript to narrow down type
+          console.error("Invalid form data.");
+          return;
+        }
+        // if no changes, close dialog
+        if (
+          currentRec &&
+          (
+            ["link", "title", "author", "year", "month", "description"] as const
+          ).every((key) => {
+            return res.data[key] === currentRec[key];
+          })
+        ) {
+          onFinish();
+          return;
+        }
+        try {
+          // if currentRec exists, update, else insert new rec
+          if (currentRec) {
+            // update
+            // await updateRec(res.data, currentRec.id);
+            await updateRec(currentRec.id, res.data);
+            toast.success("Rec updated successfully.");
+          } else {
+            // insert
+            // await insertRec(res.data);
+            await insertRec(res.data, user);
+            toast.success("We got your rec! 🎉");
+          }
+          onUpdateSuccess();
+          onFinish();
+        } catch (error) {
+          console.error(error);
+          toast.error("Failed to update/insert new rec.");
+        }
+      })}
     >
-      <div
-        className="flex flex-row gap-x-1 py-1 items-center text-accent-11 cursor-pointer"
-        onClick={() => {
-          setIsRecFormOpen(false);
-        }}
-      >
-        <ChevronLeft width="16" height="16" />
-        Back
-      </div>
-      <Text size="2" className="text-gray-11 p-1" weight="medium">
-        {`Anything interesting this week?`}
-      </Text>
-      <form
-        className="flex flex-col gap-y-[10px]"
-        onSubmit={handleSubmit(async (data, e) => {
-          e?.preventDefault();
-          // parse using zod schema
-          const res = RecFormSchema.safeParse(data);
-          if (!res.success) {
-            // should not happen, just in case and for typescript to narrow down type
-            console.error("Invalid form data.");
-            return;
-          }
-          // if no changes, close dialog
-          if (
-            currentRec &&
-            (
-              [
-                "link",
-                "title",
-                "author",
-                "year",
-                "month",
-                "description",
-              ] as const
-            ).every((key) => {
-              return res.data[key] === currentRec[key];
-            })
-          ) {
-            setIsRecFormOpen(false);
-            return;
-          }
-          try {
-            // if currentRec exists, update, else insert new rec
-            if (currentRec) {
-              // update
-              // await updateRec(res.data, currentRec.id);
-              await updateRec(currentRec.id, res.data);
-              toast.success("Rec updated successfully.");
-            } else {
-              // insert
-              // await insertRec(res.data);
-              await insertRec(res.data, user);
-              toast.success("We got your rec! 🎉");
-            }
-            onUpdateSuccess();
-            setIsRecFormOpen(false);
-          } catch (error) {
-            console.error(error);
-            toast.error("Failed to update/insert new rec.");
-          }
-        })}
-      >
-        <div>
-          <TextField.Root>
-            <TextField.Slot>
-              <Link2Icon width="16" height="16" />
-            </TextField.Slot>
-            <TextField.Input
-              placeholder="Link to paper"
-              className="w-full"
-              autoFocus
-              {...register("link", { required: true })}
-            />
-          </TextField.Root>
-          {formState.errors.link ? (
-            <Text size="1" color="red">
-              {formState.errors.link.message}
-            </Text>
-          ) : null}
-        </div>
-        <div>
-          <TextField.Root>
-            <TextField.Slot>
-              <SewingPinIcon width="16" height="16" />
-            </TextField.Slot>
-            <TextField.Input
-              placeholder="Title"
-              className="w-full"
-              {...register("title", { required: true })}
-            />
-          </TextField.Root>
-          {formState.errors.title ? (
-            <Text size="1" color="red">
-              {formState.errors.title.message}
-            </Text>
-          ) : null}
-        </div>
-        <div>
-          <TextField.Root>
-            <TextField.Slot>
-              <PersonIcon width="16" height="16" />
-            </TextField.Slot>
-            <TextField.Input
-              placeholder="Author(s)"
-              className="w-full"
-              {...register("author", { required: true })}
-            />
-          </TextField.Root>
-          {formState.errors.author ? (
-            <Text size="1" color="red">
-              {formState.errors.author.message}
-            </Text>
-          ) : null}
-        </div>
-        <Flex className="gap-x-[10px]">
-          <div className="w-[40%]">
-            <TextField.Root>
-              <TextField.Slot>
-                <CalendarIcon width="16" height="16" />
-              </TextField.Slot>
-              <TextField.Input
-                placeholder="Year"
-                className="w-full"
-                {...register("year", { required: true })}
-              />
-            </TextField.Root>
-            {formState.errors.year ? (
-              <Text size="1" color="red">
-                {formState.errors.year.message}
-              </Text>
-            ) : null}
-          </div>
-          <div className="min-w-[50%] w-[60%]">
-            <Controller
-              control={control}
-              name="month"
-              render={({ field }) => {
-                return (
-                  <Select.Root
-                    key={watch("month")}
-                    value={getValues("month")}
-                    onValueChange={(value) => {
-                      if (value === "empty") {
-                        field.onChange(undefined);
-                      } else {
-                        field.onChange(value);
-                      }
-                    }}
-                  >
-                    <Select.Trigger
-                      className={cn(
-                        "inline-flex items-center justify-start h-[32px] bg-white outline-none border-[1px] rounded-2 border-gray-6 text-[14px] leading-[14px] px-2",
-                        "data-[placeholder]:text-gray-9",
-                        "w-full",
-                        "relative",
-                        "placeholder:text-gray-2 text-gray-12"
-                      )}
-                      aria-label="Food"
-                    >
-                      <Select.Icon className="pr-2">
-                        <CalendarIcon width="16" height="16" />
-                      </Select.Icon>
-                      <Select.Value
-                        placeholder="Month(optional)"
-                        className="h-fi"
-                      />
-                      <Select.Icon className="pl-2 absolute right-2">
-                        <ChevronDownIcon />
-                      </Select.Icon>
-                    </Select.Trigger>
-
-                    <Select.Portal>
-                      <Select.Content
-                        className={cn(
-                          "overflow-hidden bg-white rounded-[8px] border-[1px] border-gray-6",
-                          "shadow-[0px_10px_38px_-10px_rgba(22,_23,_24,_0.35),0px_10px_20px_-15px_rgba(22,_23,_24,_0.2)]"
-                        )}
-                      >
-                        <Select.ScrollUpButton className="flex items-center justify-center h-[25px] bg-white text-blue-10 cursor-default">
-                          <ChevronUpIcon />
-                        </Select.ScrollUpButton>
-                        <Select.Viewport className="p-1">
-                          <SelectItem value={`empty`}>Select...</SelectItem>
-                          {Months.map((month, idx) => {
-                            return (
-                              <SelectItem key={idx} value={`${Months[idx]}`}>
-                                {month}
-                              </SelectItem>
-                            );
-                          })}
-                        </Select.Viewport>
-                        <Select.ScrollDownButton className="flex items-center justify-center h-[25px] bg-white text-blue-10 cursor-default">
-                          <ChevronDownIcon />
-                        </Select.ScrollDownButton>
-                      </Select.Content>
-                    </Select.Portal>
-                  </Select.Root>
-                );
-              }}
-            />
-          </div>
-        </Flex>
-        <div>
-          <TextArea
-            placeholder="tl;dr"
-            className="min-h-[180px] border-[1px] border-gray-6"
-            autoFocus={false}
-            {...register("description", { required: true })}
+      <div>
+        <TextField.Root>
+          <TextField.Slot>
+            <Link2Icon width="16" height="16" />
+          </TextField.Slot>
+          <TextField.Input
+            placeholder="Link to paper"
+            className="w-full"
+            autoFocus
+            {...register("link", { required: true })}
           />
-          <div className="w-full flex flex-row justify-between mt-1">
-            {formState.errors.description ? (
-              <Text size="1" color="red">
-                {formState.errors.description.message}
-              </Text>
-            ) : (
-              <div />
-            )}
-            <Text size="1" className="text-gray-11">
-              {`${getValues("description")?.length ?? 0}/280`}
-            </Text>
-          </div>
-        </div>
-        <Text size="1" weight="medium" className="text-gray-9 p-1">
-          {`You can edit as many times as you want before this week's cutoff: ${getVerboseDateString(getNextCutOff())}.`}
-        </Text>
-        <Button
-          variant="solid"
-          color="blue"
-          className={cn("bg-blue-10")}
-          type="submit"
-        >
-          Save
-        </Button>
-        {currentRec ? (
-          <Button
-            variant="outline"
-            color="red"
-            onClick={async () => {
-              try {
-                await deleteRec(currentRec.id, user.id);
-                await onDeleteSuccess();
-                setIsRecFormOpen(false);
-              } catch (error) {
-                console.error(error);
-                toast.error("Failed to delete rec.");
-                return;
-              }
-            }}
-          >
-            Delete
-          </Button>
+        </TextField.Root>
+        {formState.errors.link ? (
+          <Text size="1" color="red">
+            {formState.errors.link.message}
+          </Text>
         ) : null}
-      </form>
-    </motion.div>
+      </div>
+      <div>
+        <TextField.Root>
+          <TextField.Slot>
+            <SewingPinIcon width="16" height="16" />
+          </TextField.Slot>
+          <TextField.Input
+            placeholder="Title"
+            className="w-full"
+            {...register("title", { required: true })}
+          />
+        </TextField.Root>
+        {formState.errors.title ? (
+          <Text size="1" color="red">
+            {formState.errors.title.message}
+          </Text>
+        ) : null}
+      </div>
+      <div>
+        <TextField.Root>
+          <TextField.Slot>
+            <PersonIcon width="16" height="16" />
+          </TextField.Slot>
+          <TextField.Input
+            placeholder="Author(s)"
+            className="w-full"
+            {...register("author", { required: true })}
+          />
+        </TextField.Root>
+        {formState.errors.author ? (
+          <Text size="1" color="red">
+            {formState.errors.author.message}
+          </Text>
+        ) : null}
+      </div>
+      <Flex className="gap-x-[10px]">
+        <div className="w-[40%]">
+          <TextField.Root>
+            <TextField.Slot>
+              <CalendarIcon width="16" height="16" />
+            </TextField.Slot>
+            <TextField.Input
+              placeholder="Year"
+              className="w-full"
+              {...register("year", { required: true })}
+            />
+          </TextField.Root>
+          {formState.errors.year ? (
+            <Text size="1" color="red">
+              {formState.errors.year.message}
+            </Text>
+          ) : null}
+        </div>
+        <div className="min-w-[50%] w-[60%]">
+          <Controller
+            control={control}
+            name="month"
+            render={({ field }) => {
+              return (
+                <Select.Root
+                  key={watch("month")}
+                  value={getValues("month")}
+                  onValueChange={(value) => {
+                    if (value === "empty") {
+                      field.onChange(undefined);
+                    } else {
+                      field.onChange(value);
+                    }
+                  }}
+                >
+                  <Select.Trigger
+                    className={cn(
+                      "inline-flex items-center justify-start h-[32px] bg-white outline-none border-[1px] rounded-2 border-gray-6 text-[14px] leading-[14px] px-2",
+                      "data-[placeholder]:text-gray-9",
+                      "w-full",
+                      "relative",
+                      "placeholder:text-gray-2 text-gray-12"
+                    )}
+                    aria-label="Food"
+                  >
+                    <Select.Icon className="pr-2">
+                      <CalendarIcon width="16" height="16" />
+                    </Select.Icon>
+                    <Select.Value
+                      placeholder="Month(optional)"
+                      className="h-fi"
+                    />
+                    <Select.Icon className="pl-2 absolute right-2">
+                      <ChevronDownIcon />
+                    </Select.Icon>
+                  </Select.Trigger>
+
+                  <Select.Portal>
+                    <Select.Content
+                      className={cn(
+                        "overflow-hidden bg-white rounded-[8px] border-[1px] border-gray-6",
+                        "shadow-[0px_10px_38px_-10px_rgba(22,_23,_24,_0.35),0px_10px_20px_-15px_rgba(22,_23,_24,_0.2)]"
+                      )}
+                    >
+                      <Select.ScrollUpButton className="flex items-center justify-center h-[25px] bg-white text-blue-10 cursor-default">
+                        <ChevronUpIcon />
+                      </Select.ScrollUpButton>
+                      <Select.Viewport className="p-1">
+                        <SelectItem value={`empty`}>Select...</SelectItem>
+                        {Months.map((month, idx) => {
+                          return (
+                            <SelectItem key={idx} value={`${Months[idx]}`}>
+                              {month}
+                            </SelectItem>
+                          );
+                        })}
+                      </Select.Viewport>
+                      <Select.ScrollDownButton className="flex items-center justify-center h-[25px] bg-white text-blue-10 cursor-default">
+                        <ChevronDownIcon />
+                      </Select.ScrollDownButton>
+                    </Select.Content>
+                  </Select.Portal>
+                </Select.Root>
+              );
+            }}
+          />
+        </div>
+      </Flex>
+      <div>
+        <TextArea
+          placeholder="tl;dr"
+          className="min-h-[180px] border-[1px] border-gray-6"
+          autoFocus={false}
+          {...register("description", { required: true })}
+        />
+        <div className="w-full flex flex-row justify-between mt-1">
+          {formState.errors.description ? (
+            <Text size="1" color="red">
+              {formState.errors.description.message}
+            </Text>
+          ) : (
+            <div />
+          )}
+          <Text size="1" className="text-gray-11">
+            {`${getValues("description")?.length ?? 0}/280`}
+          </Text>
+        </div>
+      </div>
+      <Text size="1" weight="medium" className="text-gray-9 p-1">
+        {`You can edit as many times as you want before this week's cutoff: ${getVerboseDateString(getNextCutOff())}.`}
+      </Text>
+      <Button
+        variant="solid"
+        color="blue"
+        className={cn("bg-blue-10")}
+        type="submit"
+      >
+        Save
+      </Button>
+      {currentRec ? (
+        <Button
+          variant="outline"
+          color="red"
+          onClick={async () => {
+            try {
+              await deleteRec(currentRec.id, user.id);
+              await onDeleteSuccess();
+              toast.success("Rec deleted successfully");
+              onFinish();
+            } catch (error) {
+              console.error(error);
+              toast.error("Failed to delete rec.");
+              return;
+            }
+          }}
+        >
+          Delete
+        </Button>
+      ) : null}
+    </form>
   );
 }
 
@@ -592,19 +563,50 @@ export function LeftPanel() {
       >
         <AnimatePresence mode="wait" initial={false}>
           {isRecFormOpen ? (
-            <RecForm
-              setIsRecFormOpen={setIsRecFormOpen}
-              currentRec={hasRecInThisCycle ? rec : null}
-              user={user}
-              onUpdateSuccess={async () => {
-                await revalidateUser();
-                mutate();
+            <motion.div
+              key="rec-form"
+              className={cn(
+                "flex",
+                "flex-col",
+                "gap-y-3",
+                "sticky",
+                "top-[80px]"
+              )}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{
+                duration: 0.2,
               }}
-              onDeleteSuccess={async () => {
-                await revalidateUser();
-                await mutate();
-              }}
-            />
+            >
+              <div
+                className="flex flex-row gap-x-1 py-1 items-center text-accent-11 cursor-pointer"
+                onClick={() => {
+                  setIsRecFormOpen(false);
+                }}
+              >
+                <ChevronLeft width="16" height="16" />
+                Back
+              </div>
+              <Text size="2" className="text-gray-11 p-1" weight="medium">
+                {`Anything interesting this week?`}
+              </Text>
+              <RecForm
+                onFinish={() => {
+                  setIsRecFormOpen(false);
+                }}
+                currentRec={hasRecInThisCycle ? rec : null}
+                user={user}
+                onUpdateSuccess={async () => {
+                  await revalidateUser();
+                  mutate();
+                }}
+                onDeleteSuccess={async () => {
+                  await revalidateUser();
+                  await mutate();
+                }}
+              />
+            </motion.div>
           ) : (
             <motion.div
               key="left-panel"
