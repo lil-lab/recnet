@@ -222,11 +222,11 @@ export function Profile(props: { username: string }) {
           <Avatar user={user} className={cn("w-[80px]", "h-[80px]")} />
         </Flex>
         <Flex className="flex-grow flex-col justify-between h-full">
-          <Flex className="p-2 md:items-center gap-x-4 text-gray-11 flex-col md:flex-row">
+          <Flex className="p-2 sm:items-center gap-x-4 text-gray-11 flex-col sm:flex-row">
             <Text
               size={{
                 initial: "5",
-                md: "6",
+                sm: "6",
               }}
               weight="medium"
             >
@@ -235,18 +235,18 @@ export function Profile(props: { username: string }) {
             <Text
               size={{
                 initial: "3",
-                md: "4",
+                sm: "4",
               }}
             >
               {"@" + user.username}
             </Text>
           </Flex>
-          <Flex className="md:items-center gap-x-[10px] p-2 md:p-1 flex-wrap flex-col md:flex-row">
+          <Flex className="sm:items-center gap-x-[10px] p-2 sm:p-1 flex-wrap flex-col sm:flex-row">
             {user.affiliation ? (
               <Flex className="items-center gap-x-1 text-gray-11">
                 <HomeIcon width="16" height="16" />
                 <Text size="3">{user.affiliation}</Text>
-                <Text size="3" className="md:ml-[6px] hidden md:inline-block">
+                <Text size="3" className="sm:ml-[6px] hidden sm:inline-block">
                   /
                 </Text>
               </Flex>
@@ -256,7 +256,7 @@ export function Profile(props: { username: string }) {
             </Flex>
             {isMe ? (
               <Flex className="items-center gap-x-1 text-gray-11">
-                <Text size="3" className="md:mr-[6px] hidden md:inline-block">
+                <Text size="3" className="sm:mr-[6px] hidden sm:inline-block">
                   /
                 </Text>
                 <RecNetLink

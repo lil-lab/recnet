@@ -32,7 +32,7 @@ function UserDropdown({ user }: { user: User }) {
           <Avatar user={user} />
         </div>
       </DropdownMenu.Trigger>
-      <DropdownMenu.Content align="center" className="mt-1 md:w-[120px]">
+      <DropdownMenu.Content align="center" className="mt-1 sm:w-[120px]">
         <DropdownMenu.Item>
           <Link href={`/user/${user.username}`}>Profile</Link>
         </DropdownMenu.Item>
@@ -126,7 +126,7 @@ export function Headerbar() {
             RecNet
           </Text>
         </Link>
-        <TextField.Root className="hidden md:flex">
+        <TextField.Root className="hidden sm:flex">
           <TextField.Slot>
             <MagnifyingGlassIcon width="16" height="16" />
           </TextField.Slot>
@@ -153,7 +153,7 @@ export function Headerbar() {
         className="items-center"
         gap={{
           initial: "3",
-          md: "5",
+          sm: "5",
         }}
       >
         <AnimatePresence initial={false} mode="wait">
@@ -170,7 +170,7 @@ export function Headerbar() {
                 onClick={() => {
                   setEnableSearch(!enableSearch);
                 }}
-                className={cn("inline-block", "md:hidden")}
+                className={cn("inline-block", "sm:hidden")}
               />
             </motion.div>
           ) : (
@@ -186,7 +186,7 @@ export function Headerbar() {
                   "transition-all",
                   "ease-in-out",
                   "duration-200",
-                  "md:hidden"
+                  "sm:hidden"
                 )}
               >
                 <TextField.Input
@@ -214,7 +214,7 @@ export function Headerbar() {
                         hidden: !enableSearch,
                         "inline-block": enableSearch,
                       },
-                      "md:hidden"
+                      "sm:hidden"
                     )}
                   />
                 </TextField.Slot>
@@ -236,7 +236,7 @@ export function Headerbar() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="flex flex-row gap-x-3 md:gap-x-5"
+              className="flex flex-row gap-x-3 sm:gap-x-5"
             >
               <Link href="/about">
                 <Text size="3" weight="medium">

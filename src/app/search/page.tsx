@@ -118,8 +118,8 @@ export default async function SearchResultPage({
         <Grid
           columns={{
             initial: "1",
-            md: "2",
-            lg: "3",
+            sm: "2",
+            md: "3",
           }}
           gap="4"
         >
