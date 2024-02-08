@@ -1,6 +1,6 @@
 import { initializeApp, getApp, getApps } from "firebase/app";
 import { getAuth } from "firebase/auth";
-import { clientConfig } from "@/config";
+import { clientConfig } from "@/clientConfig";
 
 export const getFirebaseApp = () => {
   if (getApps().length) {
