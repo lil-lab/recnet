@@ -37,9 +37,11 @@ export async function getUsersByIds(ids: string[]): Promise<User[]> {
   for (const userId of ids) {
     const docSnap = await db.doc(`users/${userId}`).get();
     if (docSnap.exists) {
-      const res = UserSchema.safeParse(docSnap.data());
+      const res = UserSchema.safeParse({ ...docSnap.data(), id: docSnap.id });
       if (res.success) {
         users.push({ ...res.data, id: docSnap.id });
+      } else {
+        console.error("Error parsing user", res.error);
       }
     }
   }
