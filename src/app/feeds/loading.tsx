@@ -6,7 +6,8 @@ export default function Loading() {
   return (
     <div
       className={cn(
-        "w-[65%]",
+        "w-[80%]",
+        "md:w-[65%]",
         "flex",
         "flex-col",
         "gap-y-4",
