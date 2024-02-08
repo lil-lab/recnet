@@ -2,7 +2,8 @@ import { Tokens, getTokens } from "next-firebase-auth-edge";
 import { cookies } from "next/headers";
 import { authConfig } from "@/config";
 import { User, UserSchema } from "@/types/user";
-import { fetchWithZod } from "@/utils/zodFetch";
+import { db } from "@/firebase/admin";
+import { getUserByEmail } from "@/server/user";
 
 const toUser = async (tokens: Tokens | null): Promise<User | null> => {
   if (!tokens) {
@@ -14,11 +15,8 @@ const toUser = async (tokens: Tokens | null): Promise<User | null> => {
     return null;
   }
   try {
-    const res = await fetchWithZod(
-      UserSchema,
-      `/api/userByEmail?email=${email}`
-    );
-    return res;
+    const user = await getUserByEmail(email);
+    return user;
   } catch (e) {
     console.log("Error fetching user", e);
     return null;

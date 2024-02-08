@@ -59,6 +59,24 @@ export async function getUserById(userId: string): Promise<User | null> {
   return null;
 }
 
+export async function getUserByEmail(email: string): Promise<User | null> {
+  const querySnapshot = await db
+    .collection("users")
+    .where("email", "==", email)
+    .limit(1)
+    .get();
+  if (querySnapshot.empty) {
+    return null;
+  }
+  // parse the user
+  const user = {
+    ...querySnapshot.docs[0].data(),
+    id: querySnapshot.docs[0].id,
+  };
+  const parsedUser = UserSchema.parse(user);
+  return parsedUser;
+}
+
 export async function getUserByUsername(
   username: string
 ): Promise<User | null> {
