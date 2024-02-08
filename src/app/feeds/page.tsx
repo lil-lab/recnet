@@ -45,12 +45,14 @@ export default async function FeedPage({
   return (
     <div
       className={cn(
-        "w-[65%]",
+        "w-[80%]",
+        "md:w-[65%]",
         "flex",
         "flex-col",
         "gap-y-4",
         "mx-auto",
-        "py-12"
+        "py-4",
+        "md:py-12"
       )}
     >
       {recs.length > 0 ? (

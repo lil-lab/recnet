@@ -10,7 +10,14 @@ export default async function FeedPageLayout({
 }>) {
   return (
     <div
-      className={cn("flex", "flex-row", "w-full", "h-full", `min-h-[90svh]`)}
+      className={cn(
+        "flex",
+        "flex-col",
+        "md:flex-row",
+        "w-full",
+        "h-full",
+        `min-h-[90svh]`
+      )}
     >
       <LeftPanel />
       {children}

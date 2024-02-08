@@ -39,6 +39,7 @@ import { toast } from "sonner";
 import { insertRec, updateRec, deleteRec } from "@/server/rec";
 import { User } from "@/types/user";
 import { Skeleton, SkeletonText } from "@/components/Skeleton";
+import { useRouter } from "next/navigation";
 
 const RecFormSchema = z.object({
   link: z.string().url(),
@@ -475,6 +476,76 @@ time.`}
   );
 }
 
+function CutoffSelector(props: { currentCutoff: Date; cutoffs: Date[] }) {
+  const { currentCutoff, cutoffs } = props;
+  const router = useRouter();
+  // use timestamp's string as default value and select value
+  const defaultValue = currentCutoff.getTime().toString();
+
+  const tsToDateString = (tsString: string): string => {
+    const ts = parseInt(tsString);
+    const date = new Date(ts);
+    const year = date.getFullYear();
+    const month = date.getMonth() + 1;
+    const day = date.getDate();
+    return `${year}/${month}/${day}`;
+  };
+
+  return (
+    <Select.Root
+      value={defaultValue}
+      onValueChange={(value) => {
+        const dateString = tsToDateString(value);
+        router.push(`/feeds?date=${dateString}`);
+      }}
+    >
+      <Select.Trigger
+        className={cn(
+          "inline-flex items-center justify-end h-[32px] bg-white outline-none text-[14px] leading-[14px] px-2",
+          "data-[placeholder]:text-gray-9",
+          "w-fit",
+          "text-gray-9"
+        )}
+        aria-label="Food"
+      >
+        <Select.Value className="w-fit" asChild>
+          <Text>{`Cutoff: ${tsToDateString(defaultValue)}`}</Text>
+        </Select.Value>
+        <Select.Icon className="px-2">
+          <ChevronDownIcon />
+        </Select.Icon>
+      </Select.Trigger>
+
+      <Select.Portal>
+        <Select.Content
+          className={cn(
+            "overflow-hidden bg-white rounded-[8px] border-[1px] border-gray-6 py-2",
+            "shadow-[0px_10px_38px_-10px_rgba(22,_23,_24,_0.35),0px_10px_20px_-15px_rgba(22,_23,_24,_0.2)]"
+          )}
+        >
+          <Select.ScrollUpButton className="flex items-center justify-center h-[25px] bg-white text-blue-10 cursor-default">
+            <ChevronUpIcon />
+          </Select.ScrollUpButton>
+          <Select.Viewport className="p-1">
+            {cutoffs.map((cutoff, idx) => {
+              const val = cutoff.getTime().toString();
+              const dateString = tsToDateString(val);
+              return (
+                <SelectItem key={idx} value={val}>
+                  {dateString}
+                </SelectItem>
+              );
+            })}
+          </Select.Viewport>
+          <Select.ScrollDownButton className="flex items-center justify-center h-[25px] bg-white text-blue-10 cursor-default">
+            <ChevronDownIcon />
+          </Select.ScrollDownButton>
+        </Select.Content>
+      </Select.Portal>
+    </Select.Root>
+  );
+}
+
 export function LeftPanel() {
   const searchParams = useSearchParams();
   const date = searchParams.get("date");
@@ -500,91 +571,109 @@ export function LeftPanel() {
   }
 
   return (
-    <div
-      className={cn(
-        {
-          "w-[17%]": !isRecFormOpen,
-          "w-[350px]": isRecFormOpen,
-        },
-        "min-w-[250px]",
-        `min-h-[90svh]`,
-        "border-r-[1px]",
-        "border-gray-6",
-        "p-4",
-        "transition-all",
-        "duration-200",
-        "ease-in-out"
-      )}
-    >
-      <AnimatePresence mode="wait" initial={false}>
-        {isRecFormOpen ? (
-          <RecForm
-            setIsRecFormOpen={setIsRecFormOpen}
-            currentRec={hasRecInThisCycle ? rec : null}
-            user={user}
-            onUpdateSuccess={async () => {
-              await revalidateUser();
-              mutate();
-            }}
-            onDeleteSuccess={async () => {
-              await revalidateUser();
-              await mutate();
-            }}
-          />
-        ) : (
-          <motion.div
-            key="left-panel"
-            className={cn(
-              "flex",
-              "flex-col",
-              "gap-y-3",
-              "sticky",
-              "top-[80px]"
-            )}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{
-              duration: 0.2,
-            }}
-          >
-            <RecStatusPanel
-              setIsRecFormOpen={setIsRecFormOpen}
-              user={user}
-              rec={rec}
-              hasRecInThisCycle={hasRecInThisCycle}
-              isLoading={isLoading || isValidating}
-            />
-            <div className="w-full h-[1px] bg-gray-8" />
-            <div className="w-full p-2 flex flex-col gap-y-2">
-              <Text size="1" weight={"medium"} className="text-gray-11">
-                Previous cycles
-              </Text>
-              <div className="flex flex-col py-1 px-2 gap-y-2">
-                {cutoffs.map((d, idx) => {
-                  const year = d.getFullYear();
-                  const month = d.getMonth() + 1;
-                  const day = d.getDate();
-                  const key = `${month}/${day}/${year}`;
-                  return (
-                    <RecNetLink
-                      href={`/feeds?date=${key}`}
-                      key={idx}
-                      radixLinkProps={{
-                        size: "1",
-                        weight:
-                          cutoff.getTime() === d.getTime() ? "bold" : "regular",
-                      }}
-                    >
-                      {key}
-                    </RecNetLink>
-                  );
-                })}
-              </div>
-            </div>
-          </motion.div>
+    <>
+      <div
+        className={cn(
+          {
+            "w-[17%]": !isRecFormOpen,
+            "w-[350px]": isRecFormOpen,
+          },
+          "min-w-[250px]",
+          `min-h-[90svh]`,
+          "border-r-[1px]",
+          "border-gray-6",
+          "p-4",
+          "transition-all",
+          "duration-200",
+          "ease-in-out",
+          "hidden",
+          "md:inline-block"
         )}
-      </AnimatePresence>
-    </div>
+      >
+        <AnimatePresence mode="wait" initial={false}>
+          {isRecFormOpen ? (
+            <RecForm
+              setIsRecFormOpen={setIsRecFormOpen}
+              currentRec={hasRecInThisCycle ? rec : null}
+              user={user}
+              onUpdateSuccess={async () => {
+                await revalidateUser();
+                mutate();
+              }}
+              onDeleteSuccess={async () => {
+                await revalidateUser();
+                await mutate();
+              }}
+            />
+          ) : (
+            <motion.div
+              key="left-panel"
+              className={cn(
+                "flex",
+                "flex-col",
+                "gap-y-3",
+                "sticky",
+                "top-[80px]"
+              )}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{
+                duration: 0.2,
+              }}
+            >
+              <RecStatusPanel
+                setIsRecFormOpen={setIsRecFormOpen}
+                user={user}
+                rec={rec}
+                hasRecInThisCycle={hasRecInThisCycle}
+                isLoading={isLoading || isValidating}
+              />
+              <div className="w-full h-[1px] bg-gray-8" />
+              <div className="w-full p-2 flex flex-col gap-y-2">
+                <Text size="1" weight={"medium"} className="text-gray-11">
+                  Previous cycles
+                </Text>
+                <div className="flex flex-col py-1 px-2 gap-y-2">
+                  {cutoffs.map((d, idx) => {
+                    const year = d.getFullYear();
+                    const month = d.getMonth() + 1;
+                    const day = d.getDate();
+                    const key = `${month}/${day}/${year}`;
+                    return (
+                      <RecNetLink
+                        href={`/feeds?date=${key}`}
+                        key={idx}
+                        radixLinkProps={{
+                          size: "1",
+                          weight:
+                            cutoff.getTime() === d.getTime()
+                              ? "bold"
+                              : "regular",
+                        }}
+                      >
+                        {key}
+                      </RecNetLink>
+                    );
+                  })}
+                </div>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+      <div
+        className={cn(
+          "md:hidden",
+          "flex",
+          "justify-end",
+          "w-[80%]",
+          "mx-auto",
+          "pt-4"
+        )}
+      >
+        <CutoffSelector currentCutoff={cutoff} cutoffs={cutoffs} />
+      </div>
+    </>
   );
 }
