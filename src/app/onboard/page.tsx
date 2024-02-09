@@ -68,6 +68,7 @@ export default function OnboardPage() {
           const res = OnboardFormSchema.safeParse(data);
           if (!res.success) {
             toast.error("Invalid form data");
+            setIsLoading(false);
             return;
           }
           setMessage("Validating...");
@@ -84,6 +85,7 @@ export default function OnboardPage() {
                 shouldFocus: true,
               }
             );
+            setIsLoading(false);
             return;
           }
           // verify invite code is valid
@@ -101,6 +103,7 @@ export default function OnboardPage() {
                 shouldFocus: true,
               }
             );
+            setIsLoading(false);
             return;
           }
           // create user object in db
@@ -123,6 +126,7 @@ export default function OnboardPage() {
           } catch (error) {
             console.error(error);
             toast.error("Something went wrong. Please try again later.");
+            setIsLoading(false);
             return;
           }
           // revalidate user
