@@ -39,20 +39,7 @@ export default function OnboardPage() {
   const router = useRouter();
 
   return (
-    <div
-      className={cn(
-        "w-full",
-        "sm:w-[50%]",
-        "md:w-[40%]",
-        `min-h-[90svh]`,
-        "flex",
-        "flex-col",
-        "p-8",
-        "gap-y-6",
-        "justify-center",
-        "text-gray-11"
-      )}
-    >
+    <div className={cn("flex", "flex-col", "p-8", "gap-y-6", "text-gray-11")}>
       <Text size="6" weight="medium">
         Welcome to RecNet 👋
       </Text>
