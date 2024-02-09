@@ -1,3 +1,4 @@
+import "server-only";
 import { Tokens, getTokens } from "next-firebase-auth-edge";
 import { cookies } from "next/headers";
 import { authConfig } from "@/serverConfig";
