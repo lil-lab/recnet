@@ -11,6 +11,9 @@ import { getFirebaseApp } from "@/firebase/client";
 import { toast } from "sonner";
 import { useAuth } from "@/app/AuthContext";
 import { useRouter } from "next/navigation";
+import { AnimatePresence, motion } from "framer-motion";
+import { useState } from "react";
+import { TailSpin } from "react-loader-spinner";
 
 const OnboardFormSchema = z.object({
   inviteCode: z.string().min(1, "Invite code cannot be blank"),
@@ -37,16 +40,29 @@ export default function OnboardPage() {
     mode: "onBlur",
   });
   const router = useRouter();
+  const [isLoading, setIsLoading] = useState(false);
+  const [message, setMessage] = useState<string | null>(null);
 
   return (
     <div className={cn("flex", "flex-col", "p-8", "gap-y-6", "text-gray-11")}>
       <Text size="6" weight="medium">
         Welcome to RecNet 👋
       </Text>
-      <Text>One more step to get started...</Text>
+      <AnimatePresence initial={false} mode="wait">
+        <motion.div
+          key={message}
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: 10 }}
+          transition={{ duration: 0.2 }}
+        >
+          <Text>{message ?? "One more step to get started..."}</Text>
+        </motion.div>
+      </AnimatePresence>
       <form
         className="flex flex-col gap-y-3"
         onSubmit={handleSubmit(async (data, e) => {
+          setIsLoading(true);
           e?.preventDefault();
           // parse data using schema
           const res = OnboardFormSchema.safeParse(data);
@@ -54,6 +70,7 @@ export default function OnboardPage() {
             toast.error("Invalid form data");
             return;
           }
+          setMessage("Validating...");
           // verify username is unique
           const isUsernameUnique = await checkUsernameUnique(res.data.username);
           if (!isUsernameUnique) {
@@ -88,6 +105,7 @@ export default function OnboardPage() {
           }
           // create user object in db
           // mark invite code as used
+          setMessage("Creating user...");
           const firebaseUser = getAuth(getFirebaseApp()).currentUser;
           try {
             await fetch("/api/createUser", {
@@ -109,8 +127,10 @@ export default function OnboardPage() {
           }
           // revalidate user
           await revalidateUser();
+          setMessage("You are all set! Redirecting...");
           // direct to /feeds
           router.replace("/feeds");
+          setIsLoading(false);
         })}
       >
         <div className="flex flex-col gap-y-1">
@@ -166,7 +186,19 @@ export default function OnboardPage() {
           type="submit"
           disabled={!formState.isValid}
         >
-          Submit
+          {isLoading ? (
+            <TailSpin
+              radius={"1"}
+              visible={true}
+              height="20"
+              width="20"
+              color={"#ffffff"}
+              ariaLabel="line-wave-loading"
+              wrapperClass="w-fit h-fit"
+            />
+          ) : (
+            "Submit"
+          )}
         </Button>
       </form>
     </div>
