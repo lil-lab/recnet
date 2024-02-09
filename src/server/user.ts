@@ -94,6 +94,24 @@ export async function getUserByUsername(
   });
 }
 
+export async function checkUsernameUnique(username: string): Promise<boolean> {
+  const querySnapshot = await db
+    .collection("users")
+    .where("username", "==", username)
+    .limit(1)
+    .get();
+  return querySnapshot.empty;
+}
+
+export async function checkInviteCodeValid(code: string): Promise<boolean> {
+  const ref = db.doc(`invite-codes/${code}`);
+  const docSnap = await ref.get();
+  if (docSnap.exists) {
+    return docSnap.data()?.used === false;
+  }
+  return false;
+}
+
 export async function updateUser(
   newUser: {
     username: string;

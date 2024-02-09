@@ -29,7 +29,11 @@ export default async function FeedPage({
     date?: string;
   };
 }) {
-  const user = await getUserServerSide();
+  const user = await getUserServerSide({
+    notRegisteredCallback: () => {
+      redirect("/onboard");
+    },
+  });
   if (!user) {
     // if not logged in, redirect to home
     redirect("/");

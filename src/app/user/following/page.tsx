@@ -8,7 +8,11 @@ import { GoBackButton } from "@/components/GoBackButton";
 import { redirect } from "next/navigation";
 
 export default async function FollowingPage() {
-  const user = await getUserServerSide();
+  const user = await getUserServerSide({
+    notRegisteredCallback: () => {
+      redirect("/onboard");
+    },
+  });
   if (!user) {
     // if not logged in, redirect to home
     redirect("/");

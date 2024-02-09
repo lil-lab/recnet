@@ -1,4 +1,9 @@
-import type { Auth, AuthError, AuthProvider, User } from "firebase/auth";
+import type {
+  Auth,
+  AuthError,
+  AuthProvider,
+  User as FirebaseUser,
+} from "firebase/auth";
 import {
   browserPopupRedirectResolver,
   GoogleAuthProvider,
@@ -34,7 +39,7 @@ export const useGoogleProvider = (auth: Auth) => {
 export const loginWithProvider = async (
   auth: Auth,
   provider: AuthProvider
-): Promise<User> => {
+): Promise<FirebaseUser> => {
   const result = await signInWithPopup(
     auth,
     provider,

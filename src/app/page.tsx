@@ -24,10 +24,11 @@ const cards = [
 ];
 
 export default async function Home() {
-  const user = await getUserServerSide();
-  if (user) {
-    redirect("/feeds");
-  }
+  await getUserServerSide({
+    isLoggedInCallback: () => {
+      redirect("/feeds");
+    },
+  });
   return (
     <div
       className={cn(

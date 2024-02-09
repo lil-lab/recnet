@@ -23,7 +23,18 @@ const toUser = async (tokens: Tokens | null): Promise<User | null> => {
   }
 };
 
-async function getUserServerSide(): Promise<User | null> {
+interface GetUserServerSideOptions {
+  isLoggedInCallback?: (user?: User) => void;
+  notLoggedInCallback?: () => void;
+  notRegisteredCallback?: (tokens?: Tokens) => void;
+}
+
+async function getUserServerSide(
+  options?: GetUserServerSideOptions
+): Promise<User | null> {
+  const isLoggedInCallback = options?.isLoggedInCallback || (() => {});
+  const notLoggedInCallback = options?.notLoggedInCallback || (() => {});
+  const notRegisteredCallback = options?.notRegisteredCallback || (() => {});
   const tokens = await getTokens(cookies(), {
     apiKey: authConfig.apiKey,
     cookieName: authConfig.cookieName,
@@ -31,6 +42,13 @@ async function getUserServerSide(): Promise<User | null> {
     serviceAccount: authConfig.serviceAccount,
   });
   const user = await toUser(tokens);
+  if (tokens && user) {
+    isLoggedInCallback(user);
+  } else if (tokens && !user) {
+    notRegisteredCallback(tokens);
+  } else {
+    notLoggedInCallback();
+  }
   return user;
 }
 
