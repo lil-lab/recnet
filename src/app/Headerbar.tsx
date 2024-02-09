@@ -256,7 +256,17 @@ export function Headerbar() {
           )}
         </AnimatePresence>
         <div className="hidden md:flex">
-          {user ? (
+          {pathname === "/onboard" ? (
+            <Button
+              color="red"
+              onClick={async () => {
+                await logout();
+                router.push("/");
+              }}
+            >
+              Log out
+            </Button>
+          ) : user ? (
             <UserDropdown user={user} />
           ) : (
             <Button onClick={handleLogin}>Log In</Button>
