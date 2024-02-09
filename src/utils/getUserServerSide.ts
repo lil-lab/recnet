@@ -1,8 +1,7 @@
 import { Tokens, getTokens } from "next-firebase-auth-edge";
 import { cookies } from "next/headers";
 import { authConfig } from "@/serverConfig";
-import { User, UserSchema } from "@/types/user";
-import { db } from "@/firebase/admin";
+import { User } from "@/types/user";
 import { getUserByEmail } from "@/server/user";
 
 const toUser = async (tokens: Tokens | null): Promise<User | null> => {
