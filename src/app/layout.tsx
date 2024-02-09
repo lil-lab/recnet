@@ -10,6 +10,7 @@ import { HistoryProvider } from "./HistoryProvider";
 import "@radix-ui/themes/styles.css";
 import "./globals.css";
 import { MobileNavigator } from "./MobileNavigator";
+import { ProgressbarProvider } from "./Progressbar";
 
 const sfpro = localFont({
   src: [
@@ -121,19 +122,21 @@ export default async function RootLayout({
   return (
     <html lang="en">
       <body className={sfpro.className}>
-        <AuthProvider serverUser={user}>
-          <HistoryProvider>
-            <Theme accentColor="blue">
-              <Headerbar />
-              <Toaster position="top-right" richColors offset={80} />
-              <div className="min-h-[90svh] flex justify-center">
-                {children}
-              </div>
-              <Footer />
-              <MobileNavigator />
-            </Theme>
-          </HistoryProvider>
-        </AuthProvider>
+        <ProgressbarProvider>
+          <AuthProvider serverUser={user}>
+            <HistoryProvider>
+              <Theme accentColor="blue">
+                <Headerbar />
+                <Toaster position="top-right" richColors offset={80} />
+                <div className="min-h-[90svh] flex justify-center">
+                  {children}
+                </div>
+                <Footer />
+                <MobileNavigator />
+              </Theme>
+            </HistoryProvider>
+          </AuthProvider>
+        </ProgressbarProvider>
       </body>
     </html>
   );
