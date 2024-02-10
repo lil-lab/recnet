@@ -1,3 +1,6 @@
+"use client";
+
+// this page must not be server-side rendered since we need to get the client's local time
 import { cn } from "@/utils/cn";
 import { getNextCutOff, getVerboseDateString } from "@/utils/date";
 import { Text } from "@radix-ui/themes";
