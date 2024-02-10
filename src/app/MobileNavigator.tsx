@@ -82,7 +82,7 @@ function RecFormContent(props: { setOpen: (open: boolean) => void }) {
       </Text>
       <Text size="2" className="text-gray-11 p-1" weight="medium">
         {hasRecInThisCycle
-          ? "You can modify at anytime you want before this cycle ends."
+          ? "You can modify at anytime before this cycle ends."
           : `Any interesting read this week?`}
       </Text>
       <Flex className="w-full">

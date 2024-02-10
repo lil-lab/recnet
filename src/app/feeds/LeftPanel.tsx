@@ -301,7 +301,7 @@ export function RecForm(props: {
         </div>
       </div>
       <Text size="1" weight="medium" className="text-gray-9 p-1">
-        {`You can edit as many times as you want before this week's cutoff: ${getVerboseDateString(getNextCutOff())}.`}
+        {`You can edit at anytime before this week's cutoff: ${getVerboseDateString(getNextCutOff())}.`}
       </Text>
       <Button
         variant="solid"
@@ -419,7 +419,7 @@ function RecStatusPanel(props: {
       </Text>
       <Text size="2" className="text-gray-11 p-1" weight="medium">
         {hasRecInThisCycle
-          ? "You can modify at anytime you want before this cycle ends."
+          ? "You can modify at anytime before this cycle ends."
           : `Any interesting read this week?`}
       </Text>
       <Flex className="w-full">
