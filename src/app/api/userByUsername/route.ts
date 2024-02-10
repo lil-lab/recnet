@@ -16,7 +16,9 @@ export async function GET(request: NextRequest) {
       .limit(1)
       .get();
     if (querySnapshot.empty) {
-      null;
+      return Response.json(null, {
+        status: 404,
+      });
     }
     return Response.json({
       ...querySnapshot.docs[0].data(),

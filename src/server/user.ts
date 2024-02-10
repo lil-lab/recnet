@@ -86,7 +86,7 @@ export async function getUserByUsername(
     .limit(1)
     .get();
   if (querySnapshot.empty) {
-    null;
+    return null;
   }
   return UserSchema.parse({
     ...querySnapshot.docs[0].data(),
