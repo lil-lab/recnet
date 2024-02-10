@@ -50,12 +50,12 @@ export default function AboutPage() {
         About RecNet
       </Text>
       <Text className="text-gray-11" size="5">
-        Recnet is a human-driven recommendation system for academic readings.
-        Recnet implements a mechanism similar to contemporary social networks,
+        RecNet is a human-driven recommendation system for academic readings.
+        RecNet implements a mechanism similar to contemporary social networks,
         but it is designed to be impoverished in certain ways through
         information bottlenecks that increase communication cost. This is
         intended to limit the amount of time the system consumes from its users,
-        while increasing the quality of information passed. The Recnet mechanism
+        while increasing the quality of information passed. The RecNet mechanism
         was initially outlined by Yoav Artzi in a{" "}
         <RadixLink
           href="https://yoavartzi.substack.com/p/a-quick-sketch-of-a-human-based-paper"
@@ -63,7 +63,7 @@ export default function AboutPage() {
         >
           Substack post
         </RadixLink>
-        . Recnet is currently in initial development stages.
+        . RecNet is currently in initial development stages.
       </Text>
       <div className="w-full flex justify-start">
         <iframe
