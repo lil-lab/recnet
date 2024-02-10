@@ -1,6 +1,11 @@
 "use client";
 import { cn } from "@/utils/cn";
-import { AvatarIcon, HomeIcon, Pencil2Icon } from "@radix-ui/react-icons";
+import {
+  AvatarIcon,
+  Cross2Icon,
+  HomeIcon,
+  Pencil2Icon,
+} from "@radix-ui/react-icons";
 import { useRouter, usePathname } from "next/navigation";
 import { useAuth } from "./AuthContext";
 import { UserDropdown } from "./Headerbar";
@@ -56,7 +61,15 @@ function RecFormContent(props: { setOpen: (open: boolean) => void }) {
   }
 
   return (
-    <div className={cn("flex", "flex-col", "gap-y-3")}>
+    <div className={cn("flex", "flex-col", "gap-y-3", "relative")}>
+      <Button
+        variant="ghost"
+        className="absolute top-0 right-0"
+        color="gray"
+        onClick={() => setOpen(false)}
+      >
+        <Cross2Icon width="24" height="24" />
+      </Button>
       <Text
         size="2"
         className="text-gray-11 p-1"
