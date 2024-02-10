@@ -10,11 +10,7 @@ import { Dialog, Text, Button, Flex } from "@radix-ui/themes";
 import { SkeletonText, Skeleton } from "@/components/Skeleton";
 import { useState } from "react";
 import { useRec } from "@/hooks/useRec";
-import {
-  getDateFromFirebaseTimestamp,
-  getNextCutOff,
-  getVerboseDateString,
-} from "@/utils/date";
+import { getDateFromFirebaseTimestamp, getNextCutOff } from "@/utils/date";
 import { RecForm } from "./feeds/LeftPanel";
 
 function RecFormContent(props: { setOpen: (open: boolean) => void }) {
