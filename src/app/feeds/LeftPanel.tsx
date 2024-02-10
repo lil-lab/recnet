@@ -421,7 +421,7 @@ time.`}
       <Text size="2" className="text-gray-11 p-1" weight="medium">
         {hasRecInThisCycle
           ? "You can modify at anytime you want before this cycle ends."
-          : `Anything interesting this week?`}
+          : `Any interesting read this week?`}
       </Text>
       <Flex className="w-full">
         <Button
@@ -589,7 +589,7 @@ export function LeftPanel() {
                 Back
               </div>
               <Text size="2" className="text-gray-11 p-1" weight="medium">
-                {`Anything interesting this week?`}
+                {`Any interesting read this week?`}
               </Text>
               <RecForm
                 onFinish={() => {
