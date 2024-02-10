@@ -34,7 +34,6 @@ export default async function UserProfilePage({
       )}
     >
       <Profile username={username} />
-      <div className="w-full h-[1px] bg-gray-8" />
       {recs.length > 0 ? (
         recs.map((rec, idx) => {
           return (
