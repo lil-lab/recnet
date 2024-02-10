@@ -188,23 +188,25 @@ export function Profile(props: { username: string }) {
             <Skeleton className="w-[80px] h-[80px] rounded-[999px]" />
           </Flex>
           <Flex className="flex-grow flex-col justify-between h-full">
-            <Flex className="p-2 items-center gap-x-4 text-gray-11">
-              <SkeletonText size="6" />
+            <Flex className="justify-between items-center">
+              <Flex className="p-2 items-center gap-x-4 text-gray-11">
+                <SkeletonText size="6" />
+              </Flex>
+              <Flex className="w-fit">
+                <Button
+                  className="w-full p-0 overflow-hidden"
+                  radius="medium"
+                  variant="surface"
+                  disabled
+                >
+                  <SkeletonText size="3" className="h-full" />
+                </Button>
+              </Flex>
             </Flex>
             <Flex className="items-center gap-x-[10px] p-1">
               <SkeletonText className="h-fit min-w-[300px]" size="3" />
             </Flex>
           </Flex>
-        </Flex>
-        <Flex className="w-full">
-          <Button
-            className="w-full p-0 overflow-hidden"
-            radius="medium"
-            variant="surface"
-            disabled
-          >
-            <Skeleton className="h-full w-full" />
-          </Button>
         </Flex>
       </div>
     );
@@ -222,24 +224,33 @@ export function Profile(props: { username: string }) {
           <Avatar user={user} className={cn("w-[80px]", "h-[80px]")} />
         </Flex>
         <Flex className="flex-grow flex-col justify-between h-full">
-          <Flex className="p-2 sm:items-center gap-x-4 text-gray-11 flex-col sm:flex-row">
-            <Text
-              size={{
-                initial: "5",
-                sm: "6",
-              }}
-              weight="medium"
-            >
-              {user.displayName}
-            </Text>
-            <Text
-              size={{
-                initial: "3",
-                sm: "4",
-              }}
-            >
-              {"@" + user.username}
-            </Text>
+          <Flex className="justify-between items-center">
+            <Flex className="p-2 sm:items-center gap-x-4 text-gray-11 flex-col sm:flex-row">
+              <Text
+                size={{
+                  initial: "5",
+                  sm: "6",
+                }}
+                weight="medium"
+              >
+                {user.displayName}
+              </Text>
+              <Text
+                size={{
+                  initial: "3",
+                  sm: "4",
+                }}
+              >
+                {"@" + user.username}
+              </Text>
+            </Flex>
+            <Flex className="w-fit">
+              {isMe ? (
+                <EditProfileDialog username={username} />
+              ) : (
+                <FollowButton user={user} />
+              )}
+            </Flex>
           </Flex>
           <Flex className="sm:items-center gap-x-[10px] p-2 sm:p-1 flex-wrap flex-col sm:flex-row">
             {user.affiliation ? (
@@ -271,13 +282,6 @@ export function Profile(props: { username: string }) {
             ) : null}
           </Flex>
         </Flex>
-      </Flex>
-      <Flex className="w-full">
-        {isMe ? (
-          <EditProfileDialog username={username} />
-        ) : (
-          <FollowButton user={user} />
-        )}
       </Flex>
     </div>
   );
