@@ -39,18 +39,21 @@ export const getLatestCutOff = (): Date => {
 };
 
 export const getVerboseDateString = (date: Date): string => {
-  return Intl.DateTimeFormat("default", {
-    weekday: "long",
-    month: "numeric",
-    day: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-    second: "2-digit",
-    timeZoneName: "short",
-    hourCycle: "h11",
-  })
-    .format(date)
-    .replaceAll(",", " ");
+  const localTime = date.toLocaleTimeString();
+  return (
+    Intl.DateTimeFormat("default", {
+      weekday: "long",
+      month: "numeric",
+      day: "numeric",
+      // hour: "2-digit",
+      // minute: "2-digit",
+      // second: "2-digit",
+      // timeZoneName: "short",
+      // hourCycle: "h11",
+    })
+      .format(date)
+      .replaceAll(",", " ") + ` ${localTime}`
+  );
 };
 
 export const getDateFromFirebaseTimestamp = (ts: FirebaseTs): Date => {
