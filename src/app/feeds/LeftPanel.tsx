@@ -386,8 +386,7 @@ function RecStatusPanel(props: {
           </Button>
         </Flex>
         <Text size="1" weight="medium" className="text-gray-9 p-1">
-          {`This cycle concludes on ${getVerboseDateString(getNextCutOff())}
-time.`}
+          {`This cycle concludes on ${getVerboseDateString(getNextCutOff())}.`}
         </Text>
       </div>
     );
@@ -402,18 +401,18 @@ time.`}
         asChild={hasRecInThisCycle ?? undefined}
       >
         {hasRecInThisCycle ? (
-          <div className="flex flex-row">
-            Your pick:{" "}
-            <div
-              className="px-1 text-blue-11 cursor-pointer"
+          <p>
+            Upcoming rec:{" "}
+            <span
+              className="text-blue-11 cursor-pointer"
               onClick={() => {
                 // open window
                 window.open(rec?.link, "_blank");
               }}
             >
               {rec?.title}
-            </div>
-          </div>
+            </span>
+          </p>
         ) : (
           `Hi, ${user.displayName} 👋`
         )}
@@ -436,12 +435,11 @@ time.`}
           variant={hasRecInThisCycle ? "outline" : "solid"}
         >
           <Pencil1Icon width="16" height="16" />
-          {hasRecInThisCycle ? "Edit your pick" : "Recommend a paper"}
+          {hasRecInThisCycle ? "Edit your rec" : "Recommend a paper"}
         </Button>
       </Flex>
       <Text size="1" weight="medium" className="text-gray-9 p-1">
-        {`This cycle concludes on ${getVerboseDateString(getNextCutOff())}
-time.`}
+        {`This cycle concludes on ${getVerboseDateString(getNextCutOff())}.`}
       </Text>
     </div>
   );
