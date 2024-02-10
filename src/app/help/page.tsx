@@ -8,7 +8,7 @@ const faqs: {
   content: string | (() => string);
 }[] = [
   {
-    title: "How to use it?",
+    title: "How does RecNet work?",
     content:
       "Each user may recommend one paper per cycle. They may change the paper they recommend each cycle as many times as they want during the cycle (i.e, before the cutoff time). A recommendation is made out of (a) a link to the paper, (b) paper title and authors, (c) a very short tl;dr message of 280 characters.",
   },
@@ -35,7 +35,7 @@ export default function AboutPage() {
       )}
     >
       <Text size="8" className="text-gray-12" weight="bold">
-        FAQ
+        Help
       </Text>
       {faqs.map((faq) => (
         <React.Fragment key={faq.title}>

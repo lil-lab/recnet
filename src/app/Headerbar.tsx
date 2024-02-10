@@ -235,7 +235,7 @@ export function Headerbar() {
             />
           ) : (
             <motion.div
-              key="about-faq-group"
+              key="about-help-group"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
@@ -247,9 +247,9 @@ export function Headerbar() {
                   About
                 </Text>
               </Link>
-              <Link href="/faq">
+              <Link href="/help">
                 <Text size="3" weight="medium">
-                  FAQ
+                  Help
                 </Text>
               </Link>
             </motion.div>
