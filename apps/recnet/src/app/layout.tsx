@@ -8,7 +8,7 @@ import { Footer } from "@/app/Footer";
 import { Toaster } from "sonner";
 import { HistoryProvider } from "./HistoryProvider";
 import "@radix-ui/themes/styles.css";
-import "./globals.css";
+import "tailwindcss/tailwind.css";
 import { MobileNavigator } from "./MobileNavigator";
 import { ProgressbarProvider } from "./Progressbar";
 
