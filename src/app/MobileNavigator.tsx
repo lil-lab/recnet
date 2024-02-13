@@ -145,7 +145,7 @@ function MobileNavigator() {
         "bg-gradient-to-t",
         "from-white",
         "to-[#ffffff10]",
-        "backdrop-blur-sm",
+        "backdrop-blur-md",
         "sticky",
         "bottom-0"
       )}
