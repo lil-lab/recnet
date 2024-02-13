@@ -50,7 +50,7 @@ function EditProfileDialog(props: { username: string }) {
   return (
     <Dialog.Root open={open} onOpenChange={setOpen}>
       <Dialog.Trigger>
-        <Button className="w-full" variant="surface">
+        <Button className="w-full cursor-pointer" variant="surface">
           Edit profile
         </Button>
       </Dialog.Trigger>
@@ -145,14 +145,14 @@ function EditProfileDialog(props: { username: string }) {
 
           <Flex gap="3" mt="4" justify="end">
             <Dialog.Close>
-              <Button variant="soft" color="gray">
+              <Button variant="soft" color="gray" className="cursor-pointer">
                 Cancel
               </Button>
             </Dialog.Close>
             <Button
               variant="solid"
               color="blue"
-              className={cn({
+              className={cn("cursor-pointer", {
                 "bg-blue-10": formState.isValid,
                 "bg-gray-5": !formState.isValid,
               })}
@@ -194,7 +194,7 @@ export function Profile(props: { username: string }) {
               </Flex>
               <Flex className="w-fit">
                 <Button
-                  className="w-full p-0 overflow-hidden"
+                  className="w-full p-0 overflow-hidden cursor-pointer"
                   radius="medium"
                   variant="surface"
                   disabled

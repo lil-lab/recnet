@@ -7,6 +7,7 @@ export function LoginButton() {
   return (
     <Button
       size="4"
+      className="cursor-pointer"
       onClick={async () => {
         await login();
       }}

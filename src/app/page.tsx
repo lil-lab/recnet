@@ -75,7 +75,7 @@ export default async function Home() {
       </Text>
       <div className="flex flex-row gap-x-3 px-3">
         <LoginButton />
-        <Button size="4" variant="outline" asChild>
+        <Button size="4" variant="outline" asChild className="cursor-pointer">
           <Link href="/about">Learn more</Link>
         </Button>
       </div>

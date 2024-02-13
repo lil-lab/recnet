@@ -263,6 +263,7 @@ export function Headerbar() {
                 await logout();
                 router.push("/");
               }}
+              className="cursor-pointer"
             >
               Log out
             </Button>
