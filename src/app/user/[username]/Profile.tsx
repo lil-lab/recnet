@@ -16,6 +16,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { updateUser } from "@/server/user";
 import { getErrorMessage, isErrorWithMessage } from "@/utils/error";
+import { toast } from "sonner";
 
 const EditUserProfileSchema = z.object({
   name: z.string().min(1, "Name cannot be blank."),
@@ -75,6 +76,7 @@ function EditProfileDialog(props: { username: string }) {
             }
             try {
               const newUserName = await updateUser(res.data, user.id);
+              toast.success("Profile updated successfully!");
               // revaildate user profile
               const oldUserName = user.username;
               revalidateUser();
