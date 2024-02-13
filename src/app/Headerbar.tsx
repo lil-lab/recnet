@@ -255,6 +255,11 @@ export function Headerbar() {
                   Help
                 </Text>
               </Link>
+              <Link href="/all-users">
+                <Text size="3" weight="medium">
+                  All Users
+                </Text>
+              </Link>
             </motion.div>
           )}
         </AnimatePresence>
