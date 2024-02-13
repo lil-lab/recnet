@@ -8,12 +8,30 @@ import * as React from "react";
 
 const faqs: {
   title: string;
-  content: string | (() => string);
+  content: () => React.ReactNode;
 }[] = [
   {
     title: "How does RecNet work?",
-    content:
-      "Each user may recommend one paper per cycle. They may change the paper they recommend each cycle as many times as they want during the cycle (i.e, before the cutoff time). A recommendation is made out of (a) a link to the paper, (b) paper title and authors, (c) a very short tl;dr message of 280 characters.",
+    content: () => {
+      return (
+        <div>
+          <Text>
+            {
+              "Each user may recommend one paper per cycle. They may change the paper they recommend each cycle as many times as they want during the cycle (i.e, before the cutoff time). A recommendation is made out of (a) a link to the paper, (b) paper title and authors, (c) a very short tl;dr message of 280 characters."
+            }
+          </Text>
+          <div className="w-full flex justify-start mt-6">
+            <iframe
+              src="https://www.youtube.com/embed/qpEvFhNqrn8?si=mi23tRg6Z9N8M2q9"
+              title="YouTube video player"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+              allowFullScreen
+              className="w-full md:w-[95%] aspect-[560/315]"
+            ></iframe>
+          </div>
+        </div>
+      );
+    },
   },
   {
     title: "Cycle",
@@ -46,7 +64,7 @@ export default function AboutPage() {
             {faq.title}
           </Text>
           <Text className="text-gray-11" size="4">
-            {typeof faq.content === "string" ? faq.content : faq.content()}
+            {faq.content()}
           </Text>
         </React.Fragment>
       ))}
