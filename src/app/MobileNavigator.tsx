@@ -151,8 +151,8 @@ function MobileNavigator() {
       )}
     >
       <HomeIcon
-        width="32"
-        height="32"
+        width="24"
+        height="24"
         onClick={() => {
           if (pathname === "/feeds") {
             return;
@@ -173,8 +173,8 @@ function MobileNavigator() {
       >
         <Dialog.Trigger>
           <Pencil2Icon
-            width="32"
-            height="32"
+            width="24"
+            height="24"
             className={cn({ "text-gray-6": !user })}
             onClick={() => {
               if (!user) {
@@ -193,8 +193,8 @@ function MobileNavigator() {
         <UserDropdown user={user} />
       ) : (
         <AvatarIcon
-          width="32"
-          height="32"
+          width="24"
+          height="24"
           onClick={() => {
             login();
           }}
