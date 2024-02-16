@@ -1,10 +1,12 @@
-import { getFeedsRecs } from "@/server/rec";
+import { getFeedsRecs, getRecsWithUsers } from "@/server/rec";
 import { getCutOff, getLatestCutOff, START_DATE } from "@/utils/date";
 import { getUserServerSide } from "@/utils/getUserServerSide";
 import { notFound, redirect } from "next/navigation";
 import { RecCard } from "@/components/RecCard";
 import { Text } from "@radix-ui/themes";
 import { cn } from "@/utils/cn";
+import groupBy from "lodash.groupby";
+import { notEmpty } from "@/utils/notEmpty";
 
 function verifyDate(date: string) {
   const parsedDate = new Date(date);
@@ -45,6 +47,15 @@ export default async function FeedPage({
   }
   const cutoff = date ? getCutOff(new Date(date)) : getLatestCutOff();
   const recs = await getFeedsRecs(user?.id, cutoff.getTime());
+  const recsWithUsers = await getRecsWithUsers(recs);
+  const recsGroupByTitle = groupBy(recsWithUsers, (recWithUser) => {
+    const titleLowercase = recWithUser.title.toLowerCase();
+    const words = titleLowercase
+      .split(" ")
+      .filter((w) => w.length > 0)
+      .filter(notEmpty);
+    return words.join("");
+  });
 
   return (
     <div
@@ -59,10 +70,11 @@ export default async function FeedPage({
         "md:py-12"
       )}
     >
-      {recs.length > 0 ? (
-        recs.map((rec, idx) => {
+      {Object.keys(recsGroupByTitle).length > 0 ? (
+        Object.keys(recsGroupByTitle).map((recTitle, idx) => {
+          const recsWithUsers = recsGroupByTitle[recTitle];
           return (
-            <RecCard key={`${rec.title}-${rec.userId}-${idx}`} rec={rec} />
+            <RecCard key={`${recTitle}-${idx}`} recsWithUsers={recsWithUsers} />
           );
         })
       ) : (
