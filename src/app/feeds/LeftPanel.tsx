@@ -43,8 +43,8 @@ import { useRouter } from "next/navigation";
 
 const RecFormSchema = z.object({
   link: z.string().url(),
-  title: z.string(),
-  author: z.string(),
+  title: z.string().min(1, "Title cannot be blank"),
+  author: z.string().min(1, "Author(s) cannot be blank"),
   description: z
     .string()
     .max(280, "Description should be less than 280 chars")
@@ -94,6 +94,8 @@ export function RecForm(props: {
       },
       mode: "onBlur",
     });
+
+  console.log(formState.errors);
 
   return (
     <form
