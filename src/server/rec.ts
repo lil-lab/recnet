@@ -63,24 +63,39 @@ export async function getFeedsRecs(
     return [];
   }
 
-  const querySnapshot = await db
-    .collection("recommendations")
-    .where("userId", "in", following)
-    .where("cutoff", "==", Timestamp.fromMillis(cutoffTs))
-    .get();
+  // batch the recs every 30 items
+  // since firestore has a limit for "IN" query, it supports up to 30 comparison values.
+  // so we need to batch the following list
+  // https://cloud.google.com/firestore/docs/query-data/queries
+  const followingBatches = [];
+  const batchSize = 30;
+  for (let i = 0; i < following.length; i += batchSize) {
+    followingBatches.push(following.slice(i, i + batchSize));
+  }
 
-  const recs = querySnapshot.docs
-    .map((doc) => {
-      // parse rec
-      const res = RecSchema.safeParse({ ...doc.data(), id: doc.id });
-      if (res.success) {
-        return res.data;
-      } else {
-        console.error("Failed to parse rec", res.error);
-        return null;
-      }
-    })
-    .filter(notEmpty);
+  const recs: Rec[] = [];
+  for (let i = 0; i < followingBatches.length; i++) {
+    const batch = followingBatches[i];
+    const querySnapshot = await db
+      .collection("recommendations")
+      .where("userId", "in", batch)
+      .where("cutoff", "==", Timestamp.fromMillis(cutoffTs))
+      .get();
+
+    const batchRecs = querySnapshot.docs
+      .map((doc) => {
+        // parse rec
+        const res = RecSchema.safeParse({ ...doc.data(), id: doc.id });
+        if (res.success) {
+          return res.data;
+        } else {
+          console.error("Failed to parse rec", res.error);
+          return null;
+        }
+      })
+      .filter(notEmpty);
+    recs.push(...batchRecs);
+  }
 
   const seed = userId;
   return shuffleArray(recs, seed);
