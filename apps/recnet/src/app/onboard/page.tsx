@@ -183,7 +183,7 @@ export default function OnboardPage() {
         <Button
           variant="solid"
           color="blue"
-          className={cn({
+          className={cn("cursor-pointer", {
             "bg-blue-10": formState.isValid,
             "bg-gray-5": !formState.isValid,
           })}

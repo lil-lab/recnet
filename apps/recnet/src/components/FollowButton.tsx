@@ -22,7 +22,7 @@ export function FollowButton(props: FollowButtonProps) {
 
   return (
     <Button
-      className="w-full transition-all ease-in-out"
+      className="w-full transition-all ease-in-out cursor-pointer"
       variant={isFollowing ? "outline" : "solid"}
       onClick={async () => {
         if (!me) {

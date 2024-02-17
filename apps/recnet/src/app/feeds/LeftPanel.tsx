@@ -306,7 +306,7 @@ export function RecForm(props: {
       <Button
         variant="solid"
         color="blue"
-        className={cn("bg-blue-10")}
+        className={cn("bg-blue-10", "cursor-pointer")}
         type="submit"
       >
         Save
@@ -315,6 +315,7 @@ export function RecForm(props: {
         <Button
           variant="outline"
           color="red"
+          className="cursor-pointer"
           onClick={async () => {
             try {
               await deleteRec(currentRec.id, user.id);
@@ -428,7 +429,7 @@ function RecStatusPanel(props: {
             initial: "2",
             lg: "3",
           }}
-          className="w-full"
+          className="w-full cursor-pointer"
           onClick={() => {
             setIsRecFormOpen(true);
           }}
@@ -457,7 +458,7 @@ function CutoffSelector(props: { currentCutoff: Date; cutoffs: Date[] }) {
     const year = date.getFullYear();
     const month = date.getMonth() + 1;
     const day = date.getDate();
-    return `${year}/${month}/${day}`;
+    return `${month}/${day}/${year}`;
   };
 
   return (

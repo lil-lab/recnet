@@ -1,7 +1,10 @@
+"use client";
+
 import { cn } from "@/utils/cn";
 import { Flex, Text } from "@radix-ui/themes";
 import { RecNetLink } from "@/components/Link";
-import { ReportEmailAccount } from "@/app/error";
+
+export const ReportEmailAccount = "lil.recnet@gmail.com";
 
 export default function NotFoundPage() {
   return (
@@ -20,26 +23,30 @@ export default function NotFoundPage() {
     >
       <Flex className="items-center gap-x-8">
         <Text className="text-gray-10 text-[72px]" weight="medium">
-          404
+          500
         </Text>
         <div className="w-[2px] bg-gray-10 h-[75%]" />
         <div className="flex flex-col gap-y-1">
           <Text className="text-gray-11 text-[24px]" weight="medium">
-            Page not found
+            Application error
           </Text>
           <Text className="text-gray-10 text-[16px]">
-            The page you are looking for does not exist.
+            Unexpected error occurred. Please help us by reporting this issue.
           </Text>
-          <Flex className="items-center gap-x-2 text-gray-10 text-[16px] flex-wrap">
-            <Text>Go back to </Text>
-            <RecNetLink href="/">
-              <Text className="text-blue-9 text-[16px]">home</Text>
-            </RecNetLink>
-            <Text> or </Text>
+          <Flex className="items-center text-gray-10 text-[16px] flex-wrap">
             <RecNetLink href={`mailto:${ReportEmailAccount}`}>
-              <Text className="text-blue-9 text-[16px]">report issue</Text>
+              <Text className="text-blue-9 text-[16px]">
+                Report issue via email
+              </Text>
             </RecNetLink>
-            <Text> to us</Text>
+            <Text className="mx-2"> or </Text>
+            <RecNetLink href="/">
+              <Text className="text-blue-9 text-[16px]">
+                {" "}
+                open an issue at Github
+              </Text>
+            </RecNetLink>
+            <Text>.</Text>
           </Flex>
         </div>
       </Flex>

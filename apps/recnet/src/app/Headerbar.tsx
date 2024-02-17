@@ -29,12 +29,15 @@ export function UserDropdown({ user }: { user: User }) {
     <DropdownMenu.Root>
       <DropdownMenu.Trigger>
         <div>
-          <Avatar user={user} />
+          <Avatar
+            user={user}
+            className="w-[28px] h-[28px] sm:w-[36px] sm:h-[36px] md:w-[40px] md:h-[40px]"
+          />
         </div>
       </DropdownMenu.Trigger>
       <DropdownMenu.Content align="center" className="mt-1 sm:w-[120px]">
         <DropdownMenu.Item>
-          <Link href={`/user/${user.username}`}>Profile</Link>
+          <Link href={`/${user.username}`}>Profile</Link>
         </DropdownMenu.Item>
         <DropdownMenu.Item color="red" onClick={handleLogout}>
           Log out
@@ -252,6 +255,11 @@ export function Headerbar() {
                   Help
                 </Text>
               </Link>
+              <Link href="/all-users">
+                <Text size="3" weight="medium">
+                  All Users
+                </Text>
+              </Link>
             </motion.div>
           )}
         </AnimatePresence>
@@ -263,6 +271,7 @@ export function Headerbar() {
                 await logout();
                 router.push("/");
               }}
+              className="cursor-pointer"
             >
               Log out
             </Button>

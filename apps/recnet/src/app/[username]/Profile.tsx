@@ -16,6 +16,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { updateUser } from "@/server/user";
 import { getErrorMessage, isErrorWithMessage } from "@/utils/error";
+import { toast } from "sonner";
 
 const EditUserProfileSchema = z.object({
   name: z.string().min(1, "Name cannot be blank."),
@@ -50,7 +51,7 @@ function EditProfileDialog(props: { username: string }) {
   return (
     <Dialog.Root open={open} onOpenChange={setOpen}>
       <Dialog.Trigger>
-        <Button className="w-full" variant="surface">
+        <Button className="w-full cursor-pointer" variant="surface">
           Edit profile
         </Button>
       </Dialog.Trigger>
@@ -75,12 +76,13 @@ function EditProfileDialog(props: { username: string }) {
             }
             try {
               const newUserName = await updateUser(res.data, user.id);
+              toast.success("Profile updated successfully!");
               // revaildate user profile
               const oldUserName = user.username;
               revalidateUser();
               if (newUserName !== oldUserName) {
                 // if user change username, redirect to new user profile
-                router.replace(`/user/${newUserName}`);
+                router.replace(`/${newUserName}`);
               } else {
                 mutate();
                 setOpen(false);
@@ -145,14 +147,14 @@ function EditProfileDialog(props: { username: string }) {
 
           <Flex gap="3" mt="4" justify="end">
             <Dialog.Close>
-              <Button variant="soft" color="gray">
+              <Button variant="soft" color="gray" className="cursor-pointer">
                 Cancel
               </Button>
             </Dialog.Close>
             <Button
               variant="solid"
               color="blue"
-              className={cn({
+              className={cn("cursor-pointer", {
                 "bg-blue-10": formState.isValid,
                 "bg-gray-5": !formState.isValid,
               })}
@@ -194,7 +196,7 @@ export function Profile(props: { username: string }) {
               </Flex>
               <Flex className="w-fit">
                 <Button
-                  className="w-full p-0 overflow-hidden"
+                  className="w-full p-0 overflow-hidden cursor-pointer"
                   radius="medium"
                   variant="surface"
                   disabled

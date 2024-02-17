@@ -71,11 +71,11 @@ export default async function Home() {
         }}
         className="text-gray-11 text-center w-[80%]"
       >
-        Receive weekly paper recs from researchers you followed.
+        Receive weekly paper recs from researchers you follow.
       </Text>
       <div className="flex flex-row gap-x-3 px-3">
         <LoginButton />
-        <Button size="4" variant="outline" asChild>
+        <Button size="4" variant="outline" asChild className="cursor-pointer">
           <Link href="/about">Learn more</Link>
         </Button>
       </div>
