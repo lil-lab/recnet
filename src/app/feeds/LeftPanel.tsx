@@ -303,7 +303,7 @@ export function RecForm(props: {
             <div />
           )}
           <Text size="1" className="text-gray-11">
-            {`${getValues("description")?.length ?? 0}/280`}
+            {`${watch("description")?.length ?? 0}/280`}
           </Text>
         </div>
       </div>
