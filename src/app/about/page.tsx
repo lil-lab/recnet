@@ -92,7 +92,7 @@ export default function AboutPage() {
             </RecNetLink>
             {member.username ? (
               <RecNetLink
-                href={`/user/${member.username}`}
+                href={`/${member.username}`}
                 radixLinkProps={{ underline: "always" }}
               >
                 <Text>profile</Text>

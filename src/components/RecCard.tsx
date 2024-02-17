@@ -78,7 +78,7 @@ export async function RecCard(props: { rec: Rec }) {
         <Avatar user={user} className="w-[40px] aspect-square" />
         <Flex className="items-end">
           <RecNetLink
-            href={`/user/${user.username}`}
+            href={`/${user.username}`}
             radixLinkProps={{
               size: "2",
             }}

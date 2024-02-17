@@ -37,7 +37,7 @@ export function UserDropdown({ user }: { user: User }) {
       </DropdownMenu.Trigger>
       <DropdownMenu.Content align="center" className="mt-1 sm:w-[120px]">
         <DropdownMenu.Item>
-          <Link href={`/user/${user.username}`}>Profile</Link>
+          <Link href={`/${user.username}`}>Profile</Link>
         </DropdownMenu.Item>
         <DropdownMenu.Item color="red" onClick={handleLogout}>
           Log out
