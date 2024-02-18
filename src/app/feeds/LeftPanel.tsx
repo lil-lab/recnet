@@ -40,11 +40,12 @@ import { insertRec, updateRec, deleteRec } from "@/server/rec";
 import { User } from "@/types/user";
 import { Skeleton, SkeletonText } from "@/components/Skeleton";
 import { useRouter } from "next/navigation";
+import { TailSpin } from "react-loader-spinner";
 
 const RecFormSchema = z.object({
   link: z.string().url(),
-  title: z.string(),
-  author: z.string(),
+  title: z.string().min(1, "Title cannot be blank"),
+  author: z.string().min(1, "Author(s) cannot be blank"),
   description: z
     .string()
     .max(280, "Description should be less than 280 chars")
@@ -70,6 +71,7 @@ export function RecForm(props: {
   onUpdateSuccess?: () => void;
   onDeleteSuccess?: () => void;
 }) {
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const {
     onFinish = () => {},
     currentRec,
@@ -99,12 +101,14 @@ export function RecForm(props: {
     <form
       className="flex flex-col gap-y-[10px]"
       onSubmit={handleSubmit(async (data, e) => {
+        setIsSubmitting(true);
         e?.preventDefault();
         // parse using zod schema
         const res = RecFormSchema.safeParse(data);
         if (!res.success) {
           // should not happen, just in case and for typescript to narrow down type
           console.error("Invalid form data.");
+          setIsSubmitting(false);
           return;
         }
         // if no changes, close dialog
@@ -117,6 +121,7 @@ export function RecForm(props: {
           })
         ) {
           onFinish();
+          setIsSubmitting(false);
           return;
         }
         try {
@@ -134,9 +139,11 @@ export function RecForm(props: {
           }
           onUpdateSuccess();
           onFinish();
+          setIsSubmitting(false);
         } catch (error) {
           console.error(error);
           toast.error("Failed to update/insert new rec.");
+          setIsSubmitting(false);
         }
       })}
     >
@@ -296,7 +303,7 @@ export function RecForm(props: {
             <div />
           )}
           <Text size="1" className="text-gray-11">
-            {`${getValues("description")?.length ?? 0}/280`}
+            {`${watch("description")?.length ?? 0}/280`}
           </Text>
         </div>
       </div>
@@ -308,8 +315,21 @@ export function RecForm(props: {
         color="blue"
         className={cn("bg-blue-10", "cursor-pointer")}
         type="submit"
+        disabled={isSubmitting}
       >
-        Save
+        {isSubmitting ? (
+          <TailSpin
+            radius={"1"}
+            visible={true}
+            height="20"
+            width="20"
+            color={"#ffffff"}
+            ariaLabel="line-wave-loading"
+            wrapperClass="w-fit h-fit"
+          />
+        ) : (
+          "Submit"
+        )}
       </Button>
       {currentRec ? (
         <Button

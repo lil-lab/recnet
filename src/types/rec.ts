@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { User } from "./user";
 
 export const FirebaseTsSchema = z.object({
   _seconds: z.number(),
@@ -30,3 +31,5 @@ export const RecSchema = z.object({
 });
 
 export type Rec = z.infer<typeof RecSchema>;
+
+export type RecWithUser = Rec & { user: User };

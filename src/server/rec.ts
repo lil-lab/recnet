@@ -1,12 +1,13 @@
 "use server";
 import { db } from "@/firebase/admin";
-import { RecSchema, Rec } from "@/types/rec";
+import { RecSchema, Rec, RecWithUser } from "@/types/rec";
 import { Timestamp } from "firebase-admin/firestore";
 import { getNextCutOff } from "@/utils/date";
 import { notEmpty } from "@/utils/notEmpty";
 import { FieldValue } from "firebase-admin/firestore";
 import { User } from "@/types/user";
 import { Chance } from "chance";
+import { getUsersByIds } from "@/server/user";
 
 export async function getRecsByUserId(
   userId: string,
@@ -63,24 +64,39 @@ export async function getFeedsRecs(
     return [];
   }
 
-  const querySnapshot = await db
-    .collection("recommendations")
-    .where("userId", "in", following)
-    .where("cutoff", "==", Timestamp.fromMillis(cutoffTs))
-    .get();
+  // batch the recs every 30 items
+  // since firestore has a limit for "IN" query, it supports up to 30 comparison values.
+  // so we need to batch the following list
+  // https://cloud.google.com/firestore/docs/query-data/queries
+  const followingBatches: string[] = [];
+  const batchSize = 30;
+  for (let i = 0; i < following.length; i += batchSize) {
+    followingBatches.push(following.slice(i, i + batchSize));
+  }
 
-  const recs = querySnapshot.docs
-    .map((doc) => {
-      // parse rec
-      const res = RecSchema.safeParse({ ...doc.data(), id: doc.id });
-      if (res.success) {
-        return res.data;
-      } else {
-        console.error("Failed to parse rec", res.error);
-        return null;
-      }
-    })
-    .filter(notEmpty);
+  const recs: Rec[] = [];
+  for (let i = 0; i < followingBatches.length; i++) {
+    const batch = followingBatches[i];
+    const querySnapshot = await db
+      .collection("recommendations")
+      .where("userId", "in", batch)
+      .where("cutoff", "==", Timestamp.fromMillis(cutoffTs))
+      .get();
+
+    const batchRecs = querySnapshot.docs
+      .map((doc) => {
+        // parse rec
+        const res = RecSchema.safeParse({ ...doc.data(), id: doc.id });
+        if (res.success) {
+          return res.data;
+        } else {
+          console.error("Failed to parse rec", res.error);
+          return null;
+        }
+      })
+      .filter(notEmpty);
+    recs.push(...batchRecs);
+  }
 
   const seed = userId;
   return shuffleArray(recs, seed);
@@ -139,4 +155,27 @@ export async function deleteRec(recId: string, userId: string): Promise<void> {
     // post doens't exist
     throw new Error("Post doesn't exist");
   }
+}
+
+export async function getRecsWithUsers(recs: Rec[]): Promise<RecWithUser[]> {
+  const userIds = recs
+    .map((rec) => rec.userId)
+    .reduce<string[]>((arr, id) => {
+      if (!arr.includes(id)) {
+        return [...arr, id];
+      }
+      return arr;
+    }, []);
+  // get users
+  const users = await getUsersByIds(userIds);
+  const recsWithUsers = recs
+    .map((rec) => {
+      const user = users.find((u) => u.id === rec.userId);
+      if (!user) {
+        return null;
+      }
+      return { ...rec, user };
+    })
+    .filter(notEmpty);
+  return recsWithUsers;
 }

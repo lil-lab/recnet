@@ -1,5 +1,4 @@
-import { getUserById } from "@/server/user";
-import { Rec } from "@/types/rec";
+import { RecWithUser } from "@/types/rec";
 import { cn } from "@/utils/cn";
 import { Flex, Text } from "@radix-ui/themes";
 import { Avatar } from "./Avatar";
@@ -23,15 +22,6 @@ export function RecCardSkeleton() {
         "shadow-2"
       )}
     >
-      <Flex className="items-center gap-x-3 p-2">
-        <Skeleton className="w-[40px] aspect-square rounded-[999px]" />
-        <Flex className="items-end">
-          <SkeletonText size="2" />
-        </Flex>
-      </Flex>
-      <Flex className="p-2">
-        <SkeletonText size="3" />
-      </Flex>
       <Flex
         direction={"column"}
         className={cn("p-4", "gap-y-3", "bg-gray-3", "rounded-2")}
@@ -47,17 +37,33 @@ export function RecCardSkeleton() {
           </Flex>
         </Flex>
       </Flex>
+      <Flex className="items-start gap-x-3 px-4 py-2">
+        <Skeleton className="w-[40px] aspect-square rounded-[999px]" />
+        <Flex className="flex flex-col gap-y-1">
+          <Flex className="items-end">
+            <SkeletonText size="2" />
+          </Flex>
+          <Flex>
+            <SkeletonText size="3" className="w-[20vw]" />
+          </Flex>
+        </Flex>
+      </Flex>
     </div>
   );
 }
 
-// server component
-export async function RecCard(props: { rec: Rec }) {
-  const { rec } = props;
-  const user = await getUserById(rec.userId);
-  const cutoff = formatDate(getDateFromFirebaseTimestamp(rec.cutoff));
+export function RecCard(props: {
+  recsWithUsers: RecWithUser[];
+  showDate?: boolean;
+}) {
+  const { recsWithUsers, showDate = false } = props;
+  const hasRec = recsWithUsers.length > 0;
+  const cutoff = hasRec
+    ? formatDate(getDateFromFirebaseTimestamp(recsWithUsers[0].cutoff))
+    : null;
+  const rec = hasRec ? recsWithUsers[0] : null;
 
-  if (!user) {
+  if (!hasRec || !rec) {
     return null;
   }
 
@@ -74,29 +80,6 @@ export async function RecCard(props: { rec: Rec }) {
         "shadow-2"
       )}
     >
-      <Flex className="items-center gap-x-3 p-2">
-        <Avatar user={user} className="w-[40px] aspect-square" />
-        <Flex className="items-end">
-          <RecNetLink
-            href={`/${user.username}`}
-            radixLinkProps={{
-              size: "2",
-            }}
-          >
-            <Text size="2">{user.displayName}</Text>
-          </RecNetLink>
-          <Text
-            size="2"
-            className="text-gray-10"
-            weight="medium"
-          >{`'s rec on ${cutoff}`}</Text>
-        </Flex>
-      </Flex>
-      <Flex className="p-2">
-        <Text size="3" className="text-gray-11">
-          {rec.description}
-        </Text>
-      </Flex>
       <a href={rec.link} target="_blank" rel="noreferrer" className="group">
         <Flex
           direction={"column"}
@@ -123,6 +106,41 @@ export async function RecCard(props: { rec: Rec }) {
           </Flex>
         </Flex>
       </a>
+      {recsWithUsers.map((recWithUser) => {
+        const { user } = recWithUser;
+        return (
+          <Flex
+            className="items-start gap-x-3 px-4 py-2"
+            key={recWithUser.userId}
+          >
+            <Avatar user={user} className="w-[40px] aspect-square" />
+            <Flex className="flex flex-col gap-y-1">
+              <Text className="items-end">
+                <RecNetLink
+                  href={`/${user.username}`}
+                  radixLinkProps={{
+                    size: "2",
+                  }}
+                >
+                  <Text size="2">{user.displayName}</Text>
+                </RecNetLink>
+                {showDate ? (
+                  <Text
+                    size="2"
+                    className="text-gray-10"
+                    weight="medium"
+                  >{` recommended on on ${cutoff}`}</Text>
+                ) : null}
+              </Text>
+              <Flex>
+                <Text size="3" className="text-gray-11">
+                  {rec.description}
+                </Text>
+              </Flex>
+            </Flex>
+          </Flex>
+        );
+      })}
     </div>
   );
 }
