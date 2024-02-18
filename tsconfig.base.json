@@ -13,7 +13,10 @@
     "lib": ["es2020", "dom"],
     "skipLibCheck": true,
     "skipDefaultLibCheck": true,
-    "paths": {}
+    "paths": {
+      "@recnet/recnet-email/*": ["apps/recnet-email/src/*"],
+      "@recnet/main/*": ["apps/recnet/src/*"]
+    }
   },
   "exclude": ["node_modules", "tmp"]
 }
