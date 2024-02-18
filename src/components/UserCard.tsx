@@ -30,9 +30,11 @@ export function UserCard({ user }: { user: User }) {
       </Flex>
       <Flex className="items-center gap-x-1">
         {user.affiliation ? (
-          <Flex className="items-center gap-x-1 text-gray-11">
+          <Flex className="items-center gap-x-1 text-gray-11 overflow-hidden">
             <HomeIcon width="16" height="16" />
-            <Text size="1">{user.affiliation}</Text>
+            <Text size="1" className="truncate">
+              {user.affiliation}
+            </Text>
             <Text size="1" className="ml-[6px]">
               /
             </Text>
