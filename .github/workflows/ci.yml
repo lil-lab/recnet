@@ -33,7 +33,7 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - uses: nrwl/nx-set-shas@v4
 
-      - run: nx run-many -t typecheck
-      - run: nx run-many -t format:check
-      - run: nx run-many -t lint
-      - run: nx run-many -t test
+      - run: pnpm nx run-many -t typecheck
+      - run: pnpm nx run-many -t format:check
+      - run: pnpm nx run-many -t lint
+      - run: pnpm nx run-many -t test
