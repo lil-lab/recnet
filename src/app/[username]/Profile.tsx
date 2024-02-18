@@ -82,7 +82,7 @@ function EditProfileDialog(props: { username: string }) {
               revalidateUser();
               if (newUserName !== oldUserName) {
                 // if user change username, redirect to new user profile
-                router.replace(`/user/${newUserName}`);
+                router.replace(`/${newUserName}`);
               } else {
                 mutate();
                 setOpen(false);

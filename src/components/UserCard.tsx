@@ -21,7 +21,7 @@ export function UserCard({ user }: { user: User }) {
     >
       <Avatar user={user} />
       <Flex className="flex-col gap-y-1">
-        <RecNetLink href={`/user/${user.username}`}>
+        <RecNetLink href={`/${user.username}`}>
           <Text>{user.displayName}</Text>
         </RecNetLink>
         <Text size="1" className="text-gray-12">

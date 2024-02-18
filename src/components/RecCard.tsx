@@ -117,7 +117,7 @@ export function RecCard(props: {
             <Flex className="flex flex-col gap-y-1">
               <Text className="items-end">
                 <RecNetLink
-                  href={`/user/${user.username}`}
+                  href={`/${user.username}`}
                   radixLinkProps={{
                     size: "2",
                   }}
