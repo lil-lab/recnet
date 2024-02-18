@@ -1,4 +1,4 @@
-name: CI
+name: lint/test/typecheck
 
 on:
   push:
@@ -29,9 +29,11 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: 20
-          cache: 'pnpm'
+          cache: "pnpm"
       - run: pnpm install --frozen-lockfile
       - uses: nrwl/nx-set-shas@v4
 
-      - run: pnpm exec nx-cloud record -- nx format:check
-      - run: pnpm exec nx affected -t lint test build e2e-ci
+      - run: nx run-many -t typecheck
+      - run: nx run-many -t format:check
+      - run: nx run-many -t lint
+      - run: nx run-many -t test
