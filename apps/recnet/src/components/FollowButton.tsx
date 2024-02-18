@@ -26,7 +26,7 @@ export function FollowButton(props: FollowButtonProps) {
       variant={isFollowing ? "outline" : "solid"}
       onClick={async () => {
         if (!me) {
-          toast.error("You must be logged in to follow someone");
+          toast.error("You must be logged in to follow someone.");
           return;
         }
         setIsLoading(true);

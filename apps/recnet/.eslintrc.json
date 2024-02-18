@@ -11,7 +11,12 @@
     "plugin:react/recommended",
     "plugin:@typescript-eslint/recommended"
   ],
-  "ignorePatterns": ["!**/*", ".next/**/*"],
+  "ignorePatterns": [
+    "!**/*",
+    ".next/**/*",
+    "**/postcss.config.js",
+    "**/tailwind.config.js"
+  ],
   "overrides": [
     {
       "files": ["*.ts", "*.tsx", "*.js", "*.jsx"],
