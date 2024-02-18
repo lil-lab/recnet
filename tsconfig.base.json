@@ -14,8 +14,8 @@
     "skipLibCheck": true,
     "skipDefaultLibCheck": true,
     "paths": {
-      "@recnet/recnet-email/*": ["apps/recnet-email/src/*"],
-      "@recnet/main/*": ["apps/recnet/src/*"]
+      "@recnet/main/*": ["apps/recnet/src/*"],
+      "@recnet/recnet-email/*": ["apps/recnet-email/src/*"]
     }
   },
   "exclude": ["node_modules", "tmp"]
