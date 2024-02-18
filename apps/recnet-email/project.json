@@ -4,23 +4,6 @@
   "sourceRoot": "apps/recnet-email/src",
   "projectType": "library",
   "targets": {
-    "build": {
-      "executor": "@nx/js:tsc",
-      "outputs": ["{options.outputPath}"],
-      "options": {
-        "outputPath": "dist/apps/recnet-email",
-        "main": "apps/recnet-email/src/index.ts",
-        "tsConfig": "apps/recnet-email/tsconfig.lib.json",
-        "assets": ["apps/recnet-email/*.md"]
-      }
-    },
-    "test": {
-      "executor": "@nx/vite:test",
-      "outputs": ["{options.reportsDirectory}"],
-      "options": {
-        "reportsDirectory": "../../coverage/apps/recnet-email"
-      }
-    },
     "dev": {
       "executor": "nx:run-commands",
       "options": {
