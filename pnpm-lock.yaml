@@ -34,6 +34,9 @@ dependencies:
   lint-staged:
     specifier: ^15.2.0
     version: 15.2.0
+  lodash.groupby:
+    specifier: ^4.6.0
+    version: 4.6.0
   lucide-react:
     specifier: ^0.316.0
     version: 0.316.0(react@18.2.0)
@@ -84,6 +87,9 @@ devDependencies:
   '@types/chance':
     specifier: ^1.1.6
     version: 1.1.6
+  '@types/lodash.groupby':
+    specifier: ^4.6.9
+    version: 4.6.9
   '@types/node':
     specifier: ^20
     version: 20.11.6
@@ -2409,6 +2415,16 @@ packages:
     dependencies:
       '@types/node': 20.11.6
     dev: false
+
+  /@types/lodash.groupby@4.6.9:
+    resolution: {integrity: sha512-z2xtCX2ko7GrqORnnYea4+ksT7jZNAvaOcLd6mP9M7J09RHvJs06W8BGdQQAX8ARef09VQLdeRilSOcfHlDQJQ==}
+    dependencies:
+      '@types/lodash': 4.14.202
+    dev: true
+
+  /@types/lodash@4.14.202:
+    resolution: {integrity: sha512-OvlIYQK9tNneDlS0VN54LLd5uiPCBOp7gS5Z0f1mjoJYBrtStzgmJBxONW3U6OZqdtNzZPmn9BS/7WI7BFFcFQ==}
+    dev: true
 
   /@types/long@4.0.2:
     resolution: {integrity: sha512-MqTGEo5bj5t157U6fA/BiDynNkn0YknVdh48CMPkTSpFTVmvao5UQmm7uEF6xBEo7qIMAlY/JSleYaE6VOdpaA==}
@@ -4963,6 +4979,10 @@ packages:
 
   /lodash.clonedeep@4.5.0:
     resolution: {integrity: sha512-H5ZhCF25riFd9uB5UCkVKo61m3S/xZk1x4wA6yp/L3RFP6Z/eHH1ymQcGLo7J3GMPfm0V/7m1tryHuGVxpqEBQ==}
+    dev: false
+
+  /lodash.groupby@4.6.0:
+    resolution: {integrity: sha512-5dcWxm23+VAoz+awKmBaiBvzox8+RqMgFhi7UvX9DHZr2HdxHXM/Wrf8cfKpsW37RNrvtPn6hSwNqurSILbmJw==}
     dev: false
 
   /lodash.includes@4.3.0:

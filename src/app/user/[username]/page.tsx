@@ -2,7 +2,7 @@ import { cn } from "@/utils/cn";
 import { Profile } from "./Profile";
 import { getUserByUsername } from "@/server/user";
 import { notFound } from "next/navigation";
-import { getRecsByUserId } from "@/server/rec";
+import { getRecsByUserId, getRecsWithUsers } from "@/server/rec";
 import { RecCard } from "@/components/RecCard";
 import { Text } from "@radix-ui/themes";
 
@@ -20,6 +20,7 @@ export default async function UserProfilePage({
     return user;
   });
   const recs = await getRecsByUserId(user.id);
+  const recsWithUsers = await getRecsWithUsers(recs);
 
   return (
     <div
@@ -34,10 +35,14 @@ export default async function UserProfilePage({
       )}
     >
       <Profile username={username} />
-      {recs.length > 0 ? (
-        recs.map((rec, idx) => {
+      {recsWithUsers.length > 0 ? (
+        recsWithUsers.map((recWithUser, idx) => {
           return (
-            <RecCard key={`${rec.title}-${rec.userId}-${idx}`} rec={rec} />
+            <RecCard
+              key={`${recWithUser.title}-${recWithUser.userId}-${idx}`}
+              recsWithUsers={[recWithUser]}
+              showDate
+            />
           );
         })
       ) : (
