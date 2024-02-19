@@ -1,5 +1,4 @@
 // import { onSchedule } from "firebase-functions/v2/scheduler";
-import logger from "firebase-functions/logger";
 import { db } from "@/firebase/admin";
 import { UserSchema } from "@/types/user";
 import { formatDate, getLatestCutOff } from "@/utils/date";
@@ -33,7 +32,7 @@ export async function GET(request: NextRequest) {
           id: userDoc.id,
         });
         if (!res.success) {
-          logger.error("Error parsing user", res.error);
+          console.error("Error parsing user", res.error);
           return;
         }
         const user = res.data;
@@ -67,7 +66,7 @@ export async function GET(request: NextRequest) {
     );
     return NextResponse.json({ ok: true });
   } catch (error) {
-    logger.error("Error:", error);
+    console.error("Error:", error);
     return NextResponse.json({ ok: false });
   }
 }
