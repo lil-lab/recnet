@@ -11,7 +11,7 @@ import { render } from "@react-email/render";
 
 const TEST_USER_IDS = ["GoXnHBhgK8QhcZpki0la"];
 
-export const sendWeeklyDigest = onSchedule(
+export const sendWeeklyDigestTest = onSchedule(
   "every wednesday 00:01",
   async (event) => {
     try {
