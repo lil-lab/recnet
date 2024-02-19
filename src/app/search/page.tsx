@@ -100,6 +100,7 @@ export default async function SearchResultPage({
       className={cn(
         "w-full",
         "lg:w-[60%]",
+        "sm:w-[80%]",
         `min-h-[90svh]`,
         "flex",
         "flex-col",
