@@ -15,19 +15,10 @@ import {
 } from "@react-email/components";
 import * as React from "react";
 import { CalendarIcon } from "@radix-ui/react-icons";
-
-interface EmailRecWithUser {
-  avatarPhotoUrl: string;
-  title: string;
-  link: string;
-  author: string;
-  year: string;
-  username: string;
-  description: string;
-}
+import type { RecWithUser } from "@/types/rec";
 
 interface EmailRecCardProps {
-  recsWithUsers: EmailRecWithUser[];
+  recsWithUsers: RecWithUser[];
 }
 
 function EmailRecCard(props: EmailRecCardProps) {
@@ -53,11 +44,11 @@ function EmailRecCard(props: EmailRecCardProps) {
           <Container key={idx} className="px-4 pt-1">
             <div className="flex flex-row items-center gap-x-4">
               <Img
-                src={recWithUser.avatarPhotoUrl}
+                src={recWithUser.user.photoURL}
                 alt="avatar"
                 className="w-[40px] aspect-square rounded-[999px] object-cover"
               />
-              <Text>{recWithUser.username}</Text>
+              <Text>{recWithUser.user.displayName}</Text>
             </div>
             <Text>{recWithUser.description}</Text>
           </Container>
@@ -67,21 +58,9 @@ function EmailRecCard(props: EmailRecCardProps) {
   );
 }
 
-const mockRec: EmailRecWithUser = {
-  avatarPhotoUrl:
-    "https://lh3.googleusercontent.com/a/ACg8ocL6DSnMAUCuiMFjcvW477_gHLTaBDOUP5vgv5mSVO5fJs8=s96-c",
-  title:
-    "Infini-gram: Scaling Unbounded n-gram Language Models to a Trillion Tokens",
-  link: "https://arxiv.org/abs/2401.17377",
-  author:
-    "Jiacheng Liu, Sewon Min, Luke Zettlemoyer, Yejin Choi, Hannaneh Hajishirzi",
-  year: "2024",
-  username: "Frank Hsu",
-  description:
-    "N-grams with 1 trillion tokens! Fast suffix arrays! What's not to like? (They don't compute perplexities or generate from the ngram model.. but otherwise, super cool thing to try!)",
-};
-
-const WeeklyDigest = () => {
+const WeeklyDigest = (props: { recsDict?: Record<string, RecWithUser[]> }) => {
+  const { recsDict = {} } = props;
+  const recsCount = Object.keys(recsDict).length;
   return (
     <Html>
       <Tailwind
@@ -119,15 +98,31 @@ const WeeklyDigest = () => {
               <Text className="text-[18px]">
                 📬 Your Weekly Recommended Papers
               </Text>
-              <Text className="text-[16px]">{`You have ${3} recommendations this week!`}</Text>
+              <Text className="text-[16px]">{`You have ${recsCount} recommendations this week!`}</Text>
               <Text>
-                Check out these rec'd paper for you from your network!
+                {recsCount > 0 ? (
+                  `Check out these rec'd paper for you from your network!`
+                ) : (
+                  <span>
+                    Visit{" "}
+                    <a
+                      className="text-brand"
+                      href="https://recnet.io"
+                      target="_blank"
+                      rel="noreferrer"
+                    >
+                      RecNet
+                    </a>{" "}
+                    to find more papers!
+                  </span>
+                )}
               </Text>
             </Section>
-            <Hr />
-            {Array.from({ length: 3 }).map((_, i) => (
-              <EmailRecCard key={i} recsWithUsers={[mockRec]} />
-            ))}
+            {recsCount > 0 ? <Hr /> : null}
+            {Object.keys(recsDict).map((key, i) => {
+              const recsWithUsers = recsDict[key];
+              return <EmailRecCard key={i} recsWithUsers={recsWithUsers} />;
+            })}
             <Hr />
             <Section className="px-2">
               <Text className="text-[16px]">
@@ -143,7 +138,7 @@ const WeeklyDigest = () => {
               </div>
             </Section>
             <Text className="text-text opacity-[40%] p-2 text-[12px]">
-              Please reply directly if you find anerror. Thank you!
+              Please reply directly if you find any error. Thank you!
             </Text>
           </Container>
         </Body>
