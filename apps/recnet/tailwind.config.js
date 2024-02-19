@@ -1,11 +1,15 @@
-import type { Config } from "tailwindcss";
 import { radixThemePreset } from "radix-themes-tw";
+const { createGlobPatternsForDependencies } = require("@nx/react/tailwind");
+const { join } = require("path");
 
-const config: Config = {
+/** @type {import('tailwindcss').Config} */
+module.exports = {
   content: [
-    "./src/pages/**/*.{js,ts,jsx,tsx,mdx}",
-    "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
-    "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
+    join(
+      __dirname,
+      "{src,pages,components,app}/**/*!(*.stories|*.spec).{ts,tsx,html}"
+    ),
+    ...createGlobPatternsForDependencies(__dirname),
   ],
   theme: {
     extend: {
@@ -33,4 +37,3 @@ const config: Config = {
   plugins: [],
   presets: [radixThemePreset],
 };
-export default config;

@@ -1,0 +1,17 @@
+{
+  "name": "recnet",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/recnet",
+  "projectType": "application",
+  "targets": {
+    "typecheck": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": ["tsc -p tsconfig.json --noEmit"],
+        "cwd": "apps/recnet",
+        "forwardAllArgs": false
+      }
+    }
+  },
+  "tags": []
+}
