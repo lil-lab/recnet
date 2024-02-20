@@ -1,1 +1,1 @@
-web: ls node_modules && npm run recnet-api:deploy
+web: pnpm run recnet-api:deploy
