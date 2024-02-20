@@ -6,7 +6,6 @@
   "scripts": {},
 =======
   "scripts": {
-    "prepare": "husky",
     "recnet-api:prebuild": "rm -rf dist",
     "recnet-api:build": "NX_NO_CLOUD=true nx build recnet-api",
     "recnet-api:deploy": "node dist/apps/recnet-api/main.js"
