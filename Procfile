@@ -1,1 +1,1 @@
-web: pnpm run recnet-api:deploy
+web: nx deploy recnet-api

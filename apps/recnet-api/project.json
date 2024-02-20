@@ -18,6 +18,22 @@
           "buildTarget": "recnet-api:build:production"
         }
       }
+    },
+    "prebuild": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": ["rm -rf dist"],
+        "cwd": ".",
+        "forwardAllArgs": false
+      }
+    },
+    "deploy": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": ["node dist/apps/recnet-api/main.js"],
+        "cwd": ".",
+        "forwardAllArgs": false
+      }
     }
   },
   "tags": []
