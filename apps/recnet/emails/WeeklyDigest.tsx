@@ -58,6 +58,40 @@ function EmailRecCard(props: EmailRecCardProps) {
   );
 }
 
+function MockEmailRecCard() {
+  return (
+    <div className="p-2 border border-2 border-[#646464]">
+      <div className="p-3 bg-[#F1F1F1] rounded-md mb-2">
+        <Link href={"https://google.com"} className="text-brand">
+          <Text className="text-[18px]">{"I am paper's title"}</Text>
+        </Link>
+        <Text>{"Author 1, Author 2, Author 3"}</Text>
+        <div className="flex flex-row items-center text-[14px] gap-x-2">
+          <CalendarIcon className="w-4 h-4" />
+          <div>{2024}</div>
+        </div>
+      </div>
+      <div className="px-4 pt-1">
+        <div className="flex flex-row items-center gap-x-4">
+          <Img
+            src={
+              "https://lh3.googleusercontent.com/a/ACg8ocL6DSnMAUCuiMFjcvW477_gHLTaBDOUP5vgv5mSVO5fJs8=s96-c"
+            }
+            alt="avatar"
+            className="w-[40px] aspect-square rounded-[999px] object-cover"
+          />
+          <Text>{"Mock user"}</Text>
+        </div>
+        <Text>
+          {
+            "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed non risus."
+          }
+        </Text>
+      </div>
+    </div>
+  );
+}
+
 const WeeklyDigest = (props: { recsDict?: Record<string, RecWithUser[]> }) => {
   const { recsDict = {} } = props;
   const recsCount = Object.keys(recsDict).length;
@@ -118,10 +152,14 @@ const WeeklyDigest = (props: { recsDict?: Record<string, RecWithUser[]> }) => {
                 )}
               </Text>
             </Section>
-            {recsCount > 0 ? <Hr /> : null}
             {Object.keys(recsDict).map((key, i) => {
               const recsWithUsers = recsDict[key];
-              return <EmailRecCard key={i} recsWithUsers={recsWithUsers} />;
+              return (
+                <React.Fragment key={i}>
+                  <Hr />
+                  <EmailRecCard recsWithUsers={recsWithUsers} />
+                </React.Fragment>
+              );
             })}
             <Hr />
             <Section className="px-2">

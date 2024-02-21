@@ -2,7 +2,7 @@
   "crons": [
     {
       "path": "/api/sendDigest",
-      "schedule": "1 0 ? * WED"
+      "schedule": "1 0 ? * FRI"
     }
   ]
 }
