@@ -4,6 +4,7 @@ import Link from "next/link";
 import { LoginButton } from "./LoginButton";
 import { getUserServerSide } from "@/utils/getUserServerSide";
 import { redirect } from "next/navigation";
+import { AnnouncementBanner } from "./AnnouncementBanner";
 
 const cards = [
   {
@@ -44,6 +45,7 @@ export default async function Home() {
         "px-4"
       )}
     >
+      <AnnouncementBanner />
       <Text
         className={cn(
           "text-[60px]",

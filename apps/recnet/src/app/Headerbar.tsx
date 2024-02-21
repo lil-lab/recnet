@@ -134,7 +134,7 @@ export function Headerbar() {
             <MagnifyingGlassIcon width="16" height="16" />
           </TextField.Slot>
           <TextField.Input
-            placeholder="Search the users..."
+            placeholder="Search for users..."
             size="2"
             ref={searchInputRef}
             value={searchQuery}
@@ -195,7 +195,7 @@ export function Headerbar() {
                 )}
               >
                 <TextField.Input
-                  placeholder="Search the users..."
+                  placeholder="Search for users..."
                   size="2"
                   value={searchQuery}
                   onChange={(event) => {

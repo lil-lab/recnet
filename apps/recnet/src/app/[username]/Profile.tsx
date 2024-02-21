@@ -18,6 +18,17 @@ import { updateUser } from "@/server/user";
 import { getErrorMessage, isErrorWithMessage } from "@/utils/error";
 import { toast } from "sonner";
 
+const UsernameBlacklist = [
+  "about",
+  "api",
+  "all-users",
+  "feeds",
+  "help",
+  "onboard",
+  "search",
+  "user",
+];
+
 const EditUserProfileSchema = z.object({
   name: z.string().min(1, "Name cannot be blank."),
   username: z
@@ -27,6 +38,15 @@ const EditUserProfileSchema = z.object({
     .regex(
       /^[A-Za-z0-9_]+$/,
       "Username should be between 4 to 15 characters and contain only letters (A-Z, a-z), numbers, and underscores (_)."
+    )
+    .refine(
+      (name) => {
+        // username cannot be in blacklist or prefix with any reserved path
+        return !UsernameBlacklist.includes(name);
+      },
+      {
+        message: "Username is not allowed.",
+      }
     ),
   affiliation: z.string().optional(),
 });
