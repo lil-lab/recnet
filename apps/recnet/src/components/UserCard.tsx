@@ -1,10 +1,33 @@
+"use client";
+
 import { User } from "@/types/user";
 import { cn } from "@/utils/cn";
-import { Flex, Text } from "@radix-ui/themes";
+import { Flex, Text, Grid } from "@radix-ui/themes";
 import { RecNetLink } from "./Link";
 import { HomeIcon, PersonIcon } from "@radix-ui/react-icons";
 import { Avatar } from "@/components/Avatar";
 import { FollowButton } from "./FollowButton";
+import { shuffleArray } from "@/utils/shuffle";
+import { useAuth } from "@/app/AuthContext";
+
+export function UserList({ users }: { users: User[] }) {
+  const { user } = useAuth();
+  const shuffledUsers = user?.seed ? shuffleArray(users, user.seed) : users;
+  return (
+    <Grid
+      columns={{
+        initial: "1",
+        sm: "2",
+        md: "3",
+      }}
+      gap="4"
+    >
+      {shuffledUsers.map((user, idx) => (
+        <UserCard key={`${user.username}-${idx}`} user={user} />
+      ))}
+    </Grid>
+  );
+}
 
 export function UserCard({ user }: { user: User }) {
   return (
