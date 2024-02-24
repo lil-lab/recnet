@@ -2,10 +2,10 @@ import { User } from "@/types/user";
 import { db } from "@/firebase/admin";
 import { UserSchema } from "@/types/user";
 import { notEmpty } from "@/utils/notEmpty";
-import { UserCard } from "@/components/UserCard";
+import { UserList } from "@/components/UserCard";
 import { DocumentData } from "firebase-admin/firestore";
 import { cn } from "@/utils/cn";
-import { Grid, Text } from "@radix-ui/themes";
+import { Text } from "@radix-ui/themes";
 import { GoBackButton } from "@/components/GoBackButton";
 import { NotFoundBlock } from "@/app/search/NotFound";
 
@@ -46,6 +46,7 @@ async function getSearchResults(): Promise<User[]> {
 
 export default async function SearchResultPage() {
   const results = await getSearchResults();
+
   return (
     <div
       className={cn(
@@ -60,22 +61,7 @@ export default async function SearchResultPage() {
     >
       <GoBackButton />
       <Text size="7" className="text-gray-12 font-medium">{`All users`}</Text>
-      {results.length === 0 ? (
-        <NotFoundBlock />
-      ) : (
-        <Grid
-          columns={{
-            initial: "1",
-            sm: "2",
-            md: "3",
-          }}
-          gap="4"
-        >
-          {results.map((user, idx) => (
-            <UserCard key={`${user.username}-${idx}`} user={user} />
-          ))}
-        </Grid>
-      )}
+      {results.length === 0 ? <NotFoundBlock /> : <UserList users={results} />}
     </div>
   );
 }

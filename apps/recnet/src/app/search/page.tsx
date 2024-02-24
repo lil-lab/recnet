@@ -3,10 +3,10 @@ import { db } from "@/firebase/admin";
 import { Filter } from "firebase-admin/firestore";
 import { UserSchema } from "@/types/user";
 import { notEmpty } from "@/utils/notEmpty";
-import { UserCard } from "@/components/UserCard";
+import { UserList } from "@/components/UserCard";
 import { DocumentData } from "firebase-admin/firestore";
 import { cn } from "@/utils/cn";
-import { Grid, Text } from "@radix-ui/themes";
+import { Text } from "@radix-ui/themes";
 import { NotFoundBlock } from "./NotFound";
 import { GoBackButton } from "@/components/GoBackButton";
 
@@ -95,6 +95,7 @@ export default async function SearchResultPage({
 }) {
   const query = searchParams["q"];
   const results = await getSearchResults(query);
+
   return (
     <div
       className={cn(
@@ -113,22 +114,7 @@ export default async function SearchResultPage({
         size="7"
         className="text-gray-12 font-medium"
       >{`${results.length} result${results.length > 1 ? "s" : ""}`}</Text>
-      {results.length === 0 ? (
-        <NotFoundBlock />
-      ) : (
-        <Grid
-          columns={{
-            initial: "1",
-            sm: "2",
-            md: "3",
-          }}
-          gap="4"
-        >
-          {results.map((user, idx) => (
-            <UserCard key={`${user.username}-${idx}`} user={user} />
-          ))}
-        </Grid>
-      )}
+      {results.length === 0 ? <NotFoundBlock /> : <UserList users={results} />}
     </div>
   );
 }
