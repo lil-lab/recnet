@@ -1,7 +1,8 @@
 import { cn } from "@/utils/cn";
 import { Flex, Text } from "@radix-ui/themes";
 import { RecNetLink } from "@/components/Link";
-import { ReportEmailAccount } from "@/app/error";
+
+export const ReportEmailAccount = "lil.recnet@gmail.com";
 
 export default function NotFoundPage() {
   return (
