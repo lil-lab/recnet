@@ -1,0 +1,48 @@
+{
+  "name": "recnet-api",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/recnet-api/src",
+  "projectType": "application",
+  "targets": {
+    "typecheck": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": ["tsc -p tsconfig.json --noEmit"],
+        "cwd": "apps/recnet-api",
+        "forwardAllArgs": false
+      }
+    },
+    "serve": {
+      "executor": "@nx/js:node",
+      "defaultConfiguration": "development",
+      "options": {
+        "buildTarget": "recnet-api:build"
+      },
+      "configurations": {
+        "development": {
+          "buildTarget": "recnet-api:build:development"
+        },
+        "production": {
+          "buildTarget": "recnet-api:build:production"
+        }
+      }
+    },
+    "prebuild": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": ["rm -rf dist"],
+        "cwd": ".",
+        "forwardAllArgs": false
+      }
+    },
+    "deploy": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": ["node dist/apps/recnet-api/main.js"],
+        "cwd": ".",
+        "forwardAllArgs": false
+      }
+    }
+  },
+  "tags": []
+}

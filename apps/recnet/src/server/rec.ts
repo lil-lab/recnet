@@ -6,8 +6,8 @@ import { getNextCutOff } from "@/utils/date";
 import { notEmpty } from "@/utils/notEmpty";
 import { FieldValue } from "firebase-admin/firestore";
 import { User } from "@/types/user";
-import { Chance } from "chance";
 import { getUsersByIds } from "@/server/user";
+import { shuffleArray } from "@/utils/shuffle";
 
 export async function getRecsByUserId(
   userId: string,
@@ -41,12 +41,6 @@ export async function getRecsByUserId(
     }
   });
   return recs;
-}
-
-function shuffleArray<T>(_array: Array<T>, seed: string): Array<T> {
-  const chance = new Chance(seed);
-  const array = structuredClone(_array);
-  return chance.shuffle(array);
 }
 
 export async function getFeedsRecs(
