@@ -1,7 +1,7 @@
 import "server-only";
 import { Tokens, getTokens } from "next-firebase-auth-edge";
 import { cookies } from "next/headers";
-import { authConfig } from "@/serverConfig";
+import { authConfig } from "@/serverEnv";
 import { User } from "@/types/user";
 import { getUserByEmail } from "@/server/user";
 

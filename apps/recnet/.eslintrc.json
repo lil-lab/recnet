@@ -1,15 +1,11 @@
 {
   "extends": [
+    "../../.eslintrc.json",
     "plugin:@nx/react-typescript",
     "next",
     "next/core-web-vitals",
-    "../../.eslintrc.json",
-    "plugin:prettier/recommended",
-    "prettier",
     "plugin:react-hooks/recommended",
-    "eslint:recommended",
-    "plugin:react/recommended",
-    "plugin:@typescript-eslint/recommended"
+    "plugin:react/recommended"
   ],
   "ignorePatterns": [
     "!**/*",

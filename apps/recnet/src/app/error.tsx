@@ -3,8 +3,7 @@
 import { cn } from "@/utils/cn";
 import { Flex, Text } from "@radix-ui/themes";
 import { RecNetLink } from "@/components/Link";
-
-export const ReportEmailAccount = "lil.recnet@gmail.com";
+import { ReportEmailAccount } from "./not-found";
 
 export default function NotFoundPage() {
   return (
