@@ -34,7 +34,8 @@ function AdminPanelNav({ children }: { children: React.ReactNode }) {
           "hidden",
           "md:flex",
           "flex-col",
-          "gap-y-4"
+          "gap-y-4",
+          "mt-4"
         )}
       >
         {children}
@@ -54,6 +55,7 @@ function NavItem(props: { route: string; label: string }) {
       <div
         className={cn(
           "px-3 py-2 rounded-[999px] hover:bg-accentA-3 cursor-pointer transition-all ease-in-out duration-200",
+          "text-gray-11",
           {
             "bg-blue-a4": isActive,
           }
