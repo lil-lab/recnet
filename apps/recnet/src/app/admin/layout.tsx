@@ -1,12 +1,20 @@
 import React from "react";
 import { cn } from "@/utils/cn";
 import { AdminPanelNavbar } from "@/app/admin/AdminPanelNav";
+import { notFound } from "next/navigation";
+import { getUserServerSide } from "@/utils/getUserServerSide";
 
-export default function Layout({
+export default async function Layout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const user = await getUserServerSide();
+
+  if (!user || user?.role !== "admin") {
+    notFound();
+  }
+
   return (
     <div
       className={cn(
