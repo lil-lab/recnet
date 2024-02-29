@@ -1,6 +1,6 @@
 import React from "react";
 import { cn } from "@/utils/cn";
-import { AdminPageNavigator } from "@/app/admin/AdminPanelNav";
+import { AdminPanelNavbar } from "@/app/admin/AdminPanelNav";
 
 export default function Layout({
   children,
@@ -18,7 +18,7 @@ export default function Layout({
         `min-h-[90svh]`
       )}
     >
-      <AdminPageNavigator />
+      <AdminPanelNavbar />
       {children}
     </div>
   );
