@@ -1,3 +1,4 @@
+import "server-only";
 import * as admin from "firebase-admin";
 import { serverEnv } from "@/serverEnv";
 
