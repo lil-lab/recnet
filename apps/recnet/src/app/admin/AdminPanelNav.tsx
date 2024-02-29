@@ -22,25 +22,33 @@ function useAdminPanelNavContext() {
 
 function AdminPanelNav({ children }: { children: React.ReactNode }) {
   return (
-    <AdminPanelNavContext.Provider value={{}}>
-      <div
-        className={cn(
-          "w-[17%]",
-          "min-w-[250px]",
-          `min-h-[90svh]`,
-          "border-r-[1px]",
-          "border-gray-6",
-          "p-4",
-          "hidden",
-          "md:flex",
-          "flex-col",
-          "gap-y-4",
-          "pt-8"
-        )}
-      >
-        {children}
-      </div>
-    </AdminPanelNavContext.Provider>
+    <div
+      className={cn(
+        "w-[17%]",
+        "min-w-[250px]",
+        `min-h-[90svh]`,
+        "border-r-[1px]",
+        "border-gray-6",
+        "hidden",
+        "md:flex",
+        "flex-col"
+      )}
+    >
+      <AdminPanelNavContext.Provider value={{}}>
+        <div
+          className={cn(
+            "p-4",
+            "gap-y-4",
+            "sticky",
+            "flex",
+            "flex-col",
+            "top-[80px]"
+          )}
+        >
+          {children}
+        </div>
+      </AdminPanelNavContext.Provider>
+    </div>
   );
 }
 
