@@ -1,13 +1,13 @@
 import { initializeApp, getApp, getApps } from "firebase/app";
 import { getAuth } from "firebase/auth";
-import { clientConfig } from "@/clientConfig";
+import { firebaseClientEnv } from "@/clientEnv";
 
 export const getFirebaseApp = () => {
   if (getApps().length) {
     return getApp();
   }
 
-  const app = initializeApp(clientConfig);
+  const app = initializeApp(firebaseClientEnv);
 
   return app;
 };
