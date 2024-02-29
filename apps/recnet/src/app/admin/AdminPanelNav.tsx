@@ -35,7 +35,7 @@ function AdminPanelNav({ children }: { children: React.ReactNode }) {
           "md:flex",
           "flex-col",
           "gap-y-4",
-          "mt-4"
+          "pt-8"
         )}
       >
         {children}
@@ -48,7 +48,7 @@ function NavItem(props: { route: string; label: string }) {
   useAdminPanelNavContext();
   const { route, label } = props;
   const pathname = usePathname();
-  const isActive = `/admin/${route}` === pathname;
+  const isActive = pathname === `/admin/${route}`;
 
   return (
     <Link href={`/admin/${route}`}>
@@ -57,7 +57,7 @@ function NavItem(props: { route: string; label: string }) {
           "px-3 py-2 rounded-[999px] hover:bg-accentA-3 cursor-pointer transition-all ease-in-out duration-200",
           "text-gray-11",
           {
-            "bg-blue-a4": isActive,
+            "bg-accentA-4": isActive,
           }
         )}
       >
