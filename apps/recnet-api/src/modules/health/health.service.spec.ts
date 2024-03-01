@@ -1,14 +1,14 @@
-import { HealthService } from './health.service';
+import { HealthService } from "./health.service";
 
-describe('HealthService', () => {
+describe("HealthService", () => {
   let healthService: HealthService;
 
   beforeEach(async () => {
     healthService = new HealthService();
   });
 
-  it('should return status ok', async () => {
+  it("should return status ok", async () => {
     const result = await healthService.getHealth();
-    expect(result).toEqual({ status: 'OK' });
+    expect(result).toEqual({ status: "OK" });
   });
 });

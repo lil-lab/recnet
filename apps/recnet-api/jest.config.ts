@@ -1,11 +1,11 @@
 /* eslint-disable */
 export default {
-  displayName: 'recnet-api',
-  preset: '../../jest.preset.js',
-  testEnvironment: 'node',
+  displayName: "recnet-api",
+  preset: "../../jest.preset.js",
+  testEnvironment: "node",
   transform: {
-    '^.+\\.[tj]s$': ['ts-jest', { tsconfig: '<rootDir>/tsconfig.spec.json' }],
+    "^.+\\.[tj]s$": ["ts-jest", { tsconfig: "<rootDir>/tsconfig.spec.json" }],
   },
-  moduleFileExtensions: ['ts', 'js', 'html'],
-  coverageDirectory: '../../coverage/apps/recnet-api',
+  moduleFileExtensions: ["ts", "js", "html"],
+  coverageDirectory: "../../coverage/apps/recnet-api",
 };
