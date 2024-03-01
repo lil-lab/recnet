@@ -71,13 +71,23 @@ const RecsBarChart = withSuspense(
       const date = getDateFromFirebaseTimestamp(doc.cutoff);
       return date.getTime();
     });
-    const recCountByCycle = Object.keys(recsGroupByCycle).reduce(
+    const recCountByCycle: Record<string, number> = Object.keys(
+      recsGroupByCycle
+    ).reduce(
       (acc, key) => ({
         ...acc,
         [key]: recsGroupByCycle[key].length,
       }),
       {}
     );
+    const minTs = Math.min(...Object.keys(recCountByCycle).map(Number));
+    const maxTs = Math.max(...Object.keys(recCountByCycle).map(Number));
+    // fill in missing dates, increment by 1 week
+    for (let i = minTs; i <= maxTs; i += 604800000) {
+      if (!recCountByCycle[i]) {
+        recCountByCycle[i] = 0;
+      }
+    }
 
     return (
       <StatBox
