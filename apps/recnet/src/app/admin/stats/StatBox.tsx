@@ -1,15 +1,16 @@
 import { SkeletonText } from "@/components/Skeleton";
 import { cn } from "@/utils/cn";
-import { Text } from "@radix-ui/themes";
 
 export function StatBox({
   children,
   title,
   icon,
+  className,
 }: {
   children: React.ReactNode;
   title: React.ReactNode;
   icon?: React.ReactNode;
+  className?: string;
 }) {
   return (
     <div
@@ -21,15 +22,20 @@ export function StatBox({
         "flex-col",
         "p-6",
         "gap-y-3",
-        "w-fit"
+        "w-fit",
+        className
       )}
     >
-      <div className="flex flex-row gap-x-1 text-gray-11 text-[14px] font-medium items-center">
+      <div
+        className={cn(
+          "flex flex-row gap-x-1 text-gray-11 text-[14px] font-medium items-center"
+        )}
+      >
         {icon}
         {title}
       </div>
-      <div className={cn("text-gray-12")}>
-        <Text size="8">{children}</Text>
+      <div className={cn("text-gray-12", "text-[36px]", "h-full")}>
+        {children}
       </div>
     </div>
   );
