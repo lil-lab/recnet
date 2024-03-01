@@ -14,13 +14,12 @@ interface RecsCycleBarChartProps {
   data: Record<Timestamp, number>;
 }
 
-const verticalMargin = 70;
-
 function BarChart(props: RecsCycleBarChartProps) {
   const { parentWidth, parentHeight, data } = props;
   // bounds
+  const margin = { top: 40, right: 0, bottom: 0, left: 0 };
   const xMax = parentWidth;
-  const yMax = parentHeight - verticalMargin;
+  const yMax = parentHeight - margin.top;
 
   // data
   const timestamps = Object.keys(data).map((ts) => parseInt(ts, 10));
@@ -44,7 +43,7 @@ function BarChart(props: RecsCycleBarChartProps) {
 
   return (
     <svg width={parentWidth} height={parentHeight}>
-      <Group top={verticalMargin / 2}>
+      <Group top={margin.top}>
         {Object.keys(data)
           .map((key) => {
             const ts = parseInt(key, 10);
