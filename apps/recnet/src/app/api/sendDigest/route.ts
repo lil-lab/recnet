@@ -8,7 +8,7 @@ import WeeklyDigest from "../../../../emails/WeeklyDigest";
 import { render } from "@react-email/render";
 import { NextRequest, NextResponse } from "next/server";
 
-const TEST_USER_IDS = ["GoXnHBhgK8QhcZpki0la"];
+// const TEST_USER_IDS = ["GoXnHBhgK8QhcZpki0la"];
 
 export async function GET(request: NextRequest) {
   if (
@@ -39,9 +39,9 @@ export async function GET(request: NextRequest) {
         const user = res.data;
 
         // test within certain user ids
-        if (!TEST_USER_IDS.includes(user.id)) {
-          return;
-        }
+        // if (!TEST_USER_IDS.includes(user.id)) {
+        //   return;
+        // }
 
         const recs = await getFeedsRecs(user?.id, getLatestCutOff().getTime());
         const recsWithUsers = await getRecsWithUsers(recs);

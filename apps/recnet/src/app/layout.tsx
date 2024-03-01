@@ -11,6 +11,7 @@ import "@radix-ui/themes/styles.css";
 import "tailwindcss/tailwind.css";
 import { MobileNavigator } from "./MobileNavigator";
 import { ProgressbarProvider } from "./Progressbar";
+import { GoogleAnalytics } from "@next/third-parties/google";
 
 const sfpro = localFont({
   src: [
@@ -121,6 +122,9 @@ export default async function RootLayout({
   const user = await getUserServerSide();
   return (
     <html lang="en">
+      <GoogleAnalytics
+        gaId={process.env.NEXT_PUBLIC_GA_TRACKING_ID as string}
+      />
       <body className={sfpro.className}>
         <ProgressbarProvider>
           <AuthProvider serverUser={user}>
