@@ -5,6 +5,7 @@ import { scaleUtc, scaleLinear } from "@visx/scale";
 import { ParentSize } from "@visx/responsive";
 import { Bar } from "@visx/shape";
 import { Group } from "@visx/group";
+import { AxisBottom } from "@visx/axis";
 
 type Timestamp = string;
 
@@ -14,21 +15,23 @@ interface RecsCycleBarChartProps {
   data: Record<Timestamp, number>;
 }
 
+const themeColor = "#2A78D0";
+
 function BarChart(props: RecsCycleBarChartProps) {
   const { parentWidth, parentHeight, data } = props;
   // bounds
-  const margin = { top: 40, right: 0, bottom: 0, left: 0 };
+  const margin = { top: 40, right: 0, bottom: 40, left: 0 };
   const xMax = parentWidth;
-  const yMax = parentHeight - margin.top;
+  const yMax = parentHeight - margin.top - margin.bottom;
 
   // data
-  const timestamps = Object.keys(data).map((ts) => parseInt(ts, 10));
+  const timestamps = Object.keys(data).map((key) => parseInt(key, 10));
 
   const xScale = useMemo(() => {
     return scaleUtc({
       domain: [
-        new Date(Math.min(...timestamps)),
-        new Date(Math.max(...timestamps)),
+        Math.min(...timestamps),
+        Math.max(...timestamps) + 604800000, // add 1 week
       ],
       range: [0, xMax],
     });
@@ -70,6 +73,23 @@ function BarChart(props: RecsCycleBarChartProps) {
             );
           })}
       </Group>
+      <AxisBottom
+        top={yMax + margin.bottom}
+        scale={xScale}
+        tickFormat={(d) => {
+          if (d instanceof Date) {
+            return xScale.tickFormat(undefined, "%b %d")(d);
+          }
+          return "";
+        }}
+        stroke={themeColor}
+        tickStroke={themeColor}
+        tickLabelProps={{
+          fill: themeColor,
+          fontSize: 9,
+          textAnchor: "middle",
+        }}
+      />
     </svg>
   );
 }
