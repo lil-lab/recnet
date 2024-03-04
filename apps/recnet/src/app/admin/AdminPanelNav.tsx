@@ -1,7 +1,7 @@
 "use client";
 
 import { cn } from "@/utils/cn";
-import { Text } from "@radix-ui/themes";
+import { Text, Tooltip } from "@radix-ui/themes";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { createContext, useContext } from "react";
@@ -52,26 +52,38 @@ function AdminPanelNav({ children }: { children: React.ReactNode }) {
   );
 }
 
-function NavItem(props: { route: string; label: string }) {
+function NavItem(props: { route: string; label: string; wip?: boolean }) {
   useAdminPanelNavContext();
-  const { route, label } = props;
+  const { route, label, wip = false } = props;
   const pathname = usePathname();
   const isActive = pathname === `/admin/${route}`;
 
+  const ItemWrapper = ({ children }: { children: React.ReactNode }) => {
+    if (wip) {
+      return (
+        <Tooltip content="Work in progress" side="right" arrowPadding={0}>
+          {children}
+        </Tooltip>
+      );
+    }
+    return <Link href={`/admin/${route}`}>{children}</Link>;
+  };
+
   return (
-    <Link href={`/admin/${route}`}>
+    <ItemWrapper>
       <div
         className={cn(
           "px-3 py-2 rounded-[999px] hover:bg-accentA-3 cursor-pointer transition-all ease-in-out duration-200",
           "text-gray-11",
           {
             "bg-accentA-4": isActive,
+            "cursor-not-allowed": wip,
           }
         )}
       >
-        {label}
+        {`${wip ? "🚧 " : ""}${label}`}
       </div>
-    </Link>
+    </ItemWrapper>
   );
 }
 AdminPanelNav.Item = NavItem;
@@ -103,13 +115,18 @@ export function AdminPanelNavbar() {
         <AdminPanelNav.Item route="stats/user-rec" label="User & Rec" />
       </AdminPanelNav.Section>
       <AdminPanelNav.Section label="Email">
-        <AdminPanelNav.Item route="email/announcement" label="Announcement" />
+        <AdminPanelNav.Item
+          route="email/announcement"
+          label="Announcement"
+          wip
+        />
       </AdminPanelNav.Section>
       <AdminPanelNav.Section label="Invite Code">
-        <AdminPanelNav.Item route="invite-code/monitor" label="Monitor" />
+        <AdminPanelNav.Item route="invite-code/monitor" label="Monitor" wip />
         <AdminPanelNav.Item
           route="invite-code/provision"
           label="Provision code"
+          wip
         />
       </AdminPanelNav.Section>
     </AdminPanelNav>
