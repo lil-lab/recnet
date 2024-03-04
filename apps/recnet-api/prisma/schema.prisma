@@ -1,0 +1,43 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("PRISMA_DATABASE_URL")
+}
+
+// Define enum types
+enum Provider {
+  FACEBOOK
+  GOOGLE
+  // Add other providers here as needed
+}
+
+enum Role {
+  ADMIN
+  USER
+}
+
+model User {
+  id            String     @id @default(uuid()) // Primary key, UUID type
+  provider      Provider   // Enum type
+  providerId    String     @db.VarChar(128)
+  email         String     @db.VarChar(128)
+  handle        String     @db.VarChar(32) @unique
+  displayName   String     @db.VarChar(32)
+  inviteCode    String?    @db.VarChar(64)
+  photoUrl      String     @db.VarChar(128)
+  affiliation   String?    @db.VarChar(32)
+  bio           String?
+  lastLoginAt   DateTime
+  role          Role       @default(USER) // Enum type
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @default(now()) @updatedAt
+}
