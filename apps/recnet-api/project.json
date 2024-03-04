@@ -27,10 +27,20 @@
         }
       }
     },
-    "prebuild": {
+    "clean": {
       "executor": "nx:run-commands",
       "options": {
         "commands": ["rm -rf dist"],
+        "cwd": ".",
+        "forwardAllArgs": false
+      }
+    },
+    "prisma:generate": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "pnpx prisma generate --schema=apps/recnet-api/prisma/schema.prisma"
+        ],
         "cwd": ".",
         "forwardAllArgs": false
       }
