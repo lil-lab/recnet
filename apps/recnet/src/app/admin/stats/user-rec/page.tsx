@@ -1,7 +1,7 @@
 import { db } from "@/firebase/admin";
 import { StatBox, StatBoxSkeleton } from "@/app/admin/stats/StatBox";
 import { Pencil1Icon, PersonIcon } from "@radix-ui/react-icons";
-import { getDateFromFirebaseTimestamp, getLatestCutOff } from "@/utils/date";
+import { getDateFromFirebaseTimestamp, getNextCutOff } from "@/utils/date";
 import { Timestamp } from "firebase-admin/firestore";
 import { withSuspense } from "@/utils/withSuspense";
 import groupBy from "lodash.groupby";
@@ -37,7 +37,8 @@ const RecCount = withSuspense(
 
 const RecsThisCycle = withSuspense(
   async () => {
-    const cutOff = getLatestCutOff();
+    const cutOff = getNextCutOff();
+    console.log("cutOff", cutOff);
     const recsThisCycle = await db
       .collection("recommendations")
       .where("cutoff", "==", Timestamp.fromMillis(cutOff.getTime()))
@@ -62,7 +63,7 @@ const RecsBarChart = withSuspense(
         if (res.success) {
           return res.data;
         } else {
-          console.error("Failed to parse rec", res.error);
+          // console.error("Failed to parse rec", res.error);
           return null;
         }
       })
@@ -93,9 +94,11 @@ const RecsBarChart = withSuspense(
       <StatBox
         title="Number of Recs by Cutoff Date"
         icon={<Pencil1Icon />}
-        className="h-[300px] w-[40%] min-w-[500px]"
+        className="h-[300px] w-[100%] md:w-[40%] overflow-x-auto whitespace-nowrap overflow-y-hidden"
       >
-        <RecsCycleBarChart data={recCountByCycle} />
+        <div className="min-w-[400px] h-full">
+          <RecsCycleBarChart data={recCountByCycle} />
+        </div>
       </StatBox>
     );
   },
@@ -105,7 +108,7 @@ const RecsBarChart = withSuspense(
 export default async function UserRecStats() {
   return (
     <div className="flex flex-col gap-y-4">
-      <div className="flex flex-row gap-x-4">
+      <div className="flex flex-row gap-4 flex-wrap">
         <CurrentUserCount />
         <RecCount />
         <RecsThisCycle />
