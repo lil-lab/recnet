@@ -2,17 +2,17 @@
 
 import { cn } from "@/utils/cn";
 import { AdminSectionBox, AdminSectionTitle } from "../../AdminSections";
-import { Button, Flex, Text, TextField } from "@radix-ui/themes";
+import { Button, Flex, Text, TextField, Dialog } from "@radix-ui/themes";
 import { AtSignIcon, HashIcon } from "lucide-react";
-import { set, z } from "zod";
+import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
-import { toast } from "sonner";
 import { generateInviteCode } from "@/server/inviteCode";
 import { useAuth } from "@/app/AuthContext";
 import { User, UserSchema } from "@/types/user";
 import { fetchWithZod } from "@/utils/zodFetch";
+import { CopiableInviteCode } from "@/components/InviteCode";
 
 const InviteCodeGenerationSchema = z.object({
   count: z.coerce.number().min(1).max(5, "Max 5 invite codes at a time"),
@@ -22,6 +22,7 @@ const InviteCodeGenerationSchema = z.object({
 function InviteCodeGenerateForm() {
   const { user } = useAuth();
   const [newInviteCodes, setNewInviteCodes] = useState<string[]>([]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const { register, handleSubmit, formState, setError } = useForm({
     resolver: zodResolver(InviteCodeGenerationSchema),
@@ -33,95 +34,127 @@ function InviteCodeGenerateForm() {
   });
 
   return (
-    <form
-      onSubmit={handleSubmit(async (data, e) => {
-        e?.preventDefault();
-        // check if owner exists
-        let owner: User | null;
-        if (data.owner) {
+    <>
+      <form
+        onSubmit={handleSubmit(async (data, e) => {
+          e?.preventDefault();
           // check if owner exists
-          try {
-            const recipient = await fetchWithZod(
-              UserSchema,
-              `/api/userByUsername?username=${data.owner}`
-            );
-            owner = recipient;
-          } catch (error) {
-            setError("owner", {
-              type: "manual",
-              message: "User not found",
-            });
+          let owner: User | null;
+          if (data.owner) {
+            // check if owner exists
+            try {
+              const recipient = await fetchWithZod(
+                UserSchema,
+                `/api/userByUsername?username=${data.owner}`
+              );
+              owner = recipient;
+            } catch (error) {
+              setError("owner", {
+                type: "manual",
+                message: "User not found",
+              });
+              return;
+            }
+          } else {
+            owner = user;
+          }
+          if (!owner) {
+            // should never happen, for type safety
             return;
           }
-        } else {
-          owner = user;
-        }
-        if (!owner) {
-          // should never happen, for type safety
-          return;
-        }
-        // generate invite codes
-        const codes = await generateInviteCode(owner.id, data.count);
-        // show modal with invite codes
-        setNewInviteCodes(codes);
-      })}
-    >
-      <Flex className="w-full h-full gap-x-4">
-        <div className="flex flex-col gap-y-2">
-          <Text size="1" className="text-gray-10">
-            Number of Codes
-          </Text>
-          <TextField.Root>
-            <TextField.Slot>
-              <HashIcon size="12" className="text-gray-10" />
-            </TextField.Slot>
-            <TextField.Input type="number" {...register("count")} />
-          </TextField.Root>
-          {formState.errors.count ? (
-            <Text size="1" color="red">
-              {formState.errors.count.message}
+          // generate invite codes
+          const codes = await generateInviteCode(owner.id, data.count);
+          // show modal with invite codes
+          setNewInviteCodes(codes);
+          setIsModalOpen(true);
+        })}
+      >
+        <Flex className="w-full h-full gap-x-4">
+          <div className="flex flex-col gap-y-2">
+            <Text size="1" className="text-gray-10">
+              Number of Codes
             </Text>
-          ) : null}
-        </div>
-        <div className="flex flex-col gap-y-2 w-[350px]">
-          <Text size="1" className="text-gray-10">
-            {`Owner's user handle`}
-          </Text>
-          <TextField.Root className="w-full">
-            <TextField.Slot>
-              <AtSignIcon size="12" className="text-gray-10" />
-            </TextField.Slot>
-            <TextField.Input
-              placeholder="Optional"
-              className="w-full"
-              {...register("owner")}
-            />
-          </TextField.Root>
-          {formState.errors.owner ? (
-            <Text size="1" color="red">
-              {formState.errors.owner.message}
+            <TextField.Root>
+              <TextField.Slot>
+                <HashIcon size="12" className="text-gray-10" />
+              </TextField.Slot>
+              <TextField.Input type="number" {...register("count")} />
+            </TextField.Root>
+            {formState.errors.count ? (
+              <Text size="1" color="red">
+                {formState.errors.count.message}
+              </Text>
+            ) : null}
+          </div>
+          <div className="flex flex-col gap-y-2 w-[350px]">
+            <Text size="1" className="text-gray-10">
+              {`Owner's user handle`}
             </Text>
-          ) : null}
-        </div>
-        <div className="h-full flex flex-col gap-y-2">
-          <Text size="1" className="text-gray-10 invisible">
-            {`generate`}
-          </Text>
-          <Button
-            variant="solid"
-            color="blue"
-            className={cn("cursor-pointer text-white", {
-              "bg-blue-10": formState.isValid,
-              "bg-gray-3 cursor-not-allowed":
-                formState.isSubmitting || !formState.isValid,
-            })}
-            type="submit"
-          >
-            Generate
-          </Button>
-        </div>
-      </Flex>
-    </form>
+            <TextField.Root className="w-full">
+              <TextField.Slot>
+                <AtSignIcon size="12" className="text-gray-10" />
+              </TextField.Slot>
+              <TextField.Input
+                placeholder="Optional"
+                className="w-full"
+                {...register("owner")}
+              />
+            </TextField.Root>
+            {formState.errors.owner ? (
+              <Text size="1" color="red">
+                {formState.errors.owner.message}
+              </Text>
+            ) : null}
+          </div>
+          <div className="h-full flex flex-col gap-y-2">
+            <Text size="1" className="text-gray-10 invisible">
+              {`generate`}
+            </Text>
+            <Button
+              variant="solid"
+              color="blue"
+              className={cn("cursor-pointer text-white", {
+                "bg-blue-10": formState.isValid,
+                "bg-gray-3 cursor-not-allowed":
+                  formState.isSubmitting || !formState.isValid,
+              })}
+              type="submit"
+            >
+              Generate
+            </Button>
+          </div>
+        </Flex>
+      </form>
+      <Dialog.Root
+        open={isModalOpen}
+        onOpenChange={(open) => {
+          if (!open) {
+            setNewInviteCodes([]);
+          }
+          setIsModalOpen(open);
+        }}
+      >
+        <Dialog.Content style={{ maxWidth: 450 }}>
+          <Dialog.Title>Your invite codes are generated 🚀</Dialog.Title>
+          <Dialog.Description size="2" mb="4">
+            {`Share these codes with your friends and family to invite them to
+            RecNet! You can view these codes in the "Invite Code Monitor" page.`}
+          </Dialog.Description>
+
+          <Flex direction="column" gap="3">
+            {newInviteCodes.map((code) => (
+              <CopiableInviteCode key={code} inviteCode={code} />
+            ))}
+          </Flex>
+
+          <Flex gap="3" mt="4" justify="end">
+            <Dialog.Close>
+              <Button className="bg-blue-10 text-white">Done</Button>
+            </Dialog.Close>
+          </Flex>
+        </Dialog.Content>
+      </Dialog.Root>
+    </>
   );
 }
 
