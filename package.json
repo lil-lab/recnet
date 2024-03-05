@@ -2,7 +2,9 @@
   "name": "@recnet/source",
   "version": "0.0.0",
   "license": "MIT",
-  "scripts": {},
+  "scripts": {
+    "postinstall": "npx nx run-many --target sync-package-lock --all"
+  },
   "private": true,
   "dependencies": {
     "@hookform/resolvers": "^3.3.4",
@@ -34,6 +36,7 @@
     "react-email": "2.0.0",
     "react-hook-form": "^7.50.0",
     "react-loader-spinner": "^6.1.6",
+    "recnet-api": "link:dist/apps/recnet-api",
     "reflect-metadata": "^0.1.13",
     "rxjs": "^7.8.0",
     "server-only": "^0.0.1",
