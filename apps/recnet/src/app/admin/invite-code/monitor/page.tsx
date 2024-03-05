@@ -12,6 +12,19 @@ import { CopyIcon } from "@radix-ui/react-icons";
 import { useCopyToClipboard } from "@/hooks/useCopyToClipboard";
 import { toast } from "sonner";
 import { TailSpin } from "react-loader-spinner";
+import { User } from "@/types/user";
+
+const TableUserCard = (props: { user: User }) => {
+  const { user } = props;
+  return (
+    <RecNetLink href={`/${user.username}`}>
+      <Flex gap="2" className="items-center gap-x-2">
+        <Avatar user={user} className={cn("w-[40px]", "h-[40px]")} />
+        {user.displayName}
+      </Flex>
+    </RecNetLink>
+  );
+};
 
 const InviteCodeTableRow = (props: { inviteCode: InviteCode }) => {
   const { inviteCode } = props;
@@ -49,22 +62,14 @@ const InviteCodeTableRow = (props: { inviteCode: InviteCode }) => {
           : "-"}
       </Table.Cell>
       <Table.Cell>
-        {inviteCode.usedBy ? (
-          <RecNetLink href={`/${inviteCode.usedBy.username}`}>
-            <Flex gap="2" className="items-center gap-x-2">
-              <Avatar
-                user={inviteCode.usedBy}
-                className={cn("w-[40px]", "h-[40px]")}
-              />
-              {inviteCode.usedBy.displayName}
-            </Flex>
-          </RecNetLink>
+        {inviteCode.usedBy ? <TableUserCard user={inviteCode.usedBy} /> : "-"}
+      </Table.Cell>
+      <Table.Cell>
+        {inviteCode.issuedTo ? (
+          <TableUserCard user={inviteCode.issuedTo} />
         ) : (
           "-"
         )}
-      </Table.Cell>
-      <Table.Cell>
-        {inviteCode.issuedTo ? inviteCode.issuedTo.email : "-"}
       </Table.Cell>
     </Table.Row>
   );
@@ -74,7 +79,7 @@ export default function InviteCodeMonitorPage() {
   const { inviteCodes, isLoading } = useInviteCodes();
 
   return (
-    <div className={cn("w-full", "md:w-[80%]", "flex", "flex-col", "gap-y-4")}>
+    <div className={cn("w-full", "md:w-[85%]", "flex", "flex-col", "gap-y-4")}>
       <div className="flex flex-col gap-y-2 w-full">
         <AdminSectionTitle description="Manage invite events and view who used the invite codes.">
           Invite Code Monitor
