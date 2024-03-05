@@ -1,5 +1,4 @@
 import { Controller, Get, Param } from "@nestjs/common";
-// import { User as UserModel } from "src/generated/prisma-client";
 import { User as UserModel } from "@prisma/client";
 import UserRepository from "src/database/repository/user.repository";
 

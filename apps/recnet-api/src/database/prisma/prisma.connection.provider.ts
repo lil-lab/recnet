@@ -1,5 +1,4 @@
 import { Injectable, OnModuleInit } from "@nestjs/common";
-// import { PrismaClient } from "src/generated/prisma-client";
 import { PrismaClient } from "@prisma/client";
 
 const postgresConfig = {
