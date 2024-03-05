@@ -39,7 +39,6 @@ const RecCount = withSuspense(
 const RecsThisCycle = withSuspense(
   async () => {
     const cutOff = getNextCutOff();
-    console.log("cutOff", cutOff);
     const recsThisCycle = await db
       .collection("recommendations")
       .where("cutoff", "==", Timestamp.fromMillis(cutOff.getTime()))
