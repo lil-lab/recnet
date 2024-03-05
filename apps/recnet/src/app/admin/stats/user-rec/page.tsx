@@ -8,6 +8,7 @@ import groupBy from "lodash.groupby";
 import { RecSchema } from "@/types/rec";
 import { notEmpty } from "@/utils/notEmpty";
 import { RecsCycleBarChart } from "./RecsCycleBarChart";
+import { AdminSectionTitle } from "../../AdminSections";
 
 const CurrentUserCount = withSuspense(
   async () => {
@@ -108,6 +109,7 @@ const RecsBarChart = withSuspense(
 export default async function UserRecStats() {
   return (
     <div className="flex flex-col gap-y-4 w-full md:w-[70%]">
+      <AdminSectionTitle>User & Recommendation Stats</AdminSectionTitle>
       <div className="flex flex-row gap-4 flex-wrap">
         <CurrentUserCount />
         <RecCount />
