@@ -8,11 +8,9 @@ import { InviteCode } from "@/types/inviteCode";
 import { getDateFromFirebaseTimestamp, formatDate } from "@/utils/date";
 import { Avatar } from "@/components/Avatar";
 import { RecNetLink } from "@/components/Link";
-import { CopyIcon } from "@radix-ui/react-icons";
-import { useCopyToClipboard } from "@/hooks/useCopyToClipboard";
-import { toast } from "sonner";
 import { TailSpin } from "react-loader-spinner";
 import { User } from "@/types/user";
+import { CopiableInviteCode } from "@/components/InviteCode";
 
 const TableUserCard = (props: { user: User }) => {
   const { user } = props;
@@ -28,23 +26,11 @@ const TableUserCard = (props: { user: User }) => {
 
 const InviteCodeTableRow = (props: { inviteCode: InviteCode }) => {
   const { inviteCode } = props;
-  const { copy } = useCopyToClipboard();
 
   return (
     <Table.Row className="align-middle">
       <Table.RowHeaderCell>
-        <Flex
-          className="gap-x-2 items-center cursor-pointer group"
-          onClick={() => {
-            copy(inviteCode.id).then(() => {
-              // toast
-              toast.success("Copied to clipboard!");
-            });
-          }}
-        >
-          {inviteCode.id}
-          <CopyIcon className="text-gray-8 group-hover:text-gray-10 transition-all ease-in-out" />
-        </Flex>
+        <CopiableInviteCode inviteCode={inviteCode.id} />
       </Table.RowHeaderCell>
       <Table.Cell>
         <Text
@@ -75,13 +61,29 @@ const InviteCodeTableRow = (props: { inviteCode: InviteCode }) => {
   );
 };
 
+const TableLoader = () => {
+  return (
+    <Flex className="justify-center items-center w-full h-[300px]">
+      <TailSpin
+        radius={"3"}
+        visible={true}
+        height="40"
+        width="40"
+        color={"#909090"}
+        ariaLabel="line-wave-loading"
+        wrapperClass="w-fit h-fit"
+      />
+    </Flex>
+  );
+};
+
 export default function InviteCodeMonitorPage() {
   const { inviteCodes, isLoading } = useInviteCodes();
 
   return (
     <div className={cn("w-full", "md:w-[85%]", "flex", "flex-col", "gap-y-4")}>
       <div className="flex flex-col gap-y-2 w-full">
-        <AdminSectionTitle description="Manage invite events and view who used the invite codes.">
+        <AdminSectionTitle description="View who used the invite codes. Sorted in reverse-chronological order.">
           Invite Code Monitor
         </AdminSectionTitle>
         <AdminSectionBox>
@@ -89,7 +91,9 @@ export default function InviteCodeMonitorPage() {
             <Table.Root className="w-full max-h-[60svh] relative">
               <Table.Header className="sticky top-0 bg-white z-[1000]">
                 <Table.Row>
-                  <Table.ColumnHeaderCell>Code</Table.ColumnHeaderCell>
+                  <Table.ColumnHeaderCell className="w-[30%]">
+                    Code
+                  </Table.ColumnHeaderCell>
                   <Table.ColumnHeaderCell>Used</Table.ColumnHeaderCell>
                   <Table.ColumnHeaderCell>Used At</Table.ColumnHeaderCell>
                   <Table.ColumnHeaderCell>Used By</Table.ColumnHeaderCell>
@@ -98,26 +102,49 @@ export default function InviteCodeMonitorPage() {
               </Table.Header>
 
               <Table.Body>
-                {inviteCodes.map((inviteCode) => (
-                  <InviteCodeTableRow
-                    key={inviteCode.id}
-                    inviteCode={inviteCode}
-                  />
-                ))}
+                {inviteCodes
+                  .filter((c) => c.used)
+                  .map((inviteCode) => (
+                    <InviteCodeTableRow
+                      key={inviteCode.id}
+                      inviteCode={inviteCode}
+                    />
+                  ))}
               </Table.Body>
             </Table.Root>
           ) : (
-            <Flex className="justify-center items-center w-full h-[300px]">
-              <TailSpin
-                radius={"3"}
-                visible={true}
-                height="40"
-                width="40"
-                color={"#909090"}
-                ariaLabel="line-wave-loading"
-                wrapperClass="w-fit h-fit"
-              />
-            </Flex>
+            <TableLoader />
+          )}
+        </AdminSectionBox>
+        <AdminSectionTitle>Unused Invite Codes</AdminSectionTitle>
+        <AdminSectionBox>
+          {inviteCodes && !isLoading ? (
+            <Table.Root className="w-full max-h-[60svh] relative">
+              <Table.Header className="sticky top-0 bg-white z-[1000]">
+                <Table.Row>
+                  <Table.ColumnHeaderCell className="w-[30%]">
+                    Code
+                  </Table.ColumnHeaderCell>
+                  <Table.ColumnHeaderCell>Used</Table.ColumnHeaderCell>
+                  <Table.ColumnHeaderCell>Used At</Table.ColumnHeaderCell>
+                  <Table.ColumnHeaderCell>Used By</Table.ColumnHeaderCell>
+                  <Table.ColumnHeaderCell>Owner</Table.ColumnHeaderCell>
+                </Table.Row>
+              </Table.Header>
+
+              <Table.Body>
+                {inviteCodes
+                  .filter((c) => !c.used)
+                  .map((inviteCode) => (
+                    <InviteCodeTableRow
+                      key={inviteCode.id}
+                      inviteCode={inviteCode}
+                    />
+                  ))}
+              </Table.Body>
+            </Table.Root>
+          ) : (
+            <TableLoader />
           )}
         </AdminSectionBox>
       </div>
