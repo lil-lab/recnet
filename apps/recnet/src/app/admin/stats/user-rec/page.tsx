@@ -94,7 +94,7 @@ const RecsBarChart = withSuspense(
       <StatBox
         title="Number of Recs by Cutoff Date"
         icon={<Pencil1Icon />}
-        className="h-[300px] w-[100%] md:w-[40%] overflow-x-auto whitespace-nowrap overflow-y-hidden"
+        className="h-[300px] w-[100%] md:w-[55%] overflow-x-auto whitespace-nowrap overflow-y-hidden"
       >
         <div className="min-w-[400px] h-full">
           <RecsCycleBarChart data={recCountByCycle} />
@@ -107,7 +107,7 @@ const RecsBarChart = withSuspense(
 
 export default async function UserRecStats() {
   return (
-    <div className="flex flex-col gap-y-4">
+    <div className="flex flex-col gap-y-4 w-full md:w-[70%]">
       <div className="flex flex-row gap-4 flex-wrap">
         <CurrentUserCount />
         <RecCount />

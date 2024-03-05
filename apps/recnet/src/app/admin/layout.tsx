@@ -27,7 +27,7 @@ export default async function Layout({
       )}
     >
       <AdminPanelNavbar />
-      <div className="p-8 w-full">{children}</div>
+      <div className="p-8 w-full flex justify-center">{children}</div>
     </div>
   );
 }

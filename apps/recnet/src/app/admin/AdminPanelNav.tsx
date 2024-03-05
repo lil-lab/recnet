@@ -122,7 +122,7 @@ export function AdminPanelNavbar() {
         />
       </AdminPanelNav.Section>
       <AdminPanelNav.Section label="Invite Code">
-        <AdminPanelNav.Item route="invite-code/monitor" label="Monitor" wip />
+        <AdminPanelNav.Item route="invite-code/monitor" label="Monitor" />
         <AdminPanelNav.Item
           route="invite-code/provision"
           label="Provision code"
