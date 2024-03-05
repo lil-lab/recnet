@@ -88,7 +88,7 @@ export default function InviteCodeMonitorPage() {
                   <Table.ColumnHeaderCell>Used</Table.ColumnHeaderCell>
                   <Table.ColumnHeaderCell>Used At</Table.ColumnHeaderCell>
                   <Table.ColumnHeaderCell>Used By</Table.ColumnHeaderCell>
-                  <Table.ColumnHeaderCell>Referrer</Table.ColumnHeaderCell>
+                  <Table.ColumnHeaderCell>Owner</Table.ColumnHeaderCell>
                 </Table.Row>
               </Table.Header>
 

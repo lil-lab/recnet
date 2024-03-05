@@ -126,7 +126,6 @@ export function AdminPanelNavbar() {
         <AdminPanelNav.Item
           route="invite-code/provision"
           label="Provision code"
-          wip
         />
       </AdminPanelNav.Section>
     </AdminPanelNav>

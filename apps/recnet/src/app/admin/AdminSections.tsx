@@ -31,7 +31,8 @@ export function AdminSectionBox(props: { children: React.ReactNode }) {
         "p-4",
         "border-[1px]",
         "rounded-4",
-        "border-gray-6"
+        "border-gray-6",
+        "mb-4"
       )}
     >
       {children}
