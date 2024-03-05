@@ -53,7 +53,13 @@ export async function GET() {
       .filter(notEmpty);
 
     return Response.json({
-      inviteCodes: inviteCodesWithUsers,
+      inviteCodes: inviteCodesWithUsers.sort((a, b) => {
+        // sort by usedAt
+        if (a.usedAt && b.usedAt) {
+          return b.usedAt._seconds - a.usedAt._seconds;
+        }
+        return (b.used ? 1 : 0) - (a.used ? 1 : 0);
+      }),
     });
   } catch (error) {
     return Response.json(null, {

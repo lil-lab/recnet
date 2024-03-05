@@ -42,7 +42,7 @@ export function useInviteCodes(options?: {
   );
 
   return {
-    inviteCodes: data,
+    inviteCodes: data?.inviteCodes,
     isLoading: !error && !data,
     isError: error,
     mutate,
