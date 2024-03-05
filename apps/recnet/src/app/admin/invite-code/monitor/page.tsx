@@ -4,7 +4,6 @@ import { cn } from "@/utils/cn";
 import { AdminSectionBox, AdminSectionTitle } from "@/app/admin/AdminSections";
 import { useInviteCodes } from "@/hooks/useInviteCodes";
 import { Flex, Table, Text } from "@radix-ui/themes";
-import { InviteCode } from "@/types/inviteCode";
 import { getDateFromFirebaseTimestamp, formatDate } from "@/utils/date";
 import { Avatar } from "@/components/Avatar";
 import { RecNetLink } from "@/components/Link";
@@ -21,43 +20,6 @@ const TableUserCard = (props: { user: User }) => {
         {user.displayName}
       </Flex>
     </RecNetLink>
-  );
-};
-
-const InviteCodeTableRow = (props: { inviteCode: InviteCode }) => {
-  const { inviteCode } = props;
-
-  return (
-    <Table.Row className="align-middle">
-      <Table.RowHeaderCell>
-        <CopiableInviteCode inviteCode={inviteCode.id} />
-      </Table.RowHeaderCell>
-      <Table.Cell>
-        <Text
-          className={cn({
-            "text-green-9": inviteCode.used,
-            "text-red-9": !inviteCode.used,
-          })}
-        >
-          {inviteCode.used ? "Yes" : "No"}
-        </Text>
-      </Table.Cell>
-      <Table.Cell>
-        {inviteCode.usedAt
-          ? formatDate(getDateFromFirebaseTimestamp(inviteCode.usedAt))
-          : "-"}
-      </Table.Cell>
-      <Table.Cell>
-        {inviteCode.usedBy ? <TableUserCard user={inviteCode.usedBy} /> : "-"}
-      </Table.Cell>
-      <Table.Cell>
-        {inviteCode.issuedTo ? (
-          <TableUserCard user={inviteCode.issuedTo} />
-        ) : (
-          "-"
-        )}
-      </Table.Cell>
-    </Table.Row>
   );
 };
 
@@ -97,7 +59,7 @@ export default function InviteCodeMonitorPage() {
                   <Table.ColumnHeaderCell>Used</Table.ColumnHeaderCell>
                   <Table.ColumnHeaderCell>Used At</Table.ColumnHeaderCell>
                   <Table.ColumnHeaderCell>Used By</Table.ColumnHeaderCell>
-                  <Table.ColumnHeaderCell>Owner</Table.ColumnHeaderCell>
+                  <Table.ColumnHeaderCell>Referrer</Table.ColumnHeaderCell>
                 </Table.Row>
               </Table.Header>
 
@@ -105,10 +67,42 @@ export default function InviteCodeMonitorPage() {
                 {inviteCodes
                   .filter((c) => c.used)
                   .map((inviteCode) => (
-                    <InviteCodeTableRow
-                      key={inviteCode.id}
-                      inviteCode={inviteCode}
-                    />
+                    <Table.Row className="align-middle" key={inviteCode.id}>
+                      <Table.RowHeaderCell>
+                        <CopiableInviteCode inviteCode={inviteCode.id} />
+                      </Table.RowHeaderCell>
+                      <Table.Cell>
+                        <Text
+                          className={cn({
+                            "text-green-9": inviteCode.used,
+                            "text-red-9": !inviteCode.used,
+                          })}
+                        >
+                          {inviteCode.used ? "Yes" : "No"}
+                        </Text>
+                      </Table.Cell>
+                      <Table.Cell>
+                        {inviteCode.usedAt
+                          ? formatDate(
+                              getDateFromFirebaseTimestamp(inviteCode.usedAt)
+                            )
+                          : "-"}
+                      </Table.Cell>
+                      <Table.Cell>
+                        {inviteCode.usedBy ? (
+                          <TableUserCard user={inviteCode.usedBy} />
+                        ) : (
+                          "-"
+                        )}
+                      </Table.Cell>
+                      <Table.Cell>
+                        {inviteCode.issuedTo ? (
+                          <TableUserCard user={inviteCode.issuedTo} />
+                        ) : (
+                          "-"
+                        )}
+                      </Table.Cell>
+                    </Table.Row>
                   ))}
               </Table.Body>
             </Table.Root>
@@ -126,8 +120,6 @@ export default function InviteCodeMonitorPage() {
                     Code
                   </Table.ColumnHeaderCell>
                   <Table.ColumnHeaderCell>Used</Table.ColumnHeaderCell>
-                  <Table.ColumnHeaderCell>Used At</Table.ColumnHeaderCell>
-                  <Table.ColumnHeaderCell>Used By</Table.ColumnHeaderCell>
                   <Table.ColumnHeaderCell>Owner</Table.ColumnHeaderCell>
                 </Table.Row>
               </Table.Header>
@@ -136,10 +128,28 @@ export default function InviteCodeMonitorPage() {
                 {inviteCodes
                   .filter((c) => !c.used)
                   .map((inviteCode) => (
-                    <InviteCodeTableRow
-                      key={inviteCode.id}
-                      inviteCode={inviteCode}
-                    />
+                    <Table.Row className="align-middle" key={inviteCode.id}>
+                      <Table.RowHeaderCell>
+                        <CopiableInviteCode inviteCode={inviteCode.id} />
+                      </Table.RowHeaderCell>
+                      <Table.Cell>
+                        <Text
+                          className={cn({
+                            "text-green-9": inviteCode.used,
+                            "text-red-9": !inviteCode.used,
+                          })}
+                        >
+                          {inviteCode.used ? "Yes" : "No"}
+                        </Text>
+                      </Table.Cell>
+                      <Table.Cell>
+                        {inviteCode.issuedTo ? (
+                          <TableUserCard user={inviteCode.issuedTo} />
+                        ) : (
+                          "-"
+                        )}
+                      </Table.Cell>
+                    </Table.Row>
                   ))}
               </Table.Body>
             </Table.Root>
