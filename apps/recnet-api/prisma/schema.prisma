@@ -6,7 +6,6 @@
 
 generator client {
   provider = "prisma-client-js"
-  // output = "../src/generated/prisma-client"
 }
 
 datasource db {
@@ -30,7 +29,7 @@ model User {
   id            String     @id @default(uuid()) // Primary key, UUID type
   provider      Provider   // Enum type
   providerId    String     @db.VarChar(128)
-  email         String     @db.VarChar(128)
+  email         String     @db.VarChar(128) @unique
   handle        String     @db.VarChar(32) @unique
   displayName   String     @db.VarChar(32)
   inviteCode    String?    @db.VarChar(64)
