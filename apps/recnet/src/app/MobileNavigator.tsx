@@ -16,7 +16,7 @@ import { SkeletonText, Skeleton } from "@/components/Skeleton";
 import { useState } from "react";
 import { useRec } from "@/hooks/useRec";
 import { getDateFromFirebaseTimestamp, getNextCutOff } from "@/utils/date";
-import { RecForm } from "./feeds/LeftPanel";
+import { RecForm } from "@/components/RecForm";
 
 function RecFormContent(props: { setOpen: (open: boolean) => void }) {
   const { setOpen } = props;
