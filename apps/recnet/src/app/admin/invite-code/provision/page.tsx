@@ -38,7 +38,7 @@ function InviteCodeGenerateForm() {
       <form
         onSubmit={handleSubmit(async (data, e) => {
           e?.preventDefault();
-          let owner: User | null;
+          let owner = user;
           if (data.owner) {
             // check if owner exists
             try {
@@ -54,8 +54,6 @@ function InviteCodeGenerateForm() {
               });
               return;
             }
-          } else {
-            owner = user;
           }
           if (!owner) {
             // should never happen, for type safety
