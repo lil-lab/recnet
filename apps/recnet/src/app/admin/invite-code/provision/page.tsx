@@ -69,8 +69,14 @@ function InviteCodeGenerateForm() {
           setIsModalOpen(true);
         })}
       >
-        <Flex className="w-full h-full gap-x-4">
-          <div className="flex flex-col gap-y-2">
+        <Flex
+          direction={{
+            initial: "column",
+            sm: "row",
+          }}
+          className="w-full h-full gap-4"
+        >
+          <div className="flex flex-col gap-y-2 w-full md:w-fit">
             <Text size="1" className="text-gray-10">
               Number of Codes
             </Text>
@@ -86,7 +92,7 @@ function InviteCodeGenerateForm() {
               </Text>
             ) : null}
           </div>
-          <div className="flex flex-col gap-y-2 w-[350px]">
+          <div className="flex flex-col gap-y-2 md:w-[350px] w-full">
             <Text size="1" className="text-gray-10">
               {`Owner's user handle`}
             </Text>
@@ -107,7 +113,7 @@ function InviteCodeGenerateForm() {
             ) : null}
           </div>
           <div className="h-full flex flex-col gap-y-2">
-            <Text size="1" className="text-gray-10 invisible">
+            <Text size="1" className="text-gray-10 invisible hidden sm:block">
               {`generate`}
             </Text>
             <Button
