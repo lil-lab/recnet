@@ -6,6 +6,7 @@ import UserRepository from "src/database/repository/user.repository";
 export class UserController {
   constructor(private readonly userRepository: UserRepository) {}
 
+  /* For development */
   @Get(":handle")
   public async getUserByHandle(
     @Param("handle") handle: string

@@ -57,8 +57,5 @@ Thumbs.db
 *.tsbuildinfo
 next-env.d.ts
 
-# prisma
-generated
-
 # recnet-api specific
 apps/**/pnpm-lock.yaml

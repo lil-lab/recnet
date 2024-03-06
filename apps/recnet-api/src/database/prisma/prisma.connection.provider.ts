@@ -16,7 +16,6 @@ export class PrismaConnectionProvider
   extends PrismaClient
   implements OnModuleInit
 {
-  // prisma url
   private prismaUrl: string;
 
   constructor() {
