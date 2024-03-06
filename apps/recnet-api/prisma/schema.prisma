@@ -26,7 +26,7 @@ enum Role {
 }
 
 model User {
-  id            String     @id @default(uuid()) // Primary key, UUID type
+  id            String     @id @db.VarChar(64) @default(uuid()) // Primary key, UUID type
   provider      Provider   // Enum type
   providerId    String     @db.VarChar(128)
   email         String     @db.VarChar(128) @unique
@@ -41,16 +41,16 @@ model User {
   createdAt     DateTime   @default(now())
   updatedAt     DateTime   @default(now()) @updatedAt
 
-  following     FollowingRecord[] @relation("Following")
-  followers     FollowingRecord[] @relation("Follower")
+  following       FollowingRecord[] @relation("Following")
+  followers       FollowingRecord[] @relation("Follower")
   recommendations Recommendation[]
   inviteCodeOwner InviteCode[]  @relation("InviteCodeOwner")
   inviteCodeUsed  InviteCode?   @relation("InviteCodeUsedBy")
 }
 
 model FollowingRecord {
-  userId        String
-  followerId    String
+  userId        String    @db.VarChar(64)
+  followerId    String    @db.VarChar(64)
   createdAt     DateTime
 
   @@id([userId, followerId])
@@ -59,9 +59,9 @@ model FollowingRecord {
 }
 
 model Recommendation {
-  id          String    @id @default(uuid())
-  userId      String
-  articleId   String
+  id          String    @id @db.VarChar(64) @default(uuid())
+  userId      String    @db.VarChar(64)
+  articleId   String    @db.VarChar(64)
   description String
   cutoff      DateTime
   createAt    DateTime  @default(now())
@@ -72,7 +72,7 @@ model Recommendation {
 }
 
 model Article {
-  id          String    @id
+  id          String    @id @db.VarChar(64) @default(uuid())
   doi         String?   @db.VarChar(32)
   title       String    @db.VarChar(256)
   author      String    @db.VarChar(256)
@@ -89,11 +89,11 @@ model Article {
 model InviteCode {
   id          Int       @id @default(autoincrement())
   code        String    @db.VarChar(64)
-  ownerId     String    @db.VarChar(32)
+  ownerId     String    @db.VarChar(64)
   issuedAt    DateTime  @default(now())
-  usedById    String?   @db.VarChar(32) @unique
+  usedById    String?   @db.VarChar(64) @unique
   usedAt      DateTime?
 
-  owner         User      @relation("InviteCodeOwner", fields: [ownerId], references: [id])
-  usedBy        User?     @relation("InviteCodeUsedBy", fields: [usedById], references: [id])
+  owner       User      @relation("InviteCodeOwner", fields: [ownerId], references: [id])
+  usedBy      User?     @relation("InviteCodeUsedBy", fields: [usedById], references: [id])
 }

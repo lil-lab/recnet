@@ -6,7 +6,7 @@ CREATE TYPE "Role" AS ENUM ('ADMIN', 'USER');
 
 -- CreateTable
 CREATE TABLE "User" (
-    "id" TEXT NOT NULL,
+    "id" VARCHAR(64) NOT NULL,
     "provider" "Provider" NOT NULL,
     "providerId" VARCHAR(128) NOT NULL,
     "email" VARCHAR(128) NOT NULL,
@@ -26,8 +26,8 @@ CREATE TABLE "User" (
 
 -- CreateTable
 CREATE TABLE "FollowingRecord" (
-    "userId" TEXT NOT NULL,
-    "followerId" TEXT NOT NULL,
+    "userId" VARCHAR(64) NOT NULL,
+    "followerId" VARCHAR(64) NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "FollowingRecord_pkey" PRIMARY KEY ("userId","followerId")
@@ -35,9 +35,9 @@ CREATE TABLE "FollowingRecord" (
 
 -- CreateTable
 CREATE TABLE "Recommendation" (
-    "id" TEXT NOT NULL,
-    "userId" TEXT NOT NULL,
-    "articleId" TEXT NOT NULL,
+    "id" VARCHAR(64) NOT NULL,
+    "userId" VARCHAR(64) NOT NULL,
+    "articleId" VARCHAR(64) NOT NULL,
     "description" TEXT NOT NULL,
     "cutoff" TIMESTAMP(3) NOT NULL,
     "createAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -48,7 +48,7 @@ CREATE TABLE "Recommendation" (
 
 -- CreateTable
 CREATE TABLE "Article" (
-    "id" TEXT NOT NULL,
+    "id" VARCHAR(64) NOT NULL,
     "doi" VARCHAR(32),
     "title" VARCHAR(256) NOT NULL,
     "author" VARCHAR(256) NOT NULL,
@@ -66,9 +66,9 @@ CREATE TABLE "Article" (
 CREATE TABLE "InviteCode" (
     "id" SERIAL NOT NULL,
     "code" VARCHAR(64) NOT NULL,
-    "ownerId" VARCHAR(32) NOT NULL,
+    "ownerId" VARCHAR(64) NOT NULL,
     "issuedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "usedById" VARCHAR(32),
+    "usedById" VARCHAR(64),
     "usedAt" TIMESTAMP(3),
 
     CONSTRAINT "InviteCode_pkey" PRIMARY KEY ("id")
