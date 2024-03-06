@@ -1,3 +1,5 @@
+import { execSync } from "child_process";
+
 import { Injectable, OnModuleInit } from "@nestjs/common";
 import { PrismaClient } from "@prisma/client";
 
@@ -14,22 +16,39 @@ export class PrismaConnectionProvider
   extends PrismaClient
   implements OnModuleInit
 {
+  // prisma url
+  private prismaUrl: string;
+
   constructor() {
+    const connectionUrl = `postgresql://${postgresConfig.username}:${encodeURIComponent(
+      postgresConfig.password
+    )}@${postgresConfig.host}:${postgresConfig.port}/${
+      postgresConfig.database
+    }?schema=recnet`;
+
     super({
       datasources: {
         db: {
-          url: `postgresql://${postgresConfig.username}:${encodeURIComponent(
-            postgresConfig.password
-          )}@${postgresConfig.host}:${postgresConfig.port}/${
-            postgresConfig.database
-          }?schema=recnet&pool_timeout=60`,
+          url: `${connectionUrl}&pool_timeout=60`,
         },
       },
     });
+
+    this.prismaUrl = connectionUrl;
   }
 
   async onModuleInit() {
     await this.$connect();
+
+    const prismaSchema =
+      process.env.PRISMA_SCHEMA || "dist/apps/recnet-api/prisma/schema.prisma";
+
+    if (process.env.DB_MIGRATE === "true") {
+      execSync(
+        `export PRISMA_DATABASE_URL=${this.prismaUrl} && pnpx prisma migrate deploy --schema=${prismaSchema}`,
+        { stdio: "inherit" }
+      );
+    }
   }
 }
 

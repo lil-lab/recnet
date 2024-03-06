@@ -1,0 +1,33 @@
+version: 0.2
+
+phases:
+  install:
+    runtime-versions:
+      nodejs: 18
+    commands:
+      - npm i -g pnpm
+      - pnpm i --frozen-lockfile
+  pre_build:
+    commands:
+      - pnpm nx clean recnet-api
+      - pnpm nx prisma:generate recnet-api
+  build:
+    commands:
+      - pnpm nx build recnet-api
+  post_build:
+    commands:
+      - rm -rf node_modules
+      - mv package.json package.json.bak
+      - mv pnpm-lock.yaml pnpm-lock.yaml.bak
+      - mv dist/apps/recnet-api/package.json package.json
+      - mv dist/apps/recnet-api/pnpm-lock.yaml pnpm-lock.yaml
+      - pnpm install --prod --frozen-lockfile
+      - pnpx prisma generate --schema=apps/recnet-api/prisma/schema.prisma
+      - cp -R apps/recnet-api/prisma/ dist/apps/recnet-api/prisma
+artifacts:
+  files:
+    - "dist/apps/recnet-api/**/*"
+    - "node_modules/**/*"
+    - "package.json"
+    - "Procfile"
+  enable-symlinks: yes

@@ -33,11 +33,67 @@ model User {
   handle        String     @db.VarChar(32) @unique
   displayName   String     @db.VarChar(32)
   inviteCode    String?    @db.VarChar(64)
-  photoUrl      String     @db.VarChar(128)
+  photoUrl      String     @db.VarChar(256)
   affiliation   String?    @db.VarChar(32)
   bio           String?
   lastLoginAt   DateTime
   role          Role       @default(USER) // Enum type
   createdAt     DateTime   @default(now())
   updatedAt     DateTime   @default(now()) @updatedAt
+
+  following     FollowingRecord[] @relation("Following")
+  followers     FollowingRecord[] @relation("Follower")
+  recommendations Recommendation[]
+  inviteCodeOwner InviteCode[]  @relation("InviteCodeOwner")
+  inviteCodeUsed  InviteCode?   @relation("InviteCodeUsedBy")
+}
+
+model FollowingRecord {
+  userId        String
+  followerId    String
+  createdAt     DateTime
+
+  @@id([userId, followerId])
+  user          User @relation("Following", fields: [userId], references: [id])
+  follower      User @relation("Follower", fields: [followerId], references: [id])
+}
+
+model Recommendation {
+  id          String    @id @default(uuid())
+  userId      String
+  articleId   String
+  description String
+  cutoff      DateTime
+  createAt    DateTime  @default(now())
+  updateAt    DateTime  @default(now()) @updatedAt
+
+  user        User      @relation(fields: [userId], references: [id]) // User who made the recommendation
+  article     Article   @relation(fields: [articleId], references: [id]) // Article being recommended
+}
+
+model Article {
+  id          String    @id
+  doi         String?   @db.VarChar(32)
+  title       String    @db.VarChar(256)
+  author      String    @db.VarChar(256)
+  link        String    @db.VarChar(256)
+  year        Int       @db.SmallInt
+  month       Int?      @db.SmallInt
+  isVerified  Boolean   @default(false)
+  createAt    DateTime  @default(now())
+  updateAt    DateTime  @default(now()) @updatedAt
+
+  recommendations Recommendation[]
+}
+
+model InviteCode {
+  id          Int       @id @default(autoincrement())
+  code        String    @db.VarChar(64)
+  ownerId     String    @db.VarChar(32)
+  issuedAt    DateTime  @default(now())
+  usedById    String?   @db.VarChar(32) @unique
+  usedAt      DateTime?
+
+  owner         User      @relation("InviteCodeOwner", fields: [ownerId], references: [id])
+  usedBy        User?     @relation("InviteCodeUsedBy", fields: [usedById], references: [id])
 }
