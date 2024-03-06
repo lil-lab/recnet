@@ -17,7 +17,7 @@ const TableUserCard = (props: { user: User }) => {
     <RecNetLink href={`/${user.username}`}>
       <Flex gap="2" className="items-center gap-x-2">
         <Avatar user={user} className={cn("w-[40px]", "h-[40px]")} />
-        {user.displayName}
+        <Text className="whitespace-nowrap">{user.displayName}</Text>
       </Flex>
     </RecNetLink>
   );
@@ -50,14 +50,13 @@ export default function InviteCodeMonitorPage() {
         </AdminSectionTitle>
         <AdminSectionBox>
           {inviteCodes && !isLoading ? (
-            <Table.Root className="w-full max-h-[60svh] relative">
-              <Table.Header className="sticky top-0 bg-white z-[1000]">
+            <Table.Root className="w-full max-h-[60svh] relative table-fixed">
+              <Table.Header className="sticky top-0 bg-white z-[500]">
                 <Table.Row>
-                  <Table.ColumnHeaderCell className="w-[30%]">
+                  <Table.ColumnHeaderCell className="w-[400px]">
                     Code
                   </Table.ColumnHeaderCell>
                   <Table.ColumnHeaderCell>Used</Table.ColumnHeaderCell>
-                  <Table.ColumnHeaderCell>Used At</Table.ColumnHeaderCell>
                   <Table.ColumnHeaderCell>Used By</Table.ColumnHeaderCell>
                   <Table.ColumnHeaderCell>Referrer</Table.ColumnHeaderCell>
                 </Table.Row>
@@ -71,16 +70,6 @@ export default function InviteCodeMonitorPage() {
                       <Table.RowHeaderCell>
                         <CopiableInviteCode inviteCode={inviteCode.id} />
                       </Table.RowHeaderCell>
-                      <Table.Cell>
-                        <Text
-                          className={cn({
-                            "text-green-9": inviteCode.used,
-                            "text-red-9": !inviteCode.used,
-                          })}
-                        >
-                          {inviteCode.used ? "Yes" : "No"}
-                        </Text>
-                      </Table.Cell>
                       <Table.Cell>
                         {inviteCode.usedAt
                           ? formatDate(
@@ -114,12 +103,11 @@ export default function InviteCodeMonitorPage() {
         <AdminSectionBox>
           {inviteCodes && !isLoading ? (
             <Table.Root className="w-full max-h-[60svh] relative">
-              <Table.Header className="sticky top-0 bg-white z-[1000]">
+              <Table.Header className="sticky top-0 bg-white z-[500]">
                 <Table.Row>
-                  <Table.ColumnHeaderCell className="w-[30%]">
+                  <Table.ColumnHeaderCell className="md:w-[30%]">
                     Code
                   </Table.ColumnHeaderCell>
-                  <Table.ColumnHeaderCell>Used</Table.ColumnHeaderCell>
                   <Table.ColumnHeaderCell>Owner</Table.ColumnHeaderCell>
                 </Table.Row>
               </Table.Header>
@@ -132,16 +120,6 @@ export default function InviteCodeMonitorPage() {
                       <Table.RowHeaderCell>
                         <CopiableInviteCode inviteCode={inviteCode.id} />
                       </Table.RowHeaderCell>
-                      <Table.Cell>
-                        <Text
-                          className={cn({
-                            "text-green-9": inviteCode.used,
-                            "text-red-9": !inviteCode.used,
-                          })}
-                        >
-                          {inviteCode.used ? "Yes" : "No"}
-                        </Text>
-                      </Table.Cell>
                       <Table.Cell>
                         {inviteCode.issuedTo ? (
                           <TableUserCard user={inviteCode.issuedTo} />

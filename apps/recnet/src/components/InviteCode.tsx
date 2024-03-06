@@ -11,7 +11,7 @@ export const CopiableInviteCode = (props: { inviteCode: string }) => {
 
   return (
     <Flex
-      className="gap-x-2 items-center cursor-pointer group"
+      className="gap-x-2 items-center cursor-pointer group w-fit"
       onClick={() => {
         copy(inviteCode).then(() => {
           // toast
@@ -20,7 +20,7 @@ export const CopiableInviteCode = (props: { inviteCode: string }) => {
       }}
     >
       <Text
-        className="font-mono text-[14px] text-gray-10 group-hover:text-gray-11"
+        className="font-mono text-[14px] text-gray-10 group-hover:text-gray-11 whitespace-nowrap"
         weight={"medium"}
       >
         {inviteCode}
