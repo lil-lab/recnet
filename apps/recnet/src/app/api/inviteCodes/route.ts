@@ -1,6 +1,6 @@
 import { db } from "@/firebase/admin";
 import { inviteCodeSchema } from "@/types/inviteCode";
-import { UserSchema } from "@/types/user";
+import { User, UserSchema } from "@/types/user";
 import { notEmpty } from "@/utils/notEmpty";
 
 export async function GET() {
@@ -31,15 +31,21 @@ export async function GET() {
         return null;
       })
     );
+    const usersMap: Record<string, User> = users
+      .filter(notEmpty)
+      .reduce((acc, user) => {
+        return {
+          ...acc,
+          [user.id]: user,
+        };
+      }, {});
 
     // join users to invite codes
     const inviteCodesWithUsers = inviteCodes.docs
       .map((inviteCode) => {
         const inviteCodeData = inviteCode.data();
-        const user = users.find((user) => user?.id === inviteCodeData.usedBy);
-        const owner = users.find(
-          (user) => user?.id === inviteCodeData.issuedTo
-        );
+        const user = usersMap[inviteCodeData.usedBy];
+        const owner = usersMap[inviteCodeData.issuedTo];
         const res = inviteCodeSchema.safeParse({
           ...inviteCodeData,
           issuedTo: owner,
