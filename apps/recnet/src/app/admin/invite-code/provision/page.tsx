@@ -38,7 +38,6 @@ function InviteCodeGenerateForm() {
       <form
         onSubmit={handleSubmit(async (data, e) => {
           e?.preventDefault();
-          // check if owner exists
           let owner: User | null;
           if (data.owner) {
             // check if owner exists
