@@ -8,7 +8,7 @@ export async function GET() {
     // get all invite codes
     const inviteCodes = await db.collection("invite-codes").get();
     // gather all userIds
-    const userIds = [
+    const userIds: string[] = [
       ...inviteCodes.docs
         .map((inviteCode) => inviteCode.data().usedBy)
         .filter(notEmpty),
