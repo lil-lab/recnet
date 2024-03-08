@@ -8,7 +8,7 @@ export default function AdminPage() {
 
   return (
     <div className={cn("w-full", "flex", "justify-center")}>
-      To be implemented
+      To be implemented...
     </div>
   );
 }
