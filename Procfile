@@ -1,1 +1,1 @@
-web: node dist/apps/recnet-api/main.js
+web: cd dist/apps/recnet-api && node main.js
