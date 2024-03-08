@@ -39,8 +39,7 @@ export class PrismaConnectionProvider
   async onModuleInit() {
     await this.$connect();
 
-    const prismaSchema =
-      process.env.PRISMA_SCHEMA || "dist/apps/recnet-api/prisma/schema.prisma";
+    const prismaSchema = process.env.PRISMA_SCHEMA || "prisma/schema.prisma";
 
     if (process.env.DB_MIGRATE === "true") {
       execSync(
