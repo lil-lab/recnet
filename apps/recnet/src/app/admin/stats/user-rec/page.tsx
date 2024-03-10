@@ -7,7 +7,7 @@ import { Pencil1Icon, PersonIcon } from "@radix-ui/react-icons";
 import {
   getDateFromFirebaseTimestamp,
   getNextCutOff,
-} from "@recnet/recnet-web/utils/date";
+} from "@recnet/recnet-date-fns";
 import { Timestamp } from "firebase-admin/firestore";
 import { withSuspense } from "@recnet/recnet-web/utils/withSuspense";
 import groupBy from "lodash.groupby";

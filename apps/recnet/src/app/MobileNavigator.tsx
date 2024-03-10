@@ -19,7 +19,7 @@ import { useRec } from "@recnet/recnet-web/hooks/useRec";
 import {
   getDateFromFirebaseTimestamp,
   getNextCutOff,
-} from "@recnet/recnet-web/utils/date";
+} from "@recnet/recnet-date-fns";
 import { RecForm } from "@recnet/recnet-web/components/RecForm";
 import Link from "next/link";
 

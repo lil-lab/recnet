@@ -8,7 +8,7 @@ import { Group } from "@visx/group";
 import { AxisBottom } from "@visx/axis";
 import { useTooltip, useTooltipInPortal, defaultStyles } from "@visx/tooltip";
 import { localPoint } from "@visx/event";
-import { WeekTs, formatDate } from "@recnet/recnet-web/utils/date";
+import { WeekTs, formatDate } from "@recnet/recnet-date-fns";
 import { Text } from "@radix-ui/themes";
 
 type Timestamp = string;

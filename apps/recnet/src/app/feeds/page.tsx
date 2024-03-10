@@ -3,7 +3,7 @@ import {
   getCutOff,
   getLatestCutOff,
   START_DATE,
-} from "@recnet/recnet-web/utils/date";
+} from "@recnet/recnet-date-fns";
 import { getUserServerSide } from "@recnet/recnet-web/utils/getUserServerSide";
 import { notFound, redirect } from "next/navigation";
 import { RecCard } from "@recnet/recnet-web/components/RecCard";

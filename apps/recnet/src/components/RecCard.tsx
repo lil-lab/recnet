@@ -6,7 +6,7 @@ import { RecNetLink } from "./Link";
 import {
   formatDate,
   getDateFromFirebaseTimestamp,
-} from "@recnet/recnet-web/utils/date";
+} from "@recnet/recnet-date-fns";
 import { ChevronRight } from "lucide-react";
 import { CalendarIcon } from "@radix-ui/react-icons";
 import { Skeleton, SkeletonText } from "@recnet/recnet-web/components/Skeleton";

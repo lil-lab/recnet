@@ -2,7 +2,7 @@
 import { db } from "@recnet/recnet-web/firebase/admin";
 import { RecSchema, Rec, RecWithUser } from "@recnet/recnet-web/types/rec";
 import { Timestamp } from "firebase-admin/firestore";
-import { getNextCutOff } from "@recnet/recnet-web/utils/date";
+import { getNextCutOff } from "@recnet/recnet-date-fns";
 import { notEmpty } from "@recnet/recnet-web/utils/notEmpty";
 import { FieldValue } from "firebase-admin/firestore";
 import { User } from "@recnet/recnet-web/types/user";

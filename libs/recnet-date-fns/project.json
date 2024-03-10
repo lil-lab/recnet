@@ -13,6 +13,14 @@
         "tsConfig": "recnet-date-fns/tsconfig.lib.json",
         "assets": ["recnet-date-fns/*.md"]
       }
+    },
+    "typecheck": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": ["tsc -p tsconfig.json --noEmit"],
+        "cwd": "libs/recnet-date-fns",
+        "forwardAllArgs": false
+      }
     }
   },
   "tags": []

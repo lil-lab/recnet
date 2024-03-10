@@ -1,6 +1,6 @@
 import { db } from "@recnet/recnet-web/firebase/admin";
 import { UserSchema } from "@recnet/recnet-web/types/user";
-import { formatDate, getLatestCutOff } from "@recnet/recnet-web/utils/date";
+import { formatDate, getLatestCutOff } from "@recnet/recnet-date-fns";
 import { getFeedsRecs, getRecsWithUsers } from "@recnet/recnet-web/server/rec";
 import groupBy from "lodash.groupby";
 import { notEmpty } from "@recnet/recnet-web/utils/notEmpty";

@@ -9,7 +9,7 @@ import {
   getNextCutOff,
   getDateFromFirebaseTimestamp,
   getVerboseDateString,
-} from "@recnet/recnet-web/utils/date";
+} from "@recnet/recnet-date-fns";
 import { Text, Flex, Button } from "@radix-ui/themes";
 import { useSearchParams } from "next/navigation";
 import { useAuth } from "@recnet/recnet-web/app/AuthContext";

@@ -10,7 +10,7 @@ import { Flex, Table, Text } from "@radix-ui/themes";
 import {
   getDateFromFirebaseTimestamp,
   formatDate,
-} from "@recnet/recnet-web/utils/date";
+} from "@recnet/recnet-date-fns";
 import { Avatar } from "@recnet/recnet-web/components/Avatar";
 import { RecNetLink } from "@recnet/recnet-web/components/Link";
 import { TailSpin } from "react-loader-spinner";
