@@ -14,8 +14,8 @@
     "skipLibCheck": true,
     "skipDefaultLibCheck": true,
     "paths": {
-      "@recnet/recnet-web/*": ["apps/recnet/src/*"],
-      "@recnet/recnet-date-fns": ["libs/recnet-date-fns/src/index.ts"]
+      "@recnet/recnet-date-fns": ["libs/recnet-date-fns/src/index.ts"],
+      "@recnet/recnet-web/*": ["apps/recnet/src/*"]
     },
     "baseUrl": "."
   },

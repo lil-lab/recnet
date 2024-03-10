@@ -17,6 +17,14 @@
     ],
     "sharedGlobals": []
   },
+  "projects": {
+    "recnet": {
+      "tags": ["type:app"]
+    },
+    "recnet-date-fns": {
+      "tags": ["type:utils"]
+    }
+  },
   "plugins": [
     {
       "plugin": "@nx/next/plugin",
@@ -44,6 +52,16 @@
       "options": {
         "targetName": "lint"
       }
+    },
+    {
+      "plugin": "@nx/vite/plugin",
+      "options": {
+        "buildTargetName": "build",
+        "previewTargetName": "preview",
+        "testTargetName": "test",
+        "serveTargetName": "serve",
+        "serveStaticTargetName": "serve-static"
+      }
     }
   ],
   "targetDefaults": {
@@ -55,6 +73,11 @@
         "{workspaceRoot}/.eslintignore",
         "{workspaceRoot}/eslint.config.js"
       ]
+    },
+    "@nx/vite:build": {
+      "cache": true,
+      "dependsOn": ["^build"],
+      "inputs": ["production", "^production"]
     }
   },
   "generators": {
