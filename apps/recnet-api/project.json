@@ -45,6 +45,24 @@
         "forwardAllArgs": false
       }
     },
+    "prisma:migrate": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": ["sh apps/recnet-api/scripts/dbMigrate.sh"],
+        "cwd": ".",
+        "forwardAllArgs": true
+      }
+    },
+    "prisma:deploy": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "pnpx prisma migrate deploy --schema=apps/recnet-api/prisma/schema.prisma"
+        ],
+        "cwd": ".",
+        "forwardAllArgs": false
+      }
+    },
     "deploy": {
       "executor": "nx:run-commands",
       "options": {
