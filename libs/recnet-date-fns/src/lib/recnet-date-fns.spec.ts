@@ -1,7 +1,7 @@
-import { recnetDateFns } from "./recnet-date-fns";
+import { Months } from "./recnet-date-fns";
 
-describe("recnetDateFns", () => {
+describe("Should have 12 months", () => {
   it("should work", () => {
-    expect(recnetDateFns()).toEqual("recnet-date-fns");
+    expect(Months.length).toEqual(12);
   });
 });

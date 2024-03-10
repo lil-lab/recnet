@@ -21,6 +21,13 @@
         "cwd": "libs/recnet-date-fns",
         "forwardAllArgs": false
       }
+    },
+    "test": {
+      "executor": "@nx/vite:test",
+      "outputs": ["{options.reportsDirectory}"],
+      "options": {
+        "reportsDirectory": "../../coverage/libs/recnet-date-fns"
+      }
     }
   },
   "tags": []
