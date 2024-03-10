@@ -1,13 +1,13 @@
-import { db } from "@/firebase/admin";
-import { UserSchema } from "@/types/user";
-import { formatDate, getLatestCutOff } from "@/utils/date";
-import { getFeedsRecs, getRecsWithUsers } from "@/server/rec";
+import { db } from "@recnet/recnet-web/firebase/admin";
+import { UserSchema } from "@recnet/recnet-web/types/user";
+import { formatDate, getLatestCutOff } from "@recnet/recnet-web/utils/date";
+import { getFeedsRecs, getRecsWithUsers } from "@recnet/recnet-web/server/rec";
 import groupBy from "lodash.groupby";
-import { notEmpty } from "@/utils/notEmpty";
+import { notEmpty } from "@recnet/recnet-web/utils/notEmpty";
 import WeeklyDigest from "../../../../emails/WeeklyDigest";
 import { render } from "@react-email/render";
 import { NextRequest, NextResponse } from "next/server";
-import { serverEnv } from "@/serverEnv";
+import { serverEnv } from "@recnet/recnet-web/serverEnv";
 
 // const TEST_USER_IDS = ["GoXnHBhgK8QhcZpki0la"];
 

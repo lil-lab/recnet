@@ -1,8 +1,8 @@
-import { cn } from "@/utils/cn";
+import { cn } from "@recnet/recnet-web/utils/cn";
 import { Text, Button } from "@radix-ui/themes";
 import Link from "next/link";
 import { LoginButton } from "./LoginButton";
-import { getUserServerSide } from "@/utils/getUserServerSide";
+import { getUserServerSide } from "@recnet/recnet-web/utils/getUserServerSide";
 import { redirect } from "next/navigation";
 import { AnnouncementBanner } from "./AnnouncementBanner";
 

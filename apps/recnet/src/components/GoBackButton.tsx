@@ -2,7 +2,7 @@
 import { Flex } from "@radix-ui/themes";
 import { ChevronLeftIcon } from "@radix-ui/react-icons";
 import { useRouter } from "next/navigation";
-import { useHistory } from "@/app/HistoryProvider";
+import { useHistory } from "@recnet/recnet-web/app/HistoryProvider";
 
 export function GoBackButton() {
   const isWithinPage = useHistory();

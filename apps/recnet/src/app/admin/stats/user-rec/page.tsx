@@ -1,12 +1,18 @@
-import { db } from "@/firebase/admin";
-import { StatBox, StatBoxSkeleton } from "@/app/admin/stats/StatBox";
+import { db } from "@recnet/recnet-web/firebase/admin";
+import {
+  StatBox,
+  StatBoxSkeleton,
+} from "@recnet/recnet-web/app/admin/stats/StatBox";
 import { Pencil1Icon, PersonIcon } from "@radix-ui/react-icons";
-import { getDateFromFirebaseTimestamp, getNextCutOff } from "@/utils/date";
+import {
+  getDateFromFirebaseTimestamp,
+  getNextCutOff,
+} from "@recnet/recnet-web/utils/date";
 import { Timestamp } from "firebase-admin/firestore";
-import { withSuspense } from "@/utils/withSuspense";
+import { withSuspense } from "@recnet/recnet-web/utils/withSuspense";
 import groupBy from "lodash.groupby";
-import { RecSchema } from "@/types/rec";
-import { notEmpty } from "@/utils/notEmpty";
+import { RecSchema } from "@recnet/recnet-web/types/rec";
+import { notEmpty } from "@recnet/recnet-web/utils/notEmpty";
 import { RecsCycleBarChart } from "./RecsCycleBarChart";
 import { AdminSectionTitle } from "../../AdminSections";
 

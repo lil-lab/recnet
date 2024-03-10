@@ -1,13 +1,13 @@
 "use server";
-import { db } from "@/firebase/admin";
-import { RecSchema, Rec, RecWithUser } from "@/types/rec";
+import { db } from "@recnet/recnet-web/firebase/admin";
+import { RecSchema, Rec, RecWithUser } from "@recnet/recnet-web/types/rec";
 import { Timestamp } from "firebase-admin/firestore";
-import { getNextCutOff } from "@/utils/date";
-import { notEmpty } from "@/utils/notEmpty";
+import { getNextCutOff } from "@recnet/recnet-web/utils/date";
+import { notEmpty } from "@recnet/recnet-web/utils/notEmpty";
 import { FieldValue } from "firebase-admin/firestore";
-import { User } from "@/types/user";
-import { getUsersByIds } from "@/server/user";
-import { shuffleArray } from "@/utils/shuffle";
+import { User } from "@recnet/recnet-web/types/user";
+import { getUsersByIds } from "@recnet/recnet-web/server/user";
+import { shuffleArray } from "@recnet/recnet-web/utils/shuffle";
 
 export async function getRecsByUserId(
   userId: string,

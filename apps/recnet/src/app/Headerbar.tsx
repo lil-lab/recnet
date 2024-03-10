@@ -1,6 +1,6 @@
 "use client";
 
-import { cn } from "@/utils/cn";
+import { cn } from "@recnet/recnet-web/utils/cn";
 import {
   Button,
   DropdownMenu,
@@ -10,13 +10,13 @@ import {
   TextField,
 } from "@radix-ui/themes";
 import Link from "next/link";
-import { logout, useGoogleLogin } from "@/firebase/auth";
-import { useAuth } from "@/app/AuthContext";
+import { logout, useGoogleLogin } from "@recnet/recnet-web/firebase/auth";
+import { useAuth } from "@recnet/recnet-web/app/AuthContext";
 import { MagnifyingGlassIcon, Cross1Icon } from "@radix-ui/react-icons";
 import { useState, useRef, useEffect, useCallback } from "react";
-import { User } from "@/types/user";
+import { User } from "@recnet/recnet-web/types/user";
 import { useRouter, usePathname } from "next/navigation";
-import { Avatar } from "@/components/Avatar";
+import { Avatar } from "@recnet/recnet-web/components/Avatar";
 import { AnimatePresence, motion } from "framer-motion";
 
 export function UserDropdown({ user }: { user: User }) {

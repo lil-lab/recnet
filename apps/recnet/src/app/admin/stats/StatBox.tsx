@@ -1,5 +1,5 @@
-import { SkeletonText } from "@/components/Skeleton";
-import { cn } from "@/utils/cn";
+import { SkeletonText } from "@recnet/recnet-web/components/Skeleton";
+import { cn } from "@recnet/recnet-web/utils/cn";
 
 export function StatBox({
   children,

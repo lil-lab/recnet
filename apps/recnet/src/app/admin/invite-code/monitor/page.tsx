@@ -1,15 +1,21 @@
 "use client";
 
-import { cn } from "@/utils/cn";
-import { AdminSectionBox, AdminSectionTitle } from "@/app/admin/AdminSections";
-import { useInviteCodes } from "@/hooks/useInviteCodes";
+import { cn } from "@recnet/recnet-web/utils/cn";
+import {
+  AdminSectionBox,
+  AdminSectionTitle,
+} from "@recnet/recnet-web/app/admin/AdminSections";
+import { useInviteCodes } from "@recnet/recnet-web/hooks/useInviteCodes";
 import { Flex, Table, Text } from "@radix-ui/themes";
-import { getDateFromFirebaseTimestamp, formatDate } from "@/utils/date";
-import { Avatar } from "@/components/Avatar";
-import { RecNetLink } from "@/components/Link";
+import {
+  getDateFromFirebaseTimestamp,
+  formatDate,
+} from "@recnet/recnet-web/utils/date";
+import { Avatar } from "@recnet/recnet-web/components/Avatar";
+import { RecNetLink } from "@recnet/recnet-web/components/Link";
 import { TailSpin } from "react-loader-spinner";
-import { User } from "@/types/user";
-import { CopiableInviteCode } from "@/components/InviteCode";
+import { User } from "@recnet/recnet-web/types/user";
+import { CopiableInviteCode } from "@recnet/recnet-web/components/InviteCode";
 
 const TableUserCard = (props: { user: User }) => {
   const { user } = props;

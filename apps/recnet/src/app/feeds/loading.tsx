@@ -1,5 +1,5 @@
-import { RecCardSkeleton } from "@/components/RecCard";
-import { cn } from "@/utils/cn";
+import { RecCardSkeleton } from "@recnet/recnet-web/components/RecCard";
+import { cn } from "@recnet/recnet-web/utils/cn";
 
 export default function Loading() {
   // array of skeletons of rec card

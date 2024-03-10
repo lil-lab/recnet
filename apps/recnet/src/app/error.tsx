@@ -1,8 +1,8 @@
 "use client";
 
-import { cn } from "@/utils/cn";
+import { cn } from "@recnet/recnet-web/utils/cn";
 import { Flex, Text } from "@radix-ui/themes";
-import { RecNetLink } from "@/components/Link";
+import { RecNetLink } from "@recnet/recnet-web/components/Link";
 import { ReportEmailAccount } from "./not-found";
 
 export default function NotFoundPage() {

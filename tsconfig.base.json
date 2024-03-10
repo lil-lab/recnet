@@ -14,9 +14,10 @@
     "skipLibCheck": true,
     "skipDefaultLibCheck": true,
     "paths": {
-      "@recnet/main/*": ["apps/recnet/src/*"],
-      "@recnet/recnet-email/*": ["apps/recnet-email/src/*"]
-    }
+      "@recnet/recnet-web/*": ["apps/recnet/src/*"],
+      "@recnet/recnet-date-fns": ["libs/recnet-date-fns/src/index.ts"]
+    },
+    "baseUrl": "."
   },
   "exclude": ["node_modules", "tmp"]
 }

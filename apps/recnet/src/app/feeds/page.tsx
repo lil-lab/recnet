@@ -1,12 +1,16 @@
-import { getFeedsRecs, getRecsWithUsers } from "@/server/rec";
-import { getCutOff, getLatestCutOff, START_DATE } from "@/utils/date";
-import { getUserServerSide } from "@/utils/getUserServerSide";
+import { getFeedsRecs, getRecsWithUsers } from "@recnet/recnet-web/server/rec";
+import {
+  getCutOff,
+  getLatestCutOff,
+  START_DATE,
+} from "@recnet/recnet-web/utils/date";
+import { getUserServerSide } from "@recnet/recnet-web/utils/getUserServerSide";
 import { notFound, redirect } from "next/navigation";
-import { RecCard } from "@/components/RecCard";
+import { RecCard } from "@recnet/recnet-web/components/RecCard";
 import { Text } from "@radix-ui/themes";
-import { cn } from "@/utils/cn";
+import { cn } from "@recnet/recnet-web/utils/cn";
 import groupBy from "lodash.groupby";
-import { notEmpty } from "@/utils/notEmpty";
+import { notEmpty } from "@recnet/recnet-web/utils/notEmpty";
 
 function verifyDate(date: string) {
   const parsedDate = new Date(date);

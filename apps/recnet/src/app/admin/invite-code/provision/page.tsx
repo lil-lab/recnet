@@ -1,6 +1,6 @@
 "use client";
 
-import { cn } from "@/utils/cn";
+import { cn } from "@recnet/recnet-web/utils/cn";
 import { AdminSectionBox, AdminSectionTitle } from "../../AdminSections";
 import { Button, Flex, Text, TextField, Dialog } from "@radix-ui/themes";
 import { AtSignIcon, HashIcon } from "lucide-react";
@@ -8,11 +8,11 @@ import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
-import { generateInviteCode } from "@/server/inviteCode";
-import { useAuth } from "@/app/AuthContext";
-import { User, UserSchema } from "@/types/user";
-import { fetchWithZod } from "@/utils/zodFetch";
-import { CopiableInviteCode } from "@/components/InviteCode";
+import { generateInviteCode } from "@recnet/recnet-web/server/inviteCode";
+import { useAuth } from "@recnet/recnet-web/app/AuthContext";
+import { User, UserSchema } from "@recnet/recnet-web/types/user";
+import { fetchWithZod } from "@recnet/recnet-web/utils/zodFetch";
+import { CopiableInviteCode } from "@recnet/recnet-web/components/InviteCode";
 
 const InviteCodeGenerationSchema = z.object({
   count: z.coerce.number().min(1).max(5, "Max 5 invite codes at a time"),

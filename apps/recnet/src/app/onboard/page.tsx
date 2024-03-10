@@ -1,15 +1,18 @@
 "use client";
-import { cn } from "@/utils/cn";
+import { cn } from "@recnet/recnet-web/utils/cn";
 import { Button, Text, TextField } from "@radix-ui/themes";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { HomeIcon } from "@radix-ui/react-icons";
-import { checkInviteCodeValid, checkUsernameUnique } from "@/server/user";
+import {
+  checkInviteCodeValid,
+  checkUsernameUnique,
+} from "@recnet/recnet-web/server/user";
 import { getAuth } from "firebase/auth";
-import { getFirebaseApp } from "@/firebase/client";
+import { getFirebaseApp } from "@recnet/recnet-web/firebase/client";
 import { toast } from "sonner";
-import { useAuth } from "@/app/AuthContext";
+import { useAuth } from "@recnet/recnet-web/app/AuthContext";
 import { useRouter } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
 import { useState } from "react";

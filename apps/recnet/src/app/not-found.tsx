@@ -1,6 +1,6 @@
-import { cn } from "@/utils/cn";
+import { cn } from "@recnet/recnet-web/utils/cn";
 import { Flex, Text } from "@radix-ui/themes";
-import { RecNetLink } from "@/components/Link";
+import { RecNetLink } from "@recnet/recnet-web/components/Link";
 
 export const ReportEmailAccount = "lil.recnet@gmail.com";
 

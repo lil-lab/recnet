@@ -1,6 +1,6 @@
 import useSWR from "swr";
-import { fetchWithZod } from "@/utils/zodFetch";
-import { Rec, RecSchema } from "@/types/rec";
+import { fetchWithZod } from "@recnet/recnet-web/utils/zodFetch";
+import { Rec, RecSchema } from "@recnet/recnet-web/types/rec";
 import { toast } from "sonner";
 
 export function useRec(
