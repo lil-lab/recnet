@@ -1,1 +1,1 @@
-web: pnpm nx deploy recnet-api
+web: cd dist/apps/recnet-api && node main.js

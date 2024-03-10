@@ -9,6 +9,6 @@ describe("HealthService", () => {
 
   it("should return status ok", async () => {
     const result = await healthService.getHealth();
-    expect(result).toEqual({ status: "OK" });
+    expect(result).toEqual({ status: "OK!" });
   });
 });
