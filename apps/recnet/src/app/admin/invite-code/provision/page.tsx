@@ -10,7 +10,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
 import { generateInviteCode } from "@recnet/recnet-web/server/inviteCode";
 import { useAuth } from "@recnet/recnet-web/app/AuthContext";
-import { User, UserSchema } from "@recnet/recnet-web/types/user";
+import { UserSchema } from "@recnet/recnet-web/types/user";
 import { fetchWithZod } from "@recnet/recnet-web/utils/zodFetch";
 import { CopiableInviteCode } from "@recnet/recnet-web/components/InviteCode";
 
