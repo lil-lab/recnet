@@ -1,17 +1,17 @@
 {
   "name": "recnet-date-fns",
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
-  "sourceRoot": "recnet-date-fns/src",
+  "sourceRoot": "libs/recnet-date-fns/src",
   "projectType": "library",
   "targets": {
     "build": {
-      "executor": "@nx/vite:build",
+      "executor": "@nx/js:tsc",
       "outputs": ["{options.outputPath}"],
       "options": {
-        "outputPath": "dist/recnet-date-fns",
-        "main": "recnet-date-fns/src/index.ts",
-        "tsConfig": "recnet-date-fns/tsconfig.lib.json",
-        "assets": ["recnet-date-fns/*.md"]
+        "outputPath": "dist/libs/recnet-date-fns",
+        "main": "libs/recnet-date-fns/src/index.ts",
+        "tsConfig": "libs/recnet-date-fns/tsconfig.lib.json",
+        "assets": ["libs/recnet-date-fns/*.md"]
       }
     },
     "typecheck": {
