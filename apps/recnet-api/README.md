@@ -7,6 +7,12 @@ Recnet-api is a backend API service for [Recnet](https://www.recnet.io/). Powere
 - node >= 18
 - PostgreSQL 16
 
+## Documentation
+- [Notion](https://www.notion.so/RecNet-f8440e23b4e54af4a9636e84ed101815)
+- Swagger API Doc
+  - [dev](https://dev-api.recnet.io/api)
+  - prod
+
 ## Local Development
 
 ### Installation
