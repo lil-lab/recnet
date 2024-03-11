@@ -24,14 +24,17 @@ function InviteCodeGenerateForm() {
   const [newInviteCodes, setNewInviteCodes] = useState<string[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const { register, handleSubmit, formState, setError } = useForm({
-    resolver: zodResolver(InviteCodeGenerationSchema),
-    defaultValues: {
-      count: 1,
-      owner: undefined,
-    },
-    mode: "onBlur",
-  });
+  const { register, handleSubmit, formState, setError, watch, setValue } =
+    useForm({
+      resolver: zodResolver(InviteCodeGenerationSchema),
+      defaultValues: {
+        count: 1,
+        owner: undefined,
+      },
+      mode: "onBlur",
+    });
+
+  console.log(watch("count"));
 
   return (
     <>
@@ -81,7 +84,18 @@ function InviteCodeGenerateForm() {
               <TextField.Slot>
                 <HashIcon size="12" className="text-gray-10" />
               </TextField.Slot>
-              <TextField.Input type="number" {...register("count")} />
+              <TextField.Input
+                type="number"
+                {...register("count", {
+                  onBlur: (e) => {
+                    if (e.target.value == "" || parseInt(e.target.value) < 1) {
+                      setValue("count", 1, {
+                        shouldValidate: true,
+                      });
+                    }
+                  },
+                })}
+              />
             </TextField.Root>
             {formState.errors.count ? (
               <Text size="1" color="red">
