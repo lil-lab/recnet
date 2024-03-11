@@ -1,7 +1,6 @@
 import { Months } from "./recnet-date-fns";
+import { expect, test } from "vitest";
 
-describe("Should have 12 months", () => {
-  it("should work", () => {
-    expect(Months.length).toEqual(12);
-  });
+test("Should have 12 months", () => {
+  expect(Months.length).toEqual(12);
 });

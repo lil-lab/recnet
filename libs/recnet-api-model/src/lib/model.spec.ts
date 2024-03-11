@@ -1,12 +1,11 @@
 import { dateSchema } from "./model";
+import { expect, test } from "vitest";
 
-describe("Timestamp should be coerced and parsed as Date", () => {
-  it("should work", () => {
-    const date = new Date();
-    const dateStr = date.getTime();
-    const parsed = dateSchema.safeParse(dateStr);
-    expect(parsed.success).toBe(true);
-    if (!parsed.success) return;
-    expect(parsed.data).toBeInstanceOf(Date);
-  });
+test("Timestamp should be coerced and parsed as Date", () => {
+  const date = new Date();
+  const dateStr = date.getTime();
+  const parsed = dateSchema.safeParse(dateStr);
+  expect(parsed.success).toBe(true);
+  if (!parsed.success) return;
+  expect(parsed.data).toBeInstanceOf(Date);
 });
