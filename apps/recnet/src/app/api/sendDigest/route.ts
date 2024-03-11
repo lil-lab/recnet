@@ -7,12 +7,13 @@ import { notEmpty } from "@/utils/notEmpty";
 import WeeklyDigest from "../../../../emails/WeeklyDigest";
 import { render } from "@react-email/render";
 import { NextRequest, NextResponse } from "next/server";
+import { serverEnv } from "@/serverEnv";
 
 // const TEST_USER_IDS = ["GoXnHBhgK8QhcZpki0la"];
 
 export async function GET(request: NextRequest) {
   if (
-    request.headers.get("Authorization") !== `Bearer ${process.env.CRON_SECRET}`
+    request.headers.get("Authorization") !== `Bearer ${serverEnv.CRON_SECRET}`
   ) {
     return NextResponse.json({ ok: false });
   }

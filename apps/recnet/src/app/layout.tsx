@@ -12,6 +12,7 @@ import "tailwindcss/tailwind.css";
 import { MobileNavigator } from "./MobileNavigator";
 import { ProgressbarProvider } from "./Progressbar";
 import { GoogleAnalytics } from "@next/third-parties/google";
+import { clientEnv } from "@/clientEnv";
 
 const sfpro = localFont({
   src: [
@@ -122,9 +123,11 @@ export default async function RootLayout({
   const user = await getUserServerSide();
   return (
     <html lang="en">
-      <GoogleAnalytics
-        gaId={process.env.NEXT_PUBLIC_GA_TRACKING_ID as string}
-      />
+      {clientEnv.NEXT_PUBLIC_ENV === "prod" ? (
+        <GoogleAnalytics
+          gaId={clientEnv.NEXT_PUBLIC_GA_TRACKING_ID as string}
+        />
+      ) : null}
       <body className={sfpro.className}>
         <ProgressbarProvider>
           <AuthProvider serverUser={user}>

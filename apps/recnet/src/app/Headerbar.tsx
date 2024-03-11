@@ -39,6 +39,11 @@ export function UserDropdown({ user }: { user: User }) {
         <DropdownMenu.Item>
           <Link href={`/${user.username}`}>Profile</Link>
         </DropdownMenu.Item>
+        {user.role && user.role === "admin" ? (
+          <DropdownMenu.Item>
+            <Link href={`/admin`}>Admin Panel</Link>
+          </DropdownMenu.Item>
+        ) : null}
         <DropdownMenu.Item color="red" onClick={handleLogout}>
           Log out
         </DropdownMenu.Item>
@@ -120,7 +125,8 @@ export function Headerbar() {
         "border-b-[1px]",
         "border-slate-8",
         "sticky",
-        "top-0"
+        "top-0",
+        "z-[1000]"
       )}
     >
       <Flex className="items-center" gap="4">
