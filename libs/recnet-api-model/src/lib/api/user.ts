@@ -44,7 +44,7 @@ export const postUserMeRequestSchema = userPreviewSchema
     numFollowers: true,
   })
   .extend({
-    provider: z.enum(["FACEBOOK", "GOOGLE"]),
+    provider: z.enum(["FACEBOOK", "GOOGLE", "GITHUB"]),
     providerId: z.string(),
     inviteCode: z.string(),
   });
