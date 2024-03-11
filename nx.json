@@ -21,8 +21,17 @@
     "recnet": {
       "tags": ["type:app"]
     },
+    "recnet-api": {
+      "tags": ["type:app"]
+    },
     "recnet-date-fns": {
       "tags": ["type:utils"]
+    },
+    "recnet-jwt": {
+      "tags": ["type:utils"]
+    },
+    "recnet-api-model": {
+      "tags": ["type:api-model"]
     }
   },
   "plugins": [

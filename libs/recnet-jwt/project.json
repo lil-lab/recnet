@@ -1,0 +1,34 @@
+{
+  "name": "recnet-jwt",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/recnet-jwt/src",
+  "projectType": "library",
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/libs/recnet-jwt",
+        "main": "libs/recnet-jwt/src/index.ts",
+        "tsConfig": "libs/recnet-jwt/tsconfig.lib.json",
+        "assets": ["libs/recnet-jwt/*.md"]
+      }
+    },
+    "test": {
+      "executor": "@nx/vite:test",
+      "outputs": ["{options.reportsDirectory}"],
+      "options": {
+        "reportsDirectory": "../../coverage/libs/recnet-jwt"
+      }
+    },
+    "typecheck": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": ["tsc -p tsconfig.json --noEmit"],
+        "cwd": "libs/recnet-jwt",
+        "forwardAllArgs": false
+      }
+    }
+  },
+  "tags": []
+}
