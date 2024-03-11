@@ -2,6 +2,9 @@ import { z } from "zod";
 
 export const dateSchema = z.coerce.date();
 
+export const userRoleSchema = z.enum(["ADMIN", "USER"]);
+export type UserRole = z.infer<typeof userRoleSchema>;
+
 export const userPreviewSchema = z.object({
   id: z.string(),
   handle: z.string(),
@@ -15,7 +18,7 @@ export type UserPreview = z.infer<typeof userPreviewSchema>;
 
 export const userSchema = userPreviewSchema.extend({
   email: z.string().email(),
-  role: z.enum(["ADMIN", "USER"]),
+  role: userRoleSchema,
   following: z.array(userPreviewSchema),
 });
 export type User = z.infer<typeof userSchema>;

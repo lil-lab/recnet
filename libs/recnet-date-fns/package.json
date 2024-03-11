@@ -1,0 +1,8 @@
+{
+  "name": "@recnet/recnet-date-fns",
+  "version": "0.0.0",
+  "dependencies": {
+    "firebase": "^10.7.2",
+    "tslib": "^2.3.0"
+  }
+}
