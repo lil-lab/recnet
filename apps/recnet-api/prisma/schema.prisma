@@ -9,8 +9,8 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("PRISMA_DATABASE_URL")
+  provider          = "postgresql"
+  url               = env("PRISMA_DATABASE_URL")
 }
 
 // Define enum types
