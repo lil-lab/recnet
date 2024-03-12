@@ -1,5 +1,6 @@
 const admin = require("firebase-admin");
 const z = require("zod");
+const { Timestamp } = require("firebase/firestore");
 
 const firebaseEnvSchema = z.object({
   FIREBASE_PROJECT_ID: z.string(),
@@ -20,6 +21,11 @@ admin.initializeApp({
 const db = admin.firestore();
 const auth = admin.auth();
 
+const getDateFromFirebaseTimestamp = (ts) => {
+  const timestamp = new Timestamp(ts._seconds, ts._nanoseconds);
+  return timestamp.toDate();
+};
+
 console.log("Firebase Admin Initialized");
 
-module.exports = { db, auth, admin };
+module.exports = { db, auth, admin, getDateFromFirebaseTimestamp };
