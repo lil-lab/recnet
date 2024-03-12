@@ -41,21 +41,21 @@ model User {
   createdAt     DateTime   @default(now())
   updatedAt     DateTime   @default(now()) @updatedAt
 
+  followedBy      FollowingRecord[] @relation("FollowedBy")
   following       FollowingRecord[] @relation("Following")
-  followers       FollowingRecord[] @relation("Follower")
   recommendations Recommendation[]
   inviteCodeOwner InviteCode[]  @relation("InviteCodeOwner")
   inviteCodeUsed  InviteCode?   @relation("InviteCodeUsedBy")
 }
 
 model FollowingRecord {
-  userId        String    @db.VarChar(64)
-  followerId    String    @db.VarChar(64)
-  createdAt     DateTime  @default(now())
+  followingId     String    @db.VarChar(64)
+  followedById    String    @db.VarChar(64)
+  createdAt       DateTime  @default(now())
 
-  @@id([userId, followerId])
-  user          User @relation("Following", fields: [userId], references: [id])
-  follower      User @relation("Follower", fields: [followerId], references: [id])
+  @@id([followingId, followedById])
+  following       User @relation("FollowedBy", fields: [followingId], references: [id])
+  followedBy      User @relation("Following", fields: [followedById], references: [id])
 }
 
 model Recommendation {
