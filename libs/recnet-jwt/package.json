@@ -1,0 +1,9 @@
+{
+  "name": "@recnet/recnet-jwt",
+  "version": "0.0.0",
+  "dependencies": {
+    "@recnet/recnet-api-model": "0.0.0",
+    "jsonwebtoken": "^9.0.2",
+    "zod": "^3.22.4"
+  }
+}

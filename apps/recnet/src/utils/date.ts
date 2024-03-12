@@ -1,4 +1,4 @@
-import { FirebaseTs } from "@/types/rec";
+import { FirebaseTs } from "@recnet/recnet-web/types/rec";
 import { Timestamp } from "firebase/firestore";
 
 const CYCLE_DUE_DAY = 2;

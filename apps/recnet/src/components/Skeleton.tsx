@@ -1,4 +1,4 @@
-import { cn } from "@/utils/cn";
+import { cn } from "@recnet/recnet-web/utils/cn";
 import React, { ComponentProps } from "react";
 import { Text } from "@radix-ui/themes";
 

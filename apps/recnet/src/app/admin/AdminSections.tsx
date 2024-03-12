@@ -1,5 +1,5 @@
 import { Text } from "@radix-ui/themes";
-import { cn } from "@/utils/cn";
+import { cn } from "@recnet/recnet-web/utils/cn";
 
 export function AdminSectionTitle(props: {
   children: React.ReactNode;

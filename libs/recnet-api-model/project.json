@@ -1,0 +1,34 @@
+{
+  "name": "recnet-api-model",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/recnet-api-model/src",
+  "projectType": "library",
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/libs/recnet-api-model",
+        "main": "libs/recnet-api-model/src/index.ts",
+        "tsConfig": "libs/recnet-api-model/tsconfig.lib.json",
+        "assets": ["libs/recnet-api-model/*.md"]
+      }
+    },
+    "typecheck": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": ["tsc -p tsconfig.json --noEmit"],
+        "cwd": "libs/recnet-api-model",
+        "forwardAllArgs": false
+      }
+    },
+    "test": {
+      "executor": "@nx/vite:test",
+      "outputs": ["{options.reportsDirectory}"],
+      "options": {
+        "reportsDirectory": "../../coverage/libs/recnet-api-model"
+      }
+    }
+  },
+  "tags": []
+}

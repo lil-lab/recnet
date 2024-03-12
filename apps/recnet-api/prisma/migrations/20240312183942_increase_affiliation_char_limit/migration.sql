@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "User" ALTER COLUMN "affiliation" SET DATA TYPE VARCHAR(64);

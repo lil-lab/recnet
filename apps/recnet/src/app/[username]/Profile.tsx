@@ -1,21 +1,24 @@
 "use client";
 
-import { cn } from "@/utils/cn";
+import { cn } from "@recnet/recnet-web/utils/cn";
 import { Button, Flex, Text, Dialog, TextField } from "@radix-ui/themes";
-import { Avatar } from "@/components/Avatar";
+import { Avatar } from "@recnet/recnet-web/components/Avatar";
 import { HomeIcon } from "@radix-ui/react-icons";
-import { RecNetLink } from "@/components/Link";
-import { useAuth } from "@/app/AuthContext";
-import { FollowButton } from "@/components/FollowButton";
-import { useUser } from "@/hooks/useUser";
+import { RecNetLink } from "@recnet/recnet-web/components/Link";
+import { useAuth } from "@recnet/recnet-web/app/AuthContext";
+import { FollowButton } from "@recnet/recnet-web/components/FollowButton";
+import { useUser } from "@recnet/recnet-web/hooks/useUser";
 import { useRouter } from "next/navigation";
-import { Skeleton, SkeletonText } from "@/components/Skeleton";
+import { Skeleton, SkeletonText } from "@recnet/recnet-web/components/Skeleton";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { updateUser } from "@/server/user";
-import { getErrorMessage, isErrorWithMessage } from "@/utils/error";
+import { updateUser } from "@recnet/recnet-web/server/user";
+import {
+  getErrorMessage,
+  isErrorWithMessage,
+} from "@recnet/recnet-web/utils/error";
 import { toast } from "sonner";
 
 const UsernameBlacklist = [
@@ -48,7 +51,10 @@ const EditUserProfileSchema = z.object({
         message: "Username is not allowed.",
       }
     ),
-  affiliation: z.string().optional(),
+  affiliation: z
+    .string()
+    .max(64, "Affiliation must contain at most 64 character(s)")
+    .optional(),
 });
 
 function EditProfileDialog(props: { username: string }) {
@@ -162,6 +168,11 @@ function EditProfileDialog(props: { username: string }) {
                 placeholder="Enter your affiliation"
                 {...register("affiliation")}
               />
+              {formState.errors.affiliation ? (
+                <Text size="1" color="red">
+                  {formState.errors.affiliation.message}
+                </Text>
+              ) : null}
             </label>
           </Flex>
 

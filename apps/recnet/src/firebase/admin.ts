@@ -1,6 +1,6 @@
 import "server-only";
 import * as admin from "firebase-admin";
-import { serverEnv } from "@/serverEnv";
+import { serverEnv } from "@recnet/recnet-web/serverEnv";
 
 if (!admin.apps.length) {
   admin.initializeApp({
