@@ -11,7 +11,7 @@ const prisma = new PrismaClient();
 
 async function main() {
   const users = await db.collection("users").get();
-  const followPairs = []; // array of [user, follower]
+  const followPairs = []; // array of {user, follower} pairs
 
   console.log(
     "\n ============ Job start: 🔥 Pull user following relations ============ \n"
@@ -27,10 +27,7 @@ async function main() {
             followerId: follower.data().providerData[0].uid,
           });
           if (res.success) {
-            followPairs.push([
-              data.providerData[0].uid,
-              follower.data().providerData[0].uid,
-            ]);
+            followPairs.push(res.data);
           } else {
             console.log("Fail to parse following record");
           }
@@ -48,12 +45,12 @@ async function main() {
     followPairs.map(async (data) => {
       const user = await prisma.user.findUnique({
         where: {
-          providerId: data[0],
+          providerId: data.userId,
         },
       });
       const follower = await prisma.user.findUnique({
         where: {
-          providerId: data[1],
+          providerId: data.followerId,
         },
       });
       try {
