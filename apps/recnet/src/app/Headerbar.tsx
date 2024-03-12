@@ -36,11 +36,11 @@ export function UserDropdown({ user }: { user: User }) {
         </div>
       </DropdownMenu.Trigger>
       <DropdownMenu.Content align="center" className="mt-1 sm:w-[120px]">
-        <DropdownMenu.Item>
+        <DropdownMenu.Item asChild>
           <Link href={`/${user.username}`}>Profile</Link>
         </DropdownMenu.Item>
         {user.role && user.role === "admin" ? (
-          <DropdownMenu.Item>
+          <DropdownMenu.Item asChild>
             <Link href={`/admin`}>Admin Panel</Link>
           </DropdownMenu.Item>
         ) : null}
