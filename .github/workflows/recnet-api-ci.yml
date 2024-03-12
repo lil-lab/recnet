@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions: write-all
     if: github.event_name == 'push' &&
-        github.ref == 'refs/heads/recnet-api/create-ci'
+        github.ref == 'refs/heads/master'
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
