@@ -9,7 +9,6 @@ jobs:
   version_bump:
     runs-on: ubuntu-latest
     permissions: write-all
-    needs: lint-test-typecheck
     if: github.event_name == 'push' &&
         github.ref == 'refs/heads/recnet-api/create-ci'
     steps:
