@@ -2,47 +2,10 @@ name: recnet-api-ci
 
 on:
   push:
-    branches:
-      - master
-      - recnet-api/create-ci
-    path:
-      - 'apps/recnet-api/**'
-  pull_request:
-    branches:
-      - recnet-api-dev
-
-permissions:
-  actions: read
-  contents: read
+    paths:
+      - 'apps/recnet-api/package.json'
 
 jobs:
-  lint-test-typecheck:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      # Connect your workspace on nx.app and uncomment this to enable task distribution.
-      # The "--stop-agents-after" is optional, but allows idle agents to shut down once the "e2e-ci" targets have been requested
-      # - run: pnpm exec nx-cloud start-ci-run --distribute-on="5 linux-medium-js" --stop-agents-after="e2e-ci"
-
-      - uses: pnpm/action-setup@v2
-        with:
-          version: 8
-      # Cache node_modules
-      - uses: actions/setup-node@v3
-        with:
-          node-version: 20
-          cache: "pnpm"
-      - run: pnpm install --frozen-lockfile
-      - uses: nrwl/nx-set-shas@v4
-
-      - run: pnpm nx run-many -t typecheck
-      - run: pnpm nx run-many -t format:check
-      - run: pnpm nx run-many -t lint
-      - run: pnpm nx run-many -t test
-
   version_bump:
     runs-on: ubuntu-latest
     permissions: write-all
@@ -70,6 +33,6 @@ jobs:
             github.rest.git.createRef({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              ref: 'refs/tags/${{ steps.extract_version.outputs.version }}',
+              ref: 'refs/tags/recnet-api-v${{ steps.extract_version.outputs.version }}',
               sha: context.sha
             })
