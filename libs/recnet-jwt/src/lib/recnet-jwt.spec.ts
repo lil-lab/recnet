@@ -77,7 +77,6 @@ describe("Verify", () => {
       },
       env.PRIVATE_KEY
     );
-    console.log(token);
     const payload = verifyJwt(token, env.PUBLIC_KEY);
     expect(payload).toBeDefined();
     expect(payload.role).toEqual("ADMIN");
