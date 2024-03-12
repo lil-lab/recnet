@@ -4,8 +4,9 @@ on:
   push:
     branches:
       - master
-      - recnet-api-dev
       - recnet-api/create-ci
+    path:
+      - 'apps/recnet-api/**'
   pull_request:
     branches:
       - recnet-api-dev
@@ -45,8 +46,7 @@ jobs:
   version_bump:
     runs-on: ubuntu-latest
     if: github.event_name == 'push' &&
-        github.ref == 'refs/heads/recnet-api/create-ci' &&
-        contains(github.event.head_changes, 'apps/recnet-api/package.json')
+        github.ref == 'refs/heads/recnet-api/create-ci'
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -60,3 +60,14 @@ jobs:
       - name: Use extracted version
         run: |
           echo "Extracted version: ${{ steps.extract_version.outputs.version }}"
+
+      - name: Create tag
+        uses: actions/github-script@v5
+        with:
+          script: |
+            github.rest.git.createRef({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              ref: 'refs/tags/${{ steps.extract_version.outputs.version }}',
+              sha: context.sha
+            })

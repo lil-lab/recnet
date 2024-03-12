@@ -3,9 +3,9 @@ name: lint/test/typecheck
 on:
   push:
     branches:
-      - master
+      - main
   pull_request:
-     branches-ignore:
+    branches-ignore:
       - recnet-api-dev
 
 permissions:
