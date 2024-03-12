@@ -56,12 +56,12 @@ async function main() {
       try {
         await prisma.followingRecord.create({
           data: {
-            user: {
+            following: {
               connect: {
                 id: user.id,
               },
             },
-            follower: {
+            followedBy: {
               connect: {
                 id: follower.id,
               },
