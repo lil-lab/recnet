@@ -14,6 +14,7 @@
     },
     "serve": {
       "executor": "@nx/js:node",
+      "dependsOn": ["prisma:generate"],
       "defaultConfiguration": "development",
       "options": {
         "buildTarget": "recnet-api:build"
@@ -60,6 +61,14 @@
           "pnpx prisma migrate deploy --schema=apps/recnet-api/prisma/schema.prisma"
         ],
         "cwd": ".",
+        "forwardAllArgs": false
+      }
+    },
+    "prisma:studio": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": ["pnpx prisma studio"],
+        "cwd": "apps/recnet-api",
         "forwardAllArgs": false
       }
     },

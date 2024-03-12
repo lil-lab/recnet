@@ -20,6 +20,17 @@ Recnet-api is a backend API service for [Recnet](https://www.recnet.io/). Powere
 pnpm install
 ```
 
+### Prepare environment variable
+1. Copy from sample file
+```bash
+cp apps/recnet-api/.env.sample apps/recnet-api/.env
+```
+2. Modify environment variable
+3. Source the .env file
+```bash
+source apps/recnet-api/.env
+```
+
 ### Set up a local DB
 1. Use docker to create a PostgreSQL container.
 ```bash
@@ -34,23 +45,12 @@ docker rm recnet-postgres
 
 2. Run migration
 ```bash
-nx prisma deploy recnet-api
+nx prisma:deploy recnet-api
 ```
 
-### Prepare environment variable
-1. Copy from sample file
+3. Run Prisma Studio to see database at `localhost:5555`.
 ```bash
-cp apps/recnet-api/.env.sample apps/recnet-api/.env
-```
-2. Modify environment variable
-3. Source the .env file
-```bash
-source apps/recnet-api/.env
-```
-
-### Generate prisma client
-```bash
-nx prisma:generate recnet-api
+nx prisma:studio recnet-api
 ```
 
 ### Run the server
