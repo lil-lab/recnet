@@ -34,7 +34,7 @@ model User {
   displayName   String     @db.VarChar(32)
   inviteCode    String?    @db.VarChar(64)
   photoUrl      String     @db.VarChar(256)
-  affiliation   String?    @db.VarChar(32)
+  affiliation   String?    @db.VarChar(64)
   bio           String?
   lastLoginAt   DateTime
   role          Role       @default(USER) // Enum type
