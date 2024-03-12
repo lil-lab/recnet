@@ -57,5 +57,5 @@ Thumbs.db
 *.tsbuildinfo
 next-env.d.ts
 
-# recnet-api specific
+# misc
 apps/**/pnpm-lock.yaml

@@ -4,6 +4,7 @@ import {
   AvatarIcon,
   Cross2Icon,
   HomeIcon,
+  MagicWandIcon,
   Pencil2Icon,
 } from "@radix-ui/react-icons";
 import { useRouter, usePathname } from "next/navigation";
@@ -11,12 +12,13 @@ import { useAuth } from "./AuthContext";
 import { UserDropdown } from "./Headerbar";
 import { useGoogleLogin } from "@/firebase/auth";
 import { toast } from "sonner";
-import { Dialog, Text, Button, Flex } from "@radix-ui/themes";
+import { Dialog, Text, Button, Flex, DropdownMenu } from "@radix-ui/themes";
 import { SkeletonText, Skeleton } from "@/components/Skeleton";
 import { useState } from "react";
 import { useRec } from "@/hooks/useRec";
 import { getDateFromFirebaseTimestamp, getNextCutOff } from "@/utils/date";
-import { RecForm } from "./feeds/LeftPanel";
+import { RecForm } from "@/components/RecForm";
+import Link from "next/link";
 
 function RecFormContent(props: { setOpen: (open: boolean) => void }) {
   const { setOpen } = props;
@@ -119,6 +121,38 @@ function RecFormContent(props: { setOpen: (open: boolean) => void }) {
   );
 }
 
+function AdminDropdown(props: { children: React.ReactNode }) {
+  const { children } = props;
+  const dropdownSectionStyle = "p-2 text-[14px] text-gray-12 font-medium";
+
+  return (
+    <DropdownMenu.Root>
+      <DropdownMenu.Trigger>
+        <div>{children}</div>
+      </DropdownMenu.Trigger>
+      <DropdownMenu.Content align="center" className="mt-1 sm:w-[120px]">
+        <div className={cn(dropdownSectionStyle)}>Stats</div>
+        <DropdownMenu.Item>
+          <Link href={`/admin/stats/user-rec`}>User & Rec</Link>
+        </DropdownMenu.Item>
+        <DropdownMenu.Separator />
+        <div className={cn(dropdownSectionStyle)}>Email</div>
+        <DropdownMenu.Item>
+          <Link href={`/admin`}>🚧 Announcement</Link>
+        </DropdownMenu.Item>
+        <DropdownMenu.Separator />
+        <div className={cn(dropdownSectionStyle)}>Invite Codes</div>
+        <DropdownMenu.Item>
+          <Link href={`/admin/invite-code/monitor`}>Monitor</Link>
+        </DropdownMenu.Item>
+        <DropdownMenu.Item>
+          <Link href={`/admin/invite-code/provision`}>Provision</Link>
+        </DropdownMenu.Item>
+      </DropdownMenu.Content>
+    </DropdownMenu.Root>
+  );
+}
+
 function MobileNavigator() {
   const { user } = useAuth();
   const router = useRouter();
@@ -188,6 +222,12 @@ function MobileNavigator() {
           <RecFormContent setOpen={setOpen} />
         </Dialog.Content>
       </Dialog.Root>
+
+      {user && user?.role === "admin" && pathname.startsWith("/admin") ? (
+        <AdminDropdown>
+          <MagicWandIcon width="24" height="24" />
+        </AdminDropdown>
+      ) : null}
 
       {user ? (
         <UserDropdown user={user} />

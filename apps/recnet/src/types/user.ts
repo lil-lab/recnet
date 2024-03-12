@@ -15,6 +15,7 @@ export const UserSchema = z.object({
   username: z.string(),
   seed: z.string(),
   id: z.string(),
+  role: z.string().optional(),
 });
 
 export type User = z.infer<typeof UserSchema>;

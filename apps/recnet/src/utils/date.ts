@@ -2,6 +2,7 @@ import { FirebaseTs } from "@/types/rec";
 import { Timestamp } from "firebase/firestore";
 
 const CYCLE_DUE_DAY = 2;
+export const WeekTs = 604800000 as const;
 export const START_DATE = new Date(2023, 9, 24);
 export const Months = [
   "Jan",

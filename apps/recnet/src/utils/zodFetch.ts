@@ -1,10 +1,11 @@
 import { createZodFetcher } from "zod-fetch";
 import { z } from "zod";
+import { clientEnv } from "@/clientEnv";
 
 const IS_SERVER = typeof window === "undefined";
 function getURL(path: string) {
   const baseURL = IS_SERVER
-    ? process.env.NEXT_PUBLIC_BASE_URL!
+    ? clientEnv.NEXT_PUBLIC_BASE_URL
     : window.location.origin;
   return new URL(path, baseURL).toString();
 }

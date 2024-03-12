@@ -16,3 +16,4 @@
 ## TODO
 
 - [ ] Paste the testing link
+- [ ] Clear `console.log` or `console.error` for debug usage
