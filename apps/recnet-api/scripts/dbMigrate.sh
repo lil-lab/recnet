@@ -18,7 +18,11 @@ perform_migration_down() {
 
 move_down_sql_file() {
     DIRECTORY=$(find $PRISMA_MIGRATIONS_DIR -type d -name "*$MIGRATION_NAME*" | tail -n 1)
-    mv down.sql $DIRECTORY/down.sql
+    if [ -s "down.sql" ]; then
+        mv down.sql $DIRECTORY/down.sql
+    else
+        rm down.sql
+    fi
 }
 
 echo "Migrating database to $MIGRATION_NAME"
