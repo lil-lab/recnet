@@ -1,11 +1,13 @@
-name: lint/test/typecheck
+name: recnet-api-ci
 
 on:
   push:
     branches:
       - master
+      - recnet-api-dev
+      - recnet-api/create-ci
   pull_request:
-     branches-ignore:
+    branches:
       - recnet-api-dev
 
 permissions:
@@ -13,7 +15,7 @@ permissions:
   contents: read
 
 jobs:
-  main:
+  lint-test-typecheck:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -39,3 +41,22 @@ jobs:
       - run: pnpm nx run-many -t format:check
       - run: pnpm nx run-many -t lint
       - run: pnpm nx run-many -t test
+
+  version_bump:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' &&
+        github.ref == 'refs/heads/recnet-api/create-ci' &&
+        contains(github.event.head_changes, 'apps/recnet-api/package.json')
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Extract version
+        id: extract_version
+        run: |
+          VERSION=$(grep -o '"version": *"[^"]*"' apps/recnet-api/package.json | cut -d '"' -f 4)
+          echo "::set-output name=version::$VERSION"
+
+      - name: Use extracted version
+        run: |
+          echo "Extracted version: ${{ steps.extract_version.outputs.version }}"
