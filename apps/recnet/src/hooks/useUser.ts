@@ -1,6 +1,6 @@
 import useSWR from "swr";
-import { fetchWithZod } from "@/utils/zodFetch";
-import { UserSchema, User } from "@/types/user";
+import { fetchWithZod } from "@recnet/recnet-web/utils/zodFetch";
+import { UserSchema, User } from "@recnet/recnet-web/types/user";
 import { toast } from "sonner";
 
 export function useUser(

@@ -1,12 +1,15 @@
-import { RecWithUser } from "@/types/rec";
-import { cn } from "@/utils/cn";
+import { RecWithUser } from "@recnet/recnet-web/types/rec";
+import { cn } from "@recnet/recnet-web/utils/cn";
 import { Flex, Text } from "@radix-ui/themes";
 import { Avatar } from "./Avatar";
 import { RecNetLink } from "./Link";
-import { formatDate, getDateFromFirebaseTimestamp } from "@/utils/date";
+import {
+  formatDate,
+  getDateFromFirebaseTimestamp,
+} from "@recnet/recnet-date-fns";
 import { ChevronRight } from "lucide-react";
 import { CalendarIcon } from "@radix-ui/react-icons";
-import { Skeleton, SkeletonText } from "@/components/Skeleton";
+import { Skeleton, SkeletonText } from "@recnet/recnet-web/components/Skeleton";
 
 export function RecCardSkeleton() {
   return (

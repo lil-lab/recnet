@@ -1,6 +1,6 @@
 "use client";
 
-import { cn } from "@/utils/cn";
+import { cn } from "@recnet/recnet-web/utils/cn";
 import { Text } from "@radix-ui/themes";
 import { Cross1Icon } from "@radix-ui/react-icons";
 import { useState } from "react";

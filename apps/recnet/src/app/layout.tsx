@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import { Theme } from "@radix-ui/themes";
-import { Headerbar } from "@/app/Headerbar";
+import { Headerbar } from "@recnet/recnet-web/app/Headerbar";
 import { AuthProvider } from "./AuthProvider";
-import { getUserServerSide } from "@/utils/getUserServerSide";
-import { Footer } from "@/app/Footer";
+import { getUserServerSide } from "@recnet/recnet-web/utils/getUserServerSide";
+import { Footer } from "@recnet/recnet-web/app/Footer";
 import { Toaster } from "sonner";
 import { HistoryProvider } from "./HistoryProvider";
 import "@radix-ui/themes/styles.css";
@@ -12,7 +12,7 @@ import "tailwindcss/tailwind.css";
 import { MobileNavigator } from "./MobileNavigator";
 import { ProgressbarProvider } from "./Progressbar";
 import { GoogleAnalytics } from "@next/third-parties/google";
-import { clientEnv } from "@/clientEnv";
+import { clientEnv } from "@recnet/recnet-web/clientEnv";
 
 const sfpro = localFont({
   src: [

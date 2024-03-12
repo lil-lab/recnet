@@ -15,7 +15,7 @@ import {
 } from "@react-email/components";
 import * as React from "react";
 import { CalendarIcon } from "@radix-ui/react-icons";
-import type { RecWithUser } from "@/types/rec";
+import type { RecWithUser } from "@recnet/recnet-web/types/rec";
 
 interface EmailRecCardProps {
   recsWithUsers: RecWithUser[];

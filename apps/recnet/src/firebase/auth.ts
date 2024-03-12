@@ -11,7 +11,7 @@ import {
   signOut,
   useDeviceLanguage,
 } from "firebase/auth";
-import { getFirebaseAuth } from "@/firebase/client";
+import { getFirebaseAuth } from "@recnet/recnet-web/firebase/client";
 
 const CREDENTIAL_ALREADY_IN_USE_ERROR = "auth/credential-already-in-use";
 export const isCredentialAlreadyInUseError = (e: AuthError) =>

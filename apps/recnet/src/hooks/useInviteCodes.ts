@@ -1,6 +1,6 @@
 import useSWR from "swr";
-import { fetchWithZod } from "@/utils/zodFetch";
-import { inviteCodeSchema } from "@/types/inviteCode";
+import { fetchWithZod } from "@recnet/recnet-web/utils/zodFetch";
+import { inviteCodeSchema } from "@recnet/recnet-web/types/inviteCode";
 import { toast } from "sonner";
 import { z } from "zod";
 

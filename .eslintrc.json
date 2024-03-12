@@ -16,11 +16,24 @@
           "error",
           {
             "enforceBuildableLibDependency": true,
+            "allowCircularSelfDependency": true,
             "allow": [],
             "depConstraints": [
               {
                 "sourceTag": "*",
                 "onlyDependOnLibsWithTags": ["*"]
+              },
+              {
+                "sourceTag": "type:app",
+                "onlyDependOnLibsWithTags": ["type:utils", "type:api-model"]
+              },
+              {
+                "sourceTag": "type:utils",
+                "onlyDependOnLibsWithTags": ["type:utils", "type:api-model"]
+              },
+              {
+                "sourceTag": "type:api-model",
+                "onlyDependOnLibsWithTags": []
               }
             ]
           }

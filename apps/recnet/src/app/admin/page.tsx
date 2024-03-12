@@ -1,4 +1,4 @@
-import { cn } from "@/utils/cn";
+import { cn } from "@recnet/recnet-web/utils/cn";
 import { redirect } from "next/navigation";
 
 // Leave this page here, redirect to user-rec stats for now
