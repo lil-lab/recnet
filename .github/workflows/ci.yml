@@ -3,8 +3,9 @@ name: lint/test/typecheck
 on:
   push:
     branches:
-      - main
+      - master
   pull_request:
+
 
 permissions:
   actions: read
