@@ -18,7 +18,7 @@ import { useCopyToClipboard } from "@recnet/recnet-web/hooks/useCopyToClipboard"
 import { RecNetLink as Link } from "@recnet/recnet-web/components/Link";
 
 const InviteCodeGenerationSchema = z.object({
-  count: z.coerce.number().min(1).max(5, "Max 5 invite codes at a time"),
+  count: z.coerce.number().min(1).max(20, "Max 20 invite codes at a time"),
   owner: z.string().optional(),
 });
 
