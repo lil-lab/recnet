@@ -43,7 +43,7 @@ export class PrismaConnectionProvider
 
     if (process.env.DB_MIGRATE === "true") {
       execSync(
-        `export PRISMA_DATABASE_URL=${this.prismaUrl} && pnpx prisma migrate deploy --schema=${prismaSchema}`,
+        `export PRISMA_DATABASE_URL=${this.prismaUrl} && npx prisma migrate deploy --schema=${prismaSchema}`,
         { stdio: "inherit" }
       );
     }
