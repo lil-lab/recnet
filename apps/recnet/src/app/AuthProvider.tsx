@@ -3,12 +3,12 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { getAuth, onIdTokenChanged, User as FirebaseUser } from "firebase/auth";
 import { AuthContext } from "./AuthContext";
-import { getFirebaseApp } from "@/firebase/client";
-import { User, UserSchema } from "@/types/user";
-import { fetchWithZod } from "@/utils/zodFetch";
+import { getFirebaseApp } from "@recnet/recnet-web/firebase/client";
+import { User, UserSchema } from "@recnet/recnet-web/types/user";
+import { fetchWithZod } from "@recnet/recnet-web/utils/zodFetch";
 import { usePathname, useRouter } from "next/navigation";
 import { z } from "zod";
-import { getErrorMessage } from "@/utils/error";
+import { getErrorMessage } from "@recnet/recnet-web/utils/error";
 import { toast } from "sonner";
 
 export interface AuthProviderProps {

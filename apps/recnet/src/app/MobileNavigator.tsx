@@ -1,5 +1,5 @@
 "use client";
-import { cn } from "@/utils/cn";
+import { cn } from "@recnet/recnet-web/utils/cn";
 import {
   AvatarIcon,
   Cross2Icon,
@@ -10,14 +10,17 @@ import {
 import { useRouter, usePathname } from "next/navigation";
 import { useAuth } from "./AuthContext";
 import { UserDropdown } from "./Headerbar";
-import { useGoogleLogin } from "@/firebase/auth";
+import { useGoogleLogin } from "@recnet/recnet-web/firebase/auth";
 import { toast } from "sonner";
 import { Dialog, Text, Button, Flex, DropdownMenu } from "@radix-ui/themes";
-import { SkeletonText, Skeleton } from "@/components/Skeleton";
+import { SkeletonText, Skeleton } from "@recnet/recnet-web/components/Skeleton";
 import { useState } from "react";
-import { useRec } from "@/hooks/useRec";
-import { getDateFromFirebaseTimestamp, getNextCutOff } from "@/utils/date";
-import { RecForm } from "@/components/RecForm";
+import { useRec } from "@recnet/recnet-web/hooks/useRec";
+import {
+  getDateFromFirebaseTimestamp,
+  getNextCutOff,
+} from "@recnet/recnet-date-fns";
+import { RecForm } from "@recnet/recnet-web/components/RecForm";
 import Link from "next/link";
 
 function RecFormContent(props: { setOpen: (open: boolean) => void }) {

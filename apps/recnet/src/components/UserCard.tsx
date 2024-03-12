@@ -1,14 +1,14 @@
 "use client";
 
-import { User } from "@/types/user";
-import { cn } from "@/utils/cn";
+import { User } from "@recnet/recnet-web/types/user";
+import { cn } from "@recnet/recnet-web/utils/cn";
 import { Flex, Text, Grid } from "@radix-ui/themes";
 import { RecNetLink } from "./Link";
 import { HomeIcon, PersonIcon } from "@radix-ui/react-icons";
-import { Avatar } from "@/components/Avatar";
+import { Avatar } from "@recnet/recnet-web/components/Avatar";
 import { FollowButton } from "./FollowButton";
-import { shuffleArray } from "@/utils/shuffle";
-import { useAuth } from "@/app/AuthContext";
+import { shuffleArray } from "@recnet/recnet-web/utils/shuffle";
+import { useAuth } from "@recnet/recnet-web/app/AuthContext";
 
 export function UserList({ users }: { users: User[] }) {
   const { user } = useAuth();

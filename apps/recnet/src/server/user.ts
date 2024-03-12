@@ -1,6 +1,6 @@
 "use server";
-import { db } from "@/firebase/admin";
-import { User, UserSchema } from "@/types/user";
+import { db } from "@recnet/recnet-web/firebase/admin";
+import { User, UserSchema } from "@recnet/recnet-web/types/user";
 import { FieldValue } from "firebase-admin/firestore";
 
 export async function follow(userId: string, targetUserId: string) {

@@ -2,7 +2,7 @@
 
 import { Flex, Text } from "@radix-ui/themes";
 import { CopyIcon } from "@radix-ui/react-icons";
-import { useCopyToClipboard } from "@/hooks/useCopyToClipboard";
+import { useCopyToClipboard } from "@recnet/recnet-web/hooks/useCopyToClipboard";
 import { toast } from "sonner";
 
 export const CopiableInviteCode = (props: { inviteCode: string }) => {

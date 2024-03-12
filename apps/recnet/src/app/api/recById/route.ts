@@ -1,5 +1,5 @@
 import { type NextRequest } from "next/server";
-import { db } from "@/firebase/admin";
+import { db } from "@recnet/recnet-web/firebase/admin";
 
 export async function GET(request: NextRequest) {
   try {

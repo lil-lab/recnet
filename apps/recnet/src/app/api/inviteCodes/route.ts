@@ -1,7 +1,7 @@
-import { db } from "@/firebase/admin";
-import { inviteCodeSchema } from "@/types/inviteCode";
-import { User, UserSchema } from "@/types/user";
-import { notEmpty } from "@/utils/notEmpty";
+import { db } from "@recnet/recnet-web/firebase/admin";
+import { inviteCodeSchema } from "@recnet/recnet-web/types/inviteCode";
+import { User, UserSchema } from "@recnet/recnet-web/types/user";
+import { notEmpty } from "@recnet/recnet-web/utils/notEmpty";
 
 export async function GET() {
   try {

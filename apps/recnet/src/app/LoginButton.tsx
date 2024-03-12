@@ -1,6 +1,6 @@
 "use client";
 import { Button } from "@radix-ui/themes";
-import { useGoogleLogin } from "@/firebase/auth";
+import { useGoogleLogin } from "@recnet/recnet-web/firebase/auth";
 
 export function LoginButton() {
   const { login } = useGoogleLogin();

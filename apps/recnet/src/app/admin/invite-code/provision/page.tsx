@@ -1,6 +1,6 @@
 "use client";
 
-import { cn } from "@/utils/cn";
+import { cn } from "@recnet/recnet-web/utils/cn";
 import { AdminSectionBox, AdminSectionTitle } from "../../AdminSections";
 import { Button, Flex, Text, TextField, Dialog } from "@radix-ui/themes";
 import { AtSignIcon, HashIcon } from "lucide-react";
@@ -8,33 +8,37 @@ import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
-import { generateInviteCode } from "@/server/inviteCode";
-import { useAuth } from "@/app/AuthContext";
-import { User, UserSchema } from "@/types/user";
-import { fetchWithZod } from "@/utils/zodFetch";
-import { CopiableInviteCode } from "@/components/InviteCode";
+import { generateInviteCode } from "@recnet/recnet-web/server/inviteCode";
+import { useAuth } from "@recnet/recnet-web/app/AuthContext";
+import { UserSchema } from "@recnet/recnet-web/types/user";
+import { fetchWithZod } from "@recnet/recnet-web/utils/zodFetch";
+import { CopiableInviteCode } from "@recnet/recnet-web/components/InviteCode";
+import { toast } from "sonner";
+import { useCopyToClipboard } from "@recnet/recnet-web/hooks/useCopyToClipboard";
+import { RecNetLink as Link } from "@recnet/recnet-web/components/Link";
 
 const InviteCodeGenerationSchema = z.object({
-  count: z.coerce.number().min(1).max(5, "Max 5 invite codes at a time"),
+  count: z.coerce.number().min(1).max(20, "Max 20 invite codes at a time"),
   owner: z.string().optional(),
 });
+
+let timer: NodeJS.Timeout | null = null;
 
 function InviteCodeGenerateForm() {
   const { user } = useAuth();
   const [newInviteCodes, setNewInviteCodes] = useState<string[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const { copy } = useCopyToClipboard();
+  const [copied, setCopied] = useState(false);
 
-  const { register, handleSubmit, formState, setError, watch, setValue } =
-    useForm({
-      resolver: zodResolver(InviteCodeGenerationSchema),
-      defaultValues: {
-        count: 1,
-        owner: undefined,
-      },
-      mode: "onBlur",
-    });
-
-  console.log(watch("count"));
+  const { register, handleSubmit, formState, setError, setValue } = useForm({
+    resolver: zodResolver(InviteCodeGenerationSchema),
+    defaultValues: {
+      count: 1,
+      owner: undefined,
+    },
+    mode: "onBlur",
+  });
 
   return (
     <>
@@ -154,8 +158,10 @@ function InviteCodeGenerateForm() {
         <Dialog.Content style={{ maxWidth: 450 }}>
           <Dialog.Title>Your invite codes are generated 🚀</Dialog.Title>
           <Dialog.Description size="2" mb="4">
-            {`Share these codes with your friends and family to invite them to
-            RecNet! You can view these codes in the "Invite Code Monitor" page.`}
+            Share these codes with your friends to invite them to RecNet! You
+            can view these codes in the{" "}
+            <Link href="/admin/invite-code/monitor">Invite Code Monitor</Link>{" "}
+            page.
           </Dialog.Description>
 
           <Flex direction="column" gap="3">
@@ -165,8 +171,29 @@ function InviteCodeGenerateForm() {
           </Flex>
 
           <Flex gap="3" mt="4" justify="end">
+            <Button
+              variant="outline"
+              className={cn("cursor-pointer")}
+              onClick={() => {
+                const allCodes = newInviteCodes.join("\n");
+                copy(allCodes).then(() => {
+                  setCopied(true);
+                  if (timer) {
+                    clearTimeout(timer);
+                  }
+                  timer = setTimeout(() => {
+                    setCopied(false);
+                  }, 5000);
+                });
+                toast.success("Copied all invite codes to clipboard");
+              }}
+            >
+              {copied ? "Copied" : "Copy All"}
+            </Button>
             <Dialog.Close>
-              <Button className="bg-blue-10 text-white">Done</Button>
+              <Button className="bg-blue-10 text-white cursor-pointer">
+                Done
+              </Button>
             </Dialog.Close>
           </Flex>
         </Dialog.Content>

@@ -17,6 +17,23 @@
     ],
     "sharedGlobals": []
   },
+  "projects": {
+    "recnet": {
+      "tags": ["type:app"]
+    },
+    "recnet-api": {
+      "tags": ["type:app"]
+    },
+    "recnet-date-fns": {
+      "tags": ["type:utils"]
+    },
+    "recnet-jwt": {
+      "tags": ["type:utils"]
+    },
+    "recnet-api-model": {
+      "tags": ["type:api-model"]
+    }
+  },
   "plugins": [
     {
       "plugin": "@nx/next/plugin",
@@ -63,6 +80,15 @@
         "{workspaceRoot}/.eslintignore",
         "{workspaceRoot}/eslint.config.js"
       ]
+    },
+    "@nx/js:tsc": {
+      "cache": true,
+      "dependsOn": ["^build"],
+      "inputs": ["production", "^production"]
+    },
+    "@nx/vite:test": {
+      "cache": true,
+      "inputs": ["default", "^production"]
     }
   },
   "generators": {

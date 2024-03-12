@@ -1,9 +1,9 @@
 import "server-only";
 import { Tokens, getTokens } from "next-firebase-auth-edge";
 import { cookies } from "next/headers";
-import { authConfig } from "@/serverEnv";
-import { User } from "@/types/user";
-import { getUserByEmail } from "@/server/user";
+import { authConfig } from "@recnet/recnet-web/serverEnv";
+import { User } from "@recnet/recnet-web/types/user";
+import { getUserByEmail } from "@recnet/recnet-web/server/user";
 
 const toUser = async (tokens: Tokens | null): Promise<User | null> => {
   if (!tokens) {

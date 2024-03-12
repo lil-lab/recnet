@@ -1,13 +1,13 @@
-import { User } from "@/types/user";
-import { db } from "@/firebase/admin";
-import { UserSchema } from "@/types/user";
-import { notEmpty } from "@/utils/notEmpty";
-import { UserList } from "@/components/UserCard";
+import { User } from "@recnet/recnet-web/types/user";
+import { db } from "@recnet/recnet-web/firebase/admin";
+import { UserSchema } from "@recnet/recnet-web/types/user";
+import { notEmpty } from "@recnet/recnet-web/utils/notEmpty";
+import { UserList } from "@recnet/recnet-web/components/UserCard";
 import { DocumentData } from "firebase-admin/firestore";
-import { cn } from "@/utils/cn";
+import { cn } from "@recnet/recnet-web/utils/cn";
 import { Text } from "@radix-ui/themes";
-import { GoBackButton } from "@/components/GoBackButton";
-import { NotFoundBlock } from "@/app/search/NotFound";
+import { GoBackButton } from "@recnet/recnet-web/components/GoBackButton";
+import { NotFoundBlock } from "@recnet/recnet-web/app/search/NotFound";
 
 async function getSearchResults(): Promise<User[]> {
   function checkUsers(users: DocumentData[]) {
