@@ -29,11 +29,11 @@ interface Digest {
 }
 
 export async function GET(request: NextRequest) {
-  // if (
-  //   request.headers.get("Authorization") !== `Bearer ${serverEnv.CRON_SECRET}`
-  // ) {
-  //   return NextResponse.json({ ok: false });
-  // }
+  if (
+    request.headers.get("Authorization") !== `Bearer ${serverEnv.CRON_SECRET}`
+  ) {
+    return NextResponse.json({ ok: false });
+  }
   try {
     // init a map, Map<userId, Dictionary<RecWithUser>>
     // get all recs (RecWithUser) this cycle
