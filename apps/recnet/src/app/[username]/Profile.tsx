@@ -51,7 +51,10 @@ const EditUserProfileSchema = z.object({
         message: "Username is not allowed.",
       }
     ),
-  affiliation: z.string().optional(),
+  affiliation: z
+    .string()
+    .max(64, "Affiliation must contain at most 64 character(s)")
+    .optional(),
 });
 
 function EditProfileDialog(props: { username: string }) {
@@ -165,6 +168,11 @@ function EditProfileDialog(props: { username: string }) {
                 placeholder="Enter your affiliation"
                 {...register("affiliation")}
               />
+              {formState.errors.affiliation ? (
+                <Text size="1" color="red">
+                  {formState.errors.affiliation.message}
+                </Text>
+              ) : null}
             </label>
           </Flex>
 
