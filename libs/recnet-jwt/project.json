@@ -14,17 +14,8 @@
         "assets": ["libs/recnet-jwt/*.md"]
       }
     },
-    "setupEnv": {
-      "executor": "nx:run-commands",
-      "options": {
-        "commands": ["./scripts/genRS256KeyPair.sh"],
-        "cwd": "libs/recnet-jwt",
-        "forwardAllArgs": false
-      }
-    },
     "test": {
       "executor": "@nx/vite:test",
-      "dependsOn": ["setupEnv"],
       "outputs": ["{options.reportsDirectory}"],
       "options": {
         "reportsDirectory": "../../coverage/libs/recnet-jwt"
