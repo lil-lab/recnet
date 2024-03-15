@@ -2,10 +2,6 @@ import { verify, VerifyOptions } from "jsonwebtoken";
 import { z } from "zod";
 import { userRoleSchema } from "@recnet/recnet-api-model";
 
-export function recnetJwt(): string {
-  return "recnet-jwt";
-}
-
 export const recnetJwtPayloadSchema = z
   .object({
     recnet: z.object({
