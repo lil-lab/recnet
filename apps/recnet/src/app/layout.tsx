@@ -13,6 +13,7 @@ import { MobileNavigator } from "./MobileNavigator";
 import { ProgressbarProvider } from "./Progressbar";
 import { GoogleAnalytics } from "@next/third-parties/google";
 import { clientEnv } from "@recnet/recnet-web/clientEnv";
+import { Provider as TrpcProvider } from "./_trpc/Provider";
 
 const sfpro = localFont({
   src: [
@@ -129,21 +130,23 @@ export default async function RootLayout({
         />
       ) : null}
       <body className={sfpro.className}>
-        <ProgressbarProvider>
-          <AuthProvider serverUser={user}>
-            <HistoryProvider>
-              <Theme accentColor="blue">
-                <Headerbar />
-                <Toaster position="top-right" richColors offset={80} />
-                <div className="min-h-[90svh] flex justify-center">
-                  {children}
-                </div>
-                <Footer />
-                <MobileNavigator />
-              </Theme>
-            </HistoryProvider>
-          </AuthProvider>
-        </ProgressbarProvider>
+        <TrpcProvider>
+          <ProgressbarProvider>
+            <AuthProvider serverUser={user}>
+              <HistoryProvider>
+                <Theme accentColor="blue">
+                  <Headerbar />
+                  <Toaster position="top-right" richColors offset={80} />
+                  <div className="min-h-[90svh] flex justify-center">
+                    {children}
+                  </div>
+                  <Footer />
+                  <MobileNavigator />
+                </Theme>
+              </HistoryProvider>
+            </AuthProvider>
+          </ProgressbarProvider>
+        </TrpcProvider>
       </body>
     </html>
   );
