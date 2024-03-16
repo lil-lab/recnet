@@ -1,8 +1,8 @@
 import * as trpc from "@trpc/server";
-import { procedure, router } from "./trpc";
+import { publicProcedure, router } from "./trpc";
 
 export const appRouter = router({
-  hello: procedure.query(async () => {
+  hello: publicProcedure.query(async () => {
     return [1, 2, 3];
   }),
 });
