@@ -49,18 +49,15 @@ export async function getPublicKey(token: string): Promise<string> {
  *
  * @param token string: jwt token
  * @param pk string: public key
- * @param verifyOptions VerifyOptions (default `{}`): see interface VerifyOptions from jsonwebtoken & https://github.com/auth0/node-jsonwebtoken
- * @param payloadSchema z.ZodSchema (default `recnetJwtPayloadSchema`): zod schema for jwt payload, see `recnetJwtPayloadSchema` & `firebaseJwtPayloadSchema`
+ * @param payloadSchema z.ZodSchema: zod schema for jwt payload, see `recnetJwtPayloadSchema` & `firebaseJwtPayloadSchema` at `libs/recnet-jwt/src/recnet-jwt.ts`
+ * @param verifyOptions VerifyOptions (default `{}`): see interface VerifyOptions from jsonwebtoken: https://github.com/auth0/node-jsonwebtoken
  * @returns payload of jwt token
- *
- * Note: For `/login` API, use `firebaseJwtPayloadSchema` as payloadSchema since when user log in, the jwt hasn't contain any custom recnet's userclaim.
- * Else, use `recnetJwtPayloadSchema` (it's default value)
  */
 export function verifyJwt<ZSchema extends z.ZodSchema>(
   token: string,
   pk: string,
-  verifyOptions?: VerifyOptions,
-  payloadSchema?: ZSchema
+  payloadSchema: ZSchema,
+  verifyOptions?: VerifyOptions
 ): z.infer<ZSchema> {
   const schema = payloadSchema || recnetJwtPayloadSchema;
   const options = verifyOptions || {};
@@ -73,4 +70,34 @@ export function verifyJwt<ZSchema extends z.ZodSchema>(
     throw new Error("Invalid payload");
   }
   return payloadRes.data;
+}
+
+/**
+ * @param token string: jwt token
+ * @param pk string: public key
+ * @param verifyOptions VerifyOptions (default `{}`): see interface VerifyOptions from jsonwebtoken https://github.com/auth0/node-jsonwebtoken
+ * @returns FirebaseJwtPayload: payload of jwt token
+ *
+ * Note: Use this for `/login` API since when calling `/login` API, the recnet's custom claims are not included in the token
+ */
+export function verifyFirebaseJwt(
+  token: string,
+  pk: string,
+  verifyOptions?: VerifyOptions
+): FirebaseJwtPayload {
+  return verifyJwt(token, pk, firebaseJwtPayloadSchema, verifyOptions);
+}
+
+/**
+ * @param token string: jwt token
+ * @param pk string: public key
+ * @param verifyOptions VerifyOptions (default `{}`): see interface VerifyOptions from jsonwebtoken https://github.com/auth0/node-jsonwebtoken
+ * @returns RecNetJwtPayload: payload of jwt token
+ */
+export function verifyRecnetJwt(
+  token: string,
+  pk: string,
+  verifyOptions?: VerifyOptions
+): RecNetJwtPayload {
+  return verifyJwt(token, pk, recnetJwtPayloadSchema, verifyOptions);
 }
