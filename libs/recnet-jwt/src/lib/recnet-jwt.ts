@@ -59,13 +59,12 @@ export function verifyJwt<ZSchema extends z.ZodSchema>(
   payloadSchema: ZSchema,
   verifyOptions?: VerifyOptions
 ): z.infer<ZSchema> {
-  const schema = payloadSchema || recnetJwtPayloadSchema;
   const options = verifyOptions || {};
   const payload = verify(token, pk, {
     algorithms: ["RS256"],
     ...options,
   });
-  const payloadRes = schema.safeParse(payload);
+  const payloadRes = payloadSchema.safeParse(payload);
   if (!payloadRes.success) {
     throw new Error("Invalid payload");
   }
