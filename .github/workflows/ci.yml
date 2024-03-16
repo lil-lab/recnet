@@ -6,10 +6,12 @@ on:
       - master
   pull_request:
 
-
 permissions:
   actions: read
   contents: read
+
+env:
+  TEST_JWT: ${{ secrets.TEST_JWT }}
 
 jobs:
   main:
