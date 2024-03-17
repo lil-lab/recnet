@@ -1,10 +1,14 @@
 import { router } from "../trpc";
 import { z } from "zod";
-import { checkFirebaseJWTProcedure } from "./middleware";
+import {
+  checkFirebaseJWTProcedure,
+  checkRecnetJWTProcedure,
+} from "./middleware";
 import { db } from "@recnet/recnet-web/firebase/admin";
 import { TRPCError } from "@trpc/server";
 import { userSchema } from "@recnet/recnet-api-model";
 import { UserRole } from "@recnet/recnet-web/constant";
+import { FieldValue } from "firebase-admin/firestore";
 
 export const userRouter = router({
   login: checkFirebaseJWTProcedure
@@ -49,5 +53,42 @@ export const userRouter = router({
       return {
         user,
       };
+    }),
+  follow: checkRecnetJWTProcedure
+    .input(
+      z.object({
+        userId: z.string(),
+        targetUserId: z.string(),
+      })
+    )
+    .mutation(async (opts) => {
+      const { userId, targetUserId } = opts.input;
+      // add to [id] user followers
+      await db.doc(`users/${targetUserId}`).update({
+        followers: FieldValue.arrayUnion(userId),
+      });
+
+      // add to current user following
+      await db.doc(`users/${userId}`).update({
+        following: FieldValue.arrayUnion(targetUserId),
+      });
+    }),
+  unfollow: checkRecnetJWTProcedure
+    .input(
+      z.object({
+        userId: z.string(),
+        targetUserId: z.string(),
+      })
+    )
+    .mutation(async (opts) => {
+      const { userId, targetUserId } = opts.input;
+      // remove from [id] user followers
+      await db.doc(`users/${targetUserId}`).update({
+        followers: FieldValue.arrayRemove(userId),
+      });
+      // remove from current user following
+      await db.doc(`users/${userId}`).update({
+        following: FieldValue.arrayRemove(targetUserId),
+      });
     }),
 });
