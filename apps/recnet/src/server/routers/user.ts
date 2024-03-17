@@ -9,6 +9,7 @@ import { TRPCError } from "@trpc/server";
 import { userPreviewSchema, userSchema } from "@recnet/recnet-api-model";
 import { UserRole } from "@recnet/recnet-web/constant";
 import { FieldValue } from "firebase-admin/firestore";
+import { notEmpty } from "@recnet/recnet-web/utils/notEmpty";
 
 export const userRouter = router({
   login: checkFirebaseJWTProcedure
@@ -298,6 +299,66 @@ export const userRouter = router({
           email: docSnap.data()?.email,
           role: docSnap.data()?.role,
           following: [], // temperory set to empty since it's unused and will be removed after migration
+        }),
+      };
+    }),
+  getMe: checkRecnetJWTProcedure
+    .output(z.object({ user: userSchema }))
+    .query(async (opts) => {
+      // REFACTOR_AFTER_MIGRATION: use /users/me GET to get user
+      // use user info from token to get user
+      const { tokens } = opts.ctx;
+      const { decodedToken } = tokens;
+      const email = decodedToken.email as string;
+
+      const querySnapshot = await db
+        .collection("users")
+        .where("email", "==", email)
+        .limit(1)
+        .get();
+      if (querySnapshot.empty) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "User not found",
+        });
+      }
+      // get userPreview for each following
+      const userPreviews = await Promise.all(
+        querySnapshot.docs[0].data().following.map(async (id: string) => {
+          const unparsedUser = await db.doc(`users/${id}`).get();
+          const userData = unparsedUser.data();
+          if (!userData) {
+            return null;
+          }
+          const parsedRes = userPreviewSchema.safeParse({
+            id: unparsedUser.id,
+            handle: userData.username,
+            displayName: userData.displayName,
+            photoUrl: userData.photoURL,
+            affiliation: userData.affiliation || null,
+            bio: userData.bio || null,
+            numFollowers: userData.followers.length,
+          });
+          if (parsedRes.success) {
+            return parsedRes.data;
+          }
+          return null;
+        })
+      );
+      return {
+        user: userSchema.parse({
+          id: querySnapshot.docs[0].id,
+          handle: querySnapshot.docs[0].data().username,
+          displayName: querySnapshot.docs[0].data().displayName,
+          photoUrl: querySnapshot.docs[0].data().photoURL,
+          affiliation: querySnapshot.docs[0].data().affiliation || null,
+          bio: querySnapshot.docs[0].data().bio || null,
+          numFollowers: querySnapshot.docs[0].data().followers.length,
+          email: querySnapshot.docs[0].data().email,
+          role: querySnapshot.docs[0].data().role
+            ? UserRole.ADMIN
+            : UserRole.USER,
+          following: userPreviews.filter(notEmpty),
         }),
       };
     }),

@@ -20,6 +20,10 @@ export default function TestPage() {
   const isFollowing = user?.following.includes("6p9H8IigaM1Bs40AcNKS");
   const isLoading = followMutation.isPending || unfollowMutation.isPending;
 
+  const { data } = trpc.getMe.useQuery();
+
+  console.log({ data });
+
   return (
     <div>
       <Button
