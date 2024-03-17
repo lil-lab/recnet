@@ -91,4 +91,50 @@ export const userRouter = router({
         following: FieldValue.arrayRemove(targetUserId),
       });
     }),
+  checkUserHandleValid: checkFirebaseJWTProcedure
+    .input(
+      z.object({
+        handle: z.string(),
+      })
+    )
+    .output(
+      z.object({
+        isValid: z.boolean(),
+      })
+    )
+    .mutation(async (opts) => {
+      const { handle } = opts.input;
+      const querySnapshot = await db
+        .collection("users")
+        .where("username", "==", handle)
+        .limit(1)
+        .get();
+      return {
+        isValid: querySnapshot.empty,
+      };
+    }),
+  checkInviteCodeValid: checkFirebaseJWTProcedure
+    .input(
+      z.object({
+        code: z.string(),
+      })
+    )
+    .output(
+      z.object({
+        isValid: z.boolean(),
+      })
+    )
+    .mutation(async (opts) => {
+      const { code } = opts.input;
+      const ref = db.doc(`invite-codes/${code}`);
+      const docSnap = await ref.get();
+      if (docSnap.exists) {
+        return {
+          isValid: docSnap.data()?.used === false,
+        };
+      }
+      return {
+        isValid: false,
+      };
+    }),
 });
