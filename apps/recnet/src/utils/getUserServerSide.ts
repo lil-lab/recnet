@@ -1,9 +1,8 @@
 import "server-only";
-import { Tokens, getTokens } from "next-firebase-auth-edge";
-import { cookies } from "next/headers";
-import { authConfig } from "@recnet/recnet-web/serverEnv";
+import { Tokens } from "next-firebase-auth-edge";
 import { User } from "@recnet/recnet-web/types/user";
 import { getUserByEmail } from "@recnet/recnet-web/server/user";
+import { getTokenServerSide } from "@recnet/recnet-web/utils/getTokenServerSide";
 
 const toUser = async (tokens: Tokens | null): Promise<User | null> => {
   if (!tokens) {
@@ -35,12 +34,7 @@ async function getUserServerSide(
   const isLoggedInCallback = options?.isLoggedInCallback || (() => {});
   const notLoggedInCallback = options?.notLoggedInCallback || (() => {});
   const notRegisteredCallback = options?.notRegisteredCallback || (() => {});
-  const tokens = await getTokens(cookies(), {
-    apiKey: authConfig.apiKey,
-    cookieName: authConfig.cookieName,
-    cookieSignatureKeys: authConfig.cookieSignatureKeys,
-    serviceAccount: authConfig.serviceAccount,
-  });
+  const tokens = await getTokenServerSide();
   const user = await toUser(tokens);
   if (tokens && user) {
     isLoggedInCallback(user);

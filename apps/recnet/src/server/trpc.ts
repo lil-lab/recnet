@@ -1,8 +1,7 @@
 import { initTRPC } from "@trpc/server";
 import type { CreateNextContextOptions } from "@trpc/server/adapters/next";
-import { Tokens, getTokens } from "next-firebase-auth-edge";
-import { cookies } from "next/headers";
-import { authConfig } from "@recnet/recnet-web/serverEnv";
+import { Tokens } from "next-firebase-auth-edge";
+import { getTokenServerSide } from "@recnet/recnet-web/utils/getTokenServerSide";
 
 interface Context {
   tokens: Tokens | null;
@@ -11,12 +10,7 @@ interface Context {
 export const createContext = async (
   opts?: CreateNextContextOptions
 ): Promise<Context> => {
-  const tokens = await getTokens(cookies(), {
-    apiKey: authConfig.apiKey,
-    cookieName: authConfig.cookieName,
-    cookieSignatureKeys: authConfig.cookieSignatureKeys,
-    serviceAccount: authConfig.serviceAccount,
-  });
+  const tokens = await getTokenServerSide();
   return {
     tokens,
   };
