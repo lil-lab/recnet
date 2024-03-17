@@ -178,4 +178,69 @@ export const userRouter = router({
         user: null,
       };
     }),
+  createUser: checkFirebaseJWTProcedure
+    .input(
+      // REFACTOR_AFTER_MIGRATION: change the interface of this function
+      z.object({
+        userInfo: z.object({
+          inviteCode: z.string(),
+          handle: z.string(),
+          affiliation: z.string().nullable(),
+        }),
+        firebaseUser: z.record(z.unknown()),
+      })
+    )
+    .output(
+      z.object({
+        user: userSchema,
+      })
+    )
+    .mutation(async (opts) => {
+      const { userInfo, firebaseUser } = opts.input;
+      const { inviteCode, handle, affiliation } = userInfo;
+      const codeRef = db.doc(`invite-codes/${inviteCode}`);
+      const codeDoc = await codeRef.get();
+      if (!codeDoc.exists) {
+        throw new Error("Invalid invite code");
+      }
+      if (codeDoc.data()?.used) {
+        throw new Error("Invite code already used");
+      }
+      if (!firebaseUser) {
+        throw new Error("User not found");
+      }
+      // create user
+      const userData = {
+        ...firebaseUser,
+        createdAt: FieldValue.serverTimestamp(),
+        followers: [],
+        following: [],
+        inviteCode: inviteCode,
+        username: handle,
+        affiliation: affiliation,
+      };
+      const { id: userId } = await db.collection("users").add(userData);
+      const userRef = db.doc(`users/${userId}`);
+      const additionalInfo = { seed: userId, id: userId };
+      await userRef.set(additionalInfo, { merge: true });
+      // mark invite code as used
+      await codeRef.set(
+        { used: true, usedAt: FieldValue.serverTimestamp(), usedBy: userId },
+        { merge: true }
+      );
+      return {
+        user: userSchema.parse({
+          id: userId,
+          handle: handle,
+          displayName: firebaseUser.displayName,
+          photoUrl: firebaseUser.photoURL,
+          affiliation: affiliation,
+          bio: null,
+          numFollowers: 0,
+          email: firebaseUser.email,
+          role: UserRole.USER,
+          following: [], // temperory set to empty since it's unused and will be removed after migration
+        }),
+      };
+    }),
 });
