@@ -180,7 +180,9 @@ export const userRouter = router({
     }),
   createUser: checkFirebaseJWTProcedure
     .input(
-      // REFACTOR_AFTER_MIGRATION: change the interface of this function
+      // REFACTOR_AFTER_MIGRATION: change the interface of this function,
+      // don't need firebaseUser after migration, and we need some additional info about user
+      // see recnet-api-model/src/lib/api/user.ts to see the new interface
       z.object({
         userInfo: z.object({
           inviteCode: z.string(),
@@ -239,6 +241,62 @@ export const userRouter = router({
           numFollowers: 0,
           email: firebaseUser.email,
           role: UserRole.USER,
+          following: [], // temperory set to empty since it's unused and will be removed after migration
+        }),
+      };
+    }),
+  updateUser: checkRecnetJWTProcedure
+    .input(
+      z.object({
+        newData: userSchema.partial(),
+      })
+    )
+    .output(
+      z.object({
+        user: userSchema,
+      })
+    )
+    .mutation(async (opts) => {
+      const { newData } = opts.input;
+      const userId = opts.ctx.tokens.decodedToken.recnet.userId;
+      const { handle, displayName, affiliation } = newData;
+      const docRef = db.doc(`users/${userId}`);
+      const docSnap = await docRef.get();
+
+      if (!docSnap.exists) {
+        throw new Error("User does not exist.");
+      }
+
+      if (handle != docSnap?.data?.()?.username) {
+        if (handle) {
+          // check if username is unique
+          const snapshot = await db
+            .collection("users")
+            .where("username", "==", handle)
+            .get();
+          if (!snapshot.empty) {
+            throw new Error("Username already exists.");
+          }
+        }
+      }
+
+      const data = {
+        username: handle,
+        displayName: displayName,
+        affiliation: affiliation,
+      };
+      await docRef.set(data, { merge: true });
+      return {
+        user: userSchema.parse({
+          id: userId,
+          handle: handle,
+          displayName: displayName,
+          photoUrl: docSnap.data()?.photoURL,
+          affiliation: affiliation,
+          bio: docSnap.data()?.bio,
+          numFollowers: docSnap.data()?.followers.length,
+          email: docSnap.data()?.email,
+          role: docSnap.data()?.role,
           following: [], // temperory set to empty since it's unused and will be removed after migration
         }),
       };

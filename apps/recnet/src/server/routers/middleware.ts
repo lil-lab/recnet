@@ -6,6 +6,7 @@ import {
   firebaseJwtPayloadSchema,
 } from "@recnet/recnet-jwt";
 import { UserRole } from "@recnet/recnet-web/constant";
+import { z } from "zod";
 
 export const checkFirebaseJWTProcedure = publicProcedure.use(async (opts) => {
   const tokens = await getTokenServerSide();
@@ -23,9 +24,13 @@ export const checkFirebaseJWTProcedure = publicProcedure.use(async (opts) => {
   });
 });
 
+const recnetTokenSchema = z.object({
+  token: z.string(),
+  decodedToken: recnetJwtPayloadSchema,
+});
 export const checkRecnetJWTProcedure = publicProcedure.use(async (opts) => {
   const tokens = await getTokenServerSide();
-  const parseRes = recnetJwtPayloadSchema.safeParse(tokens?.decodedToken);
+  const parseRes = recnetTokenSchema.safeParse(tokens);
   if (!tokens || !parseRes.success) {
     throw new TRPCError({
       code: "UNAUTHORIZED",
@@ -34,7 +39,7 @@ export const checkRecnetJWTProcedure = publicProcedure.use(async (opts) => {
   }
   return opts.next({
     ctx: {
-      tokens,
+      tokens: parseRes.data,
     },
   });
 });
