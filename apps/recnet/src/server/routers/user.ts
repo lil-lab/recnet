@@ -1,4 +1,4 @@
-import { router } from "../trpc";
+import { publicProcedure, router } from "../trpc";
 import { z } from "zod";
 import {
   checkFirebaseJWTProcedure,
@@ -6,7 +6,7 @@ import {
 } from "./middleware";
 import { db } from "@recnet/recnet-web/firebase/admin";
 import { TRPCError } from "@trpc/server";
-import { userSchema } from "@recnet/recnet-api-model";
+import { userPreviewSchema, userSchema } from "@recnet/recnet-api-model";
 import { UserRole } from "@recnet/recnet-web/constant";
 import { FieldValue } from "firebase-admin/firestore";
 
@@ -135,6 +135,47 @@ export const userRouter = router({
       }
       return {
         isValid: false,
+      };
+    }),
+  getUserByHandle: publicProcedure
+    .input(
+      z.object({
+        handle: z.string(),
+      })
+    )
+    .output(
+      z.object({
+        user: userPreviewSchema.nullable(),
+      })
+    )
+    .query(async (opts) => {
+      const { handle } = opts.input;
+      const querySnapshot = await db
+        .collection("users")
+        .where("username", "==", handle)
+        .limit(1)
+        .get();
+      if (querySnapshot.empty) {
+        return {
+          user: null,
+        };
+      }
+      const userParsedRes = userPreviewSchema.safeParse({
+        id: querySnapshot.docs[0].id,
+        handle: querySnapshot.docs[0].data().username,
+        displayName: querySnapshot.docs[0].data().displayName,
+        photoUrl: querySnapshot.docs[0].data().photoURL,
+        affiliation: querySnapshot.docs[0].data().affiliation || null,
+        bio: querySnapshot.docs[0].data().bio || null,
+        numFollowers: querySnapshot.docs[0].data().followers.length,
+      });
+      if (userParsedRes.success) {
+        return {
+          user: userParsedRes.data,
+        };
+      }
+      return {
+        user: null,
       };
     }),
 });
