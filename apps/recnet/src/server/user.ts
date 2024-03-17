@@ -2,6 +2,10 @@
 import { db } from "@recnet/recnet-web/firebase/admin";
 import { User, UserSchema } from "@recnet/recnet-web/types/user";
 import { FieldValue } from "firebase-admin/firestore";
+import { getFirebaseAuth } from "next-firebase-auth-edge";
+import { authConfig } from "../serverEnv";
+import { getTokenServerSide } from "../utils/getTokenServerSide";
+import { UserRole } from "@recnet/recnet-api-model";
 
 export async function follow(userId: string, targetUserId: string) {
   if (!userId || !targetUserId) {
@@ -148,4 +152,26 @@ export async function updateUser(
   };
   await docRef.set(data, { merge: true });
   return username;
+}
+
+export async function setRecnetCustomClaims(role: UserRole, userId: string) {
+  const { setCustomUserClaims } = getFirebaseAuth({
+    apiKey: authConfig.apiKey,
+    serviceAccount: authConfig.serviceAccount,
+  });
+  const tokens = await getTokenServerSide();
+  if (!tokens) {
+    throw new Error("No tokens");
+  }
+  const { decodedToken } = tokens;
+  const { uid } = decodedToken;
+  setCustomUserClaims(uid, {
+    recnet: {
+      role,
+      userId,
+    },
+  });
+  console.log("Set custom claims for", uid);
+  const newToken = await getTokenServerSide();
+  console.log("New token", newToken);
 }
