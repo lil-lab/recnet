@@ -10,7 +10,7 @@ import { UserRole } from "@recnet/recnet-web/constant";
 export const checkFirebaseJWTProcedure = publicProcedure.use(async (opts) => {
   const tokens = await getTokenServerSide();
   const parseRes = firebaseJwtPayloadSchema.safeParse(tokens?.decodedToken);
-  if (!tokens && !parseRes.success) {
+  if (!tokens || !parseRes.success) {
     throw new TRPCError({
       code: "UNAUTHORIZED",
       message: "Unauthorized, missing Firebase secret",
@@ -26,7 +26,7 @@ export const checkFirebaseJWTProcedure = publicProcedure.use(async (opts) => {
 export const checkRecnetJWTProcedure = publicProcedure.use(async (opts) => {
   const tokens = await getTokenServerSide();
   const parseRes = recnetJwtPayloadSchema.safeParse(tokens?.decodedToken);
-  if (!tokens && !parseRes.success) {
+  if (!tokens || !parseRes.success) {
     throw new TRPCError({
       code: "UNAUTHORIZED",
       message: "Unauthorized, missing Recnet secret",
@@ -42,7 +42,7 @@ export const checkRecnetJWTProcedure = publicProcedure.use(async (opts) => {
 export const checkIsAdminProcedure = publicProcedure.use(async (opts) => {
   const tokens = await getTokenServerSide();
   const parseRes = recnetJwtPayloadSchema.safeParse(tokens?.decodedToken);
-  if (!tokens && !parseRes.success) {
+  if (!tokens || !parseRes.success) {
     throw new TRPCError({
       code: "UNAUTHORIZED",
       message: "Unauthorized, missing Recnet secret",
@@ -50,7 +50,7 @@ export const checkIsAdminProcedure = publicProcedure.use(async (opts) => {
   }
   // check the role of the user
   if (parseRes.success) {
-    const { role } = parseRes.data;
+    const { role } = parseRes.data.recnet;
     if (role !== UserRole.ADMIN) {
       throw new TRPCError({
         code: "UNAUTHORIZED",
