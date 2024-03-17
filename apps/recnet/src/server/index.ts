@@ -1,10 +1,7 @@
 import * as trpc from "@trpc/server";
-import { publicProcedure, router } from "./trpc";
+import { mergeRouters } from "./trpc";
+import { publicRouter } from "./routers/public";
 
-export const appRouter = router({
-  hello: publicProcedure.query(async () => {
-    return [1, 2, 3];
-  }),
-});
+export const appRouter = mergeRouters(publicRouter);
 
 export type AppRouter = typeof appRouter;

@@ -5,4 +5,9 @@ const contextSchema = z.object({});
 type Context = z.infer<typeof contextSchema>;
 
 const trpc = initTRPC.context<Context>().create();
-export const { router, procedure: publicProcedure, createCallerFactory } = trpc;
+export const {
+  router,
+  procedure: publicProcedure,
+  createCallerFactory,
+  mergeRouters,
+} = trpc;
