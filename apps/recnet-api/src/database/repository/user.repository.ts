@@ -16,7 +16,8 @@ export default class UserRepository {
     pageSize: number,
     filter: UserFilterBy = {}
   ): Promise<UserPreview[]> {
-    const where: Prisma.UserWhereInput = { ...filter };
+    const where: Prisma.UserWhereInput =
+      this.transformUserFilterByToPrismaWhere(filter);
     return this.prisma.user.findMany({
       select: {
         id: true,
@@ -35,7 +36,32 @@ export default class UserRepository {
   }
 
   public async countUsers(filter: UserFilterBy = {}): Promise<number> {
-    const where: Prisma.UserWhereInput = { ...filter };
+    const where: Prisma.UserWhereInput =
+      this.transformUserFilterByToPrismaWhere(filter);
     return this.prisma.user.count({ where });
+  }
+
+  private transformUserFilterByToPrismaWhere(
+    filter: UserFilterBy
+  ): Prisma.UserWhereInput {
+    const where: Prisma.UserWhereInput = {};
+    if (filter.handle) {
+      where.handle = filter.handle;
+    }
+    if (filter.id) {
+      where.id = filter.id;
+    }
+
+    if (filter.keyword) {
+      const keywordCondition: Prisma.StringFilter<"User"> = {
+        contains: filter.keyword,
+        mode: "insensitive",
+      };
+      where.OR = [
+        { handle: keywordCondition },
+        { displayName: keywordCondition },
+      ];
+    }
+    return where;
   }
 }
