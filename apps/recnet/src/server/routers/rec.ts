@@ -12,6 +12,7 @@ import { Month } from "@recnet/recnet-web/constant";
 import { FieldValue } from "firebase-admin/firestore";
 import { Timestamp } from "firebase-admin/firestore";
 import { getNextCutOff } from "@recnet/recnet-date-fns";
+import { notEmpty } from "@recnet/recnet-web/utils/notEmpty";
 
 export const recRouter = router({
   getUpcomingRec: checkRecnetJWTProcedure
@@ -173,5 +174,76 @@ export const recRouter = router({
         // post doens't exist
         throw new Error("Post doesn't exist");
       }
+    }),
+  getHistoricalRecs: publicProcedure
+    .input(
+      z.object({
+        userId: z.string(),
+      })
+    )
+    .output(
+      z.object({
+        recs: z.array(recSchema),
+      })
+    )
+    .query(async (opts) => {
+      const { userId } = opts.input;
+      const querySnapshot = await db
+        .collection("recommendations")
+        .where("userId", "==", userId)
+        .where("cutoff", "!=", Timestamp.fromMillis(getNextCutOff().getTime()))
+        .orderBy("cutoff", "desc")
+        .get();
+      const userRef = db.doc(`users/${userId}`);
+      const userSnap = await userRef.get();
+      const userData = userSnap.data();
+      if (!userData) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "User not found",
+        });
+      }
+      const userPreviewData = userPreviewSchema.parse({
+        id: userSnap.id,
+        handle: userData.username,
+        displayName: userData.displayName,
+        photoUrl: userData.photoURL,
+        affiliation: userData.affiliation || null,
+        bio: userData.bio || null,
+        numFollowers: userData.followers.length,
+      });
+      const recs = await Promise.all(
+        querySnapshot.docs.map(async (doc) => {
+          const postData = doc.data();
+          if (!postData) {
+            return null;
+          }
+          const parseRes = recSchema.safeParse({
+            id: doc.id,
+            description: postData.description,
+            cutoff: getDateFromFirebaseTimestamp(postData.cutoff),
+            user: userPreviewData,
+            article: {
+              id: doc.id,
+              doi: null,
+              title: postData.title,
+              author: postData.author,
+              link: postData.link,
+              year: parseInt(postData.year),
+              month: !postData.month
+                ? null
+                : parseInt(Month[postData.month.toUpperCase()]),
+              isVerified: false,
+            },
+          });
+          if (parseRes.success) {
+            return parseRes.data;
+          }
+          return null;
+        })
+      );
+      return {
+        recs: recs.filter(notEmpty),
+      };
     }),
 });
