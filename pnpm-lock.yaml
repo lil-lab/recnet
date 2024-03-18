@@ -205,6 +205,9 @@ devDependencies:
   '@types/chance':
     specifier: ^1.1.6
     version: 1.1.6
+  '@types/express':
+    specifier: ^4.17.21
+    version: 4.17.21
   '@types/jest':
     specifier: ^29.4.0
     version: 29.5.12

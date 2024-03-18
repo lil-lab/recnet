@@ -1,15 +1,17 @@
-import { Controller, Get, Query, UsePipes } from "@nestjs/common";
+import { Controller, Get, Query, UseFilters, UsePipes } from "@nestjs/common";
 import {
   GetUsersParams,
   GetUsersResponse,
   getUsersParamsSchema,
 } from "@recnet/recnet-api-model";
 
+import { RecnetExceptionFilter } from "@recnet-api/utils/filters/recnet.exception.filter";
 import { ZodValidationPipe } from "@recnet-api/utils/pipes/zod.validation.pipe";
 
 import { UserService } from "./user.service";
 
 @Controller("users")
+@UseFilters(RecnetExceptionFilter)
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
