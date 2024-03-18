@@ -3,14 +3,22 @@
  * This is only a minimal backend to get started.
  */
 
-import { Logger } from "@nestjs/common";
+import { LogLevel, Logger } from "@nestjs/common";
 import { NestFactory } from "@nestjs/core";
 import { SwaggerModule, DocumentBuilder } from "@nestjs/swagger";
 
 import { AppModule } from "./app.module";
+import { getLogLevels } from "./utils/logger";
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const nodeEnv = process.env.NODE_ENV || "development";
+  const logLevel: LogLevel =
+    (process.env.LOG_LEVEL as LogLevel) ||
+    (nodeEnv === "production" ? "warn" : "debug");
+
+  const app = await NestFactory.create(AppModule, {
+    logger: getLogLevels(logLevel),
+  });
   const port = process.env.PORT || 3000;
 
   const config = new DocumentBuilder()

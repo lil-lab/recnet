@@ -1,10 +1,11 @@
-import { Module } from "@nestjs/common";
+import { MiddlewareConsumer, Module } from "@nestjs/common";
 import { ConfigModule } from "@nestjs/config";
 
-import { HealthModule } from "./modules/health/health.module";
-import { UserModule } from "./modules/user/user.module";
 import * as CommonConfigs from "./config/common.config";
 import { parseEnv } from "./config/env.schema";
+import { HealthModule } from "./modules/health/health.module";
+import { UserModule } from "./modules/user/user.module";
+import { LoggerMiddleware } from "./utils/middlewares/logger.middleware";
 
 @Module({
   imports: [
@@ -19,4 +20,8 @@ import { parseEnv } from "./config/env.schema";
   controllers: [],
   providers: [],
 })
-export class AppModule {}
+export class AppModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(LoggerMiddleware).forRoutes("*");
+  }
+}
