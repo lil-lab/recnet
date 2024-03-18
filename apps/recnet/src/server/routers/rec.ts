@@ -9,6 +9,9 @@ import { TRPCError } from "@trpc/server";
 import { recSchema, userPreviewSchema } from "@recnet/recnet-api-model";
 import { getDateFromFirebaseTimestamp } from "@recnet/recnet-date-fns";
 import { Month } from "@recnet/recnet-web/constant";
+import { FieldValue } from "firebase-admin/firestore";
+import { Timestamp } from "firebase-admin/firestore";
+import { getNextCutOff } from "@recnet/recnet-date-fns";
 
 export const recRouter = router({
   getUpcomingRec: checkRecnetJWTProcedure
@@ -87,5 +90,38 @@ export const recRouter = router({
           rec: null,
         };
       }
+    }),
+  addUpcomingRec: checkRecnetJWTProcedure
+    .input(
+      z.object({
+        // REFACTOR AFTER MIGRATION, year and month should be number
+        link: z.string().url(),
+        title: z.string().min(1),
+        author: z.string().min(1),
+        description: z.string().max(280).min(1),
+        year: z.coerce.string(),
+        month: z.coerce.string().optional(),
+      })
+    )
+    .mutation(async (opts) => {
+      const { user } = opts.ctx;
+      const data = opts.input;
+      // add rec to recommendations collection
+      const { id } = await db.collection("recommendations").add({
+        ...data,
+        createdAt: FieldValue.serverTimestamp(),
+        cutoff: Timestamp.fromMillis(getNextCutOff().getTime()),
+        email: user.email,
+        userId: user.id,
+        month: data.month || "",
+      });
+      // update user's recs
+      const userRef = db.doc(`users/${user.id}`);
+      await userRef.set(
+        {
+          postIds: FieldValue.arrayUnion(id),
+        },
+        { merge: true }
+      );
     }),
 });
