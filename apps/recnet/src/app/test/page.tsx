@@ -3,6 +3,7 @@ import { Button } from "@radix-ui/themes";
 import { useAuth } from "../AuthContext";
 import { trpc } from "../_trpc/client";
 import { Month } from "@recnet/recnet-web/constant";
+import { getLatestCutOff } from "@recnet/recnet-date-fns";
 
 export default function TestPage() {
   console.log(Month["APR"]);
@@ -22,7 +23,9 @@ export default function TestPage() {
   const isFollowing = user?.following.includes("6p9H8IigaM1Bs40AcNKS");
   const isLoading = followMutation.isPending || unfollowMutation.isPending;
 
-  const { data, error } = trpc.getUpcomingRec.useQuery();
+  const { data, error } = trpc.getFeeds.useQuery({
+    cutoffTs: getLatestCutOff().getTime(),
+  });
 
   console.log({ data, error });
 

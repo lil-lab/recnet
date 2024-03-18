@@ -1,18 +1,16 @@
 import { publicProcedure, router } from "../trpc";
 import { z } from "zod";
-import {
-  checkFirebaseJWTProcedure,
-  checkRecnetJWTProcedure,
-} from "./middleware";
+import { checkRecnetJWTProcedure } from "./middleware";
 import { db } from "@recnet/recnet-web/firebase/admin";
 import { TRPCError } from "@trpc/server";
-import { recSchema, userPreviewSchema } from "@recnet/recnet-api-model";
+import { Rec, recSchema, userPreviewSchema } from "@recnet/recnet-api-model";
 import { getDateFromFirebaseTimestamp } from "@recnet/recnet-date-fns";
 import { Month } from "@recnet/recnet-web/constant";
 import { FieldValue } from "firebase-admin/firestore";
 import { Timestamp } from "firebase-admin/firestore";
 import { getNextCutOff } from "@recnet/recnet-date-fns";
 import { notEmpty } from "@recnet/recnet-web/utils/notEmpty";
+import { shuffleArray } from "@recnet/recnet-web/utils/shuffle";
 
 export const recRouter = router({
   getUpcomingRec: checkRecnetJWTProcedure
@@ -244,6 +242,106 @@ export const recRouter = router({
       );
       return {
         recs: recs.filter(notEmpty),
+      };
+    }),
+  getFeeds: checkRecnetJWTProcedure
+    .input(
+      z.object({
+        cutoffTs: z.number(),
+      })
+    )
+    .output(
+      z.object({
+        recs: z.array(recSchema),
+      })
+    )
+    .query(async (opts) => {
+      const { cutoffTs } = opts.input;
+      const { id: userId } = opts.ctx.user;
+      const docRef = db.doc(`users/${userId}`);
+      const docSnap = await docRef.get();
+      const data = docSnap.data();
+      if (!data) {
+        throw new Error("User not found");
+      }
+      const following = data.following;
+      if (following.length === 0) {
+        return {
+          recs: [],
+        };
+      }
+
+      // batch the recs every 30 items
+      // since firestore has a limit for "IN" query, it supports up to 30 comparison values.
+      // so we need to batch the following list
+      // https://cloud.google.com/firestore/docs/query-data/queries
+      const followingBatches: string[] = [];
+      const batchSize = 30;
+      for (let i = 0; i < following.length; i += batchSize) {
+        followingBatches.push(following.slice(i, i + batchSize));
+      }
+
+      const recs: (Rec | null)[] = [];
+      for (let i = 0; i < followingBatches.length; i++) {
+        const batch = followingBatches[i];
+        const querySnapshot = await db
+          .collection("recommendations")
+          .where("userId", "in", batch)
+          .where("cutoff", "==", Timestamp.fromMillis(cutoffTs))
+          .get();
+
+        const batchRecs = await Promise.all(
+          querySnapshot.docs.map(async (doc) => {
+            // get userPreview for each rec
+            const unparsedUser = await db
+              .doc(`users/${doc.data().userId}`)
+              .get();
+            const userData = unparsedUser.data();
+            if (!userData) {
+              return null;
+            }
+
+            // parse rec
+            const res = recSchema.safeParse({
+              id: doc.id,
+              description: doc.data().description,
+              cutoff: getDateFromFirebaseTimestamp(doc.data().cutoff),
+              user: {
+                id: unparsedUser.id,
+                handle: userData.username,
+                displayName: userData.displayName,
+                photoUrl: userData.photoURL,
+                affiliation: userData?.affiliation || null,
+                bio: userData?.bio || null,
+                numFollowers: userData?.followers?.length ?? 0,
+              },
+              article: {
+                id: doc.id,
+                doi: null,
+                title: doc.data().title,
+                author: doc.data().author,
+                link: doc.data().link,
+                year: parseInt(doc.data().year),
+                month: !doc.data().month
+                  ? null
+                  : parseInt(Month[doc.data().month.toUpperCase()]),
+                isVerified: false,
+              },
+            });
+            if (res.success) {
+              return res.data;
+            } else {
+              console.error("Failed to parse rec", res.error);
+              return null;
+            }
+          })
+        );
+        recs.push(...batchRecs);
+      }
+
+      const seed = userId;
+      return {
+        recs: shuffleArray(recs.filter(notEmpty), seed),
       };
     }),
 });
