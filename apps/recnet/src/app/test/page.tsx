@@ -36,13 +36,11 @@ export default function TestPage() {
           }
           if (isFollowing) {
             await unfollowMutation.mutate({
-              userId: user.id,
               targetUserId: "6p9H8IigaM1Bs40AcNKS",
             });
             console.log("unfollowed");
           } else {
             await followMutation.mutate({
-              userId: user.id,
               targetUserId: "6p9H8IigaM1Bs40AcNKS",
             });
             console.log("followed");
