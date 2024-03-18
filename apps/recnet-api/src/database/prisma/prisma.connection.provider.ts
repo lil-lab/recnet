@@ -3,7 +3,7 @@ import { execSync } from "child_process";
 import { Inject, Injectable, OnModuleInit } from "@nestjs/common";
 import { ConfigType } from "@nestjs/config";
 import { PrismaClient } from "@prisma/client";
-import { DBConfig, PrismaConfig } from "src/config/common.config";
+import { DBConfig, PrismaConfig } from "@recnet-api/config/common.config";
 
 @Injectable()
 export class PrismaConnectionProvider

@@ -4,8 +4,8 @@ import { userPreviewSchema, userSchema } from "../model";
 
 // GET /users
 export const getUsersParamsSchema = z.object({
-  page: z.number(),
-  pageSize: z.number(),
+  page: z.coerce.number(),
+  pageSize: z.coerce.number(),
   handle: z.string().optional(),
   keyword: z.string().optional(),
   id: z.string().optional(),
