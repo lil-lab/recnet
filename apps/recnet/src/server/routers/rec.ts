@@ -124,4 +124,54 @@ export const recRouter = router({
         { merge: true }
       );
     }),
+  editUpcomingRec: checkRecnetJWTProcedure
+    .input(
+      z.object({
+        id: z.string(),
+        data: z.object({
+          // REFACTOR AFTER MIGRATION, year and month should be number
+          link: z.string().url(),
+          title: z.string().min(1),
+          author: z.string().min(1),
+          description: z.string().max(280).min(1),
+          year: z.coerce.string(),
+          month: z.coerce.string().optional(),
+        }),
+      })
+    )
+    .mutation(async (opts) => {
+      const { id, data } = opts.input;
+      const postRef = db.doc(`recommendations/${id}`);
+      await postRef.set(
+        {
+          ...data,
+          month: data.month || "",
+          updatedAt: FieldValue.serverTimestamp(),
+        },
+        { merge: true }
+      );
+    }),
+  deleteUpcomingRec: checkRecnetJWTProcedure
+    .input(z.object({ id: z.string() }))
+    .mutation(async (opts) => {
+      const { id } = opts.input;
+      const { id: userId } = opts.ctx.user;
+      const docRef = db.doc(`recommendations/${id}`);
+      const docSnap = await docRef.get();
+      if (docSnap.exists) {
+        // delete from user postIds
+        const userRef = db.doc(`users/${userId}`);
+        await userRef.set(
+          {
+            postIds: FieldValue.arrayRemove(id),
+          },
+          { merge: true }
+        );
+        // delete post
+        await docRef.delete();
+      } else {
+        // post doens't exist
+        throw new Error("Post doesn't exist");
+      }
+    }),
 });
