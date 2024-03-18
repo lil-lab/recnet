@@ -1,10 +1,12 @@
 import { z } from "zod";
 
 const nodeEnv = z.enum(["development", "production", "local", "test"]);
+const logLevel = z.enum(["error", "warn", "debug", "verbose"]);
 
 export const EnvSchema = z.object({
   PORT: z.coerce.number().optional().default(3000),
   NODE_ENV: nodeEnv.default("development"),
+  LOG_LEVEL: logLevel.optional(),
   // db config
   RDS_HOSTNAME: z.string().optional().default("localhost"),
   RDS_PORT: z.coerce.number().optional().default(5432),

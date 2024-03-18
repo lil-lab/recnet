@@ -4,6 +4,7 @@ import {
   ExceptionFilter,
   HttpException,
   HttpStatus,
+  Logger,
 } from "@nestjs/common";
 import { Response } from "express";
 
@@ -15,7 +16,11 @@ import {
 
 @Catch()
 export class RecnetExceptionFilter implements ExceptionFilter {
+  private readonly logger = new Logger(RecnetExceptionFilter.name);
+
   public catch(exception: Error, host: ArgumentsHost): void {
+    this.logger.error(exception.message, exception.stack);
+
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<Response>();
 
