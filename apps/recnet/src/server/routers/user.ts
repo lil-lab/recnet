@@ -9,7 +9,6 @@ import { TRPCError } from "@trpc/server";
 import { userPreviewSchema, userSchema } from "@recnet/recnet-api-model";
 import { UserRole } from "@recnet/recnet-web/constant";
 import { FieldValue } from "firebase-admin/firestore";
-import { notEmpty } from "@recnet/recnet-web/utils/notEmpty";
 
 export const userRouter = router({
   login: checkFirebaseJWTProcedure
