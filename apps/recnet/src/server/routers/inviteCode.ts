@@ -1,12 +1,7 @@
-import { publicProcedure, router } from "../trpc";
+import { router } from "../trpc";
 import { z } from "zod";
-import {
-  checkFirebaseJWTProcedure,
-  checkRecnetJWTProcedure,
-  checkIsAdminProcedure,
-} from "./middleware";
+import { checkIsAdminProcedure } from "./middleware";
 import { db } from "@recnet/recnet-web/firebase/admin";
-import { TRPCError } from "@trpc/server";
 import Chance from "chance";
 import { notEmpty } from "@recnet/recnet-web/utils/notEmpty";
 import {
@@ -14,6 +9,7 @@ import {
   userPreviewSchema,
   inviteCodeSchema,
 } from "@recnet/recnet-api-model";
+import { FieldValue } from "firebase-admin/firestore";
 import { getDateFromFirebaseTimestamp } from "@recnet/recnet-date-fns";
 
 function getNewInviteCode() {
@@ -113,5 +109,39 @@ export const inviteCodeRouter = router({
           return (b.usedAt ? 1 : 0) - (a.usedAt ? 1 : 0);
         }),
       };
+    }),
+  generateInviteCode: checkIsAdminProcedure
+    .input(
+      z.object({
+        ownerId: z.string(),
+        num: z.number(),
+      })
+    )
+    .output(
+      z.object({
+        inviteCodes: z.array(z.string()),
+      })
+    )
+    .mutation(async (opts) => {
+      const { ownerId, num } = opts.input;
+      const inviteCodes = Array.from({ length: num }, () => {
+        return getNewInviteCode();
+      });
+
+      await Promise.all(
+        inviteCodes.map(async (inviteCode) => {
+          await db.collection("invite-codes").doc(inviteCode).set({
+            id: inviteCode,
+            issuedTo: ownerId,
+            createdAt: FieldValue.serverTimestamp(),
+            issuedAt: FieldValue.serverTimestamp(),
+            used: false,
+            usedAt: null,
+            usedBy: null,
+          });
+        })
+      );
+
+      return { inviteCodes };
     }),
 });
