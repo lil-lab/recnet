@@ -1,16 +1,24 @@
-import { Controller, Get, Param } from "@nestjs/common";
-import { User as UserModel } from "@prisma/client";
-import UserRepository from "src/database/repository/user.repository";
+import { Controller, Get, Query, UsePipes } from "@nestjs/common";
+import {
+  GetUsersParams,
+  GetUsersResponse,
+  getUsersParamsSchema,
+} from "@recnet/recnet-api-model";
 
-@Controller("user")
+import { ZodValidationPipe } from "@recnet-api/utils/pipes/zod.validation.pipe";
+
+import { UserService } from "./user.service";
+
+@Controller("users")
 export class UserController {
-  constructor(private readonly userRepository: UserRepository) {}
+  constructor(private readonly userService: UserService) {}
 
-  /* For development */
-  @Get(":handle")
-  public async getUserByHandle(
-    @Param("handle") handle: string
-  ): Promise<Promise<UserModel>> {
-    return this.userRepository.findByHandle(handle);
+  @Get()
+  @UsePipes(new ZodValidationPipe(getUsersParamsSchema))
+  public async getUsers(
+    @Query() dto: GetUsersParams
+  ): Promise<GetUsersResponse> {
+    const { page, pageSize, ...filter } = dto;
+    return this.userService.getUsers(page, pageSize, filter);
   }
 }

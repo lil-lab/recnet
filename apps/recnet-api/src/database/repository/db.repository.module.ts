@@ -1,7 +1,8 @@
 import { Module } from "@nestjs/common";
 
+import { PrismaModule } from "@recnet-api/database/prisma/prisma.module";
+
 import UserRepository from "./user.repository";
-import { PrismaModule } from "../prisma/prisma.module";
 
 @Module({
   imports: [PrismaModule],
