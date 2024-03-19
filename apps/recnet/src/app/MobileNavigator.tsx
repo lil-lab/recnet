@@ -99,10 +99,9 @@ function RecFormContent(props: { setOpen: (open: boolean) => void }) {
             setOpen(false);
           }}
           currentRec={rec ?? null}
-          user={user}
           onUpdateSuccess={async () => {
             await revalidateUser();
-            utils.getUpcomingRec.invalidate();
+            await utils.getUpcomingRec.invalidate();
           }}
           onDeleteSuccess={async () => {
             await revalidateUser();

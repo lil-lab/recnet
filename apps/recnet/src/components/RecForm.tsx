@@ -4,7 +4,10 @@ import { cn } from "@recnet/recnet-web/utils/cn";
 import {
   getNextCutOff,
   getVerboseDateString,
+  Month,
   Months,
+  monthToNum,
+  numToMonth,
 } from "@recnet/recnet-date-fns";
 import { Text, Flex, Button, TextField, TextArea } from "@radix-ui/themes";
 import {
@@ -24,10 +27,9 @@ import {
   ChevronUpIcon,
 } from "@radix-ui/react-icons";
 import { toast } from "sonner";
-import { User, Rec } from "@recnet/recnet-api-model";
+import { Rec } from "@recnet/recnet-api-model";
 import { TailSpin } from "react-loader-spinner";
 import { trpc } from "@recnet/recnet-web/app/_trpc/client";
-import { Month } from "../constant";
 
 const SelectItem = forwardRef<HTMLDivElement, Select.SelectItemProps>(
   ({ children, className, ...props }, forwardedRef) => {
@@ -62,23 +64,19 @@ const RecFormSchema = z.object({
     .max(280, "Description should be less than 280 chars")
     .min(1, "Description cannot be blank"),
   year: z.coerce
-    .string()
-    .refine((val) => !Number.isNaN(parseInt(val)), "Year should be a number")
+    .number()
     .refine((val) => {
-      const year = parseInt(val);
-      return year <= new Date().getUTCFullYear();
+      return val <= new Date().getUTCFullYear();
     }, "Year should be less than or equal to the current year")
     .refine((val) => {
-      const year = parseInt(val);
-      return year >= 0;
+      return val >= 0;
     }, "Year should be a positive number"),
-  month: z.coerce.string().optional(),
+  month: z.coerce.number().optional(),
 });
 
 export function RecForm(props: {
   onFinish?: () => void;
   currentRec: Rec | null;
-  user: User;
   onUpdateSuccess?: () => void;
   onDeleteSuccess?: () => void;
 }) {
@@ -86,7 +84,6 @@ export function RecForm(props: {
   const {
     onFinish = () => {},
     currentRec,
-    user,
     onUpdateSuccess = () => {},
     onDeleteSuccess = () => {},
   } = props;
@@ -99,13 +96,8 @@ export function RecForm(props: {
         title: currentRec?.article?.title,
         author: currentRec?.article?.author,
         description: currentRec?.description,
-        year:
-          currentRec?.article?.year && !Number.isNaN(currentRec.article.year)
-            ? currentRec.article.year
-            : undefined,
-        month: currentRec?.article?.month
-          ? Month[currentRec.article.month]
-          : undefined,
+        year: currentRec?.article?.year,
+        month: currentRec?.article?.month,
       },
       mode: "onBlur",
     });
@@ -128,31 +120,20 @@ export function RecForm(props: {
           setIsSubmitting(false);
           return;
         }
-        // TODO: if no changes, close dialog
-        // if (
-        //   currentRec &&
-        //   (
-        //     ["link", "title", "author", "year", "month", "description"] as const
-        //   ).every((key) => {
-        //     return res.data[key] === currentRec[key];
-        //   })
-        // ) {
-        //   onFinish();
-        //   setIsSubmitting(false);
-        //   return;
-        // }
+        if (!formState.isDirty) {
+          onFinish();
+          setIsSubmitting(false);
+          return;
+        }
         try {
           // if currentRec exists, update, else insert new rec
           if (currentRec) {
-            // update
-            // await updateRec(res.data, currentRec.id);
             await editRecMutation.mutate({
               data: res.data,
               id: currentRec.id,
             });
             toast.success("Rec updated successfully.");
           } else {
-            // insert
             await insertRecMutation.mutate(res.data);
             toast.success("We got your rec! 🎉");
           }
@@ -241,15 +222,16 @@ export function RecForm(props: {
             control={control}
             name="month"
             render={({ field }) => {
+              const monthValue = getValues("month");
               return (
                 <Select.Root
                   key={watch("month")}
-                  value={getValues("month")}
+                  value={monthValue ? numToMonth[monthValue] : undefined}
                   onValueChange={(value) => {
                     if (value === "empty") {
                       field.onChange(undefined);
                     } else {
-                      field.onChange(value);
+                      field.onChange(monthToNum[value as Month]);
                     }
                   }}
                 >

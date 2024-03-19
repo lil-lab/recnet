@@ -113,18 +113,12 @@ export function LeftPanel() {
   const date = searchParams.get("date");
   const cutoff = date ? getCutOff(new Date(date)) : getLatestCutOff();
   const cutoffs = getCutOffFromStartDate();
-  const { user, revalidateUser } = useAuth();
+  const { revalidateUser } = useAuth();
   const { data, isPending } = trpc.getUpcomingRec.useQuery();
   const rec = data?.rec ?? null;
   const utils = trpc.useUtils();
 
   const [isRecFormOpen, setIsRecFormOpen] = useState(false);
-
-  if (!user) {
-    // this should never happen, since the user should be authenticated to be here
-    // just for narrowing the type
-    return null;
-  }
 
   return (
     <>
@@ -181,10 +175,9 @@ export function LeftPanel() {
                   setIsRecFormOpen(false);
                 }}
                 currentRec={rec}
-                user={user}
                 onUpdateSuccess={async () => {
                   await revalidateUser();
-                  utils.getUpcomingRec.invalidate();
+                  await utils.getUpcomingRec.invalidate();
                 }}
                 onDeleteSuccess={async () => {
                   await revalidateUser();

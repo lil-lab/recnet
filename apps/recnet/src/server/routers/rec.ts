@@ -4,8 +4,12 @@ import { checkIsAdminProcedure, checkRecnetJWTProcedure } from "./middleware";
 import { db } from "@recnet/recnet-web/firebase/admin";
 import { TRPCError } from "@trpc/server";
 import { Rec, recSchema, userPreviewSchema } from "@recnet/recnet-api-model";
-import { getDateFromFirebaseTimestamp } from "@recnet/recnet-date-fns";
-import { Month } from "@recnet/recnet-web/constant";
+import {
+  getDateFromFirebaseTimestamp,
+  numToMonth,
+  monthToNum,
+  Month,
+} from "@recnet/recnet-date-fns";
 import { FieldValue } from "firebase-admin/firestore";
 import { Timestamp } from "firebase-admin/firestore";
 import { getNextCutOff } from "@recnet/recnet-date-fns";
@@ -77,9 +81,7 @@ export const recRouter = router({
             author: postData.author,
             link: postData.link,
             year: parseInt(postData.year),
-            month: !postData.month
-              ? null
-              : parseInt(Month[postData.month.toUpperCase()]),
+            month: !postData.month ? null : monthToNum[postData.month as Month],
             isVerified: false,
           },
         });
@@ -95,13 +97,12 @@ export const recRouter = router({
   addUpcomingRec: checkRecnetJWTProcedure
     .input(
       z.object({
-        // REFACTOR AFTER MIGRATION, year and month should be number
         link: z.string().url(),
         title: z.string().min(1),
         author: z.string().min(1),
         description: z.string().max(280).min(1),
-        year: z.coerce.string(),
-        month: z.coerce.string().optional(),
+        year: z.number(),
+        month: z.number().optional(),
       })
     )
     .mutation(async (opts) => {
@@ -114,7 +115,8 @@ export const recRouter = router({
         cutoff: Timestamp.fromMillis(getNextCutOff().getTime()),
         email: user.email,
         userId: user.id,
-        month: data.month || "",
+        year: data.year.toString(),
+        month: data.month ? numToMonth[data.month] : "",
       });
       // update user's recs
       const userRef = db.doc(`users/${user.id}`);
@@ -130,13 +132,12 @@ export const recRouter = router({
       z.object({
         id: z.string(),
         data: z.object({
-          // REFACTOR AFTER MIGRATION, year and month should be number
           link: z.string().url(),
           title: z.string().min(1),
           author: z.string().min(1),
           description: z.string().max(280).min(1),
-          year: z.coerce.string(),
-          month: z.coerce.string().optional(),
+          year: z.number(),
+          month: z.number().optional(),
         }),
       })
     )
@@ -146,8 +147,9 @@ export const recRouter = router({
       await postRef.set(
         {
           ...data,
-          month: data.month || "",
           updatedAt: FieldValue.serverTimestamp(),
+          year: data.year.toString(),
+          month: data.month ? numToMonth[data.month] : "",
         },
         { merge: true }
       );
@@ -232,7 +234,7 @@ export const recRouter = router({
               year: parseInt(postData.year),
               month: !postData.month
                 ? null
-                : parseInt(Month[postData.month.toUpperCase()]),
+                : monthToNum[postData.month as Month],
               isVerified: false,
             },
           });
@@ -328,7 +330,7 @@ export const recRouter = router({
                 year: parseInt(doc.data().year),
                 month: !doc.data().month
                   ? null
-                  : parseInt(Month[doc.data().month.toUpperCase()]),
+                  : monthToNum[doc.data().month as Month],
                 isVerified: false,
               },
             });

@@ -7,7 +7,7 @@ import { ChevronRight } from "lucide-react";
 import { CalendarIcon } from "@radix-ui/react-icons";
 import { Skeleton, SkeletonText } from "@recnet/recnet-web/components/Skeleton";
 import { Rec } from "@recnet/recnet-api-model";
-import { Month } from "../constant";
+import { numToMonth } from "@recnet/recnet-date-fns";
 
 export function RecCardSkeleton() {
   return (
@@ -95,7 +95,7 @@ export function RecCard(props: { recs: Rec[]; showDate?: boolean }) {
           <Flex className="items-center justify-between p-1">
             <Flex className="items-center gap-x-2 text-gray-10">
               <CalendarIcon width={16} height={16} />
-              <Text size="2">{`${!rec.article.month ? "" : `${Month[rec.article.month]}, `}${rec.article.year}`}</Text>
+              <Text size="2">{`${!rec.article.month ? "" : `${numToMonth[rec.article.month]}, `}${rec.article.year}`}</Text>
             </Flex>
             <Flex className="items-center gap-x-1 text-accent-11">
               <Text size="1">Read</Text>{" "}
