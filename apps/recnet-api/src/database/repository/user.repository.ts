@@ -53,13 +53,10 @@ export default class UserRepository {
     }
 
     if (filter.keyword) {
-      const keywordCondition: Prisma.StringFilter<"User"> = {
-        contains: filter.keyword,
-        mode: "insensitive",
-      };
+      const searchStr = filter.keyword.split(" ").join(" | ");
       where.OR = [
-        { handle: keywordCondition },
-        { displayName: keywordCondition },
+        { handle: { search: searchStr } },
+        { displayName: { search: searchStr } },
       ];
     }
     return where;
