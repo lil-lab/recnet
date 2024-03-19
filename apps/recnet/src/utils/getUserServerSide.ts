@@ -17,7 +17,13 @@ async function getUserServerSide(
   const notLoggedInCallback = options?.notLoggedInCallback || (() => {});
   const notRegisteredCallback = options?.notRegisteredCallback || (() => {});
   const tokens = await getTokenServerSide();
-  const { user } = await serverClient.getMe();
+  let user: User | null = null;
+  try {
+    const res = await serverClient.getMe();
+    user = res.user;
+  } catch (e) {
+    user = null;
+  }
   if (tokens && user) {
     isLoggedInCallback(user);
   } else if (tokens && !user) {

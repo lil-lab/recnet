@@ -17,7 +17,7 @@ import {
   SewingPinIcon,
 } from "@radix-ui/react-icons";
 import { forwardRef, useState } from "react";
-import { useForm, Controller } from "react-hook-form";
+import { useForm, Controller, useFormState } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import * as Select from "@radix-ui/react-select";
@@ -100,6 +100,7 @@ export function RecForm(props: {
       },
       mode: "onBlur",
     });
+  const { isDirty } = useFormState({ control });
 
   const insertRecMutation = trpc.addUpcomingRec.useMutation();
   const editRecMutation = trpc.editUpcomingRec.useMutation();
@@ -119,7 +120,7 @@ export function RecForm(props: {
           setIsSubmitting(false);
           return;
         }
-        if (!formState.isDirty) {
+        if (!isDirty) {
           onFinish();
           setIsSubmitting(false);
           return;

@@ -10,7 +10,7 @@ import { FollowButton } from "@recnet/recnet-web/components/FollowButton";
 import { useRouter } from "next/navigation";
 import { Skeleton, SkeletonText } from "@recnet/recnet-web/components/Skeleton";
 import { useState } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, useFormState } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { toast } from "sonner";
@@ -59,7 +59,7 @@ function EditProfileDialog(props: { handle: string }) {
   const [open, setOpen] = useState(false);
   const { user, revalidateUser } = useAuth();
 
-  const { register, handleSubmit, formState, setError } = useForm({
+  const { register, handleSubmit, formState, setError, control } = useForm({
     resolver: zodResolver(EditUserProfileSchema),
     defaultValues: {
       name: user?.displayName,
@@ -68,6 +68,7 @@ function EditProfileDialog(props: { handle: string }) {
     },
     mode: "onBlur",
   });
+  const { isDirty } = useFormState({ control: control });
 
   const updateProfileMutation = trpc.updateUser.useMutation();
 
@@ -89,7 +90,7 @@ function EditProfileDialog(props: { handle: string }) {
               return;
             }
             // if no changes, close dialog
-            if (!formState.isDirty) {
+            if (!isDirty) {
               setOpen(false);
               return;
             }

@@ -31,7 +31,10 @@ export const userRouter = router({
         .get();
 
       if (querySnapshot.empty) {
-        throw new Error("User not found");
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "User not found",
+        });
       }
       const user = userSchema.parse({
         id: querySnapshot.docs[0].id,
@@ -186,7 +189,7 @@ export const userRouter = router({
           handle: z.string(),
           affiliation: z.string().nullable(),
         }),
-        firebaseUser: z.record(z.unknown()),
+        firebaseUser: z.any(),
       })
     )
     .output(

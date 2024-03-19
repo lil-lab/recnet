@@ -5,10 +5,10 @@ import { getAuth, onIdTokenChanged, User as FirebaseUser } from "firebase/auth";
 import { AuthContext } from "./AuthContext";
 import { getFirebaseApp } from "@recnet/recnet-web/firebase/client";
 import { usePathname, useRouter } from "next/navigation";
-import { getErrorMessage } from "@recnet/recnet-web/utils/error";
 import { trpc } from "./_trpc/client";
 import { User } from "@recnet/recnet-api-model";
 import { setRecnetCustomClaims } from "../server/user";
+import { TRPCClientError } from "@trpc/client";
 
 export interface AuthProviderProps {
   serverUser: User | null;
@@ -55,7 +55,18 @@ export const AuthProvider: React.FunctionComponent<AuthProviderProps> = ({
         }
         try {
           // login user at api server and set custom claims
-          const data = await loginMutation.mutateAsync();
+          const data = await loginMutation.mutateAsync(undefined, {
+            onError: (error) => {
+              if (
+                error instanceof TRPCClientError &&
+                error.data.code === "NOT_FOUND" &&
+                error.message === "User not found"
+              ) {
+                // create user and redirect
+                router.replace("/onboard");
+              }
+            },
+          });
           await setRecnetCustomClaims(data.user.role, data.user.id);
           await revalidateUser();
           if (pathname === "/") {
@@ -63,11 +74,6 @@ export const AuthProvider: React.FunctionComponent<AuthProviderProps> = ({
           }
         } catch (error) {
           console.log(error);
-          const errorMsg = getErrorMessage(error);
-          if (errorMsg === "User not found") {
-            // create user and redirect
-            router.replace("/onboard");
-          }
         }
         return;
       }
