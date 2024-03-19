@@ -14,7 +14,6 @@ import {
   SewingPinIcon,
 } from "@radix-ui/react-icons";
 import { forwardRef, useState } from "react";
-import { Rec } from "@recnet/recnet-web/types/rec";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -25,9 +24,10 @@ import {
   ChevronUpIcon,
 } from "@radix-ui/react-icons";
 import { toast } from "sonner";
-import { insertRec, updateRec, deleteRec } from "@recnet/recnet-web/server/rec";
-import { User } from "@recnet/recnet-web/types/user";
+import { User, Rec } from "@recnet/recnet-api-model";
 import { TailSpin } from "react-loader-spinner";
+import { trpc } from "@recnet/recnet-web/app/_trpc/client";
+import { Month } from "../constant";
 
 const SelectItem = forwardRef<HTMLDivElement, Select.SelectItemProps>(
   ({ children, className, ...props }, forwardedRef) => {
@@ -52,6 +52,7 @@ const SelectItem = forwardRef<HTMLDivElement, Select.SelectItemProps>(
 );
 SelectItem.displayName = "SelectItem";
 
+// TODO: year and month should be number
 const RecFormSchema = z.object({
   link: z.string().url(),
   title: z.string().min(1, "Title cannot be blank"),
@@ -94,18 +95,24 @@ export function RecForm(props: {
     useForm({
       resolver: zodResolver(RecFormSchema),
       defaultValues: {
-        link: currentRec?.link,
-        title: currentRec?.title,
-        author: currentRec?.author,
+        link: currentRec?.article?.link,
+        title: currentRec?.article?.title,
+        author: currentRec?.article?.author,
         description: currentRec?.description,
         year:
-          currentRec?.year && !Number.isNaN(parseInt(currentRec.year))
-            ? parseInt(currentRec.year)
+          currentRec?.article?.year && !Number.isNaN(currentRec.article.year)
+            ? currentRec.article.year
             : undefined,
-        month: currentRec?.month,
+        month: currentRec?.article?.month
+          ? Month[currentRec.article.month]
+          : undefined,
       },
       mode: "onBlur",
     });
+
+  const insertRecMutation = trpc.addUpcomingRec.useMutation();
+  const editRecMutation = trpc.editUpcomingRec.useMutation();
+  const deleteRecMutation = trpc.deleteUpcomingRec.useMutation();
 
   return (
     <form
@@ -121,30 +128,32 @@ export function RecForm(props: {
           setIsSubmitting(false);
           return;
         }
-        // if no changes, close dialog
-        if (
-          currentRec &&
-          (
-            ["link", "title", "author", "year", "month", "description"] as const
-          ).every((key) => {
-            return res.data[key] === currentRec[key];
-          })
-        ) {
-          onFinish();
-          setIsSubmitting(false);
-          return;
-        }
+        // TODO: if no changes, close dialog
+        // if (
+        //   currentRec &&
+        //   (
+        //     ["link", "title", "author", "year", "month", "description"] as const
+        //   ).every((key) => {
+        //     return res.data[key] === currentRec[key];
+        //   })
+        // ) {
+        //   onFinish();
+        //   setIsSubmitting(false);
+        //   return;
+        // }
         try {
           // if currentRec exists, update, else insert new rec
           if (currentRec) {
             // update
             // await updateRec(res.data, currentRec.id);
-            await updateRec(currentRec.id, res.data);
+            await editRecMutation.mutate({
+              data: res.data,
+              id: currentRec.id,
+            });
             toast.success("Rec updated successfully.");
           } else {
             // insert
-            // await insertRec(res.data);
-            await insertRec(res.data, user);
+            await insertRecMutation.mutate(res.data);
             toast.success("We got your rec! 🎉");
           }
           onUpdateSuccess();
@@ -348,7 +357,9 @@ export function RecForm(props: {
           className="cursor-pointer"
           onClick={async () => {
             try {
-              await deleteRec(currentRec.id, user.id);
+              await deleteRecMutation.mutate({
+                id: currentRec.id,
+              });
               await onDeleteSuccess();
               toast.success("Rec deleted successfully");
               onFinish();

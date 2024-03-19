@@ -11,6 +11,7 @@ import {
 } from "@recnet/recnet-api-model";
 import { FieldValue } from "firebase-admin/firestore";
 import { getDateFromFirebaseTimestamp } from "@recnet/recnet-date-fns";
+import { TRPCError } from "@trpc/server";
 
 function getNewInviteCode() {
   const chance = new Chance();
@@ -85,11 +86,15 @@ export const inviteCodeRouter = router({
             code: inviteCodeData.id,
             owner: owner,
             issuedAt: inviteCodeData.issuedAt
-              ? getDateFromFirebaseTimestamp(inviteCodeData.issuedAt)
-              : null,
+              ? getDateFromFirebaseTimestamp(
+                  inviteCodeData.issuedAt
+                ).toISOString()
+              : new Date().toISOString(),
             usedBy: usedBy,
             usedAt: inviteCodeData.usedAt
-              ? getDateFromFirebaseTimestamp(inviteCodeData.usedAt)
+              ? getDateFromFirebaseTimestamp(
+                  inviteCodeData.usedAt
+                ).toISOString()
               : null,
           });
           if (res.success) {
@@ -104,7 +109,7 @@ export const inviteCodeRouter = router({
         inviteCodes: inviteCodesWithUsers.sort((a, b) => {
           // sort by usedAt
           if (a.usedAt && b.usedAt) {
-            return b.usedAt.getTime() - a.usedAt.getTime();
+            return new Date(b.usedAt).getTime() - new Date(a.usedAt).getTime();
           }
           return (b.usedAt ? 1 : 0) - (a.usedAt ? 1 : 0);
         }),
@@ -113,7 +118,7 @@ export const inviteCodeRouter = router({
   generateInviteCode: checkIsAdminProcedure
     .input(
       z.object({
-        ownerId: z.string(),
+        ownerHandle: z.string(),
         num: z.number(),
       })
     )
@@ -123,7 +128,21 @@ export const inviteCodeRouter = router({
       })
     )
     .mutation(async (opts) => {
-      const { ownerId, num } = opts.input;
+      const { ownerHandle, num } = opts.input;
+      // check if owner exists
+      const querySnapshot = await db
+        .collection("users")
+        .where("username", "==", ownerHandle)
+        .limit(1)
+        .get();
+      if (querySnapshot.empty) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Owner not found",
+        });
+      }
+      const ownerId = querySnapshot.docs[0].id;
+
       const inviteCodes = Array.from({ length: num }, () => {
         return getNewInviteCode();
       });

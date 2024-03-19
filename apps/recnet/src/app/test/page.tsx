@@ -8,24 +8,7 @@ import { getLatestCutOff } from "@recnet/recnet-date-fns";
 export default function TestPage() {
   console.log(Month["APR"]);
   const { user, revalidateUser } = useAuth();
-  const followMutation = trpc.follow.useMutation({
-    onSuccess: async () => {
-      await revalidateUser();
-    },
-  });
-
-  const unfollowMutation = trpc.unfollow.useMutation({
-    onSuccess: async () => {
-      await revalidateUser();
-    },
-  });
-
-  const isFollowing = user?.following.includes("6p9H8IigaM1Bs40AcNKS");
-  const isLoading = followMutation.isPending || unfollowMutation.isPending;
-
-  const { data, error } = trpc.getFeeds.useQuery({
-    cutoffTs: getLatestCutOff().getTime(),
-  });
+  const { data, isPending, error } = trpc.getUpcomingRec.useQuery();
 
   console.log({ data, error });
 
@@ -37,20 +20,9 @@ export default function TestPage() {
             console.error("You must be logged in to follow someone.");
             return;
           }
-          if (isFollowing) {
-            await unfollowMutation.mutate({
-              targetUserId: "6p9H8IigaM1Bs40AcNKS",
-            });
-            console.log("unfollowed");
-          } else {
-            await followMutation.mutate({
-              targetUserId: "6p9H8IigaM1Bs40AcNKS",
-            });
-            console.log("followed");
-          }
         }}
       >
-        {isLoading ? "isLoading..." : isFollowing ? "Unfollow" : "Follow"}
+        123
       </Button>
     </div>
   );

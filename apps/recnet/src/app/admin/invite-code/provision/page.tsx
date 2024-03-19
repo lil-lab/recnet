@@ -8,14 +8,13 @@ import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
-import { generateInviteCode } from "@recnet/recnet-web/server/inviteCode";
 import { useAuth } from "@recnet/recnet-web/app/AuthContext";
-import { UserSchema } from "@recnet/recnet-web/types/user";
-import { fetchWithZod } from "@recnet/recnet-web/utils/zodFetch";
 import { CopiableInviteCode } from "@recnet/recnet-web/components/InviteCode";
 import { toast } from "sonner";
 import { useCopyToClipboard } from "@recnet/recnet-web/hooks/useCopyToClipboard";
 import { RecNetLink as Link } from "@recnet/recnet-web/components/Link";
+import { trpc } from "@recnet/recnet-web/app/_trpc/client";
+import { TRPCClientError } from "@trpc/client";
 
 const InviteCodeGenerationSchema = z.object({
   count: z.coerce.number().min(1).max(20, "Max 20 invite codes at a time"),
@@ -30,6 +29,7 @@ function InviteCodeGenerateForm() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { copy } = useCopyToClipboard();
   const [copied, setCopied] = useState(false);
+  const generateInviteCodeMutation = trpc.generateInviteCode.useMutation();
 
   const { register, handleSubmit, formState, setError, setValue } = useForm({
     resolver: zodResolver(InviteCodeGenerationSchema),
@@ -45,32 +45,36 @@ function InviteCodeGenerateForm() {
       <form
         onSubmit={handleSubmit(async (data, e) => {
           e?.preventDefault();
-          let owner = user;
-          if (data.owner) {
-            // check if owner exists
-            try {
-              const recipient = await fetchWithZod(
-                UserSchema,
-                `/api/userByUsername?username=${data.owner}`
-              );
-              owner = recipient;
-            } catch (error) {
-              setError("owner", {
-                type: "manual",
-                message: "User not found",
-              });
-              return;
-            }
-          }
-          if (!owner) {
-            // should never happen, for type safety
+          if (!user) {
             return;
           }
-          // generate invite codes
-          const codes = await generateInviteCode(owner.id, data.count);
-          // show modal with invite codes
-          setNewInviteCodes(codes);
-          setIsModalOpen(true);
+          const handle = data?.owner || user.handle;
+          try {
+            const res = await generateInviteCodeMutation.mutateAsync(
+              {
+                ownerHandle: handle,
+                num: data.count,
+              },
+              {
+                onError: (error) => {
+                  if (
+                    error instanceof TRPCClientError &&
+                    error.data.code === "NOT_FOUND" &&
+                    error.message === "Owner not found"
+                  ) {
+                    setError("owner", {
+                      type: "manual",
+                      message: "User not found",
+                    });
+                  }
+                },
+              }
+            );
+            setNewInviteCodes(res.inviteCodes);
+            setIsModalOpen(true);
+          } catch (error) {
+            console.error(error);
+          }
         })}
       >
         <Flex

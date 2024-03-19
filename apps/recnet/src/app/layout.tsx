@@ -3,7 +3,6 @@ import localFont from "next/font/local";
 import { Theme } from "@radix-ui/themes";
 import { Headerbar } from "@recnet/recnet-web/app/Headerbar";
 import { AuthProvider } from "./AuthProvider";
-import { getUserServerSide } from "@recnet/recnet-web/utils/getUserServerSide";
 import { Footer } from "@recnet/recnet-web/app/Footer";
 import { Toaster } from "sonner";
 import { HistoryProvider } from "./HistoryProvider";
@@ -14,6 +13,7 @@ import { ProgressbarProvider } from "./Progressbar";
 import { GoogleAnalytics } from "@next/third-parties/google";
 import { clientEnv } from "@recnet/recnet-web/clientEnv";
 import { Provider as TrpcProvider } from "./_trpc/Provider";
+import { getUserServerSide } from "../utils/getUserServerSide";
 
 const sfpro = localFont({
   src: [

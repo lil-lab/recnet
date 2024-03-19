@@ -1,4 +1,3 @@
-import { db } from "@recnet/recnet-web/firebase/admin";
 import {
   StatBox,
   StatBoxSkeleton,
@@ -11,18 +10,16 @@ import {
 import { Timestamp } from "firebase-admin/firestore";
 import { withSuspense } from "@recnet/recnet-web/utils/withSuspense";
 import groupBy from "lodash.groupby";
-import { RecSchema } from "@recnet/recnet-web/types/rec";
-import { notEmpty } from "@recnet/recnet-web/utils/notEmpty";
 import { RecsCycleBarChart } from "./RecsCycleBarChart";
 import { AdminSectionTitle } from "../../AdminSections";
+import { serverClient } from "@recnet/recnet-web/app/_trpc/serverClient";
 
 const CurrentUserCount = withSuspense(
   async () => {
-    const users = await db.collection("users").get();
-    const userCount = users.size;
+    const { num: numOfUsers } = await serverClient.getNumOfUsers();
     return (
       <StatBox title="Current Users" icon={<PersonIcon />}>
-        {userCount}
+        {numOfUsers}
       </StatBox>
     );
   },
@@ -31,11 +28,10 @@ const CurrentUserCount = withSuspense(
 
 const RecCount = withSuspense(
   async () => {
-    const recs = await db.collection("recommendations").get();
-    const recCount = recs.size;
+    const { num: numberOfRecs } = await serverClient.getNumOfRecs();
     return (
       <StatBox title="Current Recs" icon={<Pencil1Icon />}>
-        {recCount}
+        {numberOfRecs}
       </StatBox>
     );
   },
@@ -44,14 +40,11 @@ const RecCount = withSuspense(
 
 const RecsThisCycle = withSuspense(
   async () => {
-    const cutOff = getNextCutOff();
-    const recsThisCycle = await db
-      .collection("recommendations")
-      .where("cutoff", "==", Timestamp.fromMillis(cutOff.getTime()))
-      .get();
+    const { num: numOfUpcomingRecs } =
+      await serverClient.getNumOfUpcomingRecs();
     return (
       <StatBox title="Recs This Cycle" icon={<Pencil1Icon />}>
-        {recsThisCycle.size}
+        {numOfUpcomingRecs}
       </StatBox>
     );
   },
@@ -60,33 +53,7 @@ const RecsThisCycle = withSuspense(
 
 const RecsBarChart = withSuspense(
   async () => {
-    const recs = await db.collection("recommendations").get();
-    const filteredRecs = recs.docs
-      .map((doc) => {
-        const data = doc.data();
-        // parse by rec schema
-        const res = RecSchema.safeParse({ ...data, id: doc.id });
-        if (res.success) {
-          return res.data;
-        } else {
-          // console.error("Failed to parse rec", res.error);
-          return null;
-        }
-      })
-      .filter(notEmpty);
-    const recsGroupByCycle = groupBy(filteredRecs, (doc) => {
-      const date = getDateFromFirebaseTimestamp(doc.cutoff);
-      return date.getTime();
-    });
-    const recCountByCycle: Record<string, number> = Object.keys(
-      recsGroupByCycle
-    ).reduce(
-      (acc, key) => ({
-        ...acc,
-        [key]: recsGroupByCycle[key].length,
-      }),
-      {}
-    );
+    const { recCountByCycle } = await serverClient.getRecCountByCycle();
     const minTs = Math.min(...Object.keys(recCountByCycle).map(Number));
     const maxTs = Math.max(...Object.keys(recCountByCycle).map(Number));
     // fill in missing dates, increment by 1 week

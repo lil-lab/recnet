@@ -1,6 +1,6 @@
 import { publicProcedure, router } from "../trpc";
 import { z } from "zod";
-import { checkRecnetJWTProcedure } from "./middleware";
+import { checkIsAdminProcedure, checkRecnetJWTProcedure } from "./middleware";
 import { db } from "@recnet/recnet-web/firebase/admin";
 import { TRPCError } from "@trpc/server";
 import { Rec, recSchema, userPreviewSchema } from "@recnet/recnet-api-model";
@@ -11,6 +11,8 @@ import { Timestamp } from "firebase-admin/firestore";
 import { getNextCutOff } from "@recnet/recnet-date-fns";
 import { notEmpty } from "@recnet/recnet-web/utils/notEmpty";
 import { shuffleArray } from "@recnet/recnet-web/utils/shuffle";
+import groupBy from "lodash.groupby";
+import { FirebaseTsSchema } from "@recnet/recnet-web/types/rec";
 
 export const recRouter = router({
   getUpcomingRec: checkRecnetJWTProcedure
@@ -66,7 +68,7 @@ export const recRouter = router({
         const recData = recSchema.parse({
           id: latestRecId,
           description: postData.description,
-          cutoff: getDateFromFirebaseTimestamp(postData.cutoff),
+          cutoff: getDateFromFirebaseTimestamp(postData.cutoff).toISOString(),
           user: userPreviewData,
           article: {
             id: latestRecId,
@@ -219,7 +221,7 @@ export const recRouter = router({
           const parseRes = recSchema.safeParse({
             id: doc.id,
             description: postData.description,
-            cutoff: getDateFromFirebaseTimestamp(postData.cutoff),
+            cutoff: getDateFromFirebaseTimestamp(postData.cutoff).toISOString(),
             user: userPreviewData,
             article: {
               id: doc.id,
@@ -305,7 +307,9 @@ export const recRouter = router({
             const res = recSchema.safeParse({
               id: doc.id,
               description: doc.data().description,
-              cutoff: getDateFromFirebaseTimestamp(doc.data().cutoff),
+              cutoff: getDateFromFirebaseTimestamp(
+                doc.data().cutoff
+              ).toISOString(),
               user: {
                 id: unparsedUser.id,
                 handle: userData.username,
@@ -342,6 +346,77 @@ export const recRouter = router({
       const seed = userId;
       return {
         recs: shuffleArray(recs.filter(notEmpty), seed),
+      };
+    }),
+  getNumOfRecs: checkIsAdminProcedure
+    .output(
+      z.object({
+        num: z.number(),
+      })
+    )
+    .query(async (opts) => {
+      const recs = await db.collection("recommendations").get();
+      const recCount = recs.size;
+      return {
+        num: recCount,
+      };
+    }),
+  getNumOfUpcomingRecs: checkIsAdminProcedure
+    .output(
+      z.object({
+        num: z.number(),
+      })
+    )
+    .query(async (opts) => {
+      const cutOff = getNextCutOff();
+      const recsThisCycle = await db
+        .collection("recommendations")
+        .where("cutoff", "==", Timestamp.fromMillis(cutOff.getTime()))
+        .get();
+      return {
+        num: recsThisCycle.size,
+      };
+    }),
+  getRecCountByCycle: checkIsAdminProcedure
+    .output(
+      z.object({
+        recCountByCycle: z.record(z.number()),
+      })
+    )
+    .query(async () => {
+      const recs = await db.collection("recommendations").get();
+      const schema = z.object({
+        cutoff: FirebaseTsSchema,
+        id: z.string(),
+      });
+      const filteredRecs = recs.docs
+        .map((doc) => {
+          const data = doc.data();
+          // parse by rec schema
+          const res = schema.safeParse({ ...data, id: doc.id });
+          if (res.success) {
+            return res.data;
+          } else {
+            // console.error("Failed to parse rec", res.error);
+            return null;
+          }
+        })
+        .filter(notEmpty);
+      const recsGroupByCycle = groupBy(filteredRecs, (doc) => {
+        const date = getDateFromFirebaseTimestamp(doc.cutoff);
+        return date.getTime();
+      });
+      const recCountByCycle: Record<string, number> = Object.keys(
+        recsGroupByCycle
+      ).reduce(
+        (acc, key) => ({
+          ...acc,
+          [key]: recsGroupByCycle[key].length,
+        }),
+        {}
+      );
+      return {
+        recCountByCycle,
       };
     }),
 });

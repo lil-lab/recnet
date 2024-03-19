@@ -7,31 +7,28 @@ import {
   getCutOff,
   getLatestCutOff,
   getNextCutOff,
-  getDateFromFirebaseTimestamp,
   getVerboseDateString,
 } from "@recnet/recnet-date-fns";
 import { Text, Flex, Button } from "@radix-ui/themes";
 import { useSearchParams } from "next/navigation";
 import { useAuth } from "@recnet/recnet-web/app/AuthContext";
-import { useRec } from "@recnet/recnet-web/hooks/useRec";
 import { Pencil1Icon } from "@radix-ui/react-icons";
 import { useState } from "react";
 import { ChevronLeft } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Rec } from "@recnet/recnet-web/types/rec";
-import { User } from "@recnet/recnet-web/types/user";
+import { Rec } from "@recnet/recnet-api-model";
 import { Skeleton, SkeletonText } from "@recnet/recnet-web/components/Skeleton";
 import { RecForm } from "@recnet/recnet-web/components/RecForm";
 import { CutoffDropdown } from "@recnet/recnet-web/components/CutoffDropdown";
+import { trpc } from "../_trpc/client";
 
 function RecStatusPanel(props: {
   setIsRecFormOpen: (open: boolean) => void;
-  hasRecInThisCycle: boolean;
-  user: User;
   rec: Rec | null;
   isLoading: boolean;
 }) {
-  const { setIsRecFormOpen, hasRecInThisCycle, user, rec, isLoading } = props;
+  const { setIsRecFormOpen, rec, isLoading } = props;
+  const { user } = useAuth();
 
   if (isLoading) {
     return (
@@ -64,27 +61,27 @@ function RecStatusPanel(props: {
         size="2"
         className="text-gray-11 p-1"
         weight="medium"
-        asChild={hasRecInThisCycle ?? undefined}
+        asChild={rec ? true : undefined}
       >
-        {hasRecInThisCycle ? (
+        {rec ? (
           <p>
             Upcoming rec:{" "}
             <span
               className="text-blue-11 cursor-pointer"
               onClick={() => {
                 // open window
-                window.open(rec?.link, "_blank");
+                window.open(rec.article.link, "_blank");
               }}
             >
-              {rec?.title}
+              {rec.article.title}
             </span>
           </p>
         ) : (
-          `Hi, ${user.displayName} 👋`
+          `Hi, ${user?.displayName} 👋`
         )}
       </Text>
       <Text size="2" className="text-gray-11 p-1" weight="medium">
-        {hasRecInThisCycle
+        {rec
           ? "You can modify at anytime before this cycle ends."
           : `Any interesting read this week?`}
       </Text>
@@ -98,10 +95,10 @@ function RecStatusPanel(props: {
           onClick={() => {
             setIsRecFormOpen(true);
           }}
-          variant={hasRecInThisCycle ? "outline" : "solid"}
+          variant={rec ? "outline" : "solid"}
         >
           <Pencil1Icon width="16" height="16" />
-          {hasRecInThisCycle ? "Edit your rec" : "Recommend a paper"}
+          {rec ? "Edit your rec" : "Recommend a paper"}
         </Button>
       </Flex>
       <Text size="1" weight="medium" className="text-gray-9 p-1">
@@ -117,16 +114,10 @@ export function LeftPanel() {
   const cutoff = date ? getCutOff(new Date(date)) : getLatestCutOff();
   const cutoffs = getCutOffFromStartDate();
   const { user, revalidateUser } = useAuth();
-  const lastPostId = user?.postIds
-    ? user.postIds[user.postIds.length - 1]
-    : null;
-  const { rec, mutate, isLoading, isValidating } = useRec(lastPostId, {
-    onErrorCallback: () => {}, // After deleting rec, the hook wil fetch again and throw a not-found error due to a time difference
-  });
-  const hasRecInThisCycle =
-    !!rec &&
-    getDateFromFirebaseTimestamp(rec.cutoff).getTime() ===
-      getNextCutOff().getTime();
+  const { data, isPending } = trpc.getUpcomingRec.useQuery();
+  const rec = data?.rec ?? null;
+  const utils = trpc.useUtils();
+
   const [isRecFormOpen, setIsRecFormOpen] = useState(false);
 
   if (!user) {
@@ -189,15 +180,15 @@ export function LeftPanel() {
                 onFinish={() => {
                   setIsRecFormOpen(false);
                 }}
-                currentRec={hasRecInThisCycle ? rec : null}
+                currentRec={rec}
                 user={user}
                 onUpdateSuccess={async () => {
                   await revalidateUser();
-                  mutate();
+                  utils.getUpcomingRec.invalidate();
                 }}
                 onDeleteSuccess={async () => {
                   await revalidateUser();
-                  await mutate();
+                  await utils.getUpcomingRec.invalidate();
                 }}
               />
             </motion.div>
@@ -220,10 +211,8 @@ export function LeftPanel() {
             >
               <RecStatusPanel
                 setIsRecFormOpen={setIsRecFormOpen}
-                user={user}
                 rec={rec}
-                hasRecInThisCycle={hasRecInThisCycle}
-                isLoading={isLoading || isValidating}
+                isLoading={isPending}
               />
               <div className="w-full h-[1px] bg-gray-8" />
               <div className="w-full p-2 flex flex-col gap-y-2">

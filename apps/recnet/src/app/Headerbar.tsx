@@ -14,10 +14,11 @@ import { logout, useGoogleLogin } from "@recnet/recnet-web/firebase/auth";
 import { useAuth } from "@recnet/recnet-web/app/AuthContext";
 import { MagnifyingGlassIcon, Cross1Icon } from "@radix-ui/react-icons";
 import { useState, useRef, useEffect, useCallback } from "react";
-import { User } from "@recnet/recnet-web/types/user";
+import { User } from "@recnet/recnet-api-model";
 import { useRouter, usePathname } from "next/navigation";
 import { Avatar } from "@recnet/recnet-web/components/Avatar";
 import { AnimatePresence, motion } from "framer-motion";
+import { UserRole } from "../constant";
 
 export function UserDropdown({ user }: { user: User }) {
   const router = useRouter();
@@ -37,9 +38,9 @@ export function UserDropdown({ user }: { user: User }) {
       </DropdownMenu.Trigger>
       <DropdownMenu.Content align="center" className="mt-1 sm:w-[120px]">
         <DropdownMenu.Item asChild>
-          <Link href={`/${user.username}`}>Profile</Link>
+          <Link href={`/${user.handle}`}>Profile</Link>
         </DropdownMenu.Item>
-        {user.role && user.role === "admin" ? (
+        {user.role && user.role === UserRole.ADMIN ? (
           <DropdownMenu.Item asChild>
             <Link href={`/admin`}>Admin Panel</Link>
           </DropdownMenu.Item>

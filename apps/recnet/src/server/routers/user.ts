@@ -2,10 +2,11 @@ import { publicProcedure, router } from "../trpc";
 import { z } from "zod";
 import {
   checkFirebaseJWTProcedure,
+  checkIsAdminProcedure,
   checkRecnetJWTProcedure,
+  getUserByTokens,
 } from "./middleware";
 import { db } from "@recnet/recnet-web/firebase/admin";
-import { TRPCError } from "@trpc/server";
 import { userPreviewSchema, userSchema } from "@recnet/recnet-api-model";
 import { UserRole } from "@recnet/recnet-web/constant";
 import { FieldValue } from "firebase-admin/firestore";
@@ -29,13 +30,8 @@ export const userRouter = router({
         .get();
 
       if (querySnapshot.empty) {
-        console.log("User not found");
-        throw new TRPCError({
-          code: "NOT_FOUND",
-          message: "User not found",
-        });
+        throw new Error("User not found");
       }
-      // reurn user
       const user = userSchema.parse({
         id: querySnapshot.docs[0].id,
         handle: querySnapshot.docs[0].data().username,
@@ -301,12 +297,26 @@ export const userRouter = router({
         }),
       };
     }),
-  getMe: checkRecnetJWTProcedure
-    .output(z.object({ user: userSchema }))
+  getMe: publicProcedure
+    .output(z.object({ user: userSchema.nullable() }))
     .query(async (opts) => {
-      const { user } = opts.ctx;
+      const { tokens } = opts.ctx;
+      if (!tokens) {
+        return {
+          user: null,
+        };
+      }
+      const user = await getUserByTokens(tokens);
       return {
         user,
+      };
+    }),
+  getNumOfUsers: checkIsAdminProcedure
+    .output(z.object({ num: z.number() }))
+    .query(async () => {
+      const users = await db.collection("users").get();
+      return {
+        num: users.size,
       };
     }),
 });

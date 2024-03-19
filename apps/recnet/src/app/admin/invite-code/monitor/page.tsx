@@ -5,22 +5,19 @@ import {
   AdminSectionBox,
   AdminSectionTitle,
 } from "@recnet/recnet-web/app/admin/AdminSections";
-import { useInviteCodes } from "@recnet/recnet-web/hooks/useInviteCodes";
 import { Flex, Table, Text } from "@radix-ui/themes";
-import {
-  getDateFromFirebaseTimestamp,
-  formatDate,
-} from "@recnet/recnet-date-fns";
+import { formatDate } from "@recnet/recnet-date-fns";
 import { Avatar } from "@recnet/recnet-web/components/Avatar";
 import { RecNetLink } from "@recnet/recnet-web/components/Link";
 import { TailSpin } from "react-loader-spinner";
-import { User } from "@recnet/recnet-web/types/user";
+import { UserPreview } from "@recnet/recnet-api-model";
 import { CopiableInviteCode } from "@recnet/recnet-web/components/InviteCode";
+import { trpc } from "@recnet/recnet-web/app/_trpc/client";
 
-const TableUserCard = (props: { user: User }) => {
+const TableUserCard = (props: { user: UserPreview }) => {
   const { user } = props;
   return (
-    <RecNetLink href={`/${user.username}`}>
+    <RecNetLink href={`/${user.handle}`}>
       <Flex gap="2" className="items-center gap-x-2">
         <Avatar user={user} className={cn("w-[40px]", "h-[40px]")} />
         <Text className="whitespace-nowrap">{user.displayName}</Text>
@@ -46,7 +43,8 @@ const TableLoader = () => {
 };
 
 export default function InviteCodeMonitorPage() {
-  const { inviteCodes, isLoading } = useInviteCodes();
+  const { data, isPending } = trpc.getAllInviteCodes.useQuery();
+  const inviteCodes = data?.inviteCodes ?? [];
 
   return (
     <div className={cn("w-full", "md:w-[85%]", "flex", "flex-col", "gap-y-4")}>
@@ -55,7 +53,7 @@ export default function InviteCodeMonitorPage() {
           Invite Code Monitor
         </AdminSectionTitle>
         <AdminSectionBox>
-          {inviteCodes && !isLoading ? (
+          {inviteCodes && !isPending ? (
             <Table.Root className="w-full max-h-[60svh] relative table-fixed">
               <Table.Header className="sticky top-0 bg-white z-[500]">
                 <Table.Row>
@@ -70,17 +68,15 @@ export default function InviteCodeMonitorPage() {
 
               <Table.Body>
                 {inviteCodes
-                  .filter((c) => c.used)
+                  .filter((c) => c.usedBy)
                   .map((inviteCode) => (
-                    <Table.Row className="align-middle" key={inviteCode.id}>
+                    <Table.Row className="align-middle" key={inviteCode.code}>
                       <Table.RowHeaderCell>
-                        <CopiableInviteCode inviteCode={inviteCode.id} />
+                        <CopiableInviteCode inviteCode={inviteCode.code} />
                       </Table.RowHeaderCell>
                       <Table.Cell>
                         {inviteCode.usedAt
-                          ? formatDate(
-                              getDateFromFirebaseTimestamp(inviteCode.usedAt)
-                            )
+                          ? formatDate(new Date(inviteCode.usedAt))
                           : "-"}
                       </Table.Cell>
                       <Table.Cell>
@@ -91,11 +87,7 @@ export default function InviteCodeMonitorPage() {
                         )}
                       </Table.Cell>
                       <Table.Cell>
-                        {inviteCode.issuedTo ? (
-                          <TableUserCard user={inviteCode.issuedTo} />
-                        ) : (
-                          "-"
-                        )}
+                        <TableUserCard user={inviteCode.owner} />
                       </Table.Cell>
                     </Table.Row>
                   ))}
@@ -107,7 +99,7 @@ export default function InviteCodeMonitorPage() {
         </AdminSectionBox>
         <AdminSectionTitle>Unused Invite Codes</AdminSectionTitle>
         <AdminSectionBox>
-          {inviteCodes && !isLoading ? (
+          {inviteCodes && !isPending ? (
             <Table.Root className="w-full max-h-[60svh] relative">
               <Table.Header className="sticky top-0 bg-white z-[500]">
                 <Table.Row>
@@ -120,18 +112,14 @@ export default function InviteCodeMonitorPage() {
 
               <Table.Body>
                 {inviteCodes
-                  .filter((c) => !c.used)
+                  .filter((c) => !c.usedBy)
                   .map((inviteCode) => (
-                    <Table.Row className="align-middle" key={inviteCode.id}>
+                    <Table.Row className="align-middle" key={inviteCode.code}>
                       <Table.RowHeaderCell>
-                        <CopiableInviteCode inviteCode={inviteCode.id} />
+                        <CopiableInviteCode inviteCode={inviteCode.code} />
                       </Table.RowHeaderCell>
                       <Table.Cell>
-                        {inviteCode.issuedTo ? (
-                          <TableUserCard user={inviteCode.issuedTo} />
-                        ) : (
-                          "-"
-                        )}
+                        <TableUserCard user={inviteCode.owner} />
                       </Table.Cell>
                     </Table.Row>
                   ))}

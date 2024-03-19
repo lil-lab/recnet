@@ -7,7 +7,6 @@ import { HomeIcon } from "@radix-ui/react-icons";
 import { RecNetLink } from "@recnet/recnet-web/components/Link";
 import { useAuth } from "@recnet/recnet-web/app/AuthContext";
 import { FollowButton } from "@recnet/recnet-web/components/FollowButton";
-import { useUser } from "@recnet/recnet-web/hooks/useUser";
 import { useRouter } from "next/navigation";
 import { Skeleton, SkeletonText } from "@recnet/recnet-web/components/Skeleton";
 import { useState } from "react";
@@ -20,6 +19,7 @@ import {
   isErrorWithMessage,
 } from "@recnet/recnet-web/utils/error";
 import { toast } from "sonner";
+import { trpc } from "../_trpc/client";
 
 const UsernameBlacklist = [
   "about",
@@ -57,9 +57,9 @@ const EditUserProfileSchema = z.object({
     .optional(),
 });
 
-function EditProfileDialog(props: { username: string }) {
-  const { username } = props;
-  const { mutate } = useUser(username);
+function EditProfileDialog(props: { handle: string }) {
+  const { handle } = props;
+  const utils = trpc.useUtils();
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const { user, revalidateUser } = useAuth();
@@ -68,7 +68,7 @@ function EditProfileDialog(props: { username: string }) {
     resolver: zodResolver(EditUserProfileSchema),
     defaultValues: {
       name: user?.displayName,
-      username: user?.username,
+      username: user?.handle,
       affiliation: user?.affiliation,
     },
     mode: "onBlur",
@@ -94,7 +94,7 @@ function EditProfileDialog(props: { username: string }) {
             // if no changes, close dialog
             if (
               res.data.name === user.displayName &&
-              res.data.username === user.username &&
+              res.data.username === user.handle &&
               res.data.affiliation === user.affiliation
             ) {
               setOpen(false);
@@ -104,13 +104,13 @@ function EditProfileDialog(props: { username: string }) {
               const newUserName = await updateUser(res.data, user.id);
               toast.success("Profile updated successfully!");
               // revaildate user profile
-              const oldUserName = user.username;
+              const oldUserName = user.handle;
               revalidateUser();
               if (newUserName !== oldUserName) {
                 // if user change username, redirect to new user profile
                 router.replace(`/${newUserName}`);
               } else {
-                mutate();
+                utils.getUserByHandle.invalidate({ handle: handle });
                 setOpen(false);
               }
             } catch (error) {
@@ -201,17 +201,15 @@ function EditProfileDialog(props: { username: string }) {
   );
 }
 
-export function Profile(props: { username: string }) {
+// TODO: change username to handle
+export function Profile(props: { handle: string }) {
   const router = useRouter();
-  const { username } = props;
-  const { user, isLoading } = useUser(username, {
-    onErrorCallback: () => {
-      // redirect to 404 page
-      router.replace("/404");
-    },
+  const { handle } = props;
+  const { data, isLoading } = trpc.getUserByHandle.useQuery({
+    handle,
   });
   const { user: me } = useAuth();
-  const isMe = !!me && !!user && me.username === user.username;
+  const isMe = !!me && !!data?.user && me.handle === data.user.handle;
 
   if (isLoading) {
     return (
@@ -245,7 +243,7 @@ export function Profile(props: { username: string }) {
     );
   }
 
-  if (!user) {
+  if (!data?.user) {
     router.replace("/404");
     return null;
   }
@@ -254,7 +252,7 @@ export function Profile(props: { username: string }) {
     <div className={cn("flex-col", "gap-y-6", "flex")}>
       <Flex className="items-center p-3 gap-x-6">
         <Flex>
-          <Avatar user={user} className={cn("w-[80px]", "h-[80px]")} />
+          <Avatar user={data.user} className={cn("w-[80px]", "h-[80px]")} />
         </Flex>
         <Flex className="flex-grow flex-col justify-between h-full">
           <Flex className="justify-between items-center">
@@ -266,7 +264,7 @@ export function Profile(props: { username: string }) {
                 }}
                 weight="medium"
               >
-                {user.displayName}
+                {data.user.displayName}
               </Text>
               <Text
                 size={{
@@ -274,29 +272,29 @@ export function Profile(props: { username: string }) {
                   sm: "4",
                 }}
               >
-                {"@" + user.username}
+                {"@" + data.user.handle}
               </Text>
             </Flex>
             <Flex className="w-fit">
               {isMe ? (
-                <EditProfileDialog username={username} />
+                <EditProfileDialog handle={data.user.handle} />
               ) : (
-                <FollowButton user={user} />
+                <FollowButton user={data.user} />
               )}
             </Flex>
           </Flex>
           <Flex className="sm:items-center gap-x-[10px] p-2 sm:p-1 flex-wrap flex-col sm:flex-row">
-            {user.affiliation ? (
+            {data.user.affiliation ? (
               <Flex className="items-center gap-x-1 text-gray-11">
                 <HomeIcon width="16" height="16" />
-                <Text size="3">{user.affiliation}</Text>
+                <Text size="3">{data.user.affiliation}</Text>
                 <Text size="3" className="sm:ml-[6px] hidden sm:inline-block">
                   /
                 </Text>
               </Flex>
             ) : null}
             <Flex className="items-center gap-x-1 text-gray-11">
-              <Text size="3">{`${user.followers.length} Follower${user.followers.length > 1 ? "s" : ""}`}</Text>
+              <Text size="3">{`${data.user.numFollowers} Follower${data.user.numFollowers > 1 ? "s" : ""}`}</Text>
             </Flex>
             {isMe ? (
               <Flex className="items-center gap-x-1 text-gray-11">

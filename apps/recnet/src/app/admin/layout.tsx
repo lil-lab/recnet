@@ -3,6 +3,7 @@ import { cn } from "@recnet/recnet-web/utils/cn";
 import { AdminPanelNavbar } from "@recnet/recnet-web/app/admin/AdminPanelNav";
 import { notFound } from "next/navigation";
 import { getUserServerSide } from "@recnet/recnet-web/utils/getUserServerSide";
+import { UserRole } from "@recnet/recnet-web/constant";
 
 export default async function Layout({
   children,
@@ -11,7 +12,7 @@ export default async function Layout({
 }>) {
   const user = await getUserServerSide();
 
-  if (!user || user?.role !== "admin") {
+  if (!user || user?.role !== UserRole.ADMIN) {
     notFound();
   }
 

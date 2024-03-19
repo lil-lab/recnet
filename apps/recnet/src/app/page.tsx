@@ -30,6 +30,7 @@ export default async function Home() {
       redirect("/feeds");
     },
   });
+
   return (
     <div
       className={cn(

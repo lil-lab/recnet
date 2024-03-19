@@ -1,6 +1,6 @@
 "use client";
 
-import { User } from "@recnet/recnet-web/types/user";
+import { UserPreview } from "@recnet/recnet-api-model";
 import { Button } from "@radix-ui/themes";
 import { useAuth } from "@recnet/recnet-web/app/AuthContext";
 import { useState } from "react";
@@ -10,13 +10,13 @@ import { TailSpin } from "react-loader-spinner";
 
 type RadixButtonProps = React.ComponentProps<typeof Button>;
 interface FollowButtonProps extends Omit<RadixButtonProps, "variant"> {
-  user: User;
+  user: UserPreview;
 }
 
 export function FollowButton(props: FollowButtonProps) {
   const { user, ...rest } = props;
   const { user: me, revalidateUser } = useAuth();
-  const isFollowing = me?.following.includes(user.id);
+  const isFollowing = me?.following.map((up) => up.id).includes(user.id);
 
   const [isLoading, setIsLoading] = useState(false);
 

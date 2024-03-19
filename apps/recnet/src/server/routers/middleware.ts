@@ -16,9 +16,9 @@ import { notEmpty } from "@recnet/recnet-web/utils/notEmpty";
  * @param tokens Tokens: user tokens from next-firebase-auth-edge
  * @returns User: parsed by userSchema
  *
- * Note: Internal function and used in trpc middlewares
+ * Note: Internal function and used in trpc middlewares or procedures
  */
-async function _getUserByTokens(tokens: Tokens) {
+export async function getUserByTokens(tokens: Tokens) {
   // REFACTOR_AFTER_MIGRATION
   const { decodedToken } = tokens;
   const email = decodedToken.email as string;
@@ -100,7 +100,7 @@ export const checkRecnetJWTProcedure = publicProcedure.use(async (opts) => {
       message: "Unauthorized, missing Recnet secret",
     });
   }
-  const user = await _getUserByTokens(tokens);
+  const user = await getUserByTokens(tokens);
   return opts.next({
     ctx: {
       tokens: parseRes.data,
@@ -128,7 +128,7 @@ export const checkIsAdminProcedure = publicProcedure.use(async (opts) => {
       });
     }
   }
-  const user = await _getUserByTokens(tokens);
+  const user = await getUserByTokens(tokens);
   return opts.next({
     ctx: {
       tokens: parseRes.data,
