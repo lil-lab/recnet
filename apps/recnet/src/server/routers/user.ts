@@ -296,7 +296,7 @@ export const userRouter = router({
           displayName: displayName,
           photoUrl: docSnap.data()?.photoURL,
           affiliation: affiliation,
-          bio: docSnap.data()?.bio,
+          bio: docSnap.data()?.bio ?? null,
           numFollowers: docSnap.data()?.followers.length,
           email: docSnap.data()?.email,
           role: docSnap.data()?.role,

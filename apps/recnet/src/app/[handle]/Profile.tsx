@@ -29,7 +29,7 @@ const HandleBlacklist = [
 ];
 
 const EditUserProfileSchema = z.object({
-  name: z.string().min(1, "Name cannot be blank."),
+  displayName: z.string().min(1, "Name cannot be blank."),
   handle: z
     .string()
     .min(4)
@@ -62,7 +62,7 @@ function EditProfileDialog(props: { handle: string }) {
   const { register, handleSubmit, formState, setError, control } = useForm({
     resolver: zodResolver(EditUserProfileSchema),
     defaultValues: {
-      name: user?.displayName,
+      displayName: user?.displayName,
       handle: user?.handle,
       affiliation: user?.affiliation,
     },
@@ -142,11 +142,11 @@ function EditProfileDialog(props: { handle: string }) {
               </Text>
               <TextField.Input
                 placeholder="Enter your name"
-                {...register("name")}
+                {...register("displayName")}
               />
-              {formState.errors.name ? (
+              {formState.errors.displayName ? (
                 <Text size="1" color="red">
-                  {formState.errors.name.message}
+                  {formState.errors.displayName.message}
                 </Text>
               ) : null}
             </label>
