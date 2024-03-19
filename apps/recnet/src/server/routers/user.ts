@@ -10,6 +10,7 @@ import { db } from "@recnet/recnet-web/firebase/admin";
 import { userPreviewSchema, userSchema } from "@recnet/recnet-api-model";
 import { UserRole } from "@recnet/recnet-web/constant";
 import { FieldValue } from "firebase-admin/firestore";
+import { TRPCError } from "@trpc/server";
 
 export const userRouter = router({
   login: checkFirebaseJWTProcedure
@@ -271,7 +272,10 @@ export const userRouter = router({
             .where("username", "==", handle)
             .get();
           if (!snapshot.empty) {
-            throw new Error("Username already exists.");
+            throw new TRPCError({
+              code: "CONFLICT",
+              message: "User handle already exists",
+            });
           }
         }
       }

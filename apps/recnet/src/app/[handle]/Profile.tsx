@@ -13,15 +13,11 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { updateUser } from "@recnet/recnet-web/server/user";
-import {
-  getErrorMessage,
-  isErrorWithMessage,
-} from "@recnet/recnet-web/utils/error";
 import { toast } from "sonner";
 import { trpc } from "../_trpc/client";
+import { TRPCClientError } from "@trpc/client";
 
-const UsernameBlacklist = [
+const HandleBlacklist = [
   "about",
   "api",
   "all-users",
@@ -34,21 +30,20 @@ const UsernameBlacklist = [
 
 const EditUserProfileSchema = z.object({
   name: z.string().min(1, "Name cannot be blank."),
-  username: z
+  handle: z
     .string()
     .min(4)
     .max(15)
     .regex(
       /^[A-Za-z0-9_]+$/,
-      "Username should be between 4 to 15 characters and contain only letters (A-Z, a-z), numbers, and underscores (_)."
+      "User handle should be between 4 to 15 characters and contain only letters (A-Z, a-z), numbers, and underscores (_)."
     )
     .refine(
       (name) => {
-        // username cannot be in blacklist or prefix with any reserved path
-        return !UsernameBlacklist.includes(name);
+        return !HandleBlacklist.includes(name);
       },
       {
-        message: "Username is not allowed.",
+        message: "User handle is not allowed.",
       }
     ),
   affiliation: z
@@ -68,11 +63,13 @@ function EditProfileDialog(props: { handle: string }) {
     resolver: zodResolver(EditUserProfileSchema),
     defaultValues: {
       name: user?.displayName,
-      username: user?.handle,
+      handle: user?.handle,
       affiliation: user?.affiliation,
     },
     mode: "onBlur",
   });
+
+  const updateProfileMutation = trpc.updateUser.useMutation();
 
   return (
     <Dialog.Root open={open} onOpenChange={setOpen}>
@@ -92,37 +89,43 @@ function EditProfileDialog(props: { handle: string }) {
               return;
             }
             // if no changes, close dialog
-            if (
-              res.data.name === user.displayName &&
-              res.data.username === user.handle &&
-              res.data.affiliation === user.affiliation
-            ) {
+            if (!formState.isDirty) {
               setOpen(false);
               return;
             }
             try {
-              const newUserName = await updateUser(res.data, user.id);
+              const oldHandle = user.handle;
+              const updatedData = await updateProfileMutation.mutateAsync(
+                {
+                  newData: res.data,
+                },
+                {
+                  onError: (error) => {
+                    if (
+                      error instanceof TRPCClientError &&
+                      error.data.code === "CONFLICT" &&
+                      error.message === "User handle already exists"
+                    ) {
+                      setError("handle", {
+                        type: "manual",
+                        message: "User handle already exists.",
+                      });
+                    }
+                  },
+                }
+              );
               toast.success("Profile updated successfully!");
               // revaildate user profile
-              const oldUserName = user.handle;
               revalidateUser();
-              if (newUserName !== oldUserName) {
-                // if user change username, redirect to new user profile
-                router.replace(`/${newUserName}`);
+              if (updatedData.user.handle !== oldHandle) {
+                // if user change user handle, redirect to new user profile
+                router.replace(`/${updatedData.user.handle}`);
               } else {
                 utils.getUserByHandle.invalidate({ handle: handle });
                 setOpen(false);
               }
             } catch (error) {
-              if (
-                isErrorWithMessage(error) &&
-                getErrorMessage(error) === "Username already exists."
-              ) {
-                setError("username", {
-                  type: "manual",
-                  message: "Username already exists.",
-                });
-              }
+              console.log(error);
             }
           })}
         >
@@ -152,11 +155,11 @@ function EditProfileDialog(props: { handle: string }) {
               </Text>
               <TextField.Input
                 placeholder="Enter user handle"
-                {...register("username")}
+                {...register("handle")}
               />
-              {formState.errors.username ? (
+              {formState.errors.handle ? (
                 <Text size="1" color="red">
-                  {formState.errors.username.message}
+                  {formState.errors.handle.message}
                 </Text>
               ) : null}
             </label>
@@ -201,7 +204,6 @@ function EditProfileDialog(props: { handle: string }) {
   );
 }
 
-// TODO: change username to handle
 export function Profile(props: { handle: string }) {
   const router = useRouter();
   const { handle } = props;

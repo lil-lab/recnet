@@ -54,7 +54,6 @@ const SelectItem = forwardRef<HTMLDivElement, Select.SelectItemProps>(
 );
 SelectItem.displayName = "SelectItem";
 
-// TODO: year and month should be number
 const RecFormSchema = z.object({
   link: z.string().url(),
   title: z.string().min(1, "Title cannot be blank"),
