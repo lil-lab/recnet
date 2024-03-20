@@ -1,6 +1,7 @@
-import { cn } from "@recnet/recnet-web/utils/cn";
 import React from "react";
+
 import { LeftPanel } from "@recnet/recnet-web/app/feeds/LeftPanel";
+import { cn } from "@recnet/recnet-web/utils/cn";
 
 export default async function FeedPageLayout({
   children,

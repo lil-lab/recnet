@@ -1,3 +1,4 @@
+import { CalendarIcon } from "@radix-ui/react-icons";
 import {
   Button,
   Html,
@@ -14,7 +15,7 @@ import {
   Img,
 } from "@react-email/components";
 import * as React from "react";
-import { CalendarIcon } from "@radix-ui/react-icons";
+
 import type { RecWithUser } from "@recnet/recnet-web/types/rec";
 
 interface EmailRecCardProps {

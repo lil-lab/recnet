@@ -1,5 +1,6 @@
-import { FirebaseTs } from "@recnet/recnet-web/types/rec";
 import { Timestamp } from "firebase/firestore";
+
+import { FirebaseTs } from "@recnet/recnet-web/types/rec";
 
 const CYCLE_DUE_DAY = 2;
 export const WeekTs = 604800000 as const;

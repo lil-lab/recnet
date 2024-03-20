@@ -1,6 +1,6 @@
+const { Timestamp } = require("firebase/firestore");
 const admin = require("firebase-admin");
 const z = require("zod");
-const { Timestamp } = require("firebase/firestore");
 
 const firebaseEnvSchema = z.object({
   FIREBASE_PROJECT_ID: z.string(),

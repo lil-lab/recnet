@@ -1,6 +1,7 @@
-import { verifyJwt, getPublicKey, recnetJwtPayloadSchema } from "./recnet-jwt";
 import { expect, test, describe } from "vitest";
 import { z } from "zod";
+
+import { verifyJwt, getPublicKey, recnetJwtPayloadSchema } from "./recnet-jwt";
 
 const envSchema = z.object({
   TEST_JWT: z.string(),

@@ -1,5 +1,6 @@
-const { NxWebpackPlugin } = require("@nx/webpack");
 const { join } = require("path");
+
+const { NxWebpackPlugin } = require("@nx/webpack");
 
 module.exports = {
   output: {

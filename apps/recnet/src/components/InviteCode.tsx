@@ -1,9 +1,10 @@
 "use client";
 
-import { Flex, Text } from "@radix-ui/themes";
 import { CopyIcon } from "@radix-ui/react-icons";
-import { useCopyToClipboard } from "@recnet/recnet-web/hooks/useCopyToClipboard";
+import { Flex, Text } from "@radix-ui/themes";
 import { toast } from "sonner";
+
+import { useCopyToClipboard } from "@recnet/recnet-web/hooks/useCopyToClipboard";
 
 export const CopiableInviteCode = (props: { inviteCode: string }) => {
   const { inviteCode } = props;

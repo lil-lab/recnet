@@ -1,12 +1,13 @@
 "use client";
 
-import { User } from "@recnet/recnet-web/types/user";
 import { Button } from "@radix-ui/themes";
-import { useAuth } from "@recnet/recnet-web/app/AuthContext";
 import { useState } from "react";
-import { toast } from "sonner";
-import { follow, unfollow } from "@recnet/recnet-web/server/user";
 import { TailSpin } from "react-loader-spinner";
+import { toast } from "sonner";
+
+import { useAuth } from "@recnet/recnet-web/app/AuthContext";
+import { follow, unfollow } from "@recnet/recnet-web/server/user";
+import { User } from "@recnet/recnet-web/types/user";
 
 type RadixButtonProps = React.ComponentProps<typeof Button>;
 interface FollowButtonProps extends Omit<RadixButtonProps, "variant"> {

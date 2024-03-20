@@ -1,5 +1,6 @@
-import { dateSchema } from "./model";
 import { expect, test } from "vitest";
+
+import { dateSchema } from "./model";
 
 test("Timestamp should be coerced and parsed as Date", () => {
   const date = new Date();

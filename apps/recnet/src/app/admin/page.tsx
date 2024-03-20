@@ -1,5 +1,6 @@
-import { cn } from "@recnet/recnet-web/utils/cn";
 import { redirect } from "next/navigation";
+
+import { cn } from "@recnet/recnet-web/utils/cn";
 
 // Leave this page here, redirect to user-rec stats for now
 // We would want to build admin main page in the future

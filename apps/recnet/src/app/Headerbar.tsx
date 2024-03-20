@@ -1,6 +1,6 @@
 "use client";
 
-import { cn } from "@recnet/recnet-web/utils/cn";
+import { MagnifyingGlassIcon, Cross1Icon } from "@radix-ui/react-icons";
 import {
   Button,
   DropdownMenu,
@@ -9,15 +9,16 @@ import {
   Text,
   TextField,
 } from "@radix-ui/themes";
-import Link from "next/link";
-import { logout, useGoogleLogin } from "@recnet/recnet-web/firebase/auth";
-import { useAuth } from "@recnet/recnet-web/app/AuthContext";
-import { MagnifyingGlassIcon, Cross1Icon } from "@radix-ui/react-icons";
-import { useState, useRef, useEffect, useCallback } from "react";
-import { User } from "@recnet/recnet-web/types/user";
-import { useRouter, usePathname } from "next/navigation";
-import { Avatar } from "@recnet/recnet-web/components/Avatar";
 import { AnimatePresence, motion } from "framer-motion";
+import Link from "next/link";
+import { useRouter, usePathname } from "next/navigation";
+import { useState, useRef, useEffect, useCallback } from "react";
+
+import { useAuth } from "@recnet/recnet-web/app/AuthContext";
+import { Avatar } from "@recnet/recnet-web/components/Avatar";
+import { logout, useGoogleLogin } from "@recnet/recnet-web/firebase/auth";
+import { User } from "@recnet/recnet-web/types/user";
+import { cn } from "@recnet/recnet-web/utils/cn";
 
 export function UserDropdown({ user }: { user: User }) {
   const router = useRouter();
