@@ -1,12 +1,12 @@
 import { Inject, Injectable } from "@nestjs/common";
 
-import { GetUsersResponse, UserPreview } from "@recnet/recnet-api-model";
-
 import UserRepository from "@recnet-api/database/repository/user.repository";
 import { UserPreview as DbUserPreview } from "@recnet-api/database/repository/user.repository.type";
 import { getOffset } from "@recnet-api/utils";
 
+import { UserPreview } from "./entities/user.preview.entity";
 import { UserFilterBy } from "./user.type";
+import { GetUsersResponse } from "./user.response";
 
 @Injectable()
 export class UserService {
