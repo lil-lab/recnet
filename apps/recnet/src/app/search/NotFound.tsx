@@ -1,7 +1,7 @@
 "use client";
 
-import { Callout } from "@radix-ui/themes";
 import { QuestionMarkCircledIcon } from "@radix-ui/react-icons";
+import { Callout } from "@radix-ui/themes";
 
 const DEFAULT_MESSAGE =
   "Your search did not match any users. Please check the spelling and try again";

@@ -1,12 +1,15 @@
+import { Pencil1Icon, PersonIcon } from "@radix-ui/react-icons";
+
+import { serverClient } from "@recnet/recnet-web/app/_trpc/serverClient";
 import {
   StatBox,
   StatBoxSkeleton,
 } from "@recnet/recnet-web/app/admin/stats/StatBox";
-import { Pencil1Icon, PersonIcon } from "@radix-ui/react-icons";
 import { withSuspense } from "@recnet/recnet-web/utils/withSuspense";
+
 import { RecsCycleBarChart } from "./RecsCycleBarChart";
+
 import { AdminSectionTitle } from "../../AdminSections";
-import { serverClient } from "@recnet/recnet-web/app/_trpc/serverClient";
 
 const CurrentUserCount = withSuspense(
   async () => {

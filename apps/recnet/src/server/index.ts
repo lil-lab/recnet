@@ -1,8 +1,8 @@
-import { mergeRouters } from "./trpc";
-import { publicRouter } from "./routers/public";
-import { userRouter } from "./routers/user";
-import { recRouter } from "./routers/rec";
 import { inviteCodeRouter } from "./routers/inviteCode";
+import { publicRouter } from "./routers/public";
+import { recRouter } from "./routers/rec";
+import { userRouter } from "./routers/user";
+import { mergeRouters } from "./trpc";
 
 export const appRouter = mergeRouters(
   publicRouter,

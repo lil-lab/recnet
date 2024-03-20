@@ -1,5 +1,6 @@
 import { NextRequest } from "next/server";
 import { authMiddleware } from "next-firebase-auth-edge";
+
 import { authConfig } from "@recnet/recnet-web/serverEnv";
 
 export async function middleware(request: NextRequest) {

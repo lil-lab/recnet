@@ -1,14 +1,18 @@
 "use client";
 
-import React, { useEffect, useCallback } from "react";
-import { getAuth, onIdTokenChanged, User as FirebaseUser } from "firebase/auth";
-import { AuthContext } from "./AuthContext";
-import { getFirebaseApp } from "@recnet/recnet-web/firebase/client";
-import { usePathname, useRouter } from "next/navigation";
-import { trpc } from "./_trpc/client";
-import { User } from "@recnet/recnet-api-model";
-import { setRecnetCustomClaims } from "@recnet/recnet-web/utils/setRecnetCustomClaims";
 import { TRPCClientError } from "@trpc/client";
+import { getAuth, onIdTokenChanged, User as FirebaseUser } from "firebase/auth";
+import { usePathname, useRouter } from "next/navigation";
+import React, { useEffect, useCallback } from "react";
+
+import { User } from "@recnet/recnet-api-model";
+
+import { getFirebaseApp } from "@recnet/recnet-web/firebase/client";
+import { setRecnetCustomClaims } from "@recnet/recnet-web/utils/setRecnetCustomClaims";
+
+import { AuthContext } from "./AuthContext";
+import { trpc } from "./_trpc/client";
+
 import useMount from "../hooks/useMount";
 
 export interface AuthProviderProps {

@@ -1,8 +1,9 @@
-import { publicProcedure, router } from "../trpc";
-import { z } from "zod";
-import { checkIsAdminProcedure, checkRecnetJWTProcedure } from "./middleware";
-import { db } from "@recnet/recnet-web/firebase/admin";
 import { TRPCError } from "@trpc/server";
+import { FieldValue } from "firebase-admin/firestore";
+import { Timestamp } from "firebase-admin/firestore";
+import groupBy from "lodash.groupby";
+import { z } from "zod";
+
 import { Rec, recSchema, userPreviewSchema } from "@recnet/recnet-api-model";
 import {
   getDateFromFirebaseTimestamp,
@@ -10,12 +11,15 @@ import {
   monthToNum,
   Month,
 } from "@recnet/recnet-date-fns";
-import { FieldValue } from "firebase-admin/firestore";
-import { Timestamp } from "firebase-admin/firestore";
 import { getNextCutOff } from "@recnet/recnet-date-fns";
+
+import { db } from "@recnet/recnet-web/firebase/admin";
 import { notEmpty } from "@recnet/recnet-web/utils/notEmpty";
 import { shuffleArray } from "@recnet/recnet-web/utils/shuffle";
-import groupBy from "lodash.groupby";
+
+import { checkIsAdminProcedure, checkRecnetJWTProcedure } from "./middleware";
+
+import { publicProcedure, router } from "../trpc";
 
 export const recRouter = router({
   getUpcomingRec: checkRecnetJWTProcedure

@@ -1,9 +1,11 @@
 "use server";
 import "server-only";
 import { getFirebaseAuth } from "next-firebase-auth-edge";
+
+import { UserRole } from "@recnet/recnet-api-model";
+
 import { authConfig } from "../serverEnv";
 import { getTokenServerSide } from "../utils/getTokenServerSide";
-import { UserRole } from "@recnet/recnet-api-model";
 
 export async function setRecnetCustomClaims(role: UserRole, userId: string) {
   const { setCustomUserClaims } = getFirebaseAuth({

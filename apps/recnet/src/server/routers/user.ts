@@ -1,16 +1,20 @@
-import { publicProcedure, router } from "../trpc";
+import { TRPCError } from "@trpc/server";
+import { FieldValue } from "firebase-admin/firestore";
 import { z } from "zod";
+
+import { userPreviewSchema, userSchema } from "@recnet/recnet-api-model";
+
+import { UserRole } from "@recnet/recnet-web/constant";
+import { db } from "@recnet/recnet-web/firebase/admin";
+
 import {
   checkFirebaseJWTProcedure,
   checkIsAdminProcedure,
   checkRecnetJWTProcedure,
   getUserByTokens,
 } from "./middleware";
-import { db } from "@recnet/recnet-web/firebase/admin";
-import { userPreviewSchema, userSchema } from "@recnet/recnet-api-model";
-import { UserRole } from "@recnet/recnet-web/constant";
-import { FieldValue } from "firebase-admin/firestore";
-import { TRPCError } from "@trpc/server";
+
+import { publicProcedure, router } from "../trpc";
 
 export const userRouter = router({
   login: checkFirebaseJWTProcedure

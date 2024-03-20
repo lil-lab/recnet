@@ -1,15 +1,18 @@
+import { Text } from "@radix-ui/themes";
+import groupBy from "lodash.groupby";
+import { notFound, redirect } from "next/navigation";
+
 import {
   getCutOff,
   getLatestCutOff,
   START_DATE,
 } from "@recnet/recnet-date-fns";
-import { getUserServerSide } from "@recnet/recnet-web/utils/getUserServerSide";
-import { notFound, redirect } from "next/navigation";
+
 import { RecCard } from "@recnet/recnet-web/components/RecCard";
-import { Text } from "@radix-ui/themes";
 import { cn } from "@recnet/recnet-web/utils/cn";
-import groupBy from "lodash.groupby";
+import { getUserServerSide } from "@recnet/recnet-web/utils/getUserServerSide";
 import { notEmpty } from "@recnet/recnet-web/utils/notEmpty";
+
 import { serverClient } from "../_trpc/serverClient";
 
 function verifyDate(date: string) {

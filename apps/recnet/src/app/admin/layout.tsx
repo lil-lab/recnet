@@ -1,9 +1,10 @@
-import React from "react";
-import { cn } from "@recnet/recnet-web/utils/cn";
-import { AdminPanelNavbar } from "@recnet/recnet-web/app/admin/AdminPanelNav";
 import { notFound } from "next/navigation";
-import { getUserServerSide } from "@recnet/recnet-web/utils/getUserServerSide";
+import React from "react";
+
+import { AdminPanelNavbar } from "@recnet/recnet-web/app/admin/AdminPanelNav";
 import { UserRole } from "@recnet/recnet-web/constant";
+import { cn } from "@recnet/recnet-web/utils/cn";
+import { getUserServerSide } from "@recnet/recnet-web/utils/getUserServerSide";
 
 export default async function Layout({
   children,

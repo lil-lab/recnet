@@ -1,11 +1,13 @@
 "use client";
 
-import { UserPreview } from "@recnet/recnet-api-model";
 import { Button } from "@radix-ui/themes";
-import { useAuth } from "@recnet/recnet-web/app/AuthContext";
 import { useState } from "react";
-import { toast } from "sonner";
 import { TailSpin } from "react-loader-spinner";
+import { toast } from "sonner";
+
+import { UserPreview } from "@recnet/recnet-api-model";
+
+import { useAuth } from "../app/AuthContext";
 import { trpc } from "../app/_trpc/client";
 
 type RadixButtonProps = React.ComponentProps<typeof Button>;

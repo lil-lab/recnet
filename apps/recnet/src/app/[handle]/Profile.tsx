@@ -1,21 +1,23 @@
 "use client";
 
-import { cn } from "@recnet/recnet-web/utils/cn";
-import { Button, Flex, Text, Dialog, TextField } from "@radix-ui/themes";
-import { Avatar } from "@recnet/recnet-web/components/Avatar";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { HomeIcon } from "@radix-ui/react-icons";
-import { RecNetLink } from "@recnet/recnet-web/components/Link";
-import { useAuth } from "@recnet/recnet-web/app/AuthContext";
-import { FollowButton } from "@recnet/recnet-web/components/FollowButton";
+import { Dialog, Button, Flex, Text, TextField } from "@radix-ui/themes";
+import { TRPCClientError } from "@trpc/client";
 import { useRouter } from "next/navigation";
-import { Skeleton, SkeletonText } from "@recnet/recnet-web/components/Skeleton";
 import { useState } from "react";
 import { useForm, useFormState } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
 import { toast } from "sonner";
+import * as z from "zod";
+
+import { useAuth } from "@recnet/recnet-web/app/AuthContext";
+import { Avatar } from "@recnet/recnet-web/components/Avatar";
+import { FollowButton } from "@recnet/recnet-web/components/FollowButton";
+import { RecNetLink } from "@recnet/recnet-web/components/Link";
+import { Skeleton, SkeletonText } from "@recnet/recnet-web/components/Skeleton";
+import { cn } from "@recnet/recnet-web/utils/cn";
+
 import { trpc } from "../_trpc/client";
-import { TRPCClientError } from "@trpc/client";
 
 const HandleBlacklist = [
   "about",

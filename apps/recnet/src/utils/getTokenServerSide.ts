@@ -1,6 +1,7 @@
 import "server-only";
-import { Tokens, getTokens } from "next-firebase-auth-edge";
 import { cookies } from "next/headers";
+import { Tokens, getTokens } from "next-firebase-auth-edge";
+
 import { authConfig } from "@recnet/recnet-web/serverEnv";
 
 export async function getTokenServerSide(): Promise<Tokens | null> {

@@ -1,17 +1,21 @@
-import { router } from "../trpc";
-import { z } from "zod";
-import { checkIsAdminProcedure } from "./middleware";
-import { db } from "@recnet/recnet-web/firebase/admin";
+import { TRPCError } from "@trpc/server";
 import Chance from "chance";
-import { notEmpty } from "@recnet/recnet-web/utils/notEmpty";
+import { FieldValue } from "firebase-admin/firestore";
+import { z } from "zod";
+
 import {
   UserPreview,
   userPreviewSchema,
   inviteCodeSchema,
 } from "@recnet/recnet-api-model";
-import { FieldValue } from "firebase-admin/firestore";
 import { getDateFromFirebaseTimestamp } from "@recnet/recnet-date-fns";
-import { TRPCError } from "@trpc/server";
+
+import { db } from "@recnet/recnet-web/firebase/admin";
+import { notEmpty } from "@recnet/recnet-web/utils/notEmpty";
+
+import { checkIsAdminProcedure } from "./middleware";
+
+import { router } from "../trpc";
 
 function getNewInviteCode() {
   const chance = new Chance();

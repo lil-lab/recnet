@@ -1,7 +1,8 @@
 "use client";
-import { Flex } from "@radix-ui/themes";
 import { ChevronLeftIcon } from "@radix-ui/react-icons";
+import { Flex } from "@radix-ui/themes";
 import { useRouter } from "next/navigation";
+
 import { useHistory } from "@recnet/recnet-web/app/HistoryProvider";
 
 export function GoBackButton() {

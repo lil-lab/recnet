@@ -1,10 +1,13 @@
-import { publicProcedure, router } from "../trpc";
-import { z } from "zod";
-import { UserPreview, userPreviewSchema } from "@recnet/recnet-api-model";
-import { db } from "@recnet/recnet-web/firebase/admin";
 import { DocumentData } from "firebase-admin/firestore";
-import { notEmpty } from "@recnet/recnet-web/utils/notEmpty";
 import { Filter } from "firebase-admin/firestore";
+import { z } from "zod";
+
+import { UserPreview, userPreviewSchema } from "@recnet/recnet-api-model";
+
+import { db } from "@recnet/recnet-web/firebase/admin";
+import { notEmpty } from "@recnet/recnet-web/utils/notEmpty";
+
+import { publicProcedure, router } from "../trpc";
 
 const capitalize = (s: string) => {
   const words = s.split(" ");

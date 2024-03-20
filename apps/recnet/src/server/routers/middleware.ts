@@ -1,16 +1,19 @@
-import { getTokenServerSide } from "@recnet/recnet-web/utils/getTokenServerSide";
-import { publicProcedure } from "../trpc";
 import { TRPCError } from "@trpc/server";
+import { Tokens } from "next-firebase-auth-edge";
+import { z } from "zod";
+
+import { userSchema, userPreviewSchema } from "@recnet/recnet-api-model";
 import {
   recnetJwtPayloadSchema,
   firebaseJwtPayloadSchema,
 } from "@recnet/recnet-jwt";
+
 import { UserRole } from "@recnet/recnet-web/constant";
-import { z } from "zod";
-import { Tokens } from "next-firebase-auth-edge";
-import { userSchema, userPreviewSchema } from "@recnet/recnet-api-model";
 import { db } from "@recnet/recnet-web/firebase/admin";
+import { getTokenServerSide } from "@recnet/recnet-web/utils/getTokenServerSide";
 import { notEmpty } from "@recnet/recnet-web/utils/notEmpty";
+
+import { publicProcedure } from "../trpc";
 
 /**
  * @param tokens Tokens: user tokens from next-firebase-auth-edge

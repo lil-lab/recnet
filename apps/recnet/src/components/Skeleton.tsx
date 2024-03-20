@@ -1,6 +1,7 @@
-import { cn } from "@recnet/recnet-web/utils/cn";
-import React, { ComponentProps } from "react";
 import { Text } from "@radix-ui/themes";
+import React, { ComponentProps } from "react";
+
+import { cn } from "@recnet/recnet-web/utils/cn";
 
 type SkeletonProps = React.PropsWithChildren<
   React.HTMLAttributes<HTMLDivElement> & {

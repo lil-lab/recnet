@@ -1,8 +1,11 @@
+import { Text } from "@radix-ui/themes";
+
+import { GoBackButton } from "@recnet/recnet-web/components/GoBackButton";
 import { UserList } from "@recnet/recnet-web/components/UserCard";
 import { cn } from "@recnet/recnet-web/utils/cn";
-import { Text } from "@radix-ui/themes";
+
 import { NotFoundBlock } from "./NotFound";
-import { GoBackButton } from "@recnet/recnet-web/components/GoBackButton";
+
 import { serverClient } from "../_trpc/serverClient";
 
 export default async function SearchResultPage({

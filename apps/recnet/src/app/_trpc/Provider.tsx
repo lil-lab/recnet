@@ -2,9 +2,11 @@
 
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { httpBatchLink } from "@trpc/client";
-import { trpc } from "./client";
 import React, { useState } from "react";
+
 import { clientEnv } from "@recnet/recnet-web/clientEnv";
+
+import { trpc } from "./client";
 
 const IS_SERVER = typeof window === "undefined";
 function getURL(path: string) {

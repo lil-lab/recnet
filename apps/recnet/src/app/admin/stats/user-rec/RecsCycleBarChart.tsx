@@ -1,15 +1,16 @@
 "use client";
 
-import { useMemo } from "react";
-import { scaleUtc, scaleLinear } from "@visx/scale";
-import { ParentSize } from "@visx/responsive";
-import { Bar } from "@visx/shape";
-import { Group } from "@visx/group";
-import { AxisBottom } from "@visx/axis";
-import { useTooltip, useTooltipInPortal, defaultStyles } from "@visx/tooltip";
-import { localPoint } from "@visx/event";
-import { WeekTs, formatDate } from "@recnet/recnet-date-fns";
 import { Text } from "@radix-ui/themes";
+import { AxisBottom } from "@visx/axis";
+import { localPoint } from "@visx/event";
+import { Group } from "@visx/group";
+import { ParentSize } from "@visx/responsive";
+import { scaleUtc, scaleLinear } from "@visx/scale";
+import { Bar } from "@visx/shape";
+import { useTooltip, useTooltipInPortal, defaultStyles } from "@visx/tooltip";
+import { useMemo } from "react";
+
+import { WeekTs, formatDate } from "@recnet/recnet-date-fns";
 
 type Timestamp = string;
 
