@@ -16,12 +16,11 @@ import { useState, useRef, useEffect, useCallback } from "react";
 
 import { useAuth } from "@recnet/recnet-web/app/AuthContext";
 import { Avatar } from "@recnet/recnet-web/components/Avatar";
+import { UserRole } from "@recnet/recnet-web/constant";
 import { logout, useGoogleLogin } from "@recnet/recnet-web/firebase/auth";
+import { cn } from "@recnet/recnet-web/utils/cn";
 
 import { User } from "@recnet/recnet-api-model";
-
-import { UserRole } from "../constant";
-import { cn } from "../utils/cn";
 
 export function UserDropdown({ user }: { user: User }) {
   const router = useRouter();

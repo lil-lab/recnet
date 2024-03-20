@@ -5,15 +5,13 @@ import { getAuth, onIdTokenChanged, User as FirebaseUser } from "firebase/auth";
 import { usePathname, useRouter } from "next/navigation";
 import React, { useEffect, useCallback } from "react";
 
+import { AuthContext } from "@recnet/recnet-web/app/AuthContext";
+import { trpc } from "@recnet/recnet-web/app/_trpc/client";
 import { getFirebaseApp } from "@recnet/recnet-web/firebase/client";
+import useMount from "@recnet/recnet-web/hooks/useMount";
 import { setRecnetCustomClaims } from "@recnet/recnet-web/utils/setRecnetCustomClaims";
 
 import { User } from "@recnet/recnet-api-model";
-
-import { AuthContext } from "./AuthContext";
-import { trpc } from "./_trpc/client";
-
-import useMount from "../hooks/useMount";
 
 export interface AuthProviderProps {
   serverUser: User | null;

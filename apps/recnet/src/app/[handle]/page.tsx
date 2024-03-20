@@ -1,12 +1,11 @@
 import { Text } from "@radix-ui/themes";
 import { notFound } from "next/navigation";
 
+import { serverClient } from "@recnet/recnet-web/app/_trpc/serverClient";
 import { RecCard } from "@recnet/recnet-web/components/RecCard";
 import { cn } from "@recnet/recnet-web/utils/cn";
 
 import { Profile } from "./Profile";
-
-import { serverClient } from "../_trpc/serverClient";
 
 export default async function UserProfilePage({
   params,

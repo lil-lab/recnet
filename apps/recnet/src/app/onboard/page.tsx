@@ -12,11 +12,10 @@ import { toast } from "sonner";
 import { z } from "zod";
 
 import { useAuth } from "@recnet/recnet-web/app/AuthContext";
+import { trpc } from "@recnet/recnet-web/app/_trpc/client";
 import { getFirebaseApp } from "@recnet/recnet-web/firebase/client";
 import { cn } from "@recnet/recnet-web/utils/cn";
 import { setRecnetCustomClaims } from "@recnet/recnet-web/utils/setRecnetCustomClaims";
-
-import { trpc } from "../_trpc/client";
 
 const OnboardFormSchema = z.object({
   inviteCode: z.string().min(1, "Invite code cannot be blank"),

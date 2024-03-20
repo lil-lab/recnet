@@ -2,6 +2,8 @@ import { CalendarIcon } from "@radix-ui/react-icons";
 import { Flex, Text } from "@radix-ui/themes";
 import { ChevronRight } from "lucide-react";
 
+import { Avatar } from "@recnet/recnet-web/components/Avatar";
+import { RecNetLink } from "@recnet/recnet-web/components/Link";
 import { Skeleton, SkeletonText } from "@recnet/recnet-web/components/Skeleton";
 import { cn } from "@recnet/recnet-web/utils/cn";
 
@@ -9,9 +11,6 @@ import { Rec } from "@recnet/recnet-api-model";
 
 import { formatDate } from "@recnet/recnet-date-fns";
 import { numToMonth } from "@recnet/recnet-date-fns";
-
-import { Avatar } from "./Avatar";
-import { RecNetLink } from "./Link";
 
 export function RecCardSkeleton() {
   return (

@@ -1,11 +1,10 @@
 import { Text } from "@radix-ui/themes";
 
+import { serverClient } from "@recnet/recnet-web/app/_trpc/serverClient";
 import { NotFoundBlock } from "@recnet/recnet-web/app/search/NotFound";
 import { GoBackButton } from "@recnet/recnet-web/components/GoBackButton";
 import { UserList } from "@recnet/recnet-web/components/UserCard";
 import { cn } from "@recnet/recnet-web/utils/cn";
-
-import { serverClient } from "../_trpc/serverClient";
 
 export default async function SearchResultPage() {
   const { users } = await serverClient.search({ keyword: "" });

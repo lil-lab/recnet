@@ -10,14 +10,13 @@ import { useForm, useFormState } from "react-hook-form";
 import { toast } from "sonner";
 import * as z from "zod";
 
+import { trpc } from "@recnet/recnet-web/app//_trpc/client";
 import { useAuth } from "@recnet/recnet-web/app/AuthContext";
 import { Avatar } from "@recnet/recnet-web/components/Avatar";
 import { FollowButton } from "@recnet/recnet-web/components/FollowButton";
 import { RecNetLink } from "@recnet/recnet-web/components/Link";
 import { Skeleton, SkeletonText } from "@recnet/recnet-web/components/Skeleton";
 import { cn } from "@recnet/recnet-web/utils/cn";
-
-import { trpc } from "../_trpc/client";
 
 const HandleBlacklist = [
   "about",

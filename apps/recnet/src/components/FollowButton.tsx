@@ -5,10 +5,10 @@ import { useState } from "react";
 import { TailSpin } from "react-loader-spinner";
 import { toast } from "sonner";
 
-import { UserPreview } from "@recnet/recnet-api-model";
+import { useAuth } from "@recnet/recnet-web/app/AuthContext";
+import { trpc } from "@recnet/recnet-web/app/_trpc/client";
 
-import { useAuth } from "../app/AuthContext";
-import { trpc } from "../app/_trpc/client";
+import { UserPreview } from "@recnet/recnet-api-model";
 
 type RadixButtonProps = React.ComponentProps<typeof Button>;
 interface FollowButtonProps extends Omit<RadixButtonProps, "variant"> {

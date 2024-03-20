@@ -7,6 +7,7 @@ import { Toaster } from "sonner";
 import { Footer } from "@recnet/recnet-web/app/Footer";
 import { Headerbar } from "@recnet/recnet-web/app/Headerbar";
 import { clientEnv } from "@recnet/recnet-web/clientEnv";
+import { getUserServerSide } from "@recnet/recnet-web/utils/getUserServerSide";
 
 import { AuthProvider } from "./AuthProvider";
 import { HistoryProvider } from "./HistoryProvider";
@@ -15,8 +16,6 @@ import "tailwindcss/tailwind.css";
 import { MobileNavigator } from "./MobileNavigator";
 import { ProgressbarProvider } from "./Progressbar";
 import { Provider as TrpcProvider } from "./_trpc/Provider";
-
-import { getUserServerSide } from "../utils/getUserServerSide";
 
 const sfpro = localFont({
   src: [
