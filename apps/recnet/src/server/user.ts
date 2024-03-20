@@ -171,7 +171,4 @@ export async function setRecnetCustomClaims(role: UserRole, userId: string) {
       userId,
     },
   });
-  console.log("Set custom claims for", uid);
-  const newToken = await getTokenServerSide();
-  console.log("New token", newToken);
 }
