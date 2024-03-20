@@ -138,7 +138,7 @@ export default async function RootLayout({
               <HistoryProvider>
                 <Theme accentColor="blue">
                   <Headerbar />
-                  <Toaster position="bottom-right" richColors offset={80} />
+                  <Toaster position="top-right" richColors offset={80} />
                   <div className="min-h-[90svh] flex justify-center">
                     {children}
                   </div>
