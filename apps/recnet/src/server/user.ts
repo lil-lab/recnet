@@ -1,7 +1,8 @@
 "use server";
+import { FieldValue } from "firebase-admin/firestore";
+
 import { db } from "@recnet/recnet-web/firebase/admin";
 import { User, UserSchema } from "@recnet/recnet-web/types/user";
-import { FieldValue } from "firebase-admin/firestore";
 
 export async function follow(userId: string, targetUserId: string) {
   if (!userId || !targetUserId) {

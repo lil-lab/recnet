@@ -1,10 +1,12 @@
-import { cn } from "@recnet/recnet-web/utils/cn";
 import { Text, Button } from "@radix-ui/themes";
 import Link from "next/link";
-import { LoginButton } from "./LoginButton";
-import { getUserServerSide } from "@recnet/recnet-web/utils/getUserServerSide";
 import { redirect } from "next/navigation";
+
+import { cn } from "@recnet/recnet-web/utils/cn";
+import { getUserServerSide } from "@recnet/recnet-web/utils/getUserServerSide";
+
 import { AnnouncementBanner } from "./AnnouncementBanner";
+import { LoginButton } from "./LoginButton";
 
 const cards = [
   {

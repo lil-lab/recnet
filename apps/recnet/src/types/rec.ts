@@ -1,4 +1,5 @@
 import { z } from "zod";
+
 import { User } from "./user";
 
 export const FirebaseTsSchema = z.object({

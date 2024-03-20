@@ -1,9 +1,10 @@
 "use client";
 
-import { cn } from "@recnet/recnet-web/utils/cn";
-import { Text } from "@radix-ui/themes";
 import { Cross1Icon } from "@radix-ui/react-icons";
+import { Text } from "@radix-ui/themes";
 import { useState } from "react";
+
+import { cn } from "@recnet/recnet-web/utils/cn";
 
 export function AnnouncementBanner() {
   const [isOpen, setIsOpen] = useState(true);

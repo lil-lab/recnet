@@ -1,6 +1,7 @@
-import { type NextRequest } from "next/server";
-import { db } from "@recnet/recnet-web/firebase/admin";
 import { FieldValue } from "firebase-admin/firestore";
+import { type NextRequest } from "next/server";
+
+import { db } from "@recnet/recnet-web/firebase/admin";
 
 export async function POST(request: NextRequest) {
   try {

@@ -1,8 +1,9 @@
-import useSWR from "swr";
-import { fetchWithZod } from "@recnet/recnet-web/utils/zodFetch";
-import { inviteCodeSchema } from "@recnet/recnet-web/types/inviteCode";
 import { toast } from "sonner";
+import useSWR from "swr";
 import { z } from "zod";
+
+import { inviteCodeSchema } from "@recnet/recnet-web/types/inviteCode";
+import { fetchWithZod } from "@recnet/recnet-web/utils/zodFetch";
 
 const InviteCodesSchema = z.object({
   inviteCodes: z.array(inviteCodeSchema),

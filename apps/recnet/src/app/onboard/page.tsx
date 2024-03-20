@@ -1,22 +1,23 @@
 "use client";
-import { cn } from "@recnet/recnet-web/utils/cn";
-import { Button, Text, TextField } from "@radix-ui/themes";
-import { z } from "zod";
-import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { HomeIcon } from "@radix-ui/react-icons";
+import { Button, Text, TextField } from "@radix-ui/themes";
+import { getAuth } from "firebase/auth";
+import { AnimatePresence, motion } from "framer-motion";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { TailSpin } from "react-loader-spinner";
+import { toast } from "sonner";
+import { z } from "zod";
+
+import { useAuth } from "@recnet/recnet-web/app/AuthContext";
+import { getFirebaseApp } from "@recnet/recnet-web/firebase/client";
 import {
   checkInviteCodeValid,
   checkUsernameUnique,
 } from "@recnet/recnet-web/server/user";
-import { getAuth } from "firebase/auth";
-import { getFirebaseApp } from "@recnet/recnet-web/firebase/client";
-import { toast } from "sonner";
-import { useAuth } from "@recnet/recnet-web/app/AuthContext";
-import { useRouter } from "next/navigation";
-import { AnimatePresence, motion } from "framer-motion";
-import { useState } from "react";
-import { TailSpin } from "react-loader-spinner";
+import { cn } from "@recnet/recnet-web/utils/cn";
 
 const OnboardFormSchema = z.object({
   inviteCode: z.string().min(1, "Invite code cannot be blank"),
