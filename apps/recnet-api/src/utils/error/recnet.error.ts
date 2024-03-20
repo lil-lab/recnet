@@ -5,15 +5,13 @@ import { ErrorCode, errorMessages } from "./recnet.error.const";
 export class RecnetError extends Error {
   private errorCode: number;
   private status: number;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  private extra: any | null = null;
+  private extra: unknown | null = null;
 
   constructor(
     errorCode: number = ErrorCode.INTERNAL_SERVER_ERROR,
     status: number = HttpStatus.INTERNAL_SERVER_ERROR,
     message = "",
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    extra?: any
+    extra?: unknown
   ) {
     super(message);
     this.name = this.constructor.name;
@@ -33,8 +31,7 @@ export class RecnetError extends Error {
     return this.status;
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  public getExtra(): any {
+  public getExtra(): unknown {
     return this.extra;
   }
 }

@@ -40,8 +40,11 @@ export class RecnetExceptionFilter implements ExceptionFilter {
           ? exception.message
           : errorMessages[ErrorCode.INTERNAL_SERVER_ERROR];
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    let error: { errorCode: number; message: string | object; extra?: any } = {
+    let error: {
+      errorCode: number;
+      message: string | object;
+      extra?: unknown;
+    } = {
       errorCode,
       message,
     };
