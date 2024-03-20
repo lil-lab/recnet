@@ -23,13 +23,16 @@ export const AuthProvider: React.FunctionComponent<AuthProviderProps> = ({
   const router = useRouter();
 
   const utils = trpc.useUtils();
-  const { data, isPending, isError } = trpc.getMe.useQuery(undefined, {
-    initialData: serverUser
-      ? {
-          user: serverUser,
-        }
-      : undefined,
-  });
+  const { data, isPending, isError, isFetching } = trpc.getMe.useQuery(
+    undefined,
+    {
+      initialData: serverUser
+        ? {
+            user: serverUser,
+          }
+        : undefined,
+    }
+  );
   const user = data?.user ?? null;
 
   const loginMutation = trpc.login.useMutation();
@@ -101,6 +104,7 @@ export const AuthProvider: React.FunctionComponent<AuthProviderProps> = ({
         user,
         revalidateUser,
         isPending,
+        isFetching,
         isError,
       }}
     >

@@ -43,8 +43,9 @@ const TableLoader = () => {
 };
 
 export default function InviteCodeMonitorPage() {
-  const { data, isPending } = trpc.getAllInviteCodes.useQuery();
+  const { data, isPending, isFetching } = trpc.getAllInviteCodes.useQuery();
   const inviteCodes = data?.inviteCodes ?? [];
+  const isLoading = isPending || isFetching;
 
   return (
     <div className={cn("w-full", "md:w-[85%]", "flex", "flex-col", "gap-y-4")}>
@@ -53,7 +54,7 @@ export default function InviteCodeMonitorPage() {
           Invite Code Monitor
         </AdminSectionTitle>
         <AdminSectionBox>
-          {inviteCodes && !isPending ? (
+          {inviteCodes && !isLoading ? (
             <Table.Root className="w-full max-h-[60svh] relative table-fixed">
               <Table.Header className="sticky top-0 bg-white z-[500]">
                 <Table.Row>
@@ -99,7 +100,7 @@ export default function InviteCodeMonitorPage() {
         </AdminSectionBox>
         <AdminSectionTitle>Unused Invite Codes</AdminSectionTitle>
         <AdminSectionBox>
-          {inviteCodes && !isPending ? (
+          {inviteCodes && !isLoading ? (
             <Table.Root className="w-full max-h-[60svh] relative">
               <Table.Header className="sticky top-0 bg-white z-[500]">
                 <Table.Row>

@@ -114,7 +114,7 @@ export function LeftPanel() {
   const cutoff = date ? getCutOff(new Date(date)) : getLatestCutOff();
   const cutoffs = getCutOffFromStartDate();
   const { revalidateUser } = useAuth();
-  const { data, isPending } = trpc.getUpcomingRec.useQuery();
+  const { data, isPending, isFetching } = trpc.getUpcomingRec.useQuery();
   const rec = data?.rec ?? null;
   const utils = trpc.useUtils();
 
@@ -205,7 +205,7 @@ export function LeftPanel() {
               <RecStatusPanel
                 setIsRecFormOpen={setIsRecFormOpen}
                 rec={rec}
-                isLoading={isPending}
+                isLoading={isPending || isFetching}
               />
               <div className="w-full h-[1px] bg-gray-8" />
               <div className="w-full p-2 flex flex-col gap-y-2">

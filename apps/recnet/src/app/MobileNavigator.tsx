@@ -23,7 +23,7 @@ import { UserRole } from "../constant";
 function RecFormContent(props: { setOpen: (open: boolean) => void }) {
   const { setOpen } = props;
   const { user, revalidateUser } = useAuth();
-  const { data, isPending } = trpc.getUpcomingRec.useQuery();
+  const { data, isPending, isFetching } = trpc.getUpcomingRec.useQuery();
   const rec = data?.rec ?? null;
   const utils = trpc.useUtils();
 
@@ -33,7 +33,7 @@ function RecFormContent(props: { setOpen: (open: boolean) => void }) {
     return null;
   }
 
-  if (isPending) {
+  if (isPending || isFetching) {
     return (
       <div className={cn("flex", "flex-col", "gap-y-3")}>
         <SkeletonText size="2" className="w-[100px]" />
