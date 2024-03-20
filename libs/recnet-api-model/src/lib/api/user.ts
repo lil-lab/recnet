@@ -1,4 +1,5 @@
 import { z } from "zod";
+
 import { userPreviewSchema, userSchema } from "../model";
 
 // GET /users

@@ -1,14 +1,15 @@
 import { CalendarIcon } from "@radix-ui/react-icons";
 import { Flex, Text } from "@radix-ui/themes";
-import {
-  formatDate,
-  getDateFromFirebaseTimestamp,
-} from "@recnet/recnet-date-fns";
 import { ChevronRight } from "lucide-react";
 
 import { Skeleton, SkeletonText } from "@recnet/recnet-web/components/Skeleton";
 import { RecWithUser } from "@recnet/recnet-web/types/rec";
 import { cn } from "@recnet/recnet-web/utils/cn";
+
+import {
+  formatDate,
+  getDateFromFirebaseTimestamp,
+} from "@recnet/recnet-date-fns";
 
 import { Avatar } from "./Avatar";
 import { RecNetLink } from "./Link";
