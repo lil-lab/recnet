@@ -1,5 +1,6 @@
 import { initializeApp, getApp, getApps } from "firebase/app";
 import { getAuth } from "firebase/auth";
+
 import { firebaseClientEnv } from "@recnet/recnet-web/clientEnv";
 
 export const getFirebaseApp = () => {

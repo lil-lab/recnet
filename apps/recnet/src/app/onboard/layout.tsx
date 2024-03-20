@@ -1,7 +1,8 @@
-import React from "react";
-import { getUserServerSide } from "@recnet/recnet-web/utils/getUserServerSide";
 import { redirect } from "next/navigation";
+import React from "react";
+
 import { cn } from "@recnet/recnet-web/utils/cn";
+import { getUserServerSide } from "@recnet/recnet-web/utils/getUserServerSide";
 
 export default async function OnboardPageLayout({
   children,

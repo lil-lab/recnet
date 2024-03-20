@@ -1,12 +1,13 @@
 "use client";
 
-import { cn } from "@recnet/recnet-web/utils/cn";
-import { Text } from "@radix-ui/themes";
-import * as Select from "@radix-ui/react-select";
 import { ChevronDownIcon, ChevronUpIcon } from "@radix-ui/react-icons";
+import * as Select from "@radix-ui/react-select";
+import { Text } from "@radix-ui/themes";
+import { CheckIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { forwardRef } from "react";
-import { CheckIcon } from "lucide-react";
+
+import { cn } from "@recnet/recnet-web/utils/cn";
 
 const SelectItem = forwardRef<HTMLDivElement, Select.SelectItemProps>(
   ({ children, className, ...props }, forwardedRef) => {

@@ -1,7 +1,7 @@
 "use client";
 
-import { RecNetLink } from "@recnet/recnet-web/components/Link";
-import { cn } from "@recnet/recnet-web/utils/cn";
+import { Pencil1Icon } from "@radix-ui/react-icons";
+import { Text, Flex, Button } from "@radix-ui/themes";
 import {
   getCutOffFromStartDate,
   getCutOff,
@@ -10,19 +10,20 @@ import {
   getDateFromFirebaseTimestamp,
   getVerboseDateString,
 } from "@recnet/recnet-date-fns";
-import { Text, Flex, Button } from "@radix-ui/themes";
-import { useSearchParams } from "next/navigation";
-import { useAuth } from "@recnet/recnet-web/app/AuthContext";
-import { useRec } from "@recnet/recnet-web/hooks/useRec";
-import { Pencil1Icon } from "@radix-ui/react-icons";
-import { useState } from "react";
-import { ChevronLeft } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { ChevronLeft } from "lucide-react";
+import { useSearchParams } from "next/navigation";
+import { useState } from "react";
+
+import { useAuth } from "@recnet/recnet-web/app/AuthContext";
+import { CutoffDropdown } from "@recnet/recnet-web/components/CutoffDropdown";
+import { RecNetLink } from "@recnet/recnet-web/components/Link";
+import { RecForm } from "@recnet/recnet-web/components/RecForm";
+import { Skeleton, SkeletonText } from "@recnet/recnet-web/components/Skeleton";
+import { useRec } from "@recnet/recnet-web/hooks/useRec";
 import { Rec } from "@recnet/recnet-web/types/rec";
 import { User } from "@recnet/recnet-web/types/user";
-import { Skeleton, SkeletonText } from "@recnet/recnet-web/components/Skeleton";
-import { RecForm } from "@recnet/recnet-web/components/RecForm";
-import { CutoffDropdown } from "@recnet/recnet-web/components/CutoffDropdown";
+import { cn } from "@recnet/recnet-web/utils/cn";
 
 function RecStatusPanel(props: {
   setIsRecFormOpen: (open: boolean) => void;

@@ -1,11 +1,12 @@
-import { getUsersByIds } from "@recnet/recnet-web/server/user";
-import { getUserServerSide } from "@recnet/recnet-web/utils/getUserServerSide";
-import { cn } from "@recnet/recnet-web/utils/cn";
 import { Grid } from "@radix-ui/themes";
-import { NotFoundBlock } from "@recnet/recnet-web/app/search/NotFound";
-import { UserCard } from "@recnet/recnet-web/components/UserCard";
-import { GoBackButton } from "@recnet/recnet-web/components/GoBackButton";
 import { redirect } from "next/navigation";
+
+import { NotFoundBlock } from "@recnet/recnet-web/app/search/NotFound";
+import { GoBackButton } from "@recnet/recnet-web/components/GoBackButton";
+import { UserCard } from "@recnet/recnet-web/components/UserCard";
+import { getUsersByIds } from "@recnet/recnet-web/server/user";
+import { cn } from "@recnet/recnet-web/utils/cn";
+import { getUserServerSide } from "@recnet/recnet-web/utils/getUserServerSide";
 
 export default async function FollowingPage() {
   const user = await getUserServerSide({

@@ -1,10 +1,11 @@
 "use client";
 
 // this page must not be server-side rendered since we need to get the client's local time
-import { cn } from "@recnet/recnet-web/utils/cn";
-import { getNextCutOff, getVerboseDateString } from "@recnet/recnet-date-fns";
 import { Text } from "@radix-ui/themes";
+import { getNextCutOff, getVerboseDateString } from "@recnet/recnet-date-fns";
 import * as React from "react";
+
+import { cn } from "@recnet/recnet-web/utils/cn";
 
 const faqs: {
   title: string;

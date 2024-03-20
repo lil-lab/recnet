@@ -1,13 +1,15 @@
-import { cn } from "@recnet/recnet-web/utils/cn";
-import { Profile } from "./Profile";
-import { getUserByUsername } from "@recnet/recnet-web/server/user";
+import { Text } from "@radix-ui/themes";
 import { notFound } from "next/navigation";
+
+import { RecCard } from "@recnet/recnet-web/components/RecCard";
 import {
   getRecsByUserId,
   getRecsWithUsers,
 } from "@recnet/recnet-web/server/rec";
-import { RecCard } from "@recnet/recnet-web/components/RecCard";
-import { Text } from "@radix-ui/themes";
+import { getUserByUsername } from "@recnet/recnet-web/server/user";
+import { cn } from "@recnet/recnet-web/utils/cn";
+
+import { Profile } from "./Profile";
 
 export default async function UserProfilePage({
   params,

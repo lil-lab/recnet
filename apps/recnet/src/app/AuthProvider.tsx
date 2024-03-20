@@ -1,15 +1,17 @@
 "use client";
 
-import React, { useState, useEffect, useCallback } from "react";
 import { getAuth, onIdTokenChanged, User as FirebaseUser } from "firebase/auth";
-import { AuthContext } from "./AuthContext";
+import { usePathname, useRouter } from "next/navigation";
+import React, { useState, useEffect, useCallback } from "react";
+import { toast } from "sonner";
+import { z } from "zod";
+
 import { getFirebaseApp } from "@recnet/recnet-web/firebase/client";
 import { User, UserSchema } from "@recnet/recnet-web/types/user";
-import { fetchWithZod } from "@recnet/recnet-web/utils/zodFetch";
-import { usePathname, useRouter } from "next/navigation";
-import { z } from "zod";
 import { getErrorMessage } from "@recnet/recnet-web/utils/error";
-import { toast } from "sonner";
+import { fetchWithZod } from "@recnet/recnet-web/utils/zodFetch";
+
+import { AuthContext } from "./AuthContext";
 
 export interface AuthProviderProps {
   serverUser: User | null;

@@ -1,7 +1,8 @@
 "use server";
-import { db } from "@recnet/recnet-web/firebase/admin";
 import Chance from "chance";
 import { FieldValue } from "firebase-admin/firestore";
+
+import { db } from "@recnet/recnet-web/firebase/admin";
 
 function getNewInviteCode() {
   const chance = new Chance();

@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useState, createContext, useContext } from "react";
 import { usePathname } from "next/navigation";
+import { useEffect, useState, createContext, useContext } from "react";
 
 export const HistoryContext = createContext<boolean>(false);
 

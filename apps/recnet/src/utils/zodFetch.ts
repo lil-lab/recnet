@@ -1,5 +1,6 @@
-import { createZodFetcher } from "zod-fetch";
 import { z } from "zod";
+import { createZodFetcher } from "zod-fetch";
+
 import { clientEnv } from "@recnet/recnet-web/clientEnv";
 
 const IS_SERVER = typeof window === "undefined";

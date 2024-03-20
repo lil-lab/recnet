@@ -1,6 +1,7 @@
+import { Flex, Text, Link as RadixLink } from "@radix-ui/themes";
+
 import { RecNetLink } from "@recnet/recnet-web/components/Link";
 import { cn } from "@recnet/recnet-web/utils/cn";
-import { Flex, Text, Link as RadixLink } from "@radix-ui/themes";
 
 const teamMembers: {
   name: string;

@@ -1,5 +1,6 @@
-import { cn } from "@recnet/recnet-web/utils/cn";
 import { Text } from "@radix-ui/themes";
+
+import { cn } from "@recnet/recnet-web/utils/cn";
 
 function Footer() {
   return (
