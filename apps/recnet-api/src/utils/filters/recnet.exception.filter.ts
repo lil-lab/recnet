@@ -12,7 +12,7 @@ import { RecnetError } from "@recnet-api/utils/error/recnet.error";
 import {
   ErrorCode,
   errorMessages,
-} from "@recnet-api/utils//error/recnet.error.const";
+} from "@recnet-api/utils/error/recnet.error.const";
 
 @Catch()
 export class RecnetExceptionFilter implements ExceptionFilter {
