@@ -4,6 +4,7 @@ import { Timestamp } from "firebase-admin/firestore";
 import groupBy from "lodash.groupby";
 import { z } from "zod";
 
+import { ErrorMessages } from "@recnet/recnet-web/constant";
 import { db } from "@recnet/recnet-web/firebase/admin";
 import { notEmpty } from "@recnet/recnet-web/utils/notEmpty";
 import { shuffleArray } from "@recnet/recnet-web/utils/shuffle";
@@ -41,7 +42,7 @@ export const recRouter = router({
       if (querySnapshot.empty) {
         throw new TRPCError({
           code: "NOT_FOUND",
-          message: "User not found",
+          message: ErrorMessages.USER_NOT_FOUND,
         });
       }
       const user = querySnapshot.docs[0].data();
@@ -178,7 +179,10 @@ export const recRouter = router({
         await docRef.delete();
       } else {
         // post doens't exist
-        throw new Error("Post doesn't exist");
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: ErrorMessages.REC_NOT_FOUND,
+        });
       }
     }),
   getHistoricalRecs: publicProcedure
@@ -206,7 +210,7 @@ export const recRouter = router({
       if (!userData) {
         throw new TRPCError({
           code: "NOT_FOUND",
-          message: "User not found",
+          message: ErrorMessages.USER_NOT_FOUND,
         });
       }
       const userPreviewData = userPreviewSchema.parse({
@@ -270,7 +274,10 @@ export const recRouter = router({
       const docSnap = await docRef.get();
       const data = docSnap.data();
       if (!data) {
-        throw new Error("User not found");
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: ErrorMessages.USER_NOT_FOUND,
+        });
       }
       const following = data.following;
       if (following.length === 0) {

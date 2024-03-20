@@ -3,6 +3,7 @@ import Chance from "chance";
 import { FieldValue } from "firebase-admin/firestore";
 import { z } from "zod";
 
+import { ErrorMessages } from "@recnet/recnet-web/constant";
 import { db } from "@recnet/recnet-web/firebase/admin";
 import { notEmpty } from "@recnet/recnet-web/utils/notEmpty";
 
@@ -143,7 +144,7 @@ export const inviteCodeRouter = router({
       if (querySnapshot.empty) {
         throw new TRPCError({
           code: "NOT_FOUND",
-          message: "Owner not found",
+          message: ErrorMessages.USER_NOT_FOUND,
         });
       }
       const ownerId = querySnapshot.docs[0].id;

@@ -2,7 +2,7 @@ import { TRPCError } from "@trpc/server";
 import { Tokens } from "next-firebase-auth-edge";
 import { z } from "zod";
 
-import { UserRole } from "@recnet/recnet-web/constant";
+import { ErrorMessages, UserRole } from "@recnet/recnet-web/constant";
 import { db } from "@recnet/recnet-web/firebase/admin";
 import { getTokenServerSide } from "@recnet/recnet-web/utils/getTokenServerSide";
 import { notEmpty } from "@recnet/recnet-web/utils/notEmpty";
@@ -35,7 +35,7 @@ export async function getUserByTokens(tokens: Tokens) {
   if (querySnapshot.empty) {
     throw new TRPCError({
       code: "NOT_FOUND",
-      message: "User not found",
+      message: ErrorMessages.USER_NOT_FOUND,
     });
   }
   // get userPreview for each following
@@ -81,7 +81,7 @@ export const checkFirebaseJWTProcedure = publicProcedure.use(async (opts) => {
   if (!tokens || !parseRes.success) {
     throw new TRPCError({
       code: "UNAUTHORIZED",
-      message: "Unauthorized, missing Firebase secret",
+      message: ErrorMessages.MISSING_FIREBASE_SECRET,
     });
   }
   return opts.next({
@@ -101,7 +101,7 @@ export const checkRecnetJWTProcedure = publicProcedure.use(async (opts) => {
   if (!tokens || !parseRes.success) {
     throw new TRPCError({
       code: "UNAUTHORIZED",
-      message: "Unauthorized, missing Recnet secret",
+      message: ErrorMessages.MISSING_RECNET_SECRET,
     });
   }
   const user = await getUserByTokens(tokens);
@@ -119,7 +119,7 @@ export const checkIsAdminProcedure = publicProcedure.use(async (opts) => {
   if (!tokens || !parseRes.success) {
     throw new TRPCError({
       code: "UNAUTHORIZED",
-      message: "Unauthorized, missing Recnet secret",
+      message: ErrorMessages.MISSING_RECNET_SECRET,
     });
   }
   // check the role of the user
@@ -128,7 +128,7 @@ export const checkIsAdminProcedure = publicProcedure.use(async (opts) => {
     if (role !== UserRole.ADMIN) {
       throw new TRPCError({
         code: "UNAUTHORIZED",
-        message: "Unauthorized, not an admin",
+        message: ErrorMessages.NOT_ADMIN,
       });
     }
   }

@@ -16,6 +16,7 @@ import { Avatar } from "@recnet/recnet-web/components/Avatar";
 import { FollowButton } from "@recnet/recnet-web/components/FollowButton";
 import { RecNetLink } from "@recnet/recnet-web/components/Link";
 import { Skeleton, SkeletonText } from "@recnet/recnet-web/components/Skeleton";
+import { ErrorMessages } from "@recnet/recnet-web/constant";
 import { cn } from "@recnet/recnet-web/utils/cn";
 
 const HandleBlacklist = [
@@ -106,7 +107,7 @@ function EditProfileDialog(props: { handle: string }) {
                     if (
                       error instanceof TRPCClientError &&
                       error.data.code === "CONFLICT" &&
-                      error.message === "User handle already exists"
+                      error.message === ErrorMessages.USER_HANDLE_USED
                     ) {
                       setError("handle", {
                         type: "manual",

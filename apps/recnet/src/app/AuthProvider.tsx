@@ -13,6 +13,9 @@ import { setRecnetCustomClaims } from "@recnet/recnet-web/utils/setRecnetCustomC
 
 import { User } from "@recnet/recnet-api-model";
 
+import { ErrorMessages } from "../constant";
+import { getErrorMessage } from "../utils/error";
+
 export interface AuthProviderProps {
   serverUser: User | null;
   children: React.ReactNode;
@@ -66,7 +69,7 @@ export const AuthProvider: React.FunctionComponent<AuthProviderProps> = ({
               if (
                 error instanceof TRPCClientError &&
                 error.data.code === "NOT_FOUND" &&
-                error.message === "User not found"
+                error.message === ErrorMessages.USER_NOT_FOUND
               ) {
                 // create user and redirect
                 router.replace("/onboard");
@@ -77,6 +80,12 @@ export const AuthProvider: React.FunctionComponent<AuthProviderProps> = ({
           await revalidateUser();
         } catch (error) {
           console.log(error);
+          if (
+            getErrorMessage(error) === ErrorMessages.MISSING_FIREBASE_SECRET
+          ) {
+            // redirect to homepage?
+            console.log("missing secret");
+          }
         }
         return;
       }

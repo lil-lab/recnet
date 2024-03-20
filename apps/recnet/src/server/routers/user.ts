@@ -3,6 +3,7 @@ import { FieldValue } from "firebase-admin/firestore";
 import { z } from "zod";
 
 import { UserRole } from "@recnet/recnet-web/constant";
+import { ErrorMessages } from "@recnet/recnet-web/constant";
 import { db } from "@recnet/recnet-web/firebase/admin";
 
 import { userPreviewSchema, userSchema } from "@recnet/recnet-api-model";
@@ -37,7 +38,7 @@ export const userRouter = router({
       if (querySnapshot.empty) {
         throw new TRPCError({
           code: "NOT_FOUND",
-          message: "User not found",
+          message: ErrorMessages.USER_NOT_FOUND,
         });
       }
       const user = userSchema.parse({
@@ -207,13 +208,22 @@ export const userRouter = router({
       const codeRef = db.doc(`invite-codes/${inviteCode}`);
       const codeDoc = await codeRef.get();
       if (!codeDoc.exists) {
-        throw new Error("Invalid invite code");
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: ErrorMessages.INVITE_CODE_NOT_FOUND,
+        });
       }
       if (codeDoc.data()?.used) {
-        throw new Error("Invite code already used");
+        throw new TRPCError({
+          code: "CONFLICT",
+          message: ErrorMessages.INVITE_CODE_USED,
+        });
       }
       if (!firebaseUser) {
-        throw new Error("User not found");
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: ErrorMessages.USER_NOT_FOUND,
+        });
       }
       // create user
       const userData = {
@@ -268,7 +278,10 @@ export const userRouter = router({
       const docSnap = await docRef.get();
 
       if (!docSnap.exists) {
-        throw new Error("User does not exist.");
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: ErrorMessages.USER_NOT_FOUND,
+        });
       }
 
       if (handle != docSnap?.data?.()?.username) {
@@ -281,7 +294,7 @@ export const userRouter = router({
           if (!snapshot.empty) {
             throw new TRPCError({
               code: "CONFLICT",
-              message: "User handle already exists",
+              message: ErrorMessages.USER_HANDLE_USED,
             });
           }
         }

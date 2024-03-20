@@ -13,6 +13,7 @@ import { useAuth } from "@recnet/recnet-web/app/AuthContext";
 import { trpc } from "@recnet/recnet-web/app/_trpc/client";
 import { CopiableInviteCode } from "@recnet/recnet-web/components/InviteCode";
 import { RecNetLink as Link } from "@recnet/recnet-web/components/Link";
+import { ErrorMessages } from "@recnet/recnet-web/constant";
 import { useCopyToClipboard } from "@recnet/recnet-web/hooks/useCopyToClipboard";
 import { cn } from "@recnet/recnet-web/utils/cn";
 
@@ -62,7 +63,7 @@ function InviteCodeGenerateForm() {
                   if (
                     error instanceof TRPCClientError &&
                     error.data.code === "NOT_FOUND" &&
-                    error.message === "Owner not found"
+                    error.message === ErrorMessages.USER_NOT_FOUND
                   ) {
                     setError("owner", {
                       type: "manual",
