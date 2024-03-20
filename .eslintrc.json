@@ -57,6 +57,21 @@
                 "pattern": "@recnet/recnet-web/**",
                 "group": "internal",
                 "position": "after"
+              },
+              {
+                "pattern": "@recnet/recnet-jwt/**",
+                "group": "internal",
+                "position": "after"
+              },
+              {
+                "pattern": "@recnet/recnet-date-fns/**",
+                "group": "internal",
+                "position": "after"
+              },
+              {
+                "pattern": "@recnet/recnet-api-model/**",
+                "group": "internal",
+                "position": "after"
               }
             ],
             "pathGroupsExcludedImportTypes": []

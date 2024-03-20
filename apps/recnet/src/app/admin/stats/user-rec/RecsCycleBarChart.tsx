@@ -1,7 +1,6 @@
 "use client";
 
 import { Text } from "@radix-ui/themes";
-import { WeekTs, formatDate } from "@recnet/recnet-date-fns";
 import { AxisBottom } from "@visx/axis";
 import { localPoint } from "@visx/event";
 import { Group } from "@visx/group";
@@ -10,6 +9,8 @@ import { scaleUtc, scaleLinear } from "@visx/scale";
 import { Bar } from "@visx/shape";
 import { useTooltip, useTooltipInPortal, defaultStyles } from "@visx/tooltip";
 import { useMemo } from "react";
+
+import { WeekTs, formatDate } from "@recnet/recnet-date-fns";
 
 type Timestamp = string;
 

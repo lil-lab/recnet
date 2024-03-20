@@ -4,6 +4,11 @@ import { Flex, Table, Text } from "@radix-ui/themes";
 import { TailSpin } from "react-loader-spinner";
 
 import {
+  getDateFromFirebaseTimestamp,
+  formatDate,
+} from "@recnet/recnet-date-fns";
+
+import {
   AdminSectionBox,
   AdminSectionTitle,
 } from "@recnet/recnet-web/app/admin/AdminSections";
@@ -13,11 +18,6 @@ import { RecNetLink } from "@recnet/recnet-web/components/Link";
 import { useInviteCodes } from "@recnet/recnet-web/hooks/useInviteCodes";
 import { User } from "@recnet/recnet-web/types/user";
 import { cn } from "@recnet/recnet-web/utils/cn";
-
-import {
-  getDateFromFirebaseTimestamp,
-  formatDate,
-} from "@recnet/recnet-date-fns";
 
 const TableUserCard = (props: { user: User }) => {
   const { user } = props;
