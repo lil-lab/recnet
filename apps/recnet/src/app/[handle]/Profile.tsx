@@ -209,13 +209,13 @@ function EditProfileDialog(props: { handle: string }) {
 export function Profile(props: { handle: string }) {
   const router = useRouter();
   const { handle } = props;
-  const { data, isLoading } = trpc.getUserByHandle.useQuery({
+  const { data, isPending, isFetching } = trpc.getUserByHandle.useQuery({
     handle,
   });
   const { user: me } = useAuth();
   const isMe = !!me && !!data?.user && me.handle === data.user.handle;
 
-  if (isLoading) {
+  if (isPending || isFetching) {
     return (
       <div className={cn("flex-col", "gap-y-6", "flex")}>
         <Flex className="items-center p-3 gap-x-6">
