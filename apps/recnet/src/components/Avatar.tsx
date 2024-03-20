@@ -2,9 +2,9 @@
 import { Avatar as RadixAvatar } from "@radix-ui/themes";
 import * as React from "react";
 
-import type { User, UserPreview } from "@recnet/recnet-api-model";
-
 import { cn } from "@recnet/recnet-web/utils/cn";
+
+import type { User, UserPreview } from "@recnet/recnet-api-model";
 
 type RadixAvatarProps = React.ComponentProps<typeof RadixAvatar>;
 

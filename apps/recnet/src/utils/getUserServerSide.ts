@@ -1,9 +1,9 @@
 import "server-only";
 import { Tokens } from "next-firebase-auth-edge";
 
-import { User } from "@recnet/recnet-api-model";
-
 import { getTokenServerSide } from "@recnet/recnet-web/utils/getTokenServerSide";
+
+import { User } from "@recnet/recnet-api-model";
 
 import { serverClient } from "../app/_trpc/serverClient";
 

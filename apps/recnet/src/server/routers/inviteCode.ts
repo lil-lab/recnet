@@ -3,15 +3,16 @@ import Chance from "chance";
 import { FieldValue } from "firebase-admin/firestore";
 import { z } from "zod";
 
+import { db } from "@recnet/recnet-web/firebase/admin";
+import { notEmpty } from "@recnet/recnet-web/utils/notEmpty";
+
 import {
   UserPreview,
   userPreviewSchema,
   inviteCodeSchema,
 } from "@recnet/recnet-api-model";
-import { getDateFromFirebaseTimestamp } from "@recnet/recnet-date-fns";
 
-import { db } from "@recnet/recnet-web/firebase/admin";
-import { notEmpty } from "@recnet/recnet-web/utils/notEmpty";
+import { getDateFromFirebaseTimestamp } from "@recnet/recnet-date-fns";
 
 import { checkIsAdminProcedure } from "./middleware";
 

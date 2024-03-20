@@ -2,10 +2,10 @@ import { DocumentData } from "firebase-admin/firestore";
 import { Filter } from "firebase-admin/firestore";
 import { z } from "zod";
 
-import { UserPreview, userPreviewSchema } from "@recnet/recnet-api-model";
-
 import { db } from "@recnet/recnet-web/firebase/admin";
 import { notEmpty } from "@recnet/recnet-web/utils/notEmpty";
+
+import { UserPreview, userPreviewSchema } from "@recnet/recnet-api-model";
 
 import { publicProcedure, router } from "../trpc";
 

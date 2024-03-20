@@ -4,7 +4,12 @@ import { Timestamp } from "firebase-admin/firestore";
 import groupBy from "lodash.groupby";
 import { z } from "zod";
 
+import { db } from "@recnet/recnet-web/firebase/admin";
+import { notEmpty } from "@recnet/recnet-web/utils/notEmpty";
+import { shuffleArray } from "@recnet/recnet-web/utils/shuffle";
+
 import { Rec, recSchema, userPreviewSchema } from "@recnet/recnet-api-model";
+
 import {
   getDateFromFirebaseTimestamp,
   numToMonth,
@@ -12,10 +17,6 @@ import {
   Month,
 } from "@recnet/recnet-date-fns";
 import { getNextCutOff } from "@recnet/recnet-date-fns";
-
-import { db } from "@recnet/recnet-web/firebase/admin";
-import { notEmpty } from "@recnet/recnet-web/utils/notEmpty";
-import { shuffleArray } from "@recnet/recnet-web/utils/shuffle";
 
 import { checkIsAdminProcedure, checkRecnetJWTProcedure } from "./middleware";
 

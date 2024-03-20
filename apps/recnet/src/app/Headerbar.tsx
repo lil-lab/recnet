@@ -14,11 +14,11 @@ import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
 import { useState, useRef, useEffect, useCallback } from "react";
 
-import { User } from "@recnet/recnet-api-model";
-
 import { useAuth } from "@recnet/recnet-web/app/AuthContext";
 import { Avatar } from "@recnet/recnet-web/components/Avatar";
 import { logout, useGoogleLogin } from "@recnet/recnet-web/firebase/auth";
+
+import { User } from "@recnet/recnet-api-model";
 
 import { UserRole } from "../constant";
 import { cn } from "../utils/cn";

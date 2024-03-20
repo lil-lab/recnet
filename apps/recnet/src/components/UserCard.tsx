@@ -3,12 +3,12 @@
 import { HomeIcon, PersonIcon } from "@radix-ui/react-icons";
 import { Flex, Text, Grid } from "@radix-ui/themes";
 
-import { UserPreview } from "@recnet/recnet-api-model";
-
 import { useAuth } from "@recnet/recnet-web/app/AuthContext";
 import { Avatar } from "@recnet/recnet-web/components/Avatar";
 import { cn } from "@recnet/recnet-web/utils/cn";
 import { shuffleArray } from "@recnet/recnet-web/utils/shuffle";
+
+import { UserPreview } from "@recnet/recnet-api-model";
 
 import { FollowButton } from "./FollowButton";
 import { RecNetLink } from "./Link";

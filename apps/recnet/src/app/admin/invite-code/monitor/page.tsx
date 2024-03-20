@@ -3,9 +3,6 @@
 import { Flex, Table, Text } from "@radix-ui/themes";
 import { TailSpin } from "react-loader-spinner";
 
-import { UserPreview } from "@recnet/recnet-api-model";
-import { formatDate } from "@recnet/recnet-date-fns";
-
 import { trpc } from "@recnet/recnet-web/app/_trpc/client";
 import {
   AdminSectionBox,
@@ -15,6 +12,10 @@ import { Avatar } from "@recnet/recnet-web/components/Avatar";
 import { CopiableInviteCode } from "@recnet/recnet-web/components/InviteCode";
 import { RecNetLink } from "@recnet/recnet-web/components/Link";
 import { cn } from "@recnet/recnet-web/utils/cn";
+
+import { UserPreview } from "@recnet/recnet-api-model";
+
+import { formatDate } from "@recnet/recnet-date-fns";
 
 const TableUserCard = (props: { user: UserPreview }) => {
   const { user } = props;

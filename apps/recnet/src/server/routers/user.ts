@@ -2,10 +2,10 @@ import { TRPCError } from "@trpc/server";
 import { FieldValue } from "firebase-admin/firestore";
 import { z } from "zod";
 
-import { userPreviewSchema, userSchema } from "@recnet/recnet-api-model";
-
 import { UserRole } from "@recnet/recnet-web/constant";
 import { db } from "@recnet/recnet-web/firebase/admin";
+
+import { userPreviewSchema, userSchema } from "@recnet/recnet-api-model";
 
 import {
   checkFirebaseJWTProcedure,
