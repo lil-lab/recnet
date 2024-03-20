@@ -8,11 +8,11 @@ import {
 } from "@nestjs/common";
 import { Response } from "express";
 
+import { RecnetError } from "@recnet-api/utils/error/recnet.error";
 import {
   ErrorCode,
   errorMessages,
-} from "@recnet-api/utils//error/recnet.error.const";
-import { RecnetError } from "@recnet-api/utils/error/recnet.error";
+} from "@recnet-api/utils/error/recnet.error.const";
 
 @Catch()
 export class RecnetExceptionFilter implements ExceptionFilter {
