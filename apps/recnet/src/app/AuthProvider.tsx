@@ -9,6 +9,7 @@ import { trpc } from "./_trpc/client";
 import { User } from "@recnet/recnet-api-model";
 import { setRecnetCustomClaims } from "../server/user";
 import { TRPCClientError } from "@trpc/client";
+import useMount from "../hooks/useMount";
 
 export interface AuthProviderProps {
   serverUser: User | null;
@@ -86,9 +87,9 @@ export const AuthProvider: React.FunctionComponent<AuthProviderProps> = ({
     [loginMutation, revalidateUser, router]
   );
 
-  useEffect(() => {
+  useMount(() => {
     return onIdTokenChanged(getAuth(getFirebaseApp()), handleIdTokenChanged);
-  }, []);
+  });
 
   useEffect(() => {
     if (user) {
