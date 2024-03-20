@@ -14,7 +14,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { useState } from "react";
 import { TailSpin } from "react-loader-spinner";
 import { trpc } from "../_trpc/client";
-import { setRecnetCustomClaims } from "@recnet/recnet-web/server/user";
+import { setRecnetCustomClaims } from "@recnet/recnet-web/utils/setRecnetCustomClaims";
 
 const OnboardFormSchema = z.object({
   inviteCode: z.string().min(1, "Invite code cannot be blank"),

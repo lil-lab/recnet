@@ -153,22 +153,3 @@ export async function updateUser(
   await docRef.set(data, { merge: true });
   return username;
 }
-
-export async function setRecnetCustomClaims(role: UserRole, userId: string) {
-  const { setCustomUserClaims } = getFirebaseAuth({
-    apiKey: authConfig.apiKey,
-    serviceAccount: authConfig.serviceAccount,
-  });
-  const tokens = await getTokenServerSide();
-  if (!tokens) {
-    throw new Error("No tokens");
-  }
-  const { decodedToken } = tokens;
-  const { uid } = decodedToken;
-  setCustomUserClaims(uid, {
-    recnet: {
-      role,
-      userId,
-    },
-  });
-}

@@ -7,7 +7,7 @@ import { getFirebaseApp } from "@recnet/recnet-web/firebase/client";
 import { usePathname, useRouter } from "next/navigation";
 import { trpc } from "./_trpc/client";
 import { User } from "@recnet/recnet-api-model";
-import { setRecnetCustomClaims } from "../server/user";
+import { setRecnetCustomClaims } from "@recnet/recnet-web/utils/setRecnetCustomClaims";
 import { TRPCClientError } from "@trpc/client";
 import useMount from "../hooks/useMount";
 
