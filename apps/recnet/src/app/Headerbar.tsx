@@ -66,10 +66,6 @@ export function Headerbar() {
   const searchInputRef = useRef<HTMLInputElement>(null);
   const [searchQuery, setSearchQuery] = useState<string>("");
 
-  const handleLogin = async () => {
-    await login();
-  };
-
   const handleSearch = useCallback(() => {
     if (pathname === "/search") {
       router.replace(`/search?q=${searchQuery}`);
@@ -276,7 +272,6 @@ export function Headerbar() {
               color="red"
               onClick={async () => {
                 await logout();
-                router.push("/");
               }}
               className="cursor-pointer"
             >
@@ -285,7 +280,14 @@ export function Headerbar() {
           ) : user ? (
             <UserDropdown user={user} />
           ) : (
-            <Button onClick={handleLogin}>Log In</Button>
+            <Button
+              className="cursor-pointer"
+              onClick={async () => {
+                await login();
+              }}
+            >
+              Log In
+            </Button>
           )}
         </div>
       </Flex>

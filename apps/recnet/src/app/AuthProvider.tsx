@@ -69,9 +69,6 @@ export const AuthProvider: React.FunctionComponent<AuthProviderProps> = ({
           });
           await setRecnetCustomClaims(data.user.role, data.user.id);
           await revalidateUser();
-          if (pathname === "/") {
-            router.replace("/feeds");
-          }
         } catch (error) {
           console.log(error);
         }
@@ -81,13 +78,22 @@ export const AuthProvider: React.FunctionComponent<AuthProviderProps> = ({
       // Removes authenticated user cookies
       await fetch("/api/logout");
       await revalidateUser();
+      router.replace("/");
     },
-    [pathname, router, loginMutation, revalidateUser]
+    [loginMutation, revalidateUser, router]
   );
 
   useEffect(() => {
     return onIdTokenChanged(getAuth(getFirebaseApp()), handleIdTokenChanged);
   }, []);
+
+  useEffect(() => {
+    if (user) {
+      if (pathname === "/") {
+        router.replace("/feeds");
+      }
+    }
+  }, [user, pathname, router]);
 
   return (
     <AuthContext.Provider
