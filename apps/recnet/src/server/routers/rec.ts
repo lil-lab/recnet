@@ -16,7 +16,6 @@ import { getNextCutOff } from "@recnet/recnet-date-fns";
 import { notEmpty } from "@recnet/recnet-web/utils/notEmpty";
 import { shuffleArray } from "@recnet/recnet-web/utils/shuffle";
 import groupBy from "lodash.groupby";
-import { FirebaseTsSchema } from "@recnet/recnet-web/types/rec";
 
 export const recRouter = router({
   getUpcomingRec: checkRecnetJWTProcedure
@@ -388,7 +387,10 @@ export const recRouter = router({
     .query(async () => {
       const recs = await db.collection("recommendations").get();
       const schema = z.object({
-        cutoff: FirebaseTsSchema,
+        cutoff: z.object({
+          _seconds: z.number(),
+          _nanoseconds: z.number(),
+        }),
         id: z.string(),
       });
       const filteredRecs = recs.docs
