@@ -303,7 +303,7 @@ export const userRouter = router({
           bio: docSnap.data()?.bio ?? null,
           numFollowers: docSnap.data()?.followers.length,
           email: docSnap.data()?.email,
-          role: docSnap.data()?.role,
+          role: docSnap.data()?.role ? UserRole.ADMIN : UserRole.USER,
           following: [], // temperory set to empty since it's unused and will be removed after migration
         }),
       };
