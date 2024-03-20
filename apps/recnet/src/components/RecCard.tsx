@@ -1,10 +1,9 @@
 import { CalendarIcon } from "@radix-ui/react-icons";
 import { Flex, Text } from "@radix-ui/themes";
-import { ChevronRight } from "lucide-react";
-
 import { Rec } from "@recnet/recnet-api-model";
 import { formatDate } from "@recnet/recnet-date-fns";
 import { numToMonth } from "@recnet/recnet-date-fns";
+import { ChevronRight } from "lucide-react";
 
 import { Skeleton, SkeletonText } from "@recnet/recnet-web/components/Skeleton";
 import { cn } from "@recnet/recnet-web/utils/cn";

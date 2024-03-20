@@ -1,3 +1,4 @@
+import { GoogleAnalytics } from "@next/third-parties/google";
 import { Theme } from "@radix-ui/themes";
 import type { Metadata } from "next";
 import localFont from "next/font/local";
@@ -13,9 +14,6 @@ import "@radix-ui/themes/styles.css";
 import "tailwindcss/tailwind.css";
 import { MobileNavigator } from "./MobileNavigator";
 import { ProgressbarProvider } from "./Progressbar";
-
-import { GoogleAnalytics } from "@next/third-parties/google";
-
 import { Provider as TrpcProvider } from "./_trpc/Provider";
 
 import { getUserServerSide } from "../utils/getUserServerSide";

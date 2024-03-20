@@ -1,8 +1,7 @@
 "use server";
 import "server-only";
-import { getFirebaseAuth } from "next-firebase-auth-edge";
-
 import { UserRole } from "@recnet/recnet-api-model";
+import { getFirebaseAuth } from "next-firebase-auth-edge";
 
 import { authConfig } from "../serverEnv";
 import { getTokenServerSide } from "../utils/getTokenServerSide";
