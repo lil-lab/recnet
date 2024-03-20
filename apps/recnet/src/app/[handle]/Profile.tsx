@@ -279,7 +279,7 @@ export function Profile(props: { handle: string }) {
                 {"@" + data.user.handle}
               </Text>
             </Flex>
-            <Flex className="w-fit">
+            <Flex className="w-fit hidden md:flex">
               {isMe ? (
                 <EditProfileDialog handle={data.user.handle} />
               ) : (
@@ -317,6 +317,13 @@ export function Profile(props: { handle: string }) {
             ) : null}
           </Flex>
         </Flex>
+      </Flex>
+      <Flex className="w-full md:hidden">
+        {isMe ? (
+          <EditProfileDialog handle={data.user.handle} />
+        ) : (
+          <FollowButton user={data.user} />
+        )}
       </Flex>
     </div>
   );
