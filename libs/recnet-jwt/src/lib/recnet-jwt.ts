@@ -1,6 +1,7 @@
-import { userRoleSchema } from "@recnet/recnet-api-model";
 import { verify, VerifyOptions } from "jsonwebtoken";
 import { z } from "zod";
+
+import { userRoleSchema } from "@recnet/recnet-api-model";
 
 export const recnetJwtPayloadSchema = z
   .object({
@@ -42,6 +43,9 @@ export async function getPublicKey(token: string): Promise<string> {
   );
   const keys = await res.json();
   const publicKey = keys[header.kid];
+  if (!publicKey) {
+    throw new Error("Public key not found");
+  }
   return publicKeySchema.parse(publicKey);
 }
 

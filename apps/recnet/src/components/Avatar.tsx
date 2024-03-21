@@ -2,17 +2,18 @@
 import { Avatar as RadixAvatar } from "@radix-ui/themes";
 import * as React from "react";
 
-import type { User } from "@recnet/recnet-web/types/user";
 import { cn } from "@recnet/recnet-web/utils/cn";
+
+import type { User, UserPreview } from "@recnet/recnet-api-model";
 
 type RadixAvatarProps = React.ComponentProps<typeof RadixAvatar>;
 
 interface AvatarProps extends Omit<RadixAvatarProps, "fallback"> {
-  user: User;
+  user: User | UserPreview;
   fallback?: NonNullable<React.ReactNode>;
 }
 
-function getFallbackDisplayName(user: User) {
+function getFallbackDisplayName(user: User | UserPreview) {
   return user.displayName
     .split(" ")
     .map((w) => w[0])
@@ -24,7 +25,7 @@ export function Avatar(props: AvatarProps) {
   const { className, ...restProps } = rest;
   return (
     <RadixAvatar
-      src={user.photoURL}
+      src={user.photoUrl}
       className={cn("rounded-[9999px] border-[1px] border-slate-6", className)}
       fallback={getFallbackDisplayName(user)}
       {...restProps}

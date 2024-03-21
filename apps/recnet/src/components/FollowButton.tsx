@@ -6,20 +6,23 @@ import { TailSpin } from "react-loader-spinner";
 import { toast } from "sonner";
 
 import { useAuth } from "@recnet/recnet-web/app/AuthContext";
-import { follow, unfollow } from "@recnet/recnet-web/server/user";
-import { User } from "@recnet/recnet-web/types/user";
+import { trpc } from "@recnet/recnet-web/app/_trpc/client";
+
+import { UserPreview } from "@recnet/recnet-api-model";
 
 type RadixButtonProps = React.ComponentProps<typeof Button>;
 interface FollowButtonProps extends Omit<RadixButtonProps, "variant"> {
-  user: User;
+  user: UserPreview;
 }
 
 export function FollowButton(props: FollowButtonProps) {
   const { user, ...rest } = props;
   const { user: me, revalidateUser } = useAuth();
-  const isFollowing = me?.following.includes(user.id);
+  const isFollowing = me?.following.map((up) => up.id).includes(user.id);
 
   const [isLoading, setIsLoading] = useState(false);
+  const followMutation = trpc.follow.useMutation();
+  const unfollowMutation = trpc.unfollow.useMutation();
 
   return (
     <Button
@@ -33,7 +36,7 @@ export function FollowButton(props: FollowButtonProps) {
         setIsLoading(true);
         if (isFollowing) {
           try {
-            await unfollow(me.id, user.id);
+            await unfollowMutation.mutateAsync({ targetUserId: user.id });
             await revalidateUser();
             toast.success(`Successfully unfollowed ${user.displayName}`);
           } catch (e) {
@@ -41,7 +44,7 @@ export function FollowButton(props: FollowButtonProps) {
           }
         } else {
           try {
-            await follow(me.id, user.id);
+            await followMutation.mutateAsync({ targetUserId: user.id });
             await revalidateUser();
             toast.success(`You're following ${user.displayName}`);
           } catch (e) {

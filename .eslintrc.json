@@ -59,17 +59,17 @@
                 "position": "after"
               },
               {
-                "pattern": "@recnet/recnet-jwt/**",
+                "pattern": "@recnet/recnet-jwt",
                 "group": "internal",
                 "position": "after"
               },
               {
-                "pattern": "@recnet/recnet-date-fns/**",
+                "pattern": "@recnet/recnet-date-fns",
                 "group": "internal",
                 "position": "after"
               },
               {
-                "pattern": "@recnet/recnet-api-model/**",
+                "pattern": "@recnet/recnet-api-model",
                 "group": "internal",
                 "position": "after"
               }

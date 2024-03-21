@@ -2,6 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button, Flex, Text, TextField, Dialog } from "@radix-ui/themes";
+import { TRPCClientError } from "@trpc/client";
 import { AtSignIcon, HashIcon } from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
@@ -9,13 +10,12 @@ import { toast } from "sonner";
 import { z } from "zod";
 
 import { useAuth } from "@recnet/recnet-web/app/AuthContext";
+import { trpc } from "@recnet/recnet-web/app/_trpc/client";
 import { CopiableInviteCode } from "@recnet/recnet-web/components/InviteCode";
 import { RecNetLink as Link } from "@recnet/recnet-web/components/Link";
+import { ErrorMessages } from "@recnet/recnet-web/constant";
 import { useCopyToClipboard } from "@recnet/recnet-web/hooks/useCopyToClipboard";
-import { generateInviteCode } from "@recnet/recnet-web/server/inviteCode";
-import { UserSchema } from "@recnet/recnet-web/types/user";
 import { cn } from "@recnet/recnet-web/utils/cn";
-import { fetchWithZod } from "@recnet/recnet-web/utils/zodFetch";
 
 import { AdminSectionBox, AdminSectionTitle } from "../../AdminSections";
 
@@ -32,6 +32,7 @@ function InviteCodeGenerateForm() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { copy } = useCopyToClipboard();
   const [copied, setCopied] = useState(false);
+  const generateInviteCodeMutation = trpc.generateInviteCode.useMutation();
 
   const { register, handleSubmit, formState, setError, setValue } = useForm({
     resolver: zodResolver(InviteCodeGenerationSchema),
@@ -47,32 +48,36 @@ function InviteCodeGenerateForm() {
       <form
         onSubmit={handleSubmit(async (data, e) => {
           e?.preventDefault();
-          let owner = user;
-          if (data.owner) {
-            // check if owner exists
-            try {
-              const recipient = await fetchWithZod(
-                UserSchema,
-                `/api/userByUsername?username=${data.owner}`
-              );
-              owner = recipient;
-            } catch (error) {
-              setError("owner", {
-                type: "manual",
-                message: "User not found",
-              });
-              return;
-            }
-          }
-          if (!owner) {
-            // should never happen, for type safety
+          if (!user) {
             return;
           }
-          // generate invite codes
-          const codes = await generateInviteCode(owner.id, data.count);
-          // show modal with invite codes
-          setNewInviteCodes(codes);
-          setIsModalOpen(true);
+          const handle = data?.owner || user.handle;
+          try {
+            const res = await generateInviteCodeMutation.mutateAsync(
+              {
+                ownerHandle: handle,
+                num: data.count,
+              },
+              {
+                onError: (error) => {
+                  if (
+                    error instanceof TRPCClientError &&
+                    error.data.code === "NOT_FOUND" &&
+                    error.message === ErrorMessages.USER_NOT_FOUND
+                  ) {
+                    setError("owner", {
+                      type: "manual",
+                      message: "User not found",
+                    });
+                  }
+                },
+              }
+            );
+            setNewInviteCodes(res.inviteCodes);
+            setIsModalOpen(true);
+          } catch (error) {
+            console.error(error);
+          }
         })}
       >
         <Flex
