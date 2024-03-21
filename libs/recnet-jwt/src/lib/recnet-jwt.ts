@@ -43,6 +43,9 @@ export async function getPublicKey(token: string): Promise<string> {
   );
   const keys = await res.json();
   const publicKey = keys[header.kid];
+  if (!publicKey) {
+    throw new Error("Public key not found");
+  }
   return publicKeySchema.parse(publicKey);
 }
 
