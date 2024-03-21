@@ -10,8 +10,8 @@ import { useForm, useFormState } from "react-hook-form";
 import { toast } from "sonner";
 import * as z from "zod";
 
-import { trpc } from "@recnet/recnet-web/app//_trpc/client";
 import { useAuth } from "@recnet/recnet-web/app/AuthContext";
+import { trpc } from "@recnet/recnet-web/app/_trpc/client";
 import { Avatar } from "@recnet/recnet-web/components/Avatar";
 import { FollowButton } from "@recnet/recnet-web/components/FollowButton";
 import { RecNetLink } from "@recnet/recnet-web/components/Link";
