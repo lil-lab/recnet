@@ -132,7 +132,7 @@ export function RecForm(props: {
         try {
           // if currentRec exists, update, else insert new rec
           if (currentRec) {
-            await editRecMutation.mutate({
+            await editRecMutation.mutateAsync({
               data: res.data,
               id: currentRec.id,
             });
