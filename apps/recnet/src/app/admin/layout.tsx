@@ -1,4 +1,4 @@
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import React from "react";
 
 import { AdminPanelNavbar } from "@recnet/recnet-web/app/admin/AdminPanelNav";
@@ -12,8 +12,11 @@ export default async function Layout({
   children: React.ReactNode;
 }>) {
   const user = await getUserServerSide();
+  if (!user) {
+    redirect("/");
+  }
 
-  if (!user || user?.role !== UserRole.ADMIN) {
+  if (user?.role !== UserRole.ADMIN) {
     notFound();
   }
 
