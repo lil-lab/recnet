@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "license": "MIT",
   "scripts": {
-    "postinstall": "npx nx run-many --target sync-package-lock --all"
+    "postinstall": "npx nx run-many --target sync-package-lock --all --no-cloud"
   },
   "private": true,
   "dependencies": {
