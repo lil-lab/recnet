@@ -7,10 +7,10 @@ import { RecNetLink } from "@recnet/recnet-web/components/Link";
 import { Skeleton, SkeletonText } from "@recnet/recnet-web/components/Skeleton";
 import { cn } from "@recnet/recnet-web/utils/cn";
 
-import { Rec } from "@recnet/recnet-api-model";
-
-import { formatDate } from "@recnet/recnet-date-fns";
 import { numToMonth } from "@recnet/recnet-date-fns";
+import { formatDate } from "@recnet/recnet-date-fns";
+
+import { Rec } from "@recnet/recnet-api-model";
 
 export function RecCardSkeleton() {
   return (

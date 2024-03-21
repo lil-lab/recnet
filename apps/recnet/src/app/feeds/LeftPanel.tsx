@@ -14,8 +14,6 @@ import { RecForm } from "@recnet/recnet-web/components/RecForm";
 import { Skeleton, SkeletonText } from "@recnet/recnet-web/components/Skeleton";
 import { cn } from "@recnet/recnet-web/utils/cn";
 
-import { Rec } from "@recnet/recnet-api-model";
-
 import {
   getCutOffFromStartDate,
   getCutOff,
@@ -23,6 +21,8 @@ import {
   getNextCutOff,
   getVerboseDateString,
 } from "@recnet/recnet-date-fns";
+
+import { Rec } from "@recnet/recnet-api-model";
 
 import { trpc } from "../_trpc/client";
 

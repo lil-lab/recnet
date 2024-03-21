@@ -7,13 +7,13 @@ import { ErrorMessages } from "@recnet/recnet-web/constant";
 import { db } from "@recnet/recnet-web/firebase/admin";
 import { notEmpty } from "@recnet/recnet-web/utils/notEmpty";
 
+import { getDateFromFirebaseTimestamp } from "@recnet/recnet-date-fns";
+
 import {
   UserPreview,
   userPreviewSchema,
   inviteCodeSchema,
 } from "@recnet/recnet-api-model";
-
-import { getDateFromFirebaseTimestamp } from "@recnet/recnet-date-fns";
 
 import { checkIsAdminProcedure } from "./middleware";
 

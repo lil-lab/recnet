@@ -9,15 +9,15 @@ import { db } from "@recnet/recnet-web/firebase/admin";
 import { notEmpty } from "@recnet/recnet-web/utils/notEmpty";
 import { shuffleArray } from "@recnet/recnet-web/utils/shuffle";
 
-import { Rec, recSchema, userPreviewSchema } from "@recnet/recnet-api-model";
-
+import { getNextCutOff } from "@recnet/recnet-date-fns";
 import {
   getDateFromFirebaseTimestamp,
   numToMonth,
   monthToNum,
   Month,
 } from "@recnet/recnet-date-fns";
-import { getNextCutOff } from "@recnet/recnet-date-fns";
+
+import { Rec, recSchema, userPreviewSchema } from "@recnet/recnet-api-model";
 
 import { checkIsAdminProcedure, checkRecnetJWTProcedure } from "./middleware";
 

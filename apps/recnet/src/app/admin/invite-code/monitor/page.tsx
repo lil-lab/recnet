@@ -13,9 +13,9 @@ import { CopiableInviteCode } from "@recnet/recnet-web/components/InviteCode";
 import { RecNetLink } from "@recnet/recnet-web/components/Link";
 import { cn } from "@recnet/recnet-web/utils/cn";
 
-import { UserPreview } from "@recnet/recnet-api-model";
-
 import { formatDate } from "@recnet/recnet-date-fns";
+
+import { UserPreview } from "@recnet/recnet-api-model";
 
 const TableUserCard = (props: { user: UserPreview }) => {
   const { user } = props;

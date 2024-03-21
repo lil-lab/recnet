@@ -23,8 +23,6 @@ import * as z from "zod";
 import { trpc } from "@recnet/recnet-web/app/_trpc/client";
 import { cn } from "@recnet/recnet-web/utils/cn";
 
-import { Rec } from "@recnet/recnet-api-model";
-
 import {
   getNextCutOff,
   getVerboseDateString,
@@ -33,6 +31,8 @@ import {
   monthToNum,
   numToMonth,
 } from "@recnet/recnet-date-fns";
+
+import { Rec } from "@recnet/recnet-api-model";
 
 const SelectItem = forwardRef<HTMLDivElement, Select.SelectItemProps>(
   ({ children, className, ...props }, forwardedRef) => {

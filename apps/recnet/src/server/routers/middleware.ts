@@ -7,12 +7,12 @@ import { db } from "@recnet/recnet-web/firebase/admin";
 import { getTokenServerSide } from "@recnet/recnet-web/utils/getTokenServerSide";
 import { notEmpty } from "@recnet/recnet-web/utils/notEmpty";
 
-import { userSchema, userPreviewSchema } from "@recnet/recnet-api-model";
-
 import {
   recnetJwtPayloadSchema,
   firebaseJwtPayloadSchema,
 } from "@recnet/recnet-jwt";
+
+import { userSchema, userPreviewSchema } from "@recnet/recnet-api-model";
 
 import { publicProcedure } from "../trpc";
 
