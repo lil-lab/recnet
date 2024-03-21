@@ -33,7 +33,7 @@ jobs:
         with:
           node-version: 20
           cache: "pnpm"
-      - run: pnpm install --frozen-lockfile
+      - run: pnpm install
       - uses: nrwl/nx-set-shas@v4
 
       - run: pnpm nx run-many -t typecheck
