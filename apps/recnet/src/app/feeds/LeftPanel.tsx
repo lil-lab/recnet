@@ -117,10 +117,8 @@ export function LeftPanel() {
   const date = searchParams.get("date");
   const cutoff = date ? getCutOff(new Date(date)) : getLatestCutOff();
   const cutoffs = getCutOffFromStartDate();
-  const { revalidateUser } = useAuth();
   const { data, isPending, isFetching } = trpc.getUpcomingRec.useQuery();
   const rec = data?.rec ?? null;
-  const utils = trpc.useUtils();
 
   const [isRecFormOpen, setIsRecFormOpen] = useState(false);
 
@@ -179,14 +177,6 @@ export function LeftPanel() {
                   setIsRecFormOpen(false);
                 }}
                 currentRec={rec}
-                onUpdateSuccess={async () => {
-                  await revalidateUser();
-                  await utils.getUpcomingRec.invalidate();
-                }}
-                onDeleteSuccess={async () => {
-                  await revalidateUser();
-                  await utils.getUpcomingRec.invalidate();
-                }}
               />
             </motion.div>
           ) : (

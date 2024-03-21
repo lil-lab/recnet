@@ -24,10 +24,9 @@ import { UserDropdown } from "./Headerbar";
 
 function RecFormContent(props: { setOpen: (open: boolean) => void }) {
   const { setOpen } = props;
-  const { user, revalidateUser } = useAuth();
+  const { user } = useAuth();
   const { data, isPending, isFetching } = trpc.getUpcomingRec.useQuery();
   const rec = data?.rec ?? null;
-  const utils = trpc.useUtils();
 
   if (!user) {
     // this case should never happen, just for type narrowing
@@ -101,14 +100,6 @@ function RecFormContent(props: { setOpen: (open: boolean) => void }) {
             setOpen(false);
           }}
           currentRec={rec ?? null}
-          onUpdateSuccess={async () => {
-            await revalidateUser();
-            await utils.getUpcomingRec.invalidate();
-          }}
-          onDeleteSuccess={async () => {
-            await revalidateUser();
-            await utils.getUpcomingRec.invalidate();
-          }}
         />
       </Flex>
     </div>

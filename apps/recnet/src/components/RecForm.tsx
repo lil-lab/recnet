@@ -108,6 +108,7 @@ export function RecForm(props: {
   const insertRecMutation = trpc.addUpcomingRec.useMutation();
   const editRecMutation = trpc.editUpcomingRec.useMutation();
   const deleteRecMutation = trpc.deleteUpcomingRec.useMutation();
+  const utils = trpc.useUtils();
 
   return (
     <form
@@ -137,10 +138,11 @@ export function RecForm(props: {
             });
             toast.success("Rec updated successfully.");
           } else {
-            await insertRecMutation.mutate(res.data);
+            await insertRecMutation.mutateAsync(res.data);
             toast.success("We got your rec! 🎉");
           }
           onUpdateSuccess();
+          await utils.getUpcomingRec.invalidate();
           onFinish();
           setIsSubmitting(false);
         } catch (error) {
@@ -342,10 +344,11 @@ export function RecForm(props: {
           className="cursor-pointer"
           onClick={async () => {
             try {
-              await deleteRecMutation.mutate({
+              await deleteRecMutation.mutateAsync({
                 id: currentRec.id,
               });
               await onDeleteSuccess();
+              await utils.getUpcomingRec.invalidate();
               toast.success("Rec deleted successfully");
               onFinish();
             } catch (error) {
