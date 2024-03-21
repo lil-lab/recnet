@@ -88,6 +88,8 @@ export const inviteCodeRouter = router({
           const usedBy = usersMap?.[inviteCodeData.usedBy] ?? null;
           const owner = usersMap[inviteCodeData.issuedTo];
           const res = inviteCodeSchema.safeParse({
+            // In the new schema, id is a auto-incremented number
+            // 0 is just a placeholder now since current firebase db don't have numeric ID.
             id: 0,
             code: inviteCodeData.id,
             owner: owner,
