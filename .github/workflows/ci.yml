@@ -12,6 +12,7 @@ permissions:
 
 env:
   TEST_JWT: ${{ secrets.TEST_JWT }}
+  NX_NO_CLOUD: ${{ secrets.NX_NO_CLOUD }}
 
 jobs:
   main:
