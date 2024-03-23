@@ -1,6 +1,6 @@
 import { Injectable, NestMiddleware, Logger } from "@nestjs/common";
-import { v4 as uuidv4 } from "uuid";
 import { NextFunction, Request, Response } from "express";
+import { v4 as uuidv4 } from "uuid";
 
 @Injectable()
 export class LoggerMiddleware implements NestMiddleware {
