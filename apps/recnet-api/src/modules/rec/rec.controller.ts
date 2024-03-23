@@ -1,9 +1,18 @@
-import { Controller, Get, Query, UseFilters, UsePipes } from "@nestjs/common";
+import {
+  Controller,
+  Get,
+  Query,
+  UseFilters,
+  UseGuards,
+  UsePipes,
+} from "@nestjs/common";
 import { ApiOkResponse, ApiOperation, ApiTags } from "@nestjs/swagger";
-import { getRecsParamsSchema } from "@recnet/recnet-api-model";
 
 import { RecnetExceptionFilter } from "@recnet-api/utils/filters/recnet.exception.filter";
+import { AuthGuard } from "@recnet-api/utils/guards/auth.guard";
 import { ZodValidationPipe } from "@recnet-api/utils/pipes/zod.validation.pipe";
+
+import { getRecsParamsSchema } from "@recnet/recnet-api-model";
 
 import { QueryRecsDto } from "./dto/query.recs.dto";
 import { GetRecsResponse } from "./rec.response";
@@ -21,6 +30,7 @@ export class RecController {
   })
   @ApiOkResponse({ type: GetRecsResponse })
   @Get()
+  @UseGuards(AuthGuard("RecNetJWT"))
   @UsePipes(new ZodValidationPipe(getRecsParamsSchema))
   public async getRecs(@Query() dto: QueryRecsDto): Promise<GetRecsResponse> {
     const { page, pageSize, userId } = dto;
