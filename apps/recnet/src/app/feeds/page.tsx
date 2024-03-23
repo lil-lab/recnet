@@ -2,17 +2,18 @@ import { Text } from "@radix-ui/themes";
 import groupBy from "lodash.groupby";
 import { notFound, redirect } from "next/navigation";
 
+import { RecCard } from "@recnet/recnet-web/components/RecCard";
+import { cn } from "@recnet/recnet-web/utils/cn";
+import { getUserServerSide } from "@recnet/recnet-web/utils/getUserServerSide";
+import { notEmpty } from "@recnet/recnet-web/utils/notEmpty";
+
 import {
   getCutOff,
   getLatestCutOff,
   START_DATE,
 } from "@recnet/recnet-date-fns";
 
-import { RecCard } from "@recnet/recnet-web/components/RecCard";
-import { getFeedsRecs, getRecsWithUsers } from "@recnet/recnet-web/server/rec";
-import { cn } from "@recnet/recnet-web/utils/cn";
-import { getUserServerSide } from "@recnet/recnet-web/utils/getUserServerSide";
-import { notEmpty } from "@recnet/recnet-web/utils/notEmpty";
+import { serverClient } from "../_trpc/serverClient";
 
 function verifyDate(date: string) {
   const parsedDate = new Date(date);
@@ -52,10 +53,9 @@ export default async function FeedPage({
     verifyDate(date);
   }
   const cutoff = date ? getCutOff(new Date(date)) : getLatestCutOff();
-  const recs = await getFeedsRecs(user?.id, cutoff.getTime());
-  const recsWithUsers = await getRecsWithUsers(recs);
-  const recsGroupByTitle = groupBy(recsWithUsers, (recWithUser) => {
-    const titleLowercase = recWithUser.title.toLowerCase();
+  const { recs } = await serverClient.getFeeds({ cutoffTs: cutoff.getTime() });
+  const recsGroupByTitle = groupBy(recs, (rec) => {
+    const titleLowercase = rec.article.title.toLowerCase();
     const words = titleLowercase
       .split(" ")
       .filter((w) => w.length > 0)
@@ -78,10 +78,8 @@ export default async function FeedPage({
     >
       {Object.keys(recsGroupByTitle).length > 0 ? (
         Object.keys(recsGroupByTitle).map((recTitle, idx) => {
-          const recsWithUsers = recsGroupByTitle[recTitle];
-          return (
-            <RecCard key={`${recTitle}-${idx}`} recsWithUsers={recsWithUsers} />
-          );
+          const recs = recsGroupByTitle[recTitle];
+          return <RecCard key={`${recTitle}-${idx}`} recs={recs} />;
         })
       ) : (
         <div className="h-[150px] w-full flex justify-center items-center">

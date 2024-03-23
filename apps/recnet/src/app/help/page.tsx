@@ -4,9 +4,9 @@
 import { Text } from "@radix-ui/themes";
 import * as React from "react";
 
-import { getNextCutOff, getVerboseDateString } from "@recnet/recnet-date-fns";
-
 import { cn } from "@recnet/recnet-web/utils/cn";
+
+import { getNextCutOff, getVerboseDateString } from "@recnet/recnet-date-fns";
 
 const faqs: {
   title: string;

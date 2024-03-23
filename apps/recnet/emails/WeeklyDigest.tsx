@@ -16,42 +16,42 @@ import {
 } from "@react-email/components";
 import * as React from "react";
 
-import type { RecWithUser } from "@recnet/recnet-web/types/rec";
+import { Rec } from "@recnet/recnet-api-model";
 
 interface EmailRecCardProps {
-  recsWithUsers: RecWithUser[];
+  recs: Rec[];
 }
 
 function EmailRecCard(props: EmailRecCardProps) {
-  const { recsWithUsers } = props;
-  if (recsWithUsers.length === 0) {
+  const { recs } = props;
+  if (recs.length === 0) {
     return null;
   }
-  const rec = recsWithUsers[0];
+  const rec = recs[0];
   return (
     <Container className="p-2">
       <Container className="p-3 bg-[#F1F1F1] rounded-md mb-2">
-        <Link href={rec.link} className="text-brand">
-          <Text className="text-[18px]">{rec.title}</Text>
+        <Link href={rec.article.link} className="text-brand">
+          <Text className="text-[18px]">{rec.article.title}</Text>
         </Link>
-        <Text>{rec.author}</Text>
+        <Text>{rec.article.author}</Text>
         <div className="flex flex-row items-center text-[14px] gap-x-2">
           <CalendarIcon className="w-4 h-4" />
-          <div>{rec.year}</div>
+          <div>{rec.article.year}</div>
         </div>
       </Container>
-      {recsWithUsers.map((recWithUser, idx) => {
+      {recs.map((rec, idx) => {
         return (
           <Container key={idx} className="px-4 pt-1">
             <div className="flex flex-row items-center gap-x-4">
               <Img
-                src={recWithUser.user.photoURL}
+                src={rec.user.photoUrl}
                 alt="avatar"
                 className="w-[40px] aspect-square rounded-[999px] object-cover"
               />
-              <Text>{recWithUser.user.displayName}</Text>
+              <Text>{rec.user.displayName}</Text>
             </div>
-            <Text>{recWithUser.description}</Text>
+            <Text>{rec.description}</Text>
           </Container>
         );
       })}
@@ -93,7 +93,7 @@ function MockEmailRecCard() {
   );
 }
 
-const WeeklyDigest = (props: { recsDict?: Record<string, RecWithUser[]> }) => {
+const WeeklyDigest = (props: { recsDict?: Record<string, Rec[]> }) => {
   const { recsDict = {} } = props;
   const recsCount = Object.keys(recsDict).length;
   return (
@@ -154,11 +154,11 @@ const WeeklyDigest = (props: { recsDict?: Record<string, RecWithUser[]> }) => {
               </Text>
             </Section>
             {Object.keys(recsDict).map((key, i) => {
-              const recsWithUsers = recsDict[key];
+              const recs = recsDict[key];
               return (
                 <React.Fragment key={i}>
                   <Hr />
-                  <EmailRecCard recsWithUsers={recsWithUsers} />
+                  <EmailRecCard recs={recs} />
                 </React.Fragment>
               );
             })}

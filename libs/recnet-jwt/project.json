@@ -16,6 +16,7 @@
     },
     "test": {
       "executor": "@nx/vite:test",
+      "dependsOn": ["setupEnv"],
       "outputs": ["{options.reportsDirectory}"],
       "options": {
         "reportsDirectory": "../../coverage/libs/recnet-jwt"
@@ -25,6 +26,14 @@
       "executor": "nx:run-commands",
       "options": {
         "commands": ["tsc -p tsconfig.json --noEmit"],
+        "cwd": "libs/recnet-jwt",
+        "forwardAllArgs": false
+      }
+    },
+    "setupEnv": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": ["./scripts/genRS256KeyPair.sh"],
         "cwd": "libs/recnet-jwt",
         "forwardAllArgs": false
       }

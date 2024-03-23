@@ -1,9 +1,10 @@
 import { Controller, Get, Query, UseFilters, UsePipes } from "@nestjs/common";
 import { ApiOkResponse, ApiOperation, ApiTags } from "@nestjs/swagger";
-import { getUsersParamsSchema } from "@recnet/recnet-api-model";
 
 import { RecnetExceptionFilter } from "@recnet-api/utils/filters/recnet.exception.filter";
 import { ZodValidationPipe } from "@recnet-api/utils/pipes/zod.validation.pipe";
+
+import { getUsersParamsSchema } from "@recnet/recnet-api-model";
 
 import { QueryUsersDto } from "./dto/query.users.dto";
 import { GetUsersResponse } from "./user.response";

@@ -1,7 +1,7 @@
 "use client";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { HomeIcon } from "@radix-ui/react-icons";
-import { Button, Text, TextField } from "@radix-ui/themes";
+import { Text, TextField, Button } from "@radix-ui/themes";
 import { getAuth } from "firebase/auth";
 import { AnimatePresence, motion } from "framer-motion";
 import { useRouter } from "next/navigation";
@@ -12,22 +12,20 @@ import { toast } from "sonner";
 import { z } from "zod";
 
 import { useAuth } from "@recnet/recnet-web/app/AuthContext";
+import { trpc } from "@recnet/recnet-web/app/_trpc/client";
 import { getFirebaseApp } from "@recnet/recnet-web/firebase/client";
-import {
-  checkInviteCodeValid,
-  checkUsernameUnique,
-} from "@recnet/recnet-web/server/user";
 import { cn } from "@recnet/recnet-web/utils/cn";
+import { setRecnetCustomClaims } from "@recnet/recnet-web/utils/setRecnetCustomClaims";
 
 const OnboardFormSchema = z.object({
   inviteCode: z.string().min(1, "Invite code cannot be blank"),
-  username: z
+  handle: z
     .string()
-    .min(4, "Username should be at least 4 characters")
-    .max(15, "Username should be at most 15 characters")
+    .min(4, "User handle should be at least 4 characters")
+    .max(15, "User handle should be at most 15 characters")
     .regex(
       /^[A-Za-z0-9_]+$/,
-      "Username should contain only letters (A-Z, a-z), numbers, and underscores (_)."
+      "User handle should contain only letters (A-Z, a-z), numbers, and underscores (_)."
     ),
   affiliation: z.string().optional(),
 });
@@ -38,7 +36,7 @@ export default function OnboardPage() {
     resolver: zodResolver(OnboardFormSchema),
     defaultValues: {
       inviteCode: undefined,
-      username: undefined,
+      handle: undefined,
       affiliation: undefined,
     },
     mode: "onBlur",
@@ -46,6 +44,10 @@ export default function OnboardPage() {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
+
+  const checkInviteCodeValidMutation = trpc.checkInviteCodeValid.useMutation();
+  const checkUserHandleValidMutation = trpc.checkUserHandleValid.useMutation();
+  const createUserMutation = trpc.createUser.useMutation();
 
   return (
     <div className={cn("flex", "flex-col", "p-8", "gap-y-6", "text-gray-11")}>
@@ -77,13 +79,16 @@ export default function OnboardPage() {
           }
           setMessage("Validating...");
           // verify username is unique
-          const isUsernameUnique = await checkUsernameUnique(res.data.username);
+          const { isValid: isUsernameUnique } =
+            await checkUserHandleValidMutation.mutateAsync({
+              handle: res.data.handle,
+            });
           if (!isUsernameUnique) {
             setError(
-              "username",
+              "handle",
               {
                 type: "custom",
-                message: "This username is already taken",
+                message: "This handle is already taken",
               },
               {
                 shouldFocus: true,
@@ -93,9 +98,10 @@ export default function OnboardPage() {
             return;
           }
           // verify invite code is valid
-          const inviteCodeValid = await checkInviteCodeValid(
-            res.data.inviteCode
-          );
+          const { isValid: inviteCodeValid } =
+            await checkInviteCodeValidMutation.mutateAsync({
+              code: res.data.inviteCode,
+            });
           if (!inviteCodeValid) {
             setError(
               "inviteCode",
@@ -115,18 +121,16 @@ export default function OnboardPage() {
           setMessage("Creating user...");
           const firebaseUser = getAuth(getFirebaseApp()).currentUser;
           try {
-            await fetch("/api/createUser", {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify({
-                username: res.data.username,
+            const { user: createdUser } = await createUserMutation.mutateAsync({
+              userInfo: {
                 inviteCode: res.data.inviteCode,
-                affiliation: res.data.affiliation,
-                firebaseUser: firebaseUser,
-              }),
+                handle: res.data.handle,
+                affiliation: res.data.affiliation ?? null,
+              },
+              firebaseUser: firebaseUser,
             });
+            // set custom claims
+            await setRecnetCustomClaims(createdUser.role, createdUser.id);
           } catch (error) {
             console.error(error);
             toast.error("Something went wrong. Please try again later.");
@@ -164,11 +168,11 @@ export default function OnboardPage() {
                 @
               </Text>
             </TextField.Slot>
-            <TextField.Input {...register("username")} />
+            <TextField.Input {...register("handle")} />
           </TextField.Root>
-          {formState.errors.username ? (
+          {formState.errors.handle ? (
             <Text size="1" color="red">
-              {formState.errors.username.message}
+              {formState.errors.handle.message}
             </Text>
           ) : null}
         </div>

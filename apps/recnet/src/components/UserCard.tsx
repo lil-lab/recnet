@@ -5,16 +5,16 @@ import { Flex, Text, Grid } from "@radix-ui/themes";
 
 import { useAuth } from "@recnet/recnet-web/app/AuthContext";
 import { Avatar } from "@recnet/recnet-web/components/Avatar";
-import { User } from "@recnet/recnet-web/types/user";
+import { FollowButton } from "@recnet/recnet-web/components/FollowButton";
+import { RecNetLink } from "@recnet/recnet-web/components/Link";
 import { cn } from "@recnet/recnet-web/utils/cn";
 import { shuffleArray } from "@recnet/recnet-web/utils/shuffle";
 
-import { FollowButton } from "./FollowButton";
-import { RecNetLink } from "./Link";
+import { UserPreview } from "@recnet/recnet-api-model";
 
-export function UserList({ users }: { users: User[] }) {
+export function UserList({ users }: { users: UserPreview[] }) {
   const { user } = useAuth();
-  const shuffledUsers = user?.seed ? shuffleArray(users, user.seed) : users;
+  const shuffledUsers = user?.id ? shuffleArray(users, user.id) : users;
   return (
     <Grid
       columns={{
@@ -25,13 +25,13 @@ export function UserList({ users }: { users: User[] }) {
       gap="4"
     >
       {shuffledUsers.map((user, idx) => (
-        <UserCard key={`${user.username}-${idx}`} user={user} />
+        <UserCard key={`${user.handle}-${idx}`} user={user} />
       ))}
     </Grid>
   );
 }
 
-export function UserCard({ user }: { user: User }) {
+export function UserCard({ user }: { user: UserPreview }) {
   return (
     <div
       className={cn(
@@ -46,11 +46,11 @@ export function UserCard({ user }: { user: User }) {
     >
       <Avatar user={user} />
       <Flex className="flex-col gap-y-1">
-        <RecNetLink href={`/${user.username}`}>
+        <RecNetLink href={`/${user.handle}`}>
           <Text>{user.displayName}</Text>
         </RecNetLink>
         <Text size="1" className="text-gray-12">
-          {"@" + user.username}
+          {"@" + user.handle}
         </Text>
       </Flex>
       <Flex className="items-center gap-x-1">
@@ -67,7 +67,7 @@ export function UserCard({ user }: { user: User }) {
         ) : null}
         <Flex className="items-center gap-x-1 text-gray-11">
           <PersonIcon width="16" height="16" />
-          <Text size="1">{user.followers.length}</Text>
+          <Text size="1">{user.numFollowers}</Text>
         </Flex>
       </Flex>
       <FollowButton user={user} />

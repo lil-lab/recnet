@@ -13,9 +13,9 @@ export type GetStatsResponse = z.infer<typeof getStatsResponseSchema>;
 
 // GET /inviteCodes
 export const getInviteCodesParamsSchema = z.object({
-  page: z.number(),
-  pageSize: z.number(),
-  used: z.boolean().optional(),
+  page: z.coerce.number(),
+  pageSize: z.coerce.number(),
+  used: z.coerce.boolean().optional(),
 });
 export type GetInviteCodesParams = z.infer<typeof getInviteCodesParamsSchema>;
 

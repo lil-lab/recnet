@@ -16,9 +16,11 @@ import { useState, useRef, useEffect, useCallback } from "react";
 
 import { useAuth } from "@recnet/recnet-web/app/AuthContext";
 import { Avatar } from "@recnet/recnet-web/components/Avatar";
+import { UserRole } from "@recnet/recnet-web/constant";
 import { logout, useGoogleLogin } from "@recnet/recnet-web/firebase/auth";
-import { User } from "@recnet/recnet-web/types/user";
 import { cn } from "@recnet/recnet-web/utils/cn";
+
+import { User } from "@recnet/recnet-api-model";
 
 export function UserDropdown({ user }: { user: User }) {
   const router = useRouter();
@@ -38,9 +40,9 @@ export function UserDropdown({ user }: { user: User }) {
       </DropdownMenu.Trigger>
       <DropdownMenu.Content align="center" className="mt-1 sm:w-[120px]">
         <DropdownMenu.Item asChild>
-          <Link href={`/${user.username}`}>Profile</Link>
+          <Link href={`/${user.handle}`}>Profile</Link>
         </DropdownMenu.Item>
-        {user.role && user.role === "admin" ? (
+        {user.role && user.role === UserRole.ADMIN ? (
           <DropdownMenu.Item asChild>
             <Link href={`/admin`}>Admin Panel</Link>
           </DropdownMenu.Item>
@@ -65,10 +67,6 @@ export function Headerbar() {
   );
   const searchInputRef = useRef<HTMLInputElement>(null);
   const [searchQuery, setSearchQuery] = useState<string>("");
-
-  const handleLogin = async () => {
-    await login();
-  };
 
   const handleSearch = useCallback(() => {
     if (pathname === "/search") {
@@ -276,7 +274,6 @@ export function Headerbar() {
               color="red"
               onClick={async () => {
                 await logout();
-                router.push("/");
               }}
               className="cursor-pointer"
             >
@@ -285,7 +282,14 @@ export function Headerbar() {
           ) : user ? (
             <UserDropdown user={user} />
           ) : (
-            <Button onClick={handleLogin}>Log In</Button>
+            <Button
+              className="cursor-pointer"
+              onClick={async () => {
+                await login();
+              }}
+            >
+              Log In
+            </Button>
           )}
         </div>
       </Flex>

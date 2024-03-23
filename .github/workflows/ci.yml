@@ -12,6 +12,7 @@ permissions:
 
 env:
   TEST_JWT: ${{ secrets.TEST_JWT }}
+  NX_NO_CLOUD: ${{ secrets.NX_NO_CLOUD }}
 
 jobs:
   main:
@@ -27,7 +28,7 @@ jobs:
 
       - uses: pnpm/action-setup@v2
         with:
-          version: 8
+          version: 8.15.5
       # Cache node_modules
       - uses: actions/setup-node@v3
         with:

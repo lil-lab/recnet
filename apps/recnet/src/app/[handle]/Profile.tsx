@@ -2,27 +2,24 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { HomeIcon } from "@radix-ui/react-icons";
-import { Button, Flex, Text, Dialog, TextField } from "@radix-ui/themes";
+import { Dialog, Button, Flex, Text, TextField } from "@radix-ui/themes";
+import { TRPCClientError } from "@trpc/client";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, useFormState } from "react-hook-form";
 import { toast } from "sonner";
 import * as z from "zod";
 
 import { useAuth } from "@recnet/recnet-web/app/AuthContext";
+import { trpc } from "@recnet/recnet-web/app/_trpc/client";
 import { Avatar } from "@recnet/recnet-web/components/Avatar";
 import { FollowButton } from "@recnet/recnet-web/components/FollowButton";
 import { RecNetLink } from "@recnet/recnet-web/components/Link";
 import { Skeleton, SkeletonText } from "@recnet/recnet-web/components/Skeleton";
-import { useUser } from "@recnet/recnet-web/hooks/useUser";
-import { updateUser } from "@recnet/recnet-web/server/user";
+import { ErrorMessages } from "@recnet/recnet-web/constant";
 import { cn } from "@recnet/recnet-web/utils/cn";
-import {
-  getErrorMessage,
-  isErrorWithMessage,
-} from "@recnet/recnet-web/utils/error";
 
-const UsernameBlacklist = [
+const HandleBlacklist = [
   "about",
   "api",
   "all-users",
@@ -34,22 +31,21 @@ const UsernameBlacklist = [
 ];
 
 const EditUserProfileSchema = z.object({
-  name: z.string().min(1, "Name cannot be blank."),
-  username: z
+  displayName: z.string().min(1, "Name cannot be blank."),
+  handle: z
     .string()
     .min(4)
     .max(15)
     .regex(
       /^[A-Za-z0-9_]+$/,
-      "Username should be between 4 to 15 characters and contain only letters (A-Z, a-z), numbers, and underscores (_)."
+      "User handle should be between 4 to 15 characters and contain only letters (A-Z, a-z), numbers, and underscores (_)."
     )
     .refine(
       (name) => {
-        // username cannot be in blacklist or prefix with any reserved path
-        return !UsernameBlacklist.includes(name);
+        return !HandleBlacklist.includes(name);
       },
       {
-        message: "Username is not allowed.",
+        message: "User handle is not allowed.",
       }
     ),
   affiliation: z
@@ -58,22 +54,25 @@ const EditUserProfileSchema = z.object({
     .optional(),
 });
 
-function EditProfileDialog(props: { username: string }) {
-  const { username } = props;
-  const { mutate } = useUser(username);
+function EditProfileDialog(props: { handle: string }) {
+  const { handle } = props;
+  const utils = trpc.useUtils();
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const { user, revalidateUser } = useAuth();
 
-  const { register, handleSubmit, formState, setError } = useForm({
+  const { register, handleSubmit, formState, setError, control } = useForm({
     resolver: zodResolver(EditUserProfileSchema),
     defaultValues: {
-      name: user?.displayName,
-      username: user?.username,
+      displayName: user?.displayName,
+      handle: user?.handle,
       affiliation: user?.affiliation,
     },
     mode: "onBlur",
   });
+  const { isDirty } = useFormState({ control: control });
+
+  const updateProfileMutation = trpc.updateUser.useMutation();
 
   return (
     <Dialog.Root open={open} onOpenChange={setOpen}>
@@ -93,37 +92,43 @@ function EditProfileDialog(props: { username: string }) {
               return;
             }
             // if no changes, close dialog
-            if (
-              res.data.name === user.displayName &&
-              res.data.username === user.username &&
-              res.data.affiliation === user.affiliation
-            ) {
+            if (!isDirty) {
               setOpen(false);
               return;
             }
             try {
-              const newUserName = await updateUser(res.data, user.id);
+              const oldHandle = user.handle;
+              const updatedData = await updateProfileMutation.mutateAsync(
+                {
+                  newData: res.data,
+                },
+                {
+                  onError: (error) => {
+                    if (
+                      error instanceof TRPCClientError &&
+                      error.data.code === "CONFLICT" &&
+                      error.message === ErrorMessages.USER_HANDLE_USED
+                    ) {
+                      setError("handle", {
+                        type: "manual",
+                        message: "User handle already exists.",
+                      });
+                    }
+                  },
+                }
+              );
               toast.success("Profile updated successfully!");
               // revaildate user profile
-              const oldUserName = user.username;
               revalidateUser();
-              if (newUserName !== oldUserName) {
-                // if user change username, redirect to new user profile
-                router.replace(`/${newUserName}`);
+              if (updatedData.user.handle !== oldHandle) {
+                // if user change user handle, redirect to new user profile
+                router.replace(`/${updatedData.user.handle}`);
               } else {
-                mutate();
+                utils.getUserByHandle.invalidate({ handle: handle });
                 setOpen(false);
               }
             } catch (error) {
-              if (
-                isErrorWithMessage(error) &&
-                getErrorMessage(error) === "Username already exists."
-              ) {
-                setError("username", {
-                  type: "manual",
-                  message: "Username already exists.",
-                });
-              }
+              console.log(error);
             }
           })}
         >
@@ -139,11 +144,11 @@ function EditProfileDialog(props: { username: string }) {
               </Text>
               <TextField.Input
                 placeholder="Enter your name"
-                {...register("name")}
+                {...register("displayName")}
               />
-              {formState.errors.name ? (
+              {formState.errors.displayName ? (
                 <Text size="1" color="red">
-                  {formState.errors.name.message}
+                  {formState.errors.displayName.message}
                 </Text>
               ) : null}
             </label>
@@ -153,11 +158,11 @@ function EditProfileDialog(props: { username: string }) {
               </Text>
               <TextField.Input
                 placeholder="Enter user handle"
-                {...register("username")}
+                {...register("handle")}
               />
-              {formState.errors.username ? (
+              {formState.errors.handle ? (
                 <Text size="1" color="red">
-                  {formState.errors.username.message}
+                  {formState.errors.handle.message}
                 </Text>
               ) : null}
             </label>
@@ -202,19 +207,16 @@ function EditProfileDialog(props: { username: string }) {
   );
 }
 
-export function Profile(props: { username: string }) {
+export function Profile(props: { handle: string }) {
   const router = useRouter();
-  const { username } = props;
-  const { user, isLoading } = useUser(username, {
-    onErrorCallback: () => {
-      // redirect to 404 page
-      router.replace("/404");
-    },
+  const { handle } = props;
+  const { data, isPending, isFetching } = trpc.getUserByHandle.useQuery({
+    handle,
   });
   const { user: me } = useAuth();
-  const isMe = !!me && !!user && me.username === user.username;
+  const isMe = !!me && !!data?.user && me.handle === data.user.handle;
 
-  if (isLoading) {
+  if (isPending || isFetching) {
     return (
       <div className={cn("flex-col", "gap-y-6", "flex")}>
         <Flex className="items-center p-3 gap-x-6">
@@ -246,7 +248,7 @@ export function Profile(props: { username: string }) {
     );
   }
 
-  if (!user) {
+  if (!data?.user) {
     router.replace("/404");
     return null;
   }
@@ -255,7 +257,7 @@ export function Profile(props: { username: string }) {
     <div className={cn("flex-col", "gap-y-6", "flex")}>
       <Flex className="items-center p-3 gap-x-6">
         <Flex>
-          <Avatar user={user} className={cn("w-[80px]", "h-[80px]")} />
+          <Avatar user={data.user} className={cn("w-[80px]", "h-[80px]")} />
         </Flex>
         <Flex className="flex-grow flex-col justify-between h-full">
           <Flex className="justify-between items-center">
@@ -267,7 +269,7 @@ export function Profile(props: { username: string }) {
                 }}
                 weight="medium"
               >
-                {user.displayName}
+                {data.user.displayName}
               </Text>
               <Text
                 size={{
@@ -275,29 +277,29 @@ export function Profile(props: { username: string }) {
                   sm: "4",
                 }}
               >
-                {"@" + user.username}
+                {"@" + data.user.handle}
               </Text>
             </Flex>
-            <Flex className="w-fit">
+            <Flex className="w-fit hidden md:flex">
               {isMe ? (
-                <EditProfileDialog username={username} />
+                <EditProfileDialog handle={data.user.handle} />
               ) : (
-                <FollowButton user={user} />
+                <FollowButton user={data.user} />
               )}
             </Flex>
           </Flex>
           <Flex className="sm:items-center gap-x-[10px] p-2 sm:p-1 flex-wrap flex-col sm:flex-row">
-            {user.affiliation ? (
+            {data.user.affiliation ? (
               <Flex className="items-center gap-x-1 text-gray-11">
                 <HomeIcon width="16" height="16" />
-                <Text size="3">{user.affiliation}</Text>
+                <Text size="3">{data.user.affiliation}</Text>
                 <Text size="3" className="sm:ml-[6px] hidden sm:inline-block">
                   /
                 </Text>
               </Flex>
             ) : null}
             <Flex className="items-center gap-x-1 text-gray-11">
-              <Text size="3">{`${user.followers.length} Follower${user.followers.length > 1 ? "s" : ""}`}</Text>
+              <Text size="3">{`${data.user.numFollowers} Follower${data.user.numFollowers > 1 ? "s" : ""}`}</Text>
             </Flex>
             {isMe ? (
               <Flex className="items-center gap-x-1 text-gray-11">
@@ -316,6 +318,13 @@ export function Profile(props: { username: string }) {
             ) : null}
           </Flex>
         </Flex>
+      </Flex>
+      <Flex className="w-full md:hidden">
+        {isMe ? (
+          <EditProfileDialog handle={data.user.handle} />
+        ) : (
+          <FollowButton user={data.user} />
+        )}
       </Flex>
     </div>
   );
