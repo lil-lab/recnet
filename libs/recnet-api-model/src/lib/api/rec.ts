@@ -21,8 +21,8 @@ export type RecFormSubmission = z.infer<typeof recFormSubmissionSchema>;
 
 // GET /recs
 export const getRecsParamsSchema = z.object({
-  page: z.number(),
-  pageSize: z.number(),
+  page: z.coerce.number(),
+  pageSize: z.coerce.number(),
   userId: z.string(),
 });
 export type GetRecsParams = z.infer<typeof getRecsParamsSchema>;
@@ -35,9 +35,9 @@ export type GetRecsResponse = z.infer<typeof getRecsResponseSchema>;
 
 // GET /recs/feeds
 export const getRecsFeedsParamsSchema = z.object({
-  page: z.number(),
-  pageSize: z.number(),
-  cutoff: z.number(), // timestamp
+  page: z.coerce.number(),
+  pageSize: z.coerce.number(),
+  cutoff: z.coerce.number(), // timestamp
 });
 export type GetRecsFeedsParams = z.infer<typeof getRecsFeedsParamsSchema>;
 
