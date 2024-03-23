@@ -26,11 +26,19 @@ export function AnnouncementBanner() {
         "text-white",
         {
           hidden: !isOpen,
-        }
+        },
+        "px-4"
       )}
     >
       <div />
-      <Text size="2" weight="medium">
+      <Text
+        size={{
+          initial: "1",
+          md: "2",
+        }}
+        weight="medium"
+        className="text-center"
+      >
         📢 RecNet is under early development. Signing up requires an invite
         code.
       </Text>

@@ -4,7 +4,6 @@ import { redirect } from "next/navigation";
 import { NotFoundBlock } from "@recnet/recnet-web/app/search/NotFound";
 import { GoBackButton } from "@recnet/recnet-web/components/GoBackButton";
 import { UserCard } from "@recnet/recnet-web/components/UserCard";
-import { getUsersByIds } from "@recnet/recnet-web/server/user";
 import { cn } from "@recnet/recnet-web/utils/cn";
 import { getUserServerSide } from "@recnet/recnet-web/utils/getUserServerSide";
 
@@ -18,7 +17,7 @@ export default async function FollowingPage() {
     // if not logged in, redirect to home
     redirect("/");
   }
-  const results = await getUsersByIds(user.following);
+
   return (
     <div
       className={cn(
@@ -32,7 +31,7 @@ export default async function FollowingPage() {
       )}
     >
       <GoBackButton />
-      {results.length === 0 ? (
+      {user.following.length === 0 ? (
         <NotFoundBlock message="You did not follow any user right now. Search researchers you know and follow them!" />
       ) : (
         <Grid
@@ -43,8 +42,8 @@ export default async function FollowingPage() {
           }}
           gap="4"
         >
-          {results.map((user, idx) => (
-            <UserCard key={`${user.username}-${idx}`} user={user} />
+          {user.following.map((userPreview, idx) => (
+            <UserCard key={`${userPreview.id}-${idx}`} user={userPreview} />
           ))}
         </Grid>
       )}

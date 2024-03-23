@@ -1,40 +1,24 @@
 "use client";
 
+import { TRPCClientError } from "@trpc/client";
 import { getAuth, onIdTokenChanged, User as FirebaseUser } from "firebase/auth";
 import { usePathname, useRouter } from "next/navigation";
-import React, { useState, useEffect, useCallback } from "react";
-import { toast } from "sonner";
-import { z } from "zod";
+import React, { useEffect, useCallback } from "react";
 
+import { AuthContext } from "@recnet/recnet-web/app/AuthContext";
+import { trpc } from "@recnet/recnet-web/app/_trpc/client";
 import { getFirebaseApp } from "@recnet/recnet-web/firebase/client";
-import { User, UserSchema } from "@recnet/recnet-web/types/user";
-import { getErrorMessage } from "@recnet/recnet-web/utils/error";
-import { fetchWithZod } from "@recnet/recnet-web/utils/zodFetch";
+import useMount from "@recnet/recnet-web/hooks/useMount";
+import { setRecnetCustomClaims } from "@recnet/recnet-web/utils/setRecnetCustomClaims";
 
-import { AuthContext } from "./AuthContext";
+import { User } from "@recnet/recnet-api-model";
+
+import { ErrorMessages } from "../constant";
+import { getErrorMessage } from "../utils/error";
 
 export interface AuthProviderProps {
   serverUser: User | null;
   children: React.ReactNode;
-}
-
-async function toUser(firebaseUser: FirebaseUser): Promise<User | null> {
-  if (!firebaseUser.email) {
-    return null;
-  }
-  try {
-    const user = await fetchWithZod(
-      UserSchema,
-      `/api/userByEmail?email=${firebaseUser.email}`
-    );
-    return user;
-  } catch (e) {
-    if (e instanceof z.ZodError) {
-      throw new Error("ZodError: Invalid user format");
-    } else {
-      throw new Error("User not found");
-    }
-  }
 }
 
 export const AuthProvider: React.FunctionComponent<AuthProviderProps> = ({
@@ -43,17 +27,25 @@ export const AuthProvider: React.FunctionComponent<AuthProviderProps> = ({
 }) => {
   const pathname = usePathname();
   const router = useRouter();
-  const [user, setUser] = useState(serverUser);
 
-  async function revalidateUser() {
-    const firebaseUser = getAuth(getFirebaseApp()).currentUser;
-    if (!firebaseUser) {
-      setUser(null);
-      return;
+  const utils = trpc.useUtils();
+  const { data, isPending, isError, isFetching } = trpc.getMe.useQuery(
+    undefined,
+    {
+      initialData: serverUser
+        ? {
+            user: serverUser,
+          }
+        : undefined,
     }
-    const user = await toUser(firebaseUser);
-    setUser(user);
-  }
+  );
+  const user = data?.user ?? null;
+
+  const loginMutation = trpc.login.useMutation();
+
+  const revalidateUser = useCallback(async () => {
+    await utils.getMe.invalidate();
+  }, [utils.getMe]);
 
   const handleIdTokenChanged = useCallback(
     async (firebaseUser: FirebaseUser | null) => {
@@ -61,24 +53,38 @@ export const AuthProvider: React.FunctionComponent<AuthProviderProps> = ({
         const idTokenResult = await firebaseUser.getIdTokenResult();
 
         // Sets authenticated user cookies
-        await fetch("/api/login", {
-          headers: {
-            Authorization: `Bearer ${idTokenResult.token}`,
-          },
-        });
         try {
-          const user = await toUser(firebaseUser);
-          setUser(user);
-          if (pathname === "/") {
-            router.replace("/feeds");
-          }
+          await fetch("/api/login", {
+            headers: {
+              Authorization: `Bearer ${idTokenResult.token}`,
+            },
+          });
+        } catch (e) {
+          console.log(e);
+        }
+        try {
+          // login user at api server and set custom claims
+          const data = await loginMutation.mutateAsync(undefined, {
+            onError: (error) => {
+              if (
+                error instanceof TRPCClientError &&
+                error.data.code === "NOT_FOUND" &&
+                error.message === ErrorMessages.USER_NOT_FOUND
+              ) {
+                // create user and redirect
+                router.replace("/onboard");
+              }
+            },
+          });
+          await setRecnetCustomClaims(data.user.role, data.user.id);
+          await revalidateUser();
         } catch (error) {
-          const errorMsg = getErrorMessage(error);
-          if (errorMsg === "User not found") {
-            // create user and redirect
-            router.replace("/onboard");
-          } else {
-            toast.error("Failed to authenticate user. Contact support.");
+          console.log(error);
+          if (
+            getErrorMessage(error) === ErrorMessages.MISSING_FIREBASE_SECRET
+          ) {
+            // redirect to homepage?
+            console.log("missing secret");
           }
         }
         return;
@@ -86,20 +92,32 @@ export const AuthProvider: React.FunctionComponent<AuthProviderProps> = ({
 
       // Removes authenticated user cookies
       await fetch("/api/logout");
-      setUser(null);
+      await revalidateUser();
+      router.replace("/");
     },
-    [pathname, router]
+    [loginMutation, revalidateUser, router]
   );
 
-  useEffect(() => {
+  useMount(() => {
     return onIdTokenChanged(getAuth(getFirebaseApp()), handleIdTokenChanged);
-  }, [handleIdTokenChanged]);
+  });
+
+  useEffect(() => {
+    if (user) {
+      if (pathname === "/") {
+        router.replace("/feeds");
+      }
+    }
+  }, [user, pathname, router]);
 
   return (
     <AuthContext.Provider
       value={{
         user,
         revalidateUser,
+        isPending,
+        isFetching,
+        isError,
       }}
     >
       {children}

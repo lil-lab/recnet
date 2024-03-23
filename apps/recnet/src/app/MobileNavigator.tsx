@@ -12,15 +12,11 @@ import { useRouter, usePathname } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
 
-import {
-  getDateFromFirebaseTimestamp,
-  getNextCutOff,
-} from "@recnet/recnet-date-fns";
-
+import { trpc } from "@recnet/recnet-web/app/_trpc/client";
 import { RecForm } from "@recnet/recnet-web/components/RecForm";
 import { SkeletonText, Skeleton } from "@recnet/recnet-web/components/Skeleton";
+import { UserRole } from "@recnet/recnet-web/constant";
 import { useGoogleLogin } from "@recnet/recnet-web/firebase/auth";
-import { useRec } from "@recnet/recnet-web/hooks/useRec";
 import { cn } from "@recnet/recnet-web/utils/cn";
 
 import { useAuth } from "./AuthContext";
@@ -28,17 +24,9 @@ import { UserDropdown } from "./Headerbar";
 
 function RecFormContent(props: { setOpen: (open: boolean) => void }) {
   const { setOpen } = props;
-  const { user, revalidateUser } = useAuth();
-  const lastPostId = user?.postIds
-    ? user.postIds[user.postIds.length - 1]
-    : null;
-  const { rec, mutate, isLoading, isValidating } = useRec(lastPostId, {
-    onErrorCallback: () => {}, // After deleting rec, the hook wil fetch again and throw a not-found error due to a time difference
-  });
-  const hasRecInThisCycle =
-    !!rec &&
-    getDateFromFirebaseTimestamp(rec.cutoff).getTime() ===
-      getNextCutOff().getTime();
+  const { user } = useAuth();
+  const { data, isPending, isFetching } = trpc.getUpcomingRec.useQuery();
+  const rec = data?.rec ?? null;
 
   if (!user) {
     // this case should never happen, just for type narrowing
@@ -46,7 +34,7 @@ function RecFormContent(props: { setOpen: (open: boolean) => void }) {
     return null;
   }
 
-  if (isLoading || isValidating) {
+  if (isPending || isFetching) {
     return (
       <div className={cn("flex", "flex-col", "gap-y-3")}>
         <SkeletonText size="2" className="w-[100px]" />
@@ -82,19 +70,19 @@ function RecFormContent(props: { setOpen: (open: boolean) => void }) {
         size="2"
         className="text-gray-11 p-1"
         weight="medium"
-        asChild={hasRecInThisCycle ?? undefined}
+        asChild={rec ? true : undefined}
       >
-        {hasRecInThisCycle ? (
+        {rec ? (
           <p>
             Upcoming rec:{" "}
             <span
               className="text-blue-11 cursor-pointer"
               onClick={() => {
                 // open window
-                window.open(rec?.link, "_blank");
+                window.open(rec.article.link, "_blank");
               }}
             >
-              {rec?.title}
+              {rec.article.title}
             </span>
           </p>
         ) : (
@@ -102,7 +90,7 @@ function RecFormContent(props: { setOpen: (open: boolean) => void }) {
         )}
       </Text>
       <Text size="2" className="text-gray-11 p-1" weight="medium">
-        {hasRecInThisCycle
+        {rec
           ? "You can modify at anytime before this cycle ends."
           : `Any interesting read this week?`}
       </Text>
@@ -111,16 +99,7 @@ function RecFormContent(props: { setOpen: (open: boolean) => void }) {
           onFinish={() => {
             setOpen(false);
           }}
-          currentRec={hasRecInThisCycle ? rec : null}
-          user={user}
-          onUpdateSuccess={async () => {
-            await revalidateUser();
-            mutate();
-          }}
-          onDeleteSuccess={async () => {
-            await revalidateUser();
-            await mutate();
-          }}
+          currentRec={rec ?? null}
         />
       </Flex>
     </div>
@@ -229,7 +208,9 @@ function MobileNavigator() {
         </Dialog.Content>
       </Dialog.Root>
 
-      {user && user?.role === "admin" && pathname.startsWith("/admin") ? (
+      {user &&
+      user?.role === UserRole.ADMIN &&
+      pathname.startsWith("/admin") ? (
         <AdminDropdown>
           <MagicWandIcon width="24" height="24" />
         </AdminDropdown>

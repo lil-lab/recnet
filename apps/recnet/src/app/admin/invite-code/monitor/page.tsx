@@ -3,11 +3,7 @@
 import { Flex, Table, Text } from "@radix-ui/themes";
 import { TailSpin } from "react-loader-spinner";
 
-import {
-  getDateFromFirebaseTimestamp,
-  formatDate,
-} from "@recnet/recnet-date-fns";
-
+import { trpc } from "@recnet/recnet-web/app/_trpc/client";
 import {
   AdminSectionBox,
   AdminSectionTitle,
@@ -15,14 +11,16 @@ import {
 import { Avatar } from "@recnet/recnet-web/components/Avatar";
 import { CopiableInviteCode } from "@recnet/recnet-web/components/InviteCode";
 import { RecNetLink } from "@recnet/recnet-web/components/Link";
-import { useInviteCodes } from "@recnet/recnet-web/hooks/useInviteCodes";
-import { User } from "@recnet/recnet-web/types/user";
 import { cn } from "@recnet/recnet-web/utils/cn";
 
-const TableUserCard = (props: { user: User }) => {
+import { formatDate } from "@recnet/recnet-date-fns";
+
+import { UserPreview } from "@recnet/recnet-api-model";
+
+const TableUserCard = (props: { user: UserPreview }) => {
   const { user } = props;
   return (
-    <RecNetLink href={`/${user.username}`}>
+    <RecNetLink href={`/${user.handle}`}>
       <Flex gap="2" className="items-center gap-x-2">
         <Avatar user={user} className={cn("w-[40px]", "h-[40px]")} />
         <Text className="whitespace-nowrap">{user.displayName}</Text>
@@ -48,7 +46,9 @@ const TableLoader = () => {
 };
 
 export default function InviteCodeMonitorPage() {
-  const { inviteCodes, isLoading } = useInviteCodes();
+  const { data, isPending, isFetching } = trpc.getAllInviteCodes.useQuery();
+  const inviteCodes = data?.inviteCodes ?? [];
+  const isLoading = isPending || isFetching;
 
   return (
     <div className={cn("w-full", "md:w-[85%]", "flex", "flex-col", "gap-y-4")}>
@@ -72,17 +72,15 @@ export default function InviteCodeMonitorPage() {
 
               <Table.Body>
                 {inviteCodes
-                  .filter((c) => c.used)
+                  .filter((c) => c.usedBy)
                   .map((inviteCode) => (
-                    <Table.Row className="align-middle" key={inviteCode.id}>
+                    <Table.Row className="align-middle" key={inviteCode.code}>
                       <Table.RowHeaderCell>
-                        <CopiableInviteCode inviteCode={inviteCode.id} />
+                        <CopiableInviteCode inviteCode={inviteCode.code} />
                       </Table.RowHeaderCell>
                       <Table.Cell>
                         {inviteCode.usedAt
-                          ? formatDate(
-                              getDateFromFirebaseTimestamp(inviteCode.usedAt)
-                            )
+                          ? formatDate(new Date(inviteCode.usedAt))
                           : "-"}
                       </Table.Cell>
                       <Table.Cell>
@@ -93,11 +91,7 @@ export default function InviteCodeMonitorPage() {
                         )}
                       </Table.Cell>
                       <Table.Cell>
-                        {inviteCode.issuedTo ? (
-                          <TableUserCard user={inviteCode.issuedTo} />
-                        ) : (
-                          "-"
-                        )}
+                        <TableUserCard user={inviteCode.owner} />
                       </Table.Cell>
                     </Table.Row>
                   ))}
@@ -122,18 +116,14 @@ export default function InviteCodeMonitorPage() {
 
               <Table.Body>
                 {inviteCodes
-                  .filter((c) => !c.used)
+                  .filter((c) => !c.usedBy)
                   .map((inviteCode) => (
-                    <Table.Row className="align-middle" key={inviteCode.id}>
+                    <Table.Row className="align-middle" key={inviteCode.code}>
                       <Table.RowHeaderCell>
-                        <CopiableInviteCode inviteCode={inviteCode.id} />
+                        <CopiableInviteCode inviteCode={inviteCode.code} />
                       </Table.RowHeaderCell>
                       <Table.Cell>
-                        {inviteCode.issuedTo ? (
-                          <TableUserCard user={inviteCode.issuedTo} />
-                        ) : (
-                          "-"
-                        )}
+                        <TableUserCard user={inviteCode.owner} />
                       </Table.Cell>
                     </Table.Row>
                   ))}

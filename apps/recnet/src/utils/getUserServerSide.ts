@@ -1,28 +1,10 @@
 import "server-only";
-import { cookies } from "next/headers";
-import { Tokens, getTokens } from "next-firebase-auth-edge";
+import { Tokens } from "next-firebase-auth-edge";
 
-import { getUserByEmail } from "@recnet/recnet-web/server/user";
-import { authConfig } from "@recnet/recnet-web/serverEnv";
-import { User } from "@recnet/recnet-web/types/user";
+import { serverClient } from "@recnet/recnet-web/app/_trpc/serverClient";
+import { getTokenServerSide } from "@recnet/recnet-web/utils/getTokenServerSide";
 
-const toUser = async (tokens: Tokens | null): Promise<User | null> => {
-  if (!tokens) {
-    return null;
-  }
-  const { decodedToken } = tokens;
-  const { email } = decodedToken;
-  if (!email) {
-    return null;
-  }
-  try {
-    const user = await getUserByEmail(email);
-    return user;
-  } catch (e) {
-    console.log("Error fetching user", e);
-    return null;
-  }
-};
+import { User } from "@recnet/recnet-api-model";
 
 interface GetUserServerSideOptions {
   isLoggedInCallback?: (user?: User) => void;
@@ -36,13 +18,14 @@ async function getUserServerSide(
   const isLoggedInCallback = options?.isLoggedInCallback || (() => {});
   const notLoggedInCallback = options?.notLoggedInCallback || (() => {});
   const notRegisteredCallback = options?.notRegisteredCallback || (() => {});
-  const tokens = await getTokens(cookies(), {
-    apiKey: authConfig.apiKey,
-    cookieName: authConfig.cookieName,
-    cookieSignatureKeys: authConfig.cookieSignatureKeys,
-    serviceAccount: authConfig.serviceAccount,
-  });
-  const user = await toUser(tokens);
+  const tokens = await getTokenServerSide();
+  let user: User | null = null;
+  try {
+    const res = await serverClient.getMe();
+    user = res.user;
+  } catch (e) {
+    user = null;
+  }
   if (tokens && user) {
     isLoggedInCallback(user);
   } else if (tokens && !user) {

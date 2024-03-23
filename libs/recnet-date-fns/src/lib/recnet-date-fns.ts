@@ -3,20 +3,46 @@ import { Timestamp } from "firebase/firestore";
 const CYCLE_DUE_DAY = 2;
 export const WeekTs = 604800000 as const;
 export const START_DATE = new Date(2023, 9, 24);
-export const Months = [
-  "Jan",
-  "Feb",
-  "Mar",
-  "Apr",
-  "May",
-  "Jun",
-  "Jul",
-  "Aug",
-  "Sep",
-  "Oct",
-  "Nov",
-  "Dec",
-];
+
+export const monthValMap = {
+  Jan: 0,
+  Feb: 1,
+  Mar: 2,
+  Apr: 3,
+  May: 4,
+  Jun: 5,
+  Jul: 6,
+  Aug: 7,
+  Sep: 8,
+  Oct: 9,
+  Nov: 10,
+  Dec: 11,
+} as const;
+export type Month = keyof typeof monthValMap;
+export function isMonth(val: string): val is Month {
+  return val in monthValMap;
+}
+
+export const Months: Month[] = Object.keys(monthValMap).sort(
+  (a, b) => monthValMap[a as Month] - monthValMap[b as Month]
+) as Month[];
+
+export const numToMonth = Months.reduce(
+  (acc, key) => {
+    const num = monthValMap[key];
+    acc[num] = key;
+    return acc;
+  },
+  {} as Record<number, Month>
+);
+export const monthToNum = Months.reduce(
+  (acc, key) => {
+    const num = monthValMap[key];
+    acc[key] = num;
+    return acc;
+  },
+  {} as Record<Month, number>
+);
 
 export const getCutOff = (_date: Date): Date => {
   const date = new Date(_date.getTime());

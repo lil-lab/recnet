@@ -1,7 +1,8 @@
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import React from "react";
 
 import { AdminPanelNavbar } from "@recnet/recnet-web/app/admin/AdminPanelNav";
+import { UserRole } from "@recnet/recnet-web/constant";
 import { cn } from "@recnet/recnet-web/utils/cn";
 import { getUserServerSide } from "@recnet/recnet-web/utils/getUserServerSide";
 
@@ -11,8 +12,11 @@ export default async function Layout({
   children: React.ReactNode;
 }>) {
   const user = await getUserServerSide();
+  if (!user) {
+    redirect("/");
+  }
 
-  if (!user || user?.role !== "admin") {
+  if (user?.role !== UserRole.ADMIN) {
     notFound();
   }
 

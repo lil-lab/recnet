@@ -1,28 +1,52 @@
+import { sign } from "jsonwebtoken";
 import { expect, test, describe } from "vitest";
 import { z } from "zod";
 
-import { verifyJwt, getPublicKey, recnetJwtPayloadSchema } from "./recnet-jwt";
+import {
+  verifyJwt,
+  recnetJwtPayloadSchema,
+  firebaseJwtPayloadSchema,
+} from "./recnet-jwt";
 
 const envSchema = z.object({
-  TEST_JWT: z.string(),
+  PRIVATE_KEY: z.string().transform((s) => s.replace(/\\n/gm, "\n")),
+  PUBLIC_KEY: z.string().transform((s) => s.replace(/\\n/gm, "\n")),
 });
+
+function generateFirebaseJWT(sk: string) {
+  const payload = firebaseJwtPayloadSchema.parse({});
+  return sign(payload, sk, {
+    algorithm: "RS256",
+  });
+}
+
+function generateRecnetJWT(sk: string) {
+  const payload = recnetJwtPayloadSchema.parse({
+    recnet: {
+      role: "USER",
+      userId: "123",
+    },
+  });
+  return sign(payload, sk, {
+    algorithm: "RS256",
+  });
+}
 
 describe("Verify", async () => {
   const env = envSchema.parse(process.env);
-  const token = env.TEST_JWT;
-  const publicKey = await getPublicKey(env.TEST_JWT);
+  const publicKey = env.PUBLIC_KEY;
   const fakePublicKey = publicKey.replace("A", "B");
 
-  test("Should be able to get public key from token", async () => {
-    expect(publicKey).toBeDefined();
-    expectTypeOf(publicKey).toBeString();
+  const firebaseJWT = generateFirebaseJWT(env.PRIVATE_KEY);
+  const recnetJWT = generateRecnetJWT(env.PRIVATE_KEY);
+
+  test("Should be able to decode firebaseJWT if using correct public key", async () => {
+    const payload = verifyJwt(firebaseJWT, publicKey, firebaseJwtPayloadSchema);
+    expect(payload).toBeDefined();
   });
 
-  test("Should be able to decode if using correct public key", async () => {
-    // ignore expiration for testing since TEST_JWT might be expired
-    const payload = verifyJwt(token, publicKey, recnetJwtPayloadSchema, {
-      ignoreExpiration: true,
-    });
+  test("Should be able to decode recnetJWT if using correct public key", async () => {
+    const payload = verifyJwt(recnetJWT, publicKey, recnetJwtPayloadSchema);
     expect(payload).toBeDefined();
     expect(payload.recnet.userId).toBeDefined();
     expectTypeOf(payload.recnet.userId).toBeString();
@@ -33,7 +57,7 @@ describe("Verify", async () => {
   test("Should throw error if using incorrect public key", async () => {
     expect(() =>
       // ignore expiration for testing since TEST_JWT might be expired
-      verifyJwt(token, fakePublicKey, recnetJwtPayloadSchema, {
+      verifyJwt(recnetJWT, fakePublicKey, recnetJwtPayloadSchema, {
         ignoreExpiration: true,
       })
     ).toThrowError();

@@ -2,17 +2,15 @@ import { CalendarIcon } from "@radix-ui/react-icons";
 import { Flex, Text } from "@radix-ui/themes";
 import { ChevronRight } from "lucide-react";
 
-import {
-  formatDate,
-  getDateFromFirebaseTimestamp,
-} from "@recnet/recnet-date-fns";
-
+import { Avatar } from "@recnet/recnet-web/components/Avatar";
+import { RecNetLink } from "@recnet/recnet-web/components/Link";
 import { Skeleton, SkeletonText } from "@recnet/recnet-web/components/Skeleton";
-import { RecWithUser } from "@recnet/recnet-web/types/rec";
 import { cn } from "@recnet/recnet-web/utils/cn";
 
-import { Avatar } from "./Avatar";
-import { RecNetLink } from "./Link";
+import { numToMonth } from "@recnet/recnet-date-fns";
+import { formatDate } from "@recnet/recnet-date-fns";
+
+import { Rec } from "@recnet/recnet-api-model";
 
 export function RecCardSkeleton() {
   return (
@@ -58,16 +56,11 @@ export function RecCardSkeleton() {
   );
 }
 
-export function RecCard(props: {
-  recsWithUsers: RecWithUser[];
-  showDate?: boolean;
-}) {
-  const { recsWithUsers, showDate = false } = props;
-  const hasRec = recsWithUsers.length > 0;
-  const cutoff = hasRec
-    ? formatDate(getDateFromFirebaseTimestamp(recsWithUsers[0].cutoff))
-    : null;
-  const rec = hasRec ? recsWithUsers[0] : null;
+export function RecCard(props: { recs: Rec[]; showDate?: boolean }) {
+  const { recs, showDate = false } = props;
+  const hasRec = recs.length > 0;
+  const cutoff = hasRec ? formatDate(new Date(recs[0].cutoff)) : null;
+  const rec = hasRec ? recs[0] : null;
 
   if (!hasRec || !rec) {
     return null;
@@ -86,21 +79,26 @@ export function RecCard(props: {
         "shadow-2"
       )}
     >
-      <a href={rec.link} target="_blank" rel="noreferrer" className="group">
+      <a
+        href={rec.article.link}
+        target="_blank"
+        rel="noreferrer"
+        className="group"
+      >
         <Flex
           direction={"column"}
           className={cn("p-4", "gap-y-3", "bg-gray-3", "rounded-2")}
         >
           <Text size="5" className="text-accent-11 font-medium">
-            {rec.title}
+            {rec.article.title}
           </Text>
           <Text size="2" className="text-gray-10">
-            {rec.author}
+            {rec.article.author}
           </Text>
           <Flex className="items-center justify-between p-1">
             <Flex className="items-center gap-x-2 text-gray-10">
               <CalendarIcon width={16} height={16} />
-              <Text size="2">{`${!rec.month ? "" : `${rec.month}, `}${rec.year}`}</Text>
+              <Text size="2">{`${!rec.article.month ? "" : `${numToMonth[rec.article.month]}, `}${rec.article.year}`}</Text>
             </Flex>
             <Flex className="items-center gap-x-1 text-accent-11">
               <Text size="1">Read</Text>{" "}
@@ -112,18 +110,15 @@ export function RecCard(props: {
           </Flex>
         </Flex>
       </a>
-      {recsWithUsers.map((recWithUser) => {
-        const { user } = recWithUser;
+      {recs.map((rec) => {
+        const { user } = rec;
         return (
-          <Flex
-            className="items-start gap-x-3 px-4 py-2"
-            key={recWithUser.userId}
-          >
+          <Flex className="items-start gap-x-3 px-4 py-2" key={user.id}>
             <Avatar user={user} className="w-[40px] aspect-square" />
             <Flex className="flex flex-col gap-y-1">
               <Text className="items-end">
                 <RecNetLink
-                  href={`/${user.username}`}
+                  href={`/${user.handle}`}
                   radixLinkProps={{
                     size: "2",
                   }}

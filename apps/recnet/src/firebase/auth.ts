@@ -11,6 +11,7 @@ import {
   signOut,
   useDeviceLanguage,
 } from "firebase/auth";
+import { toast } from "sonner";
 
 import { getFirebaseAuth } from "@recnet/recnet-web/firebase/client";
 
@@ -23,6 +24,7 @@ export const logout = async (): Promise<void> => {
   signOut(auth);
   // since we use next-firebase-auth-edge, need to hit the logout endpoint to clear cookies
   await fetch("/api/logout");
+  toast.success("Logged out successfully");
 };
 
 export const useGoogleProvider = (auth: Auth) => {
@@ -55,7 +57,11 @@ export function useGoogleLogin() {
   const GoogleProvider = useGoogleProvider(auth);
 
   const login = async () => {
+    const id = toast.loading("Logging in...");
     await loginWithProvider(auth, GoogleProvider);
+    toast.success("Welcome back!", {
+      id,
+    });
   };
 
   return { login };

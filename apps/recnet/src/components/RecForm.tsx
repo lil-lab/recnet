@@ -15,21 +15,24 @@ import {
 import * as Select from "@radix-ui/react-select";
 import { Text, Flex, Button, TextField, TextArea } from "@radix-ui/themes";
 import { forwardRef, useState } from "react";
-import { useForm, Controller } from "react-hook-form";
+import { useForm, Controller, useFormState } from "react-hook-form";
 import { TailSpin } from "react-loader-spinner";
 import { toast } from "sonner";
 import * as z from "zod";
 
+import { trpc } from "@recnet/recnet-web/app/_trpc/client";
+import { cn } from "@recnet/recnet-web/utils/cn";
+
 import {
   getNextCutOff,
   getVerboseDateString,
+  Month,
   Months,
+  monthToNum,
+  numToMonth,
 } from "@recnet/recnet-date-fns";
 
-import { insertRec, updateRec, deleteRec } from "@recnet/recnet-web/server/rec";
-import { Rec } from "@recnet/recnet-web/types/rec";
-import { User } from "@recnet/recnet-web/types/user";
-import { cn } from "@recnet/recnet-web/utils/cn";
+import { Rec } from "@recnet/recnet-api-model";
 
 const SelectItem = forwardRef<HTMLDivElement, Select.SelectItemProps>(
   ({ children, className, ...props }, forwardedRef) => {
@@ -63,23 +66,19 @@ const RecFormSchema = z.object({
     .max(280, "Description should be less than 280 chars")
     .min(1, "Description cannot be blank"),
   year: z.coerce
-    .string()
-    .refine((val) => !Number.isNaN(parseInt(val)), "Year should be a number")
+    .number()
     .refine((val) => {
-      const year = parseInt(val);
-      return year <= new Date().getUTCFullYear();
+      return val <= new Date().getUTCFullYear();
     }, "Year should be less than or equal to the current year")
     .refine((val) => {
-      const year = parseInt(val);
-      return year >= 0;
+      return val >= 0;
     }, "Year should be a positive number"),
-  month: z.coerce.string().optional(),
+  month: z.coerce.number().optional(),
 });
 
 export function RecForm(props: {
   onFinish?: () => void;
   currentRec: Rec | null;
-  user: User;
   onUpdateSuccess?: () => void;
   onDeleteSuccess?: () => void;
 }) {
@@ -87,7 +86,6 @@ export function RecForm(props: {
   const {
     onFinish = () => {},
     currentRec,
-    user,
     onUpdateSuccess = () => {},
     onDeleteSuccess = () => {},
   } = props;
@@ -96,18 +94,21 @@ export function RecForm(props: {
     useForm({
       resolver: zodResolver(RecFormSchema),
       defaultValues: {
-        link: currentRec?.link,
-        title: currentRec?.title,
-        author: currentRec?.author,
+        link: currentRec?.article?.link,
+        title: currentRec?.article?.title,
+        author: currentRec?.article?.author,
         description: currentRec?.description,
-        year:
-          currentRec?.year && !Number.isNaN(parseInt(currentRec.year))
-            ? parseInt(currentRec.year)
-            : undefined,
-        month: currentRec?.month,
+        year: currentRec?.article?.year,
+        month: currentRec?.article?.month,
       },
       mode: "onBlur",
     });
+  const { isDirty } = useFormState({ control });
+
+  const insertRecMutation = trpc.addUpcomingRec.useMutation();
+  const editRecMutation = trpc.editUpcomingRec.useMutation();
+  const deleteRecMutation = trpc.deleteUpcomingRec.useMutation();
+  const utils = trpc.useUtils();
 
   return (
     <form
@@ -123,15 +124,7 @@ export function RecForm(props: {
           setIsSubmitting(false);
           return;
         }
-        // if no changes, close dialog
-        if (
-          currentRec &&
-          (
-            ["link", "title", "author", "year", "month", "description"] as const
-          ).every((key) => {
-            return res.data[key] === currentRec[key];
-          })
-        ) {
+        if (!isDirty) {
           onFinish();
           setIsSubmitting(false);
           return;
@@ -139,17 +132,17 @@ export function RecForm(props: {
         try {
           // if currentRec exists, update, else insert new rec
           if (currentRec) {
-            // update
-            // await updateRec(res.data, currentRec.id);
-            await updateRec(currentRec.id, res.data);
+            await editRecMutation.mutateAsync({
+              data: res.data,
+              id: currentRec.id,
+            });
             toast.success("Rec updated successfully.");
           } else {
-            // insert
-            // await insertRec(res.data);
-            await insertRec(res.data, user);
+            await insertRecMutation.mutateAsync(res.data);
             toast.success("We got your rec! 🎉");
           }
           onUpdateSuccess();
+          await utils.getUpcomingRec.invalidate();
           onFinish();
           setIsSubmitting(false);
         } catch (error) {
@@ -234,15 +227,16 @@ export function RecForm(props: {
             control={control}
             name="month"
             render={({ field }) => {
+              const monthValue = getValues("month");
               return (
                 <Select.Root
                   key={watch("month")}
-                  value={getValues("month")}
+                  value={monthValue ? numToMonth[monthValue] : undefined}
                   onValueChange={(value) => {
                     if (value === "empty") {
                       field.onChange(undefined);
                     } else {
-                      field.onChange(value);
+                      field.onChange(monthToNum[value as Month]);
                     }
                   }}
                 >
@@ -350,8 +344,11 @@ export function RecForm(props: {
           className="cursor-pointer"
           onClick={async () => {
             try {
-              await deleteRec(currentRec.id, user.id);
+              await deleteRecMutation.mutateAsync({
+                id: currentRec.id,
+              });
               await onDeleteSuccess();
+              await utils.getUpcomingRec.invalidate();
               toast.success("Rec deleted successfully");
               onFinish();
             } catch (error) {
