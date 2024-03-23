@@ -26,16 +26,9 @@ export class RecService {
         ...dbRec,
         cutoff: dbRec.cutoff.toISOString(),
         user: {
-          id: dbRec.user.id,
-          handle: dbRec.user.handle,
-          displayName: dbRec.user.displayName,
-          photoUrl: dbRec.user.photoUrl,
-          affiliation: dbRec.user.affiliation,
-          bio: dbRec.user.bio,
+          ...dbRec.user,
           numFollowers: dbRec.user.followedBy.length,
-        },
-        article: {
-          ...dbRec.article,
+          followedBy: undefined,
         },
       };
     });
