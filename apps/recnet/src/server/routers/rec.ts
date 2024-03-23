@@ -65,6 +65,17 @@ export const recRouter = router({
             rec: null,
           };
         }
+        // check if the rec is for the current cycle
+        const cutOff = getNextCutOff();
+        if (
+          getDateFromFirebaseTimestamp(postData.cutoff).getTime() !==
+          cutOff.getTime()
+        ) {
+          return {
+            rec: null,
+          };
+        }
+
         const userPreviewData = userPreviewSchema.parse({
           id: user.seed,
           handle: user.username,
