@@ -1,16 +1,21 @@
 import { Inject, Injectable } from "@nestjs/common";
+import { Prisma } from "@prisma/client";
 
 import RecRepository from "@recnet-api/database/repository/rec.repository";
+import { Rec as DbRec } from "@recnet-api/database/repository/rec.repository.type";
+import UserRepository from "@recnet-api/database/repository/user.repository";
 import { getOffset } from "@recnet-api/utils";
 
 import { Rec } from "./entities/rec.entity";
-import { GetRecsResponse } from "./rec.response";
+import { GetFeedsResponse, GetRecsResponse } from "./rec.response";
 
 @Injectable()
 export class RecService {
   constructor(
     @Inject(RecRepository)
-    private readonly recRepository: RecRepository
+    private readonly recRepository: RecRepository,
+    @Inject(UserRepository)
+    private readonly userRepository: UserRepository
   ) {}
 
   public async getRecs(
@@ -18,10 +23,46 @@ export class RecService {
     pageSize: number,
     userId: string
   ): Promise<GetRecsResponse> {
-    const recCount = await this.recRepository.countRecs(userId);
-    const dbRecs = await this.recRepository.findRecs(page, pageSize, userId);
+    const recCount = await this.recRepository.countRecs({
+      userId: userId,
+    });
+    const dbRecs = await this.recRepository.findRecs(page, pageSize, {
+      userId: userId,
+    });
+    const recs = this.getRecsFromDbRecs(dbRecs);
 
-    const recs: Rec[] = dbRecs.map((dbRec) => {
+    return {
+      hasNext: recs.length + getOffset(page, pageSize) < recCount,
+      recs: recs,
+    };
+  }
+
+  public async getFeeds(
+    page: number,
+    pageSize: number,
+    cutoff: number,
+    userId: string
+  ): Promise<GetFeedsResponse> {
+    const user = await this.userRepository.getUser(userId);
+    const followings = user.following.map((following) => following.followingId);
+    const where: Prisma.RecommendationWhereInput = {
+      userId: {
+        in: followings,
+      },
+      cutoff: new Date(cutoff),
+    };
+    const recCount = await this.recRepository.countRecs(where);
+    const dbRecs = await this.recRepository.findRecs(page, pageSize, where);
+    const recs = this.getRecsFromDbRecs(dbRecs);
+
+    return {
+      hasNext: recs.length + getOffset(page, pageSize) < recCount,
+      recs: recs,
+    };
+  }
+
+  private getRecsFromDbRecs(dbRec: DbRec[]): Rec[] {
+    return dbRec.map((dbRec) => {
       return {
         ...dbRec,
         cutoff: dbRec.cutoff.toISOString(),
@@ -32,10 +73,5 @@ export class RecService {
         },
       };
     });
-
-    return {
-      hasNext: recs.length + getOffset(page, pageSize) < recCount,
-      recs: recs,
-    };
   }
 }

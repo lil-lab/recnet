@@ -12,24 +12,22 @@ export default class RecRepository {
   public async findRecs(
     page: number,
     pageSize: number,
-    userId: string
+    where: Prisma.RecommendationWhereInput
   ): Promise<Rec[]> {
     return this.prisma.recommendation.findMany({
       select: rec.select,
-      where: {
-        userId: userId,
-      },
+      where: where,
       take: pageSize,
       skip: getOffset(page, pageSize),
       orderBy: { id: Prisma.SortOrder.asc },
     });
   }
 
-  public async countRecs(userId: string): Promise<number> {
+  public async countRecs(
+    where: Prisma.RecommendationWhereInput
+  ): Promise<number> {
     return this.prisma.recommendation.count({
-      where: {
-        userId: userId,
-      },
+      where: where,
     });
   }
 }

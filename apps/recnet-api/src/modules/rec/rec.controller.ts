@@ -57,9 +57,15 @@ export class RecController {
   public async getFeeds(
     @Query() dto: QueryFeedsDto,
     @Req() req: Request
-  ): Promise<void> {
+  ): Promise<GetFeedsResponse> {
     const { page, pageSize, ...rest } = dto;
     const cutoff = rest?.cutoff ?? getNextCutOff().getTime();
     const jwtPayload = getRecnetJWTPayloadFromReq(req);
+    return this.recService.getFeeds(
+      page,
+      pageSize,
+      cutoff,
+      jwtPayload.recnet.userId
+    );
   }
 }
