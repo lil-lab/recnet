@@ -13,7 +13,9 @@ import {
   getPublicKey,
 } from "@recnet/recnet-jwt";
 
-export const AuthGuard = (jwtType: "FirebaseJWT" | "RecNetJWT") => {
+import { JWTType } from "./token.type";
+
+export const AuthGuard = (jwtType: JWTType) => {
   class RoleGuardMixin implements CanActivate {
     async canActivate(context: ExecutionContext) {
       const request = context.switchToHttp().getRequest();
@@ -24,9 +26,11 @@ export const AuthGuard = (jwtType: "FirebaseJWT" | "RecNetJWT") => {
       try {
         const publicKey = await getPublicKey(token);
         if (jwtType === "FirebaseJWT") {
-          verifyFirebaseJwt(token, publicKey);
+          const payload = verifyFirebaseJwt(token, publicKey);
+          request.jwtPayload = payload;
         } else {
-          verifyRecnetJwt(token, publicKey);
+          const payload = verifyRecnetJwt(token, publicKey);
+          request.jwtPayload = payload;
         }
       } catch (error) {
         throw new UnauthorizedException();
