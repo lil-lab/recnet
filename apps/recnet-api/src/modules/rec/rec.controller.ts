@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   Get,
+  Patch,
   Post,
   Query,
   Req,
@@ -23,17 +24,20 @@ import {
   getRecsFeedsParamsSchema,
   getRecsParamsSchema,
   getRecsUpcomingResponseSchema,
+  patchRecsUpcomingRequestSchema,
   postRecsUpcomingRequestSchema,
 } from "@recnet/recnet-api-model";
 
 import { CreateRecDto } from "./dto/create.rec.dto";
 import { QueryFeedsDto } from "./dto/query.feeds.dto";
 import { QueryRecsDto } from "./dto/query.recs.dto";
+import { UpdateRecDto } from "./dto/update.rec.dto";
 import {
   CreateRecResponse,
   GetFeedsResponse,
   GetRecsResponse,
   GetUpcomingRecResponse,
+  UpdateRecResponse,
 } from "./rec.response";
 import { RecService } from "./rec.service";
 
@@ -113,5 +117,21 @@ export class RecController {
       body.description,
       jwtPayload.recnet.userId
     );
+  }
+
+  @ApiOperation({
+    summary: "Edit upcoming rec",
+    description: "Edit upcoming rec.",
+  })
+  @ApiOkResponse({ type: UpdateRecResponse })
+  @Patch("upcoming")
+  @UseGuards(AuthGuard("RecNetJWT"))
+  @UsePipes(new ZodValidationPipe(patchRecsUpcomingRequestSchema))
+  public async updateUpcomingRec(
+    @Req() req: Request,
+    @Body() body: UpdateRecDto
+  ): Promise<void> {
+    const jwtPayload = getRecnetJWTPayloadFromReq(req);
+    return;
   }
 }

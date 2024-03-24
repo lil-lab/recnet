@@ -29,3 +29,8 @@ export class CreateRecResponse {
   @ApiProperty()
   rec: Rec;
 }
+
+export class UpdateRecResponse {
+  @ApiProperty()
+  rec: Rec;
+}

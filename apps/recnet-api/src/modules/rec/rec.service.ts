@@ -11,12 +11,14 @@ import { ErrorCode } from "@recnet-api/utils/error/recnet.error.const";
 import { getNextCutOff } from "@recnet/recnet-date-fns";
 
 import { CreateArticleDto } from "./dto/create.rec.dto";
+import { UpdateArticleDto } from "./dto/update.rec.dto";
 import { Rec } from "./entities/rec.entity";
 import {
   CreateRecResponse,
   GetFeedsResponse,
   GetRecsResponse,
   GetUpcomingRecResponse,
+  UpdateRecResponse,
 } from "./rec.response";
 
 @Injectable()
@@ -142,6 +144,39 @@ export class RecService {
       HttpStatus.BAD_REQUEST,
       "Article and articleId cannot have value at the same time"
     );
+  }
+
+  public async updateUpcomingRec(
+    articleId: string | null,
+    article: UpdateArticleDto | null,
+    description: string,
+    userId: string
+  ): Promise<UpdateRecResponse> {
+    const dbRec = await this.recRepository.findUpcomingRec(userId);
+    if (!dbRec) {
+      // which code should be returned?
+      throw new RecnetError(
+        ErrorCode.INTERNAL_SERVER_ERROR,
+        HttpStatus.NOT_FOUND,
+        "Upcoming rec not found"
+      );
+    }
+    if (!article && !articleId) {
+      // article and articleId cannot be null at the same time
+      // check libs/recnet-api-model/src/lib/api/rec.ts
+      throw new RecnetError(
+        ErrorCode.INTERNAL_SERVER_ERROR,
+        HttpStatus.BAD_REQUEST,
+        "Article and articleId cannot be null at the same time"
+      );
+    } else if (article && articleId) {
+      throw new RecnetError(
+        ErrorCode.INTERNAL_SERVER_ERROR,
+        HttpStatus.BAD_REQUEST,
+        "Article and articleId cannot have value at the same time"
+      );
+    }
+    throw new Error("TODO: finish this function");
   }
 
   private getRecsFromDbRecs(dbRec: DbRec[]): Rec[] {
