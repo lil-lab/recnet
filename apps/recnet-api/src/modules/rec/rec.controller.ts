@@ -15,7 +15,7 @@ import { getRecnetJWTPayloadFromReq } from "@recnet-api/utils/getJWTPayloadFromR
 import { AuthGuard } from "@recnet-api/utils/guards/auth.guard";
 import { ZodValidationPipe } from "@recnet-api/utils/pipes/zod.validation.pipe";
 
-import { getNextCutOff } from "@recnet/recnet-date-fns";
+import { getLatestCutOff } from "@recnet/recnet-date-fns";
 
 import {
   getRecsFeedsParamsSchema,
@@ -59,7 +59,7 @@ export class RecController {
     @Req() req: Request
   ): Promise<GetFeedsResponse> {
     const { page, pageSize, ...rest } = dto;
-    const cutoff = rest?.cutoff ?? getNextCutOff().getTime();
+    const cutoff = rest?.cutoff ?? getLatestCutOff().getTime();
     const jwtPayload = getRecnetJWTPayloadFromReq(req);
     return this.recService.getFeeds(
       page,
