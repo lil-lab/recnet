@@ -6,9 +6,9 @@ import {
   UseFilters,
   UseGuards,
   UsePipes,
-  Request,
 } from "@nestjs/common";
 import { ApiOkResponse, ApiOperation, ApiTags } from "@nestjs/swagger";
+import { Request } from "express";
 
 import { RecnetExceptionFilter } from "@recnet-api/utils/filters/recnet.exception.filter";
 import { getRecnetJWTPayloadFromReq } from "@recnet-api/utils/getJWTPayloadFromReq";
