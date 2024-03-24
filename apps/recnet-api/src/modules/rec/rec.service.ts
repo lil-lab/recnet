@@ -15,6 +15,7 @@ import { UpdateArticleDto } from "./dto/update.rec.dto";
 import { Rec } from "./entities/rec.entity";
 import {
   CreateRecResponse,
+  GetArticleByLinkResponse,
   GetFeedsResponse,
   GetRecsResponse,
   GetUpcomingRecResponse,
@@ -181,6 +182,20 @@ export class RecService {
 
   public async deleteUpcomingRec(recId: string): Promise<void> {
     await this.recRepository.deleteUpcomingRec(recId);
+  }
+
+  public async getArticleByLink(
+    link: string
+  ): Promise<GetArticleByLinkResponse> {
+    const article = await this.recRepository.findArticleByLink(link);
+    if (!article) {
+      return {
+        article: null,
+      };
+    }
+    return {
+      article: article,
+    };
   }
 
   private getRecsFromDbRecs(dbRec: DbRec[]): Rec[] {
