@@ -9,3 +9,11 @@ export class GetRecsResponse {
   @ApiProperty({ type: [Rec] })
   recs: Rec[];
 }
+
+export class GetFeedsResponse {
+  @ApiProperty()
+  hasNext: boolean;
+
+  @ApiProperty({ type: [Rec] })
+  recs: Rec[];
+}

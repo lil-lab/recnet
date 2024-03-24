@@ -37,7 +37,7 @@ export type GetRecsResponse = z.infer<typeof getRecsResponseSchema>;
 export const getRecsFeedsParamsSchema = z.object({
   page: z.coerce.number(),
   pageSize: z.coerce.number(),
-  cutoff: z.coerce.number(), // timestamp
+  cutoff: z.coerce.number().optional(), // timestamp
 });
 export type GetRecsFeedsParams = z.infer<typeof getRecsFeedsParamsSchema>;
 
