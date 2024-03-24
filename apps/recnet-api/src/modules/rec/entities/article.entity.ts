@@ -5,7 +5,7 @@ export class Article {
   id: string;
 
   @ApiProperty()
-  doi?: string;
+  doi: string | null;
 
   @ApiProperty()
   title: string;
@@ -20,7 +20,7 @@ export class Article {
   year: number;
 
   @ApiProperty()
-  month?: number;
+  month: number | null;
 
   @ApiProperty()
   isVerified: boolean;

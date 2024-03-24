@@ -24,3 +24,8 @@ export class GetUpcomingRecResponse {
   })
   rec: Rec | null;
 }
+
+export class CreateRecResponse {
+  @ApiProperty()
+  rec: Rec;
+}

@@ -49,4 +49,11 @@ export default class RecRepository {
     }
     return recommendataion;
   }
+
+  public async createRec(data: Prisma.RecommendationCreateInput): Promise<Rec> {
+    return this.prisma.recommendation.create({
+      data: data,
+      select: rec.select,
+    });
+  }
 }

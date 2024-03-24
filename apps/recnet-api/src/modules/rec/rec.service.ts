@@ -1,13 +1,19 @@
-import { Inject, Injectable } from "@nestjs/common";
+import { HttpStatus, Inject, Injectable } from "@nestjs/common";
 import { Prisma } from "@prisma/client";
 
 import RecRepository from "@recnet-api/database/repository/rec.repository";
 import { Rec as DbRec } from "@recnet-api/database/repository/rec.repository.type";
 import UserRepository from "@recnet-api/database/repository/user.repository";
 import { getOffset } from "@recnet-api/utils";
+import { RecnetError } from "@recnet-api/utils/error/recnet.error";
+import { ErrorCode } from "@recnet-api/utils/error/recnet.error.const";
 
+import { getNextCutOff } from "@recnet/recnet-date-fns";
+
+import { CreateArticleDto } from "./dto/create.rec.dto";
 import { Rec } from "./entities/rec.entity";
 import {
+  CreateRecResponse,
   GetFeedsResponse,
   GetRecsResponse,
   GetUpcomingRecResponse,
@@ -75,6 +81,67 @@ export class RecService {
     return {
       rec: this.getRecFromDbRec(dbRec),
     };
+  }
+
+  public async addRec(
+    articleId: string | null,
+    article: CreateArticleDto | null,
+    description: string,
+    userId: string
+  ): Promise<CreateRecResponse> {
+    // article and articleId cannot be null at the same time
+    // check libs/recnet-api-model/src/lib/api/rec.ts
+    if (!article && !articleId) {
+      // which code should be returned?
+      throw new RecnetError(
+        ErrorCode.INTERNAL_SERVER_ERROR,
+        HttpStatus.BAD_REQUEST,
+        "Article and articleId cannot be null at the same time"
+      );
+    } else if (!article && articleId) {
+      // insert rec to db
+      const rec = await this.recRepository.createRec({
+        user: {
+          connect: {
+            id: userId,
+          },
+        },
+        cutoff: getNextCutOff(),
+        description: description,
+        article: {
+          connect: {
+            id: articleId,
+          },
+        },
+      });
+      return {
+        rec: this.getRecFromDbRec(rec),
+      };
+    } else if (article && !articleId) {
+      // insert article and rec to db
+      const rec = await this.recRepository.createRec({
+        user: {
+          connect: {
+            id: userId,
+          },
+        },
+        cutoff: getNextCutOff(),
+        description: description,
+        article: {
+          create: {
+            ...article,
+          },
+        },
+      });
+      return {
+        rec: this.getRecFromDbRec(rec),
+      };
+    }
+    throw new RecnetError(
+      ErrorCode.INTERNAL_SERVER_ERROR,
+      HttpStatus.BAD_REQUEST,
+      "Article and articleId cannot have value at the same time"
+    );
   }
 
   private getRecsFromDbRecs(dbRec: DbRec[]): Rec[] {

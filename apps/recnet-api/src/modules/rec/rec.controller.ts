@@ -1,6 +1,8 @@
 import {
+  Body,
   Controller,
   Get,
+  Post,
   Query,
   Req,
   UseFilters,
@@ -21,11 +23,14 @@ import {
   getRecsFeedsParamsSchema,
   getRecsParamsSchema,
   getRecsUpcomingResponseSchema,
+  postRecsUpcomingRequestSchema,
 } from "@recnet/recnet-api-model";
 
+import { CreateRecDto } from "./dto/create.rec.dto";
 import { QueryFeedsDto } from "./dto/query.feeds.dto";
 import { QueryRecsDto } from "./dto/query.recs.dto";
 import {
+  CreateRecResponse,
   GetFeedsResponse,
   GetRecsResponse,
   GetUpcomingRecResponse,
@@ -87,5 +92,26 @@ export class RecController {
   ): Promise<GetUpcomingRecResponse> {
     const jwtPayload = getRecnetJWTPayloadFromReq(req);
     return this.recService.getUpcomingRec(jwtPayload.recnet.userId);
+  }
+
+  @ApiOperation({
+    summary: "Create new rec",
+    description: "Create new rec using userId in JWT.",
+  })
+  @ApiOkResponse({ type: CreateRecResponse })
+  @Post("upcoming")
+  @UseGuards(AuthGuard("RecNetJWT"))
+  @UsePipes(new ZodValidationPipe(postRecsUpcomingRequestSchema))
+  public async createUpcomingRec(
+    @Req() req: Request,
+    @Body() body: CreateRecDto
+  ): Promise<CreateRecResponse> {
+    const jwtPayload = getRecnetJWTPayloadFromReq(req);
+    return this.recService.addRec(
+      body.articleId,
+      body.article,
+      body.description,
+      jwtPayload.recnet.userId
+    );
   }
 }
