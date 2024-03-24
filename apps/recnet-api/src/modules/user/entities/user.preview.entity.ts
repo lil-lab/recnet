@@ -14,10 +14,10 @@ export class UserPreview {
   photoUrl: string;
 
   @ApiProperty()
-  affiliation: string;
+  affiliation: string | null;
 
   @ApiProperty()
-  bio: string;
+  bio: string | null;
 
   @ApiProperty()
   numFollowers: number;
