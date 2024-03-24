@@ -56,4 +56,12 @@ export default class RecRepository {
       select: rec.select,
     });
   }
+
+  public async deleteUpcomingRec(recId: string): Promise<void> {
+    await this.prisma.recommendation.delete({
+      where: {
+        id: recId,
+      },
+    });
+  }
 }

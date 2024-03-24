@@ -179,6 +179,10 @@ export class RecService {
     throw new Error("TODO: finish this function");
   }
 
+  public async deleteUpcomingRec(recId: string): Promise<void> {
+    await this.recRepository.deleteUpcomingRec(recId);
+  }
+
   private getRecsFromDbRecs(dbRec: DbRec[]): Rec[] {
     return dbRec.map(this.getRecFromDbRec);
   }
