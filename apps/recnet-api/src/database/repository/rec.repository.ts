@@ -5,6 +5,8 @@ import PrismaConnectionProvider from "@recnet-api/database/prisma/prisma.connect
 import { rec, Rec } from "@recnet-api/database/repository/rec.repository.type";
 import { getOffset } from "@recnet-api/utils";
 
+import { getNextCutOff } from "@recnet/recnet-date-fns";
+
 @Injectable()
 export default class RecRepository {
   constructor(private readonly prisma: PrismaConnectionProvider) {}
@@ -29,5 +31,22 @@ export default class RecRepository {
     return this.prisma.recommendation.count({
       where: where,
     });
+  }
+
+  public async findUpcomingRec(userId: string): Promise<Rec | null> {
+    const recommendataion = await this.prisma.recommendation.findFirst({
+      where: {
+        userId: userId,
+      },
+      select: rec.select,
+      orderBy: { cutoff: Prisma.SortOrder.desc },
+    });
+    if (!recommendataion) {
+      return null;
+    }
+    if (recommendataion.cutoff.getTime() !== getNextCutOff().getTime()) {
+      return null;
+    }
+    return recommendataion;
   }
 }

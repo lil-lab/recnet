@@ -17,3 +17,10 @@ export class GetFeedsResponse {
   @ApiProperty({ type: [Rec] })
   recs: Rec[];
 }
+
+export class GetUpcomingRecResponse {
+  @ApiProperty({
+    nullable: true,
+  })
+  rec: Rec | null;
+}

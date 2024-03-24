@@ -20,11 +20,16 @@ import { getLatestCutOff } from "@recnet/recnet-date-fns";
 import {
   getRecsFeedsParamsSchema,
   getRecsParamsSchema,
+  getRecsUpcomingResponseSchema,
 } from "@recnet/recnet-api-model";
 
 import { QueryFeedsDto } from "./dto/query.feeds.dto";
 import { QueryRecsDto } from "./dto/query.recs.dto";
-import { GetFeedsResponse, GetRecsResponse } from "./rec.response";
+import {
+  GetFeedsResponse,
+  GetRecsResponse,
+  GetUpcomingRecResponse,
+} from "./rec.response";
 import { RecService } from "./rec.service";
 
 @ApiTags("recs")
@@ -67,5 +72,20 @@ export class RecController {
       cutoff,
       jwtPayload.recnet.userId
     );
+  }
+
+  @ApiOperation({
+    summary: "Get upcoming rec",
+    description: "Get upcoming rec using userId in JWT.",
+  })
+  @ApiOkResponse({ type: GetUpcomingRecResponse })
+  @Get("upcoming")
+  @UseGuards(AuthGuard("RecNetJWT"))
+  @UsePipes(new ZodValidationPipe(getRecsUpcomingResponseSchema))
+  public async getUpcomingRec(
+    @Req() req: Request
+  ): Promise<GetUpcomingRecResponse> {
+    const jwtPayload = getRecnetJWTPayloadFromReq(req);
+    return this.recService.getUpcomingRec(jwtPayload.recnet.userId);
   }
 }

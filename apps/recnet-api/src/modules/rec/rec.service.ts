@@ -7,7 +7,11 @@ import UserRepository from "@recnet-api/database/repository/user.repository";
 import { getOffset } from "@recnet-api/utils";
 
 import { Rec } from "./entities/rec.entity";
-import { GetFeedsResponse, GetRecsResponse } from "./rec.response";
+import {
+  GetFeedsResponse,
+  GetRecsResponse,
+  GetUpcomingRecResponse,
+} from "./rec.response";
 
 @Injectable()
 export class RecService {
@@ -61,17 +65,35 @@ export class RecService {
     };
   }
 
-  private getRecsFromDbRecs(dbRec: DbRec[]): Rec[] {
-    return dbRec.map((dbRec) => {
+  public async getUpcomingRec(userId: string): Promise<GetUpcomingRecResponse> {
+    const dbRec = await this.recRepository.findUpcomingRec(userId);
+    if (!dbRec) {
       return {
-        ...dbRec,
-        cutoff: dbRec.cutoff.toISOString(),
-        user: {
-          ...dbRec.user,
-          numFollowers: dbRec.user.followedBy.length,
-          followedBy: undefined,
-        },
+        rec: null,
       };
-    });
+    }
+    return {
+      rec: this.getRecFromDbRec(dbRec),
+    };
+  }
+
+  private getRecsFromDbRecs(dbRec: DbRec[]): Rec[] {
+    return dbRec.map(this.getRecFromDbRec);
+  }
+
+  private getRecFromDbRec(dbRec: DbRec): Rec {
+    return {
+      ...dbRec,
+      cutoff: dbRec.cutoff.toISOString(),
+      user: {
+        id: dbRec.user.id,
+        handle: dbRec.user.handle,
+        displayName: dbRec.user.displayName,
+        photoUrl: dbRec.user.photoUrl,
+        affiliation: dbRec.user.affiliation,
+        bio: dbRec.user.bio,
+        numFollowers: dbRec.user.followedBy.length,
+      },
+    };
   }
 }
