@@ -18,7 +18,7 @@ export const EnvSchema = z.object({
   DB_MIGRATE: z.coerce.boolean().optional().default(false),
 });
 
-export const parseEnv = (env: Record<string, string>) => {
+export const parseEnv = (env: Record<string, string | undefined>) => {
   const parsedEnv = EnvSchema.parse(env);
   return parsedEnv;
 };
