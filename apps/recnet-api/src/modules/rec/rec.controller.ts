@@ -131,10 +131,14 @@ export class RecController {
   public async updateUpcomingRec(
     @Req() req: Request,
     @Body() body: UpdateRecDto
-  ): Promise<void> {
+  ): Promise<UpdateRecResponse> {
     const jwtPayload = getRecnetJWTPayloadFromReq(req);
-    // TODO: Implement update
-    return;
+    return this.recService.updateUpcomingRec(
+      body.articleId,
+      body.article,
+      body.description,
+      jwtPayload.recnet.userId
+    );
   }
 
   @ApiOperation({

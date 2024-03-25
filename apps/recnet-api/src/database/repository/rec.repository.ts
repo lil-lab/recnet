@@ -57,6 +57,19 @@ export default class RecRepository {
     });
   }
 
+  public async updateRec(
+    id: string,
+    data: Prisma.RecommendationUpdateInput
+  ): Promise<Rec> {
+    return this.prisma.recommendation.update({
+      where: {
+        id: id,
+      },
+      data: data,
+      select: rec.select,
+    });
+  }
+
   public async deleteUpcomingRec(recId: string): Promise<void> {
     await this.prisma.recommendation.delete({
       where: {

@@ -169,18 +169,52 @@ export class RecService {
         HttpStatus.BAD_REQUEST,
         "Article and articleId cannot be null at the same time"
       );
-    } else if (article && articleId) {
-      throw new RecnetError(
-        ErrorCode.INTERNAL_SERVER_ERROR,
-        HttpStatus.BAD_REQUEST,
-        "Article and articleId cannot have value at the same time"
-      );
+    } else if (article && !articleId) {
+      // update rec and create new article
+      const updatedRec = await this.recRepository.updateRec(dbRec.id, {
+        description: description,
+        article: {
+          create: {
+            ...article,
+          },
+        },
+      });
+      return {
+        rec: this.getRecFromDbRec(updatedRec),
+      };
+    } else if (articleId && !article) {
+      // check if articleId is the same as dbRec.article.id
+      // if not, update rec and link to another article using articleId
+      // if the same, update rec
+      if (articleId !== dbRec.article.id) {
+        const updatedRec = await this.recRepository.updateRec(dbRec.id, {
+          description: description,
+          article: {
+            connect: {
+              id: articleId,
+            },
+          },
+        });
+        return {
+          rec: this.getRecFromDbRec(updatedRec),
+        };
+      } else {
+        const updatedRec = await this.recRepository.updateRec(dbRec.id, {
+          description: description,
+        });
+        return {
+          rec: this.getRecFromDbRec(updatedRec),
+        };
+      }
     }
-    throw new Error("TODO: finish this function");
+    throw new RecnetError(
+      ErrorCode.INTERNAL_SERVER_ERROR,
+      HttpStatus.BAD_REQUEST,
+      "Article and articleId cannot have value at the same time"
+    );
   }
 
   public async deleteUpcomingRec(userId: string): Promise<void> {
-    // get upcoming rec
     const rec = await this.recRepository.findUpcomingRec(userId);
     if (!rec) {
       throw new RecnetError(
