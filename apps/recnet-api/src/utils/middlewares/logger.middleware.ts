@@ -8,7 +8,7 @@ export class LoggerMiddleware implements NestMiddleware {
 
   use(req: Request, res: Response, next: NextFunction) {
     const { method, originalUrl, body, headers } = req;
-    const requestId = uuidv4().substr(0, 8);
+    const requestId = uuidv4().slice(0, 8);
 
     const requestDetails = {
       method,
