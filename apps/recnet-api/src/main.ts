@@ -25,6 +25,7 @@ async function bootstrap() {
     .setTitle("Recnet API")
     .setDescription("This is the Recnet API document.")
     .setVersion("1.0")
+    .addBearerAuth()
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup("api", app, document);

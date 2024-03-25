@@ -1,6 +1,8 @@
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 
-export class UserPreview {
+import { UserPreview } from "./user.preview.entity";
+
+export class User {
   @ApiProperty()
   id: string;
 
@@ -21,4 +23,13 @@ export class UserPreview {
 
   @ApiProperty()
   numFollowers: number;
+
+  @ApiProperty()
+  email: string;
+
+  @ApiProperty()
+  role: string;
+
+  @ApiProperty()
+  following: UserPreview[];
 }

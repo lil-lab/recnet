@@ -5,7 +5,7 @@ import PrismaConnectionProvider from "@recnet-api/database/prisma/prisma.connect
 import { UserFilterBy } from "@recnet-api/modules/user/user.type";
 import { getOffset } from "@recnet-api/utils";
 
-import { UserPreview } from "./user.repository.type";
+import { User, UserPreview } from "./user.repository.type";
 
 @Injectable()
 export default class UserRepository {
@@ -39,6 +39,39 @@ export default class UserRepository {
     const where: Prisma.UserWhereInput =
       this.transformUserFilterByToPrismaWhere(filter);
     return this.prisma.user.count({ where });
+  }
+
+  public async findUserById(userId: string): Promise<User> {
+    return this.prisma.user.findUniqueOrThrow({
+      where: { id: userId },
+      select: {
+        id: true,
+        handle: true,
+        displayName: true,
+        photoUrl: true,
+        affiliation: true,
+        bio: true,
+        followedBy: true,
+        email: true,
+        role: true,
+        following: true,
+      },
+    });
+  }
+
+  public async findUserPreviewByIds(userIds: string[]): Promise<UserPreview[]> {
+    return this.prisma.user.findMany({
+      select: {
+        id: true,
+        handle: true,
+        displayName: true,
+        photoUrl: true,
+        affiliation: true,
+        bio: true,
+        followedBy: true,
+      },
+      where: { id: { in: userIds } },
+    });
   }
 
   private transformUserFilterByToPrismaWhere(

@@ -1,3 +1,5 @@
+import { UserRole } from "@recnet/recnet-api-model";
+
 export type UserFilterBy = {
   handle?: string;
   keyword?: string;
@@ -5,6 +7,6 @@ export type UserFilterBy = {
 };
 
 export type AuthUser = {
-  role: string;
+  role: UserRole;
   userId: string;
 };
