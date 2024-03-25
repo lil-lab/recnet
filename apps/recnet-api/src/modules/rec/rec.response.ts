@@ -1,6 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger";
 
-import { Article } from "./entities/article.entity";
 import { Rec } from "./entities/rec.entity";
 
 export class GetRecsResponse {
@@ -34,9 +33,4 @@ export class CreateRecResponse {
 export class UpdateRecResponse {
   @ApiProperty()
   rec: Rec;
-}
-
-export class GetArticleByLinkResponse {
-  @ApiProperty()
-  article: Article | null;
 }

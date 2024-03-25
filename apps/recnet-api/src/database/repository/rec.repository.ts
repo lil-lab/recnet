@@ -2,12 +2,7 @@ import { Injectable } from "@nestjs/common";
 import { Prisma } from "@prisma/client";
 
 import PrismaConnectionProvider from "@recnet-api/database/prisma/prisma.connection.provider";
-import {
-  rec,
-  Rec,
-  article,
-  Article,
-} from "@recnet-api/database/repository/rec.repository.type";
+import { rec, Rec } from "@recnet-api/database/repository/rec.repository.type";
 import { getOffset } from "@recnet-api/utils";
 
 import { getNextCutOff } from "@recnet/recnet-date-fns";
@@ -67,15 +62,6 @@ export default class RecRepository {
       where: {
         id: recId,
       },
-    });
-  }
-
-  public async findArticleByLink(link: string): Promise<Article | null> {
-    return this.prisma.article.findFirst({
-      where: {
-        link: link,
-      },
-      select: article.select,
     });
   }
 }

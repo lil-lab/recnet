@@ -31,17 +31,3 @@ export const rec = Prisma.validator<Prisma.RecommendationDefaultArgs>()({
   },
 });
 export type Rec = Prisma.RecommendationGetPayload<typeof rec>;
-
-export const article = Prisma.validator<Prisma.ArticleDefaultArgs>()({
-  select: {
-    id: true,
-    title: true,
-    doi: true,
-    author: true,
-    link: true,
-    year: true,
-    month: true,
-    isVerified: true,
-  },
-});
-export type Article = Prisma.ArticleGetPayload<typeof article>;

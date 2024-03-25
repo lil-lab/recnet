@@ -1,6 +1,6 @@
 import { ApiProperty, OmitType } from "@nestjs/swagger";
 
-import { Article } from "../entities/article.entity";
+import { Article } from "@recnet-api/modules/article/entities/article.entity";
 
 export class CreateArticleDto extends OmitType(Article, [
   "id",

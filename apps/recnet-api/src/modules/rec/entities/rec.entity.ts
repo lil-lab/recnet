@@ -1,6 +1,6 @@
 import { ApiProperty } from "@nestjs/swagger";
 
-import { Article } from "./article.entity";
+import { Article } from "@recnet-api/modules/article/entities/article.entity";
 
 import { UserPreview } from "../../user/entities/user.preview.entity";
 

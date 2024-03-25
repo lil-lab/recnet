@@ -22,7 +22,6 @@ import { ZodValidationPipe } from "@recnet-api/utils/pipes/zod.validation.pipe";
 import { getLatestCutOff } from "@recnet/recnet-date-fns";
 
 import {
-  getArticlesParamsSchema,
   getRecsFeedsParamsSchema,
   getRecsParamsSchema,
   getRecsUpcomingResponseSchema,
@@ -31,13 +30,11 @@ import {
 } from "@recnet/recnet-api-model";
 
 import { CreateRecDto } from "./dto/create.rec.dto";
-import { QueryArticleDto } from "./dto/query.article.dto";
 import { QueryFeedsDto } from "./dto/query.feeds.dto";
 import { QueryRecsDto } from "./dto/query.recs.dto";
 import { UpdateRecDto } from "./dto/update.rec.dto";
 import {
   CreateRecResponse,
-  GetArticleByLinkResponse,
   GetFeedsResponse,
   GetRecsResponse,
   GetUpcomingRecResponse,
@@ -149,20 +146,5 @@ export class RecController {
   public async deleteUpcomingRec(@Req() req: Request): Promise<void> {
     const jwtPayload = getRecnetJWTPayloadFromReq(req);
     return this.recService.deleteUpcomingRec(jwtPayload.recnet.userId);
-  }
-
-  @ApiOperation({
-    summary: "Get Article By Link",
-    description: "Get article by link.",
-  })
-  @ApiOkResponse({ type: GetArticleByLinkResponse })
-  @Get("articles")
-  @UseGuards(AuthGuard("RecNetJWT"))
-  @UsePipes(new ZodValidationPipe(getArticlesParamsSchema))
-  public async getArticleByLink(
-    @Query() dto: QueryArticleDto
-  ): Promise<GetArticleByLinkResponse> {
-    const { link } = dto;
-    return this.recService.getArticleByLink(link);
   }
 }
