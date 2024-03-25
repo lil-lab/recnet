@@ -3,6 +3,7 @@ import { ConfigModule } from "@nestjs/config";
 
 import * as CommonConfigs from "./config/common.config";
 import { parseEnv } from "./config/env.schema";
+import { ArticleModule } from "./modules/article/article.module";
 import { HealthModule } from "./modules/health/health.module";
 import { RecModule } from "./modules/rec/rec.module";
 import { UserModule } from "./modules/user/user.module";
@@ -18,6 +19,7 @@ import { LoggerMiddleware } from "./utils/middlewares/logger.middleware";
     HealthModule,
     UserModule,
     RecModule,
+    ArticleModule,
   ],
   controllers: [],
   providers: [],
