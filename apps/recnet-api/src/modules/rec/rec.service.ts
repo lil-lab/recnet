@@ -180,8 +180,17 @@ export class RecService {
     throw new Error("TODO: finish this function");
   }
 
-  public async deleteUpcomingRec(recId: string): Promise<void> {
-    await this.recRepository.deleteUpcomingRec(recId);
+  public async deleteUpcomingRec(userId: string): Promise<void> {
+    // get upcoming rec
+    const rec = await this.recRepository.findUpcomingRec(userId);
+    if (!rec) {
+      throw new RecnetError(
+        ErrorCode.INTERNAL_SERVER_ERROR,
+        HttpStatus.NOT_FOUND,
+        "Upcoming rec not found"
+      );
+    }
+    await this.recRepository.deleteUpcomingRec(rec.id);
   }
 
   public async getArticleByLink(

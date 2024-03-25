@@ -22,7 +22,6 @@ import { ZodValidationPipe } from "@recnet-api/utils/pipes/zod.validation.pipe";
 import { getLatestCutOff } from "@recnet/recnet-date-fns";
 
 import {
-  deleteRecsUpcomingParamsSchema,
   getArticlesParamsSchema,
   getRecsFeedsParamsSchema,
   getRecsParamsSchema,
@@ -32,7 +31,6 @@ import {
 } from "@recnet/recnet-api-model";
 
 import { CreateRecDto } from "./dto/create.rec.dto";
-import { DeleteRecDto } from "./dto/delete.rec.dto";
 import { QueryArticleDto } from "./dto/query.article.dto";
 import { QueryFeedsDto } from "./dto/query.feeds.dto";
 import { QueryRecsDto } from "./dto/query.recs.dto";
@@ -148,10 +146,9 @@ export class RecController {
   })
   @Delete("upcoming")
   @UseGuards(AuthGuard("RecNetJWT"))
-  @UsePipes(new ZodValidationPipe(deleteRecsUpcomingParamsSchema))
-  public async deleteUpcomingRec(@Query() dto: DeleteRecDto): Promise<void> {
-    const { recId } = dto;
-    return this.recService.deleteUpcomingRec(recId);
+  public async deleteUpcomingRec(@Req() req: Request): Promise<void> {
+    const jwtPayload = getRecnetJWTPayloadFromReq(req);
+    return this.recService.deleteUpcomingRec(jwtPayload.recnet.userId);
   }
 
   @ApiOperation({

@@ -81,14 +81,6 @@ export type PatchRecsUpcomingResponse = z.infer<
   typeof patchRecsUpcomingResponseSchema
 >;
 
-// DELETE /recs/upcoming
-export const deleteRecsUpcomingParamsSchema = z.object({
-  recId: z.string(),
-});
-export type DeleteRecsUpcomingParams = z.infer<
-  typeof deleteRecsUpcomingParamsSchema
->;
-
 // GET /articles
 export const getArticlesParamsSchema = z.object({
   link: z.string().url(),
