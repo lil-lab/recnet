@@ -1,32 +1,18 @@
 import { Prisma } from "@prisma/client";
 
+import { article } from "./article.repository.type";
+import { userPreview } from "./user.repository.type";
+
 export const rec = Prisma.validator<Prisma.RecommendationDefaultArgs>()({
   select: {
     id: true,
     description: true,
     cutoff: true,
     user: {
-      select: {
-        id: true,
-        handle: true,
-        displayName: true,
-        photoUrl: true,
-        affiliation: true,
-        bio: true,
-        followedBy: true,
-      },
+      select: userPreview.select,
     },
     article: {
-      select: {
-        id: true,
-        title: true,
-        doi: true,
-        author: true,
-        link: true,
-        year: true,
-        month: true,
-        isVerified: true,
-      },
+      select: article.select,
     },
   },
 });
