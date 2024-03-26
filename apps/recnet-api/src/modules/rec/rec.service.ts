@@ -106,9 +106,8 @@ export class RecService {
     // article and articleId cannot be null at the same time
     // check libs/recnet-api-model/src/lib/api/rec.ts
     if (!article && !articleId) {
-      // which code should be returned?
       throw new RecnetError(
-        ErrorCode.INTERNAL_SERVER_ERROR,
+        ErrorCode.REC_UPDATE_OR_CREATE_RULE_VIOLATION,
         HttpStatus.BAD_REQUEST,
         "Article and articleId cannot be null at the same time"
       );
@@ -118,7 +117,7 @@ export class RecService {
     if (article) {
       if (articleId) {
         throw new RecnetError(
-          ErrorCode.INTERNAL_SERVER_ERROR,
+          ErrorCode.REC_UPDATE_OR_CREATE_RULE_VIOLATION,
           HttpStatus.BAD_REQUEST,
           "Article and articleId cannot have value at the same time"
         );
@@ -161,11 +160,19 @@ export class RecService {
   ): Promise<UpdateRecResponse> {
     const dbRec = await this.recRepository.findUpcomingRec(userId);
     if (!dbRec) {
-      // which code should be returned?
       throw new RecnetError(
         ErrorCode.INTERNAL_SERVER_ERROR,
         HttpStatus.NOT_FOUND,
         "Upcoming rec not found"
+      );
+    }
+    // article and articleId cannot be null at the same time
+    // check libs/recnet-api-model/src/lib/api/rec.ts
+    if (!article && !articleId) {
+      throw new RecnetError(
+        ErrorCode.REC_UPDATE_OR_CREATE_RULE_VIOLATION,
+        HttpStatus.BAD_REQUEST,
+        "Article and articleId cannot be null at the same time"
       );
     }
 
@@ -173,7 +180,7 @@ export class RecService {
     if (article) {
       if (articleId) {
         throw new RecnetError(
-          ErrorCode.INTERNAL_SERVER_ERROR,
+          ErrorCode.REC_UPDATE_OR_CREATE_RULE_VIOLATION,
           HttpStatus.BAD_REQUEST,
           "Article and articleId cannot have value at the same time"
         );
