@@ -75,8 +75,19 @@ export default class RecRepository {
 
   public async updateRec(
     id: string,
-    data: Prisma.RecommendationUpdateInput
+    description: string,
+    articleId?: string
   ): Promise<Rec> {
+    const data: Prisma.RecommendationUpdateInput = {
+      description: description,
+    };
+    if (articleId) {
+      data.article = {
+        connect: {
+          id: articleId,
+        },
+      };
+    }
     return this.prisma.recommendation.update({
       where: {
         id: id,

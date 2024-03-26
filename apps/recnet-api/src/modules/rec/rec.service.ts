@@ -14,7 +14,6 @@ import { ErrorCode } from "@recnet-api/utils/error/recnet.error.const";
 
 import { getCutOff } from "@recnet/recnet-date-fns";
 
-import { UpdateArticleDto } from "./dto/update.rec.dto";
 import { Rec } from "./entities/rec.entity";
 import {
   CreateRecResponse,
@@ -115,7 +114,7 @@ export class RecService {
       );
     }
 
-    let checkArticleId: string | null = null;
+    let targetArticleId: string | null = null;
     if (article) {
       if (articleId) {
         throw new RecnetError(
@@ -129,17 +128,15 @@ export class RecService {
         article.link
       );
       if (dbArticle) {
-        checkArticleId = dbArticle.id;
+        targetArticleId = dbArticle.id;
       } else {
-        // create new article
         const newArticle = await this.articleRepository.createArticle(article);
-        checkArticleId = newArticle.id;
+        targetArticleId = newArticle.id;
       }
     }
 
-    // create new rec
-    const targetArticleId = articleId ? articleId : checkArticleId;
-    if (targetArticleId === null) {
+    const articleIdToConnect = articleId ? articleId : targetArticleId;
+    if (articleIdToConnect === null) {
       throw new RecnetError(
         ErrorCode.INTERNAL_SERVER_ERROR,
         HttpStatus.INTERNAL_SERVER_ERROR,
@@ -149,7 +146,7 @@ export class RecService {
     const newRec = await this.recRepository.createRec(
       userId,
       description,
-      targetArticleId
+      articleIdToConnect
     );
     return {
       rec: this.getRecFromDbRec(newRec),
@@ -158,7 +155,7 @@ export class RecService {
 
   public async updateUpcomingRec(
     articleId: string | null,
-    article: UpdateArticleDto | null,
+    article: CreateArticleInput | null,
     description: string,
     userId: string
   ): Promise<UpdateRecResponse> {
@@ -171,57 +168,54 @@ export class RecService {
         "Upcoming rec not found"
       );
     }
-    if (!article && !articleId) {
-      // article and articleId cannot be null at the same time
-      // check libs/recnet-api-model/src/lib/api/rec.ts
+
+    let targetArticleId: string | null = null;
+    if (article) {
+      if (articleId) {
+        throw new RecnetError(
+          ErrorCode.INTERNAL_SERVER_ERROR,
+          HttpStatus.BAD_REQUEST,
+          "Article and articleId cannot have value at the same time"
+        );
+      }
+      // check if article already exists
+      const dbArticle = await this.articleRepository.findArticleByLink(
+        article.link
+      );
+      if (dbArticle) {
+        targetArticleId = dbArticle.id;
+      } else {
+        const newArticle = await this.articleRepository.createArticle(article);
+        targetArticleId = newArticle.id;
+      }
+    }
+
+    const articleIdToConnect = articleId ? articleId : targetArticleId;
+    if (articleIdToConnect === null) {
       throw new RecnetError(
         ErrorCode.INTERNAL_SERVER_ERROR,
-        HttpStatus.BAD_REQUEST,
-        "Article and articleId cannot be null at the same time"
+        HttpStatus.INTERNAL_SERVER_ERROR,
+        "Error getting article id while updating rec"
       );
-    } else if (article && !articleId) {
-      // update rec and create new article
-      const updatedRec = await this.recRepository.updateRec(dbRec.id, {
-        description: description,
-        article: {
-          create: {
-            ...article,
-          },
-        },
-      });
+    }
+    if (articleIdToConnect === dbRec.id) {
+      const updatedRec = await this.recRepository.updateRec(
+        dbRec.id,
+        description
+      );
       return {
         rec: this.getRecFromDbRec(updatedRec),
       };
-    } else if (articleId && !article) {
-      // check if articleId is the same as dbRec.article.id
-      // if not, update rec and link to another article using articleId
-      // if the same, update rec
-      if (articleId !== dbRec.article.id) {
-        const updatedRec = await this.recRepository.updateRec(dbRec.id, {
-          description: description,
-          article: {
-            connect: {
-              id: articleId,
-            },
-          },
-        });
-        return {
-          rec: this.getRecFromDbRec(updatedRec),
-        };
-      } else {
-        const updatedRec = await this.recRepository.updateRec(dbRec.id, {
-          description: description,
-        });
-        return {
-          rec: this.getRecFromDbRec(updatedRec),
-        };
-      }
+    } else {
+      const updatedRec = await this.recRepository.updateRec(
+        dbRec.id,
+        description,
+        articleIdToConnect
+      );
+      return {
+        rec: this.getRecFromDbRec(updatedRec),
+      };
     }
-    throw new RecnetError(
-      ErrorCode.INTERNAL_SERVER_ERROR,
-      HttpStatus.BAD_REQUEST,
-      "Article and articleId cannot have value at the same time"
-    );
   }
 
   public async deleteUpcomingRec(userId: string): Promise<void> {
