@@ -1,6 +1,6 @@
 import { Prisma } from "@prisma/client";
 
-const userPreviews = Prisma.validator<Prisma.UserDefaultArgs>()({
+export const userPreview = Prisma.validator<Prisma.UserDefaultArgs>()({
   select: {
     id: true,
     handle: true,
@@ -12,9 +12,9 @@ const userPreviews = Prisma.validator<Prisma.UserDefaultArgs>()({
   },
 });
 
-export type UserPreview = Prisma.UserGetPayload<typeof userPreviews>;
+export type UserPreview = Prisma.UserGetPayload<typeof userPreview>;
 
-const user = Prisma.validator<Prisma.UserDefaultArgs>()({
+export const user = Prisma.validator<Prisma.UserDefaultArgs>()({
   select: {
     id: true,
     handle: true,
