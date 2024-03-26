@@ -8,7 +8,7 @@ import { getOffset } from "@recnet-api/utils";
 import { RecnetError } from "@recnet-api/utils/error/recnet.error";
 import { ErrorCode } from "@recnet-api/utils/error/recnet.error.const";
 
-import { getNextCutOff } from "@recnet/recnet-date-fns";
+import { getCutOff, getNextCutOff } from "@recnet/recnet-date-fns";
 
 import { CreateArticleDto } from "./dto/create.rec.dto";
 import { UpdateArticleDto } from "./dto/update.rec.dto";
@@ -55,6 +55,9 @@ export class RecService {
     cutoff: number,
     userId: string
   ): Promise<GetFeedsResponse> {
+    if (cutoff !== getCutOff(new Date(cutoff)).getTime()) {
+      throw new RecnetError(ErrorCode.INVALID_CUTOFF, HttpStatus.BAD_REQUEST);
+    }
     const user = await this.userRepository.findUserById(userId);
     const followings = user.following.map((following) => following.followingId);
     const where: Prisma.RecommendationWhereInput = {
