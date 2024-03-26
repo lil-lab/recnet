@@ -6,9 +6,7 @@ import {
   Patch,
   Post,
   Query,
-  Req,
   UseFilters,
-  UseGuards,
   UsePipes,
 } from "@nestjs/common";
 import {
@@ -17,7 +15,6 @@ import {
   ApiOperation,
   ApiTags,
 } from "@nestjs/swagger";
-import { Request } from "express";
 
 import { Auth } from "@recnet-api/utils/auth/auth.decorator";
 import { AuthUser } from "@recnet-api/utils/auth/auth.type";

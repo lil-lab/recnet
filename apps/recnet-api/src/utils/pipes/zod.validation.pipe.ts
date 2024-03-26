@@ -1,4 +1,4 @@
-import { PipeTransform, HttpStatus } from "@nestjs/common";
+import { PipeTransform, HttpStatus, ArgumentMetadata } from "@nestjs/common";
 import { ZodError, ZodSchema } from "zod";
 
 import { RecnetError } from "@recnet-api/utils/error/recnet.error";
@@ -7,7 +7,10 @@ import { ErrorCode } from "@recnet-api/utils/error/recnet.error.const";
 export class ZodValidationPipe implements PipeTransform {
   constructor(private schema: ZodSchema) {}
 
-  transform(value: unknown) {
+  transform(value: unknown, metadata: ArgumentMetadata) {
+    if (metadata.type === "custom") {
+      return value;
+    }
     try {
       const parsedValue = this.schema.parse(value);
       return parsedValue;
