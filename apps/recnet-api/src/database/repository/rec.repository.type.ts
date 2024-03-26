@@ -31,3 +31,9 @@ export const rec = Prisma.validator<Prisma.RecommendationDefaultArgs>()({
   },
 });
 export type Rec = Prisma.RecommendationGetPayload<typeof rec>;
+
+export type RecFilterBy = {
+  userId?: string;
+  userIds?: string[];
+  cutoff?: Date;
+};

@@ -3,6 +3,7 @@ import { Prisma } from "@prisma/client";
 
 import PrismaConnectionProvider from "@recnet-api/database/prisma/prisma.connection.provider";
 import { rec, Rec } from "@recnet-api/database/repository/rec.repository.type";
+import { RecFilterBy } from "@recnet-api/database/repository/rec.repository.type";
 import { getOffset } from "@recnet-api/utils";
 
 import { getNextCutOff } from "@recnet/recnet-date-fns";
@@ -14,22 +15,20 @@ export default class RecRepository {
   public async findRecs(
     page: number,
     pageSize: number,
-    where: Prisma.RecommendationWhereInput
+    filter: RecFilterBy
   ): Promise<Rec[]> {
     return this.prisma.recommendation.findMany({
       select: rec.select,
-      where: where,
+      where: this.transformRecFilterByToPrismaWhere(filter),
       take: pageSize,
       skip: getOffset(page, pageSize),
       orderBy: { id: Prisma.SortOrder.asc },
     });
   }
 
-  public async countRecs(
-    where: Prisma.RecommendationWhereInput
-  ): Promise<number> {
+  public async countRecs(filter: RecFilterBy): Promise<number> {
     return this.prisma.recommendation.count({
-      where: where,
+      where: this.transformRecFilterByToPrismaWhere(filter),
     });
   }
 
@@ -76,5 +75,21 @@ export default class RecRepository {
         id: recId,
       },
     });
+  }
+
+  private transformRecFilterByToPrismaWhere(
+    filter: RecFilterBy
+  ): Prisma.RecommendationWhereInput {
+    const where: Prisma.RecommendationWhereInput = {};
+    if (filter.userId) {
+      where.userId = filter.userId;
+    }
+    if (filter.userIds) {
+      where.userId = { in: filter.userIds };
+    }
+    if (filter.cutoff) {
+      where.cutoff = filter.cutoff;
+    }
+    return where;
   }
 }

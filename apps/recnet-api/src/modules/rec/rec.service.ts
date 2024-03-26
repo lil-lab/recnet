@@ -1,8 +1,10 @@
 import { HttpStatus, Inject, Injectable } from "@nestjs/common";
-import { Prisma } from "@prisma/client";
 
 import RecRepository from "@recnet-api/database/repository/rec.repository";
-import { Rec as DbRec } from "@recnet-api/database/repository/rec.repository.type";
+import {
+  Rec as DbRec,
+  RecFilterBy,
+} from "@recnet-api/database/repository/rec.repository.type";
 import UserRepository from "@recnet-api/database/repository/user.repository";
 import { getOffset } from "@recnet-api/utils";
 import { RecnetError } from "@recnet-api/utils/error/recnet.error";
@@ -35,12 +37,11 @@ export class RecService {
     pageSize: number,
     userId: string
   ): Promise<GetRecsResponse> {
-    const recCount = await this.recRepository.countRecs({
+    const filter: RecFilterBy = {
       userId: userId,
-    });
-    const dbRecs = await this.recRepository.findRecs(page, pageSize, {
-      userId: userId,
-    });
+    };
+    const recCount = await this.recRepository.countRecs(filter);
+    const dbRecs = await this.recRepository.findRecs(page, pageSize, filter);
     const recs = this.getRecsFromDbRecs(dbRecs);
 
     return {
@@ -60,14 +61,12 @@ export class RecService {
     }
     const user = await this.userRepository.findUserById(userId);
     const followings = user.following.map((following) => following.followingId);
-    const where: Prisma.RecommendationWhereInput = {
-      userId: {
-        in: followings,
-      },
+    const filter: RecFilterBy = {
+      userIds: followings,
       cutoff: new Date(cutoff),
     };
-    const recCount = await this.recRepository.countRecs(where);
-    const dbRecs = await this.recRepository.findRecs(page, pageSize, where);
+    const recCount = await this.recRepository.countRecs(filter);
+    const dbRecs = await this.recRepository.findRecs(page, pageSize, filter);
     const recs = this.getRecsFromDbRecs(dbRecs);
 
     return {
