@@ -55,7 +55,7 @@ export class RecService {
     cutoff: number,
     userId: string
   ): Promise<GetFeedsResponse> {
-    const user = await this.userRepository.getUser(userId);
+    const user = await this.userRepository.findUserById(userId);
     const followings = user.following.map((following) => following.followingId);
     const where: Prisma.RecommendationWhereInput = {
       userId: {
