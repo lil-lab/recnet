@@ -49,9 +49,26 @@ export default class RecRepository {
     return recommendataion;
   }
 
-  public async createRec(data: Prisma.RecommendationCreateInput): Promise<Rec> {
+  public async createRec(
+    userId: string,
+    description: string,
+    articleId: string
+  ): Promise<Rec> {
     return this.prisma.recommendation.create({
-      data: data,
+      data: {
+        description: description,
+        cutoff: getNextCutOff(),
+        user: {
+          connect: {
+            id: userId,
+          },
+        },
+        article: {
+          connect: {
+            id: articleId,
+          },
+        },
+      },
       select: rec.select,
     });
   }

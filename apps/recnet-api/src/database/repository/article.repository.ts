@@ -4,6 +4,7 @@ import PrismaConnectionProvider from "@recnet-api/database/prisma/prisma.connect
 import {
   article,
   Article,
+  CreateArticleInput,
 } from "@recnet-api/database/repository/article.repository.type";
 
 @Injectable()
@@ -15,6 +16,15 @@ export default class ArticleRepository {
       where: {
         link: link,
       },
+      select: article.select,
+    });
+  }
+
+  public async createArticle(
+    articleData: CreateArticleInput
+  ): Promise<Article> {
+    return this.prisma.article.create({
+      data: articleData,
       select: article.select,
     });
   }

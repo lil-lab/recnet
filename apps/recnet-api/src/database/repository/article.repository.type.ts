@@ -13,3 +13,5 @@ export const article = Prisma.validator<Prisma.ArticleDefaultArgs>()({
   },
 });
 export type Article = Prisma.ArticleGetPayload<typeof article>;
+
+export type CreateArticleInput = Omit<Article, "id" | "isVerified">;

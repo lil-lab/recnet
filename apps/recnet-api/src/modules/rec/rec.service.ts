@@ -1,5 +1,7 @@
 import { HttpStatus, Inject, Injectable } from "@nestjs/common";
 
+import ArticleRepository from "@recnet-api/database/repository/article.repository";
+import { CreateArticleInput } from "@recnet-api/database/repository/article.repository.type";
 import RecRepository from "@recnet-api/database/repository/rec.repository";
 import {
   Rec as DbRec,
@@ -10,9 +12,8 @@ import { getOffset } from "@recnet-api/utils";
 import { RecnetError } from "@recnet-api/utils/error/recnet.error";
 import { ErrorCode } from "@recnet-api/utils/error/recnet.error.const";
 
-import { getCutOff, getNextCutOff } from "@recnet/recnet-date-fns";
+import { getCutOff } from "@recnet/recnet-date-fns";
 
-import { CreateArticleDto } from "./dto/create.rec.dto";
 import { UpdateArticleDto } from "./dto/update.rec.dto";
 import { Rec } from "./entities/rec.entity";
 import {
@@ -29,7 +30,9 @@ export class RecService {
     @Inject(RecRepository)
     private readonly recRepository: RecRepository,
     @Inject(UserRepository)
-    private readonly userRepository: UserRepository
+    private readonly userRepository: UserRepository,
+    @Inject(ArticleRepository)
+    private readonly articleRepository: ArticleRepository
   ) {}
 
   public async getRecs(
@@ -89,10 +92,18 @@ export class RecService {
 
   public async addRec(
     articleId: string | null,
-    article: CreateArticleDto | null,
+    article: CreateArticleInput | null,
     description: string,
     userId: string
   ): Promise<CreateRecResponse> {
+    const dbRec = await this.recRepository.findUpcomingRec(userId);
+    if (dbRec) {
+      throw new RecnetError(
+        ErrorCode.REC_ALREADY_EXISTS,
+        HttpStatus.BAD_REQUEST,
+        "Upcoming rec already exists"
+      );
+    }
     // article and articleId cannot be null at the same time
     // check libs/recnet-api-model/src/lib/api/rec.ts
     if (!article && !articleId) {
@@ -102,50 +113,47 @@ export class RecService {
         HttpStatus.BAD_REQUEST,
         "Article and articleId cannot be null at the same time"
       );
-    } else if (!article && articleId) {
-      // insert rec to db
-      const rec = await this.recRepository.createRec({
-        user: {
-          connect: {
-            id: userId,
-          },
-        },
-        cutoff: getNextCutOff(),
-        description: description,
-        article: {
-          connect: {
-            id: articleId,
-          },
-        },
-      });
-      return {
-        rec: this.getRecFromDbRec(rec),
-      };
-    } else if (article && !articleId) {
-      // insert article and rec to db
-      const rec = await this.recRepository.createRec({
-        user: {
-          connect: {
-            id: userId,
-          },
-        },
-        cutoff: getNextCutOff(),
-        description: description,
-        article: {
-          create: {
-            ...article,
-          },
-        },
-      });
-      return {
-        rec: this.getRecFromDbRec(rec),
-      };
     }
-    throw new RecnetError(
-      ErrorCode.INTERNAL_SERVER_ERROR,
-      HttpStatus.BAD_REQUEST,
-      "Article and articleId cannot have value at the same time"
+
+    let checkArticleId: string | null = null;
+    if (article) {
+      if (articleId) {
+        throw new RecnetError(
+          ErrorCode.INTERNAL_SERVER_ERROR,
+          HttpStatus.BAD_REQUEST,
+          "Article and articleId cannot have value at the same time"
+        );
+      }
+      // check if article already exists
+      const dbArticle = await this.articleRepository.findArticleByLink(
+        article.link
+      );
+      if (dbArticle) {
+        checkArticleId = dbArticle.id;
+      } else {
+        // create new article
+        const newArticle = await this.articleRepository.createArticle(article);
+        checkArticleId = newArticle.id;
+      }
+    }
+
+    // create new rec
+    const targetArticleId = articleId ? articleId : checkArticleId;
+    if (targetArticleId === null) {
+      throw new RecnetError(
+        ErrorCode.INTERNAL_SERVER_ERROR,
+        HttpStatus.INTERNAL_SERVER_ERROR,
+        "Error getting article id while creating rec"
+      );
+    }
+    const newRec = await this.recRepository.createRec(
+      userId,
+      description,
+      targetArticleId
     );
+    return {
+      rec: this.getRecFromDbRec(newRec),
+    };
   }
 
   public async updateUpcomingRec(
