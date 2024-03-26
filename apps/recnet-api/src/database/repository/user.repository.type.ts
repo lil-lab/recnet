@@ -30,3 +30,9 @@ export const user = Prisma.validator<Prisma.UserDefaultArgs>()({
 });
 
 export type User = Prisma.UserGetPayload<typeof user>;
+
+export type UserFilterBy = {
+  handle?: string;
+  keyword?: string;
+  id?: string;
+};

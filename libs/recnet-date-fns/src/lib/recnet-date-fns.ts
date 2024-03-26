@@ -44,6 +44,12 @@ export const monthToNum = Months.reduce(
   {} as Record<Month, number>
 );
 
+/**
+  @param _date: Date
+  @returns Date
+
+  Returns the next cutoff date from the given date.
+*/
 export const getCutOff = (_date: Date): Date => {
   const date = new Date(_date.getTime());
   const currentDay = date.getUTCDay();
@@ -53,11 +59,21 @@ export const getCutOff = (_date: Date): Date => {
   return date;
 };
 
+/**
+  @returns Date
+
+  Returns the next cutoff date from the current date.
+*/
 export const getNextCutOff = (): Date => {
   const currentDate = new Date();
   return getCutOff(currentDate);
 };
 
+/**
+  @returns Date
+
+  Returns the latest cutoff date before the current date.
+*/
 export const getLatestCutOff = (): Date => {
   const nextCutOff = getNextCutOff();
   nextCutOff.setUTCDate(nextCutOff.getUTCDate() - 7);

@@ -2,10 +2,15 @@ import { Injectable } from "@nestjs/common";
 import { Prisma } from "@prisma/client";
 
 import PrismaConnectionProvider from "@recnet-api/database/prisma/prisma.connection.provider";
-import { UserFilterBy } from "@recnet-api/modules/user/user.type";
 import { getOffset } from "@recnet-api/utils";
 
-import { User, UserPreview, user, userPreview } from "./user.repository.type";
+import {
+  User,
+  UserPreview,
+  user,
+  userPreview,
+  UserFilterBy,
+} from "./user.repository.type";
 
 @Injectable()
 export default class UserRepository {
