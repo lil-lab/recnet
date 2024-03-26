@@ -18,7 +18,7 @@ export class QueryFeedsDto {
 
   @ApiPropertyOptional({
     description:
-      "Cutoff timestamp. It doesn't specify, it will use the next cycle cutoff timestamp. The timestamp is in milliseconds and the time should be 11:59:59 PM, Tuesday.",
+      "Cutoff timestamp. It doesn't specify, it will use the next cycle cutoff timestamp. The timestamp is in milliseconds and the time should be 11:59:59.999 PM, Tuesday.",
   })
   cutoff?: number;
 }
