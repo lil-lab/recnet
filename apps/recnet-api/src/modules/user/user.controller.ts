@@ -7,16 +7,16 @@ import {
 } from "@nestjs/swagger";
 
 import { Auth } from "@recnet-api/utils/auth/auth.decorator";
+import { AuthUser } from "@recnet-api/utils/auth/auth.type";
+import { User } from "@recnet-api/utils/auth/auth.user.decorator";
 import { RecnetExceptionFilter } from "@recnet-api/utils/filters/recnet.exception.filter";
 import { ZodValidationPipe } from "@recnet-api/utils/pipes/zod.validation.pipe";
 
 import { getUsersParamsSchema } from "@recnet/recnet-api-model";
 
 import { QueryUsersDto } from "./dto/query.users.dto";
-import { User } from "./user.decorator";
 import { GetUserMeResponse, GetUsersResponse } from "./user.response";
 import { UserService } from "./user.service";
-import { AuthUser } from "./user.type";
 
 @ApiTags("users")
 @Controller("users")

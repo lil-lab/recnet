@@ -8,7 +8,7 @@ import { Request } from "express";
 
 import { getPublicKey } from "@recnet/recnet-jwt";
 
-import { JwtPayload, JwtPayloadSchema, VerifyJwtFunction } from "./auth.type";
+import { JwtPayloadSchema, VerifyJwtFunction } from "./auth.type";
 
 @Injectable()
 export class AuthGuard implements CanActivate {
@@ -27,8 +27,7 @@ export class AuthGuard implements CanActivate {
     try {
       const publicKey = await getPublicKey(token);
       const payload = this.verifyJwt(token, publicKey);
-      const parsedPayload = this.parsePayload(payload);
-      request.user = parsedPayload;
+      request.user = payload;
     } catch (error) {
       throw new UnauthorizedException();
     }
@@ -38,13 +37,5 @@ export class AuthGuard implements CanActivate {
   private extractTokenFromHeader(request: Request): string | undefined {
     const [type, token] = request.headers.authorization?.split(" ") ?? [];
     return type === "Bearer" ? token : undefined;
-  }
-
-  private parsePayload(payload: JwtPayload) {
-    const parsedPayload = this.payloadSchema.safeParse(payload);
-    if (!parsedPayload.success) {
-      throw new UnauthorizedException();
-    }
-    return parsedPayload.data;
   }
 }
