@@ -6,10 +6,15 @@ import {
   UsePipes,
   UseGuards,
 } from "@nestjs/common";
-import { ApiOkResponse, ApiOperation, ApiTags } from "@nestjs/swagger";
+import {
+  ApiOkResponse,
+  ApiOperation,
+  ApiTags,
+  ApiBearerAuth,
+} from "@nestjs/swagger";
 
+import { Auth } from "@recnet-api/utils/auth/auth.decorator";
 import { RecnetExceptionFilter } from "@recnet-api/utils/filters/recnet.exception.filter";
-import { AuthGuard } from "@recnet-api/utils/guards/auth.guard";
 import { ZodValidationPipe } from "@recnet-api/utils/pipes/zod.validation.pipe";
 
 import { getArticlesParamsSchema } from "@recnet/recnet-api-model";
@@ -29,8 +34,9 @@ export class ArticleController {
     description: "Get article by link.",
   })
   @ApiOkResponse({ type: GetArticleByLinkResponse })
+  @ApiBearerAuth()
   @Get()
-  @UseGuards(AuthGuard("RecNetJWT"))
+  @Auth()
   @UsePipes(new ZodValidationPipe(getArticlesParamsSchema))
   public async getArticleByLink(
     @Query() dto: QueryArticleDto

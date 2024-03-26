@@ -11,12 +11,18 @@ import {
   UseGuards,
   UsePipes,
 } from "@nestjs/common";
-import { ApiOkResponse, ApiOperation, ApiTags } from "@nestjs/swagger";
+import {
+  ApiBearerAuth,
+  ApiOkResponse,
+  ApiOperation,
+  ApiTags,
+} from "@nestjs/swagger";
 import { Request } from "express";
 
+import { Auth } from "@recnet-api/utils/auth/auth.decorator";
+import { AuthUser } from "@recnet-api/utils/auth/auth.type";
+import { User } from "@recnet-api/utils/auth/auth.user.decorator";
 import { RecnetExceptionFilter } from "@recnet-api/utils/filters/recnet.exception.filter";
-import { getRecnetJWTPayloadFromReq } from "@recnet-api/utils/getJWTPayloadFromReq";
-import { AuthGuard } from "@recnet-api/utils/guards/auth.guard";
 import { ZodValidationPipe } from "@recnet-api/utils/pipes/zod.validation.pipe";
 
 import { getLatestCutOff } from "@recnet/recnet-date-fns";
@@ -53,8 +59,9 @@ export class RecController {
     description: "Get historical recs by userId with pagination.",
   })
   @ApiOkResponse({ type: GetRecsResponse })
+  @ApiBearerAuth()
   @Get()
-  @UseGuards(AuthGuard("RecNetJWT"))
+  @Auth()
   @UsePipes(new ZodValidationPipe(getRecsParamsSchema))
   public async getRecs(@Query() dto: QueryRecsDto): Promise<GetRecsResponse> {
     const { page, pageSize, userId } = dto;
@@ -66,22 +73,18 @@ export class RecController {
     description: "Get feeds by userId with pagination.",
   })
   @ApiOkResponse({ type: GetFeedsResponse })
+  @ApiBearerAuth()
   @Get("feeds")
-  @UseGuards(AuthGuard("RecNetJWT"))
+  @Auth()
   @UsePipes(new ZodValidationPipe(getRecsFeedsParamsSchema))
   public async getFeeds(
     @Query() dto: QueryFeedsDto,
-    @Req() req: Request
+    @User() authUser: AuthUser
   ): Promise<GetFeedsResponse> {
     const { page, pageSize, ...rest } = dto;
     const cutoff = rest?.cutoff ?? getLatestCutOff().getTime();
-    const jwtPayload = getRecnetJWTPayloadFromReq(req);
-    return this.recService.getFeeds(
-      page,
-      pageSize,
-      cutoff,
-      jwtPayload.recnet.userId
-    );
+    const { userId } = authUser;
+    return this.recService.getFeeds(page, pageSize, cutoff, userId);
   }
 
   @ApiOperation({
@@ -89,14 +92,15 @@ export class RecController {
     description: "Get upcoming rec using userId in JWT.",
   })
   @ApiOkResponse({ type: GetUpcomingRecResponse })
+  @ApiBearerAuth()
   @Get("upcoming")
-  @UseGuards(AuthGuard("RecNetJWT"))
+  @Auth()
   @UsePipes(new ZodValidationPipe(getRecsUpcomingResponseSchema))
   public async getUpcomingRec(
-    @Req() req: Request
+    @User() authUser: AuthUser
   ): Promise<GetUpcomingRecResponse> {
-    const jwtPayload = getRecnetJWTPayloadFromReq(req);
-    return this.recService.getUpcomingRec(jwtPayload.recnet.userId);
+    const { userId } = authUser;
+    return this.recService.getUpcomingRec(userId);
   }
 
   @ApiOperation({
@@ -104,19 +108,20 @@ export class RecController {
     description: "Create new rec using userId in JWT.",
   })
   @ApiOkResponse({ type: CreateRecResponse })
+  @ApiBearerAuth()
   @Post("upcoming")
-  @UseGuards(AuthGuard("RecNetJWT"))
+  @Auth()
   @UsePipes(new ZodValidationPipe(postRecsUpcomingRequestSchema))
   public async createUpcomingRec(
-    @Req() req: Request,
-    @Body() body: CreateRecDto
+    @Body() body: CreateRecDto,
+    @User() authUser: AuthUser
   ): Promise<CreateRecResponse> {
-    const jwtPayload = getRecnetJWTPayloadFromReq(req);
+    const { userId } = authUser;
     return this.recService.addRec(
       body.articleId,
       body.article,
       body.description,
-      jwtPayload.recnet.userId
+      userId
     );
   }
 
@@ -125,19 +130,20 @@ export class RecController {
     description: "Edit upcoming rec.",
   })
   @ApiOkResponse({ type: UpdateRecResponse })
+  @ApiBearerAuth()
   @Patch("upcoming")
-  @UseGuards(AuthGuard("RecNetJWT"))
+  @Auth()
   @UsePipes(new ZodValidationPipe(patchRecsUpcomingRequestSchema))
   public async updateUpcomingRec(
-    @Req() req: Request,
-    @Body() body: UpdateRecDto
+    @Body() body: UpdateRecDto,
+    @User() authUser: AuthUser
   ): Promise<UpdateRecResponse> {
-    const jwtPayload = getRecnetJWTPayloadFromReq(req);
+    const { userId } = authUser;
     return this.recService.updateUpcomingRec(
       body.articleId,
       body.article,
       body.description,
-      jwtPayload.recnet.userId
+      userId
     );
   }
 
@@ -145,10 +151,11 @@ export class RecController {
     summary: "Delete upcoming rec",
     description: "Delete upcoming rec.",
   })
+  @ApiBearerAuth()
   @Delete("upcoming")
-  @UseGuards(AuthGuard("RecNetJWT"))
-  public async deleteUpcomingRec(@Req() req: Request): Promise<void> {
-    const jwtPayload = getRecnetJWTPayloadFromReq(req);
-    return this.recService.deleteUpcomingRec(jwtPayload.recnet.userId);
+  @Auth()
+  public async deleteUpcomingRec(@User() authUser: AuthUser): Promise<void> {
+    const { userId } = authUser;
+    return this.recService.deleteUpcomingRec(userId);
   }
 }
