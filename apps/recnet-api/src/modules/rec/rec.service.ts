@@ -103,38 +103,14 @@ export class RecService {
         "Upcoming rec already exists"
       );
     }
-    // article and articleId cannot be null at the same time
-    // check libs/recnet-api-model/src/lib/api/rec.ts
-    if (!article && !articleId) {
-      throw new RecnetError(
-        ErrorCode.REC_UPDATE_OR_CREATE_RULE_VIOLATION,
-        HttpStatus.BAD_REQUEST,
-        "Article and articleId cannot be null at the same time"
-      );
+    this.validateArticleInput(article, articleId);
+    let articleIdToConnect: string | null = null;
+    if (articleId) {
+      articleIdToConnect = articleId;
+    } else if (article) {
+      articleIdToConnect = await this.findOrCreateArticle(article);
     }
 
-    let targetArticleId: string | null = null;
-    if (article) {
-      if (articleId) {
-        throw new RecnetError(
-          ErrorCode.REC_UPDATE_OR_CREATE_RULE_VIOLATION,
-          HttpStatus.BAD_REQUEST,
-          "Article and articleId cannot have value at the same time"
-        );
-      }
-      // check if article already exists
-      const dbArticle = await this.articleRepository.findArticleByLink(
-        article.link
-      );
-      if (dbArticle) {
-        targetArticleId = dbArticle.id;
-      } else {
-        const newArticle = await this.articleRepository.createArticle(article);
-        targetArticleId = newArticle.id;
-      }
-    }
-
-    const articleIdToConnect = articleId ? articleId : targetArticleId;
     if (articleIdToConnect === null) {
       throw new RecnetError(
         ErrorCode.INTERNAL_SERVER_ERROR,
@@ -166,38 +142,14 @@ export class RecService {
         "Upcoming rec not found"
       );
     }
-    // article and articleId cannot be null at the same time
-    // check libs/recnet-api-model/src/lib/api/rec.ts
-    if (!article && !articleId) {
-      throw new RecnetError(
-        ErrorCode.REC_UPDATE_OR_CREATE_RULE_VIOLATION,
-        HttpStatus.BAD_REQUEST,
-        "Article and articleId cannot be null at the same time"
-      );
+    this.validateArticleInput(article, articleId);
+    let articleIdToConnect: string | null = null;
+    if (articleId) {
+      articleIdToConnect = articleId;
+    } else if (article) {
+      articleIdToConnect = await this.findOrCreateArticle(article);
     }
 
-    let targetArticleId: string | null = null;
-    if (article) {
-      if (articleId) {
-        throw new RecnetError(
-          ErrorCode.REC_UPDATE_OR_CREATE_RULE_VIOLATION,
-          HttpStatus.BAD_REQUEST,
-          "Article and articleId cannot have value at the same time"
-        );
-      }
-      // check if article already exists
-      const dbArticle = await this.articleRepository.findArticleByLink(
-        article.link
-      );
-      if (dbArticle) {
-        targetArticleId = dbArticle.id;
-      } else {
-        const newArticle = await this.articleRepository.createArticle(article);
-        targetArticleId = newArticle.id;
-      }
-    }
-
-    const articleIdToConnect = articleId ? articleId : targetArticleId;
     if (articleIdToConnect === null) {
       throw new RecnetError(
         ErrorCode.INTERNAL_SERVER_ERROR,
@@ -250,5 +202,44 @@ export class RecService {
         numFollowers: dbRec.user.followedBy.length,
       },
     };
+  }
+
+  private validateArticleInput(
+    article: CreateArticleInput | null,
+    articleId: string | null
+  ): void {
+    // article and articleId cannot be null at the same time
+    // check libs/recnet-api-model/src/lib/api/rec.ts
+    if (!article && !articleId) {
+      throw new RecnetError(
+        ErrorCode.REC_UPDATE_OR_CREATE_RULE_VIOLATION,
+        HttpStatus.BAD_REQUEST,
+        "Article and articleId cannot be null at the same time"
+      );
+    }
+
+    if (article && articleId) {
+      throw new RecnetError(
+        ErrorCode.REC_UPDATE_OR_CREATE_RULE_VIOLATION,
+        HttpStatus.BAD_REQUEST,
+        "Article and articleId cannot be set at the same time"
+      );
+    }
+  }
+
+  private async findOrCreateArticle(
+    article: CreateArticleInput
+  ): Promise<string> {
+    let targetArticleId: string;
+    const dbArticle = await this.articleRepository.findArticleByLink(
+      article.link
+    );
+    if (dbArticle) {
+      targetArticleId = dbArticle.id;
+    } else {
+      const newArticle = await this.articleRepository.createArticle(article);
+      targetArticleId = newArticle.id;
+    }
+    return targetArticleId;
   }
 }
