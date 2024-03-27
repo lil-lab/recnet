@@ -5,12 +5,12 @@ import {
   User as DbUser,
   UserPreview as DbUserPreview,
 } from "@recnet-api/database/repository/user.repository.type";
+import { UserFilterBy } from "@recnet-api/database/repository/user.repository.type";
 import { getOffset } from "@recnet-api/utils";
 
 import { User } from "./entities/user.entity";
 import { UserPreview } from "./entities/user.preview.entity";
 import { GetUsersResponse } from "./user.response";
-import { UserFilterBy } from "./user.type";
 
 @Injectable()
 export class UserService {
