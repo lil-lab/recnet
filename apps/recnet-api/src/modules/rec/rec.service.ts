@@ -205,24 +205,19 @@ export class RecService {
         "Error getting article id while updating rec"
       );
     }
-    if (articleIdToConnect === dbRec.id) {
-      const updatedRec = await this.recRepository.updateRec(
-        dbRec.id,
-        description
-      );
-      return {
-        rec: this.getRecFromDbRec(updatedRec),
-      };
+    let updatedRec: DbRec;
+    if (articleIdToConnect === dbRec.article.id) {
+      updatedRec = await this.recRepository.updateRec(dbRec.id, description);
     } else {
-      const updatedRec = await this.recRepository.updateRec(
+      updatedRec = await this.recRepository.updateRec(
         dbRec.id,
         description,
         articleIdToConnect
       );
-      return {
-        rec: this.getRecFromDbRec(updatedRec),
-      };
     }
+    return {
+      rec: this.getRecFromDbRec(updatedRec),
+    };
   }
 
   public async deleteUpcomingRec(userId: string): Promise<void> {
