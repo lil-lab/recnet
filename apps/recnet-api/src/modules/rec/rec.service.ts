@@ -204,12 +204,18 @@ export class RecService {
     };
   }
 
+  /**
+    * @param article - CreateArticleInput | null
+    * @param articleId - string | null
+    * @returns void
+
+    * Article and articleId cannot be null or have value at the same time
+    * Check libs/recnet-api-model/src/lib/api/rec.ts for more information
+  */
   private validateArticleInput(
     article: CreateArticleInput | null,
     articleId: string | null
   ): void {
-    // article and articleId cannot be null at the same time
-    // check libs/recnet-api-model/src/lib/api/rec.ts
     if (!article && !articleId) {
       throw new RecnetError(
         ErrorCode.REC_UPDATE_OR_CREATE_RULE_VIOLATION,
@@ -217,7 +223,6 @@ export class RecService {
         "Article and articleId cannot be null at the same time"
       );
     }
-
     if (article && articleId) {
       throw new RecnetError(
         ErrorCode.REC_UPDATE_OR_CREATE_RULE_VIOLATION,
@@ -227,6 +232,14 @@ export class RecService {
     }
   }
 
+  /**
+   * @param article - CreateArticleInput
+   * @returns articleId - string
+
+   * Find an existing article by link or create an article in the database
+   * Return the articleId of the existing or newly created article
+   * Note that, due to current app design, if the article is found by the link, other fields like year, month, title of the article will not be overwritten
+   */
   private async findOrCreateArticle(
     article: CreateArticleInput
   ): Promise<string> {
