@@ -19,7 +19,7 @@ export class InviteCodeService {
     const codes = Array.from({ length: numCodes }, () => this.genRandomCode());
     await this.inviteCodeRepository.createInviteCode(codes, ownerId);
     return {
-      inviteCodes: codes,
+      codes: codes,
     };
   }
 

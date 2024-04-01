@@ -1,6 +1,16 @@
 import { ApiProperty } from "@nestjs/swagger";
 
+import { InviteCode } from "./entities/invite-code.entity";
+
 export class CreateInviteCodeResponse {
   @ApiProperty()
-  inviteCodes: string[];
+  codes: string[];
+}
+
+export class GetInviteCodeResponse {
+  @ApiProperty()
+  hasNext: boolean;
+
+  @ApiProperty()
+  inviteCodes: InviteCode[];
 }
