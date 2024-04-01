@@ -1,7 +1,7 @@
 const config = {
   logo: <span>RecNet Docs</span>,
   project: {
-    link: "https://github.com/shuding/nextra",
+    link: "https://github.com/lil-lab/recnet",
   },
   // ... other theme options
 };
