@@ -1,4 +1,12 @@
-import { Controller, Body, UseFilters, UsePipes, Post } from "@nestjs/common";
+import {
+  Controller,
+  Body,
+  UseFilters,
+  UsePipes,
+  Post,
+  Get,
+  Query,
+} from "@nestjs/common";
 import {
   ApiOkResponse,
   ApiOperation,
@@ -10,10 +18,17 @@ import { Auth } from "@recnet-api/utils/auth/auth.decorator";
 import { RecnetExceptionFilter } from "@recnet-api/utils/filters/recnet.exception.filter";
 import { ZodValidationPipe } from "@recnet-api/utils/pipes/zod.validation.pipe";
 
-import { postInviteCodesRequestSchema } from "@recnet/recnet-api-model";
+import {
+  postInviteCodesRequestSchema,
+  getInviteCodesParamsSchema,
+} from "@recnet/recnet-api-model";
 
 import { CreateInviteCodeDto } from "./dto/create.invite-code.dto";
-import { CreateInviteCodeResponse } from "./invite-code.response";
+import { QueryInviteCodeDto } from "./dto/query.invite-code.dto";
+import {
+  CreateInviteCodeResponse,
+  GetInviteCodeResponse,
+} from "./invite-code.response";
 import { InviteCodeService } from "./invite-code.service";
 
 @ApiTags("invite-codes")
@@ -23,8 +38,8 @@ export class InviteCodeController {
   constructor(private readonly inviteCodeService: InviteCodeService) {}
 
   @ApiOperation({
-    summary: "Generate Invite Code",
-    description: "Generate n invite code and assign to target user.",
+    summary: "Generate Invite Codes",
+    description: "Generate n invite codes and assign to target user.",
   })
   @ApiOkResponse({ type: CreateInviteCodeResponse })
   @ApiBearerAuth()
@@ -36,5 +51,21 @@ export class InviteCodeController {
   ): Promise<CreateInviteCodeResponse> {
     const { numCodes, ownerId } = dto;
     return this.inviteCodeService.createInviteCode(numCodes, ownerId);
+  }
+
+  @ApiOperation({
+    summary: "Get Invite Codes",
+    description: "Get all invite codes with pagination.",
+  })
+  @ApiOkResponse({ type: GetInviteCodeResponse })
+  @ApiBearerAuth()
+  @Get()
+  @Auth()
+  @UsePipes(new ZodValidationPipe(getInviteCodesParamsSchema))
+  public async getInviteCodes(
+    @Query() dto: QueryInviteCodeDto
+  ): Promise<GetInviteCodeResponse> {
+    const { page, pageSize, ...filter } = dto;
+    return this.inviteCodeService.getInviteCodes(page, pageSize, filter);
   }
 }

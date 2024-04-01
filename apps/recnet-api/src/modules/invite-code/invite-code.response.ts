@@ -11,6 +11,6 @@ export class GetInviteCodeResponse {
   @ApiProperty()
   hasNext: boolean;
 
-  @ApiProperty()
+  @ApiProperty({ type: [InviteCode] })
   inviteCodes: InviteCode[];
 }

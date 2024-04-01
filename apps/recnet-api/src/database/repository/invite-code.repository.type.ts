@@ -17,3 +17,7 @@ export const inviteCode = Prisma.validator<Prisma.InviteCodeDefaultArgs>()({
   },
 });
 export type InviteCode = Prisma.InviteCodeGetPayload<typeof inviteCode>;
+
+export type InviteCodeFilterBy = {
+  used?: boolean;
+};

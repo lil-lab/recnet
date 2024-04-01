@@ -4,7 +4,7 @@ import { UserPreview } from "@recnet-api/modules/user/entities/user.preview.enti
 
 export class InviteCode {
   @ApiProperty()
-  id: string;
+  id: number;
 
   @ApiProperty()
   code: string;
