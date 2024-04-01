@@ -10,16 +10,16 @@ import UserRepository from "./user.repository";
 @Module({
   imports: [PrismaModule],
   providers: [
-    UserRepository,
-    RecRepository,
     ArticleRepository,
     InviteCodeRepository,
+    RecRepository,
+    UserRepository,
   ],
   exports: [
-    UserRepository,
-    RecRepository,
     ArticleRepository,
     InviteCodeRepository,
+    RecRepository,
+    UserRepository,
   ],
 })
 export class DbRepositoryModule {}

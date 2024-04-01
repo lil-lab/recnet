@@ -90,7 +90,7 @@ model Article {
 
 model InviteCode {
   id          Int       @id @default(autoincrement())
-  code        String    @db.VarChar(64)
+  code        String    @db.VarChar(64) @unique
   ownerId     String    @db.VarChar(64)
   issuedAt    DateTime  @default(now())
   usedById    String?   @db.VarChar(64) @unique

@@ -1,5 +1,6 @@
-import { Inject, Injectable } from "@nestjs/common";
+import { HttpStatus, Inject, Injectable } from "@nestjs/common";
 
+import InviteCodeRepository from "@recnet-api/database/repository/inviteCode.repository";
 import UserRepository from "@recnet-api/database/repository/user.repository";
 import {
   User as DbUser,
@@ -7,6 +8,8 @@ import {
 } from "@recnet-api/database/repository/user.repository.type";
 import { UserFilterBy } from "@recnet-api/database/repository/user.repository.type";
 import { getOffset } from "@recnet-api/utils";
+import { RecnetError } from "@recnet-api/utils/error/recnet.error";
+import { ErrorCode } from "@recnet-api/utils/error/recnet.error.const";
 
 import { AuthProvider } from "@recnet/recnet-jwt";
 
@@ -19,7 +22,9 @@ import { GetUsersResponse } from "./user.response";
 export class UserService {
   constructor(
     @Inject(UserRepository)
-    private readonly userRepository: UserRepository
+    private readonly userRepository: UserRepository,
+    @Inject(InviteCodeRepository)
+    private readonly inviteCodeRepository: InviteCodeRepository
   ) {}
 
   public async getUsers(
@@ -56,17 +61,21 @@ export class UserService {
     providerId: string,
     dto: CreateUserDto
   ): Promise<User> {
+    const { inviteCode } = dto;
+    const inviteCodeFound =
+      await this.inviteCodeRepository.findInviteCode(inviteCode);
+
+    if (!inviteCodeFound || inviteCodeFound.usedById) {
+      throw new RecnetError(
+        ErrorCode.INVALID_INVITE_CODE,
+        HttpStatus.BAD_REQUEST
+      );
+    }
+
     const createUserInput = {
+      ...dto,
       provider,
       providerId,
-      handle: dto.handle,
-      displayName: dto.displayName,
-      photoUrl: dto.photoUrl,
-      affiliation: dto.affiliation,
-      bio: dto.bio,
-      email: dto.email,
-      role: dto.role,
-      inviteCode: dto.inviteCode,
     };
     const user: DbUser = await this.userRepository.createUser(createUserInput);
     return this.transformUser(user);

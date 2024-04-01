@@ -96,9 +96,21 @@ export default class UserRepository {
 
     let createdUser: User;
     try {
-      createdUser = await this.prisma.user.create({
-        data: prismaCreateUserInput,
-        select: user.select,
+      createdUser = await this.prisma.$transaction(async (prisma) => {
+        const userInTransaction = await prisma.user.create({
+          data: prismaCreateUserInput,
+          select: user.select,
+        });
+
+        await prisma.inviteCode.update({
+          where: { code: createUserInput.inviteCode },
+          data: {
+            usedById: userInTransaction.id,
+            usedAt: new Date(),
+          },
+        });
+
+        return userInTransaction;
       });
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : undefined;
