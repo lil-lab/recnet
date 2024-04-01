@@ -1,7 +1,5 @@
 import {
   RecNetJwtPayload,
-  firebaseJwtPayloadSchema,
-  recnetJwtPayloadSchema,
   verifyFirebaseJwt,
   verifyRecnetJwt,
 } from "@recnet/recnet-jwt";
@@ -9,10 +7,6 @@ import {
 export type VerifyJwtFunction =
   | typeof verifyFirebaseJwt
   | typeof verifyRecnetJwt;
-
-export type JwtPayloadSchema =
-  | typeof firebaseJwtPayloadSchema
-  | typeof recnetJwtPayloadSchema;
 
 export type RecNetJwtPayloadProps = keyof RecNetJwtPayload["recnet"];
 

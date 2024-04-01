@@ -44,7 +44,7 @@ export class InviteCodeController {
   @ApiOkResponse({ type: CreateInviteCodeResponse })
   @ApiBearerAuth()
   @Post()
-  @Auth()
+  @Auth(["ADMIN"])
   @UsePipes(new ZodValidationPipe(postInviteCodesRequestSchema))
   public async createInviteCode(
     @Body() dto: CreateInviteCodeDto
@@ -60,7 +60,7 @@ export class InviteCodeController {
   @ApiOkResponse({ type: GetInviteCodeResponse })
   @ApiBearerAuth()
   @Get()
-  @Auth()
+  @Auth(["ADMIN"])
   @UsePipes(new ZodValidationPipe(getInviteCodesParamsSchema))
   public async getInviteCodes(
     @Query() dto: QueryInviteCodeDto

@@ -24,7 +24,7 @@ export const User = createParamDecorator<
       "Invalid JWT payload"
     );
   }
-  const recnetUser = recnetJwtPayload.data;
+  const recnetUser = recnetJwtPayload.data.recnet;
 
   return prop ? recnetUser[prop] : recnetUser;
 });
