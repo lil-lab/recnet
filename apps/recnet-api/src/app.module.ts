@@ -5,6 +5,7 @@ import * as CommonConfigs from "./config/common.config";
 import { parseEnv } from "./config/env.schema";
 import { ArticleModule } from "./modules/article/article.module";
 import { HealthModule } from "./modules/health/health.module";
+import { InviteCodeModule } from "./modules/invite-code/invite-code.module";
 import { RecModule } from "./modules/rec/rec.module";
 import { UserModule } from "./modules/user/user.module";
 import { LoggerMiddleware } from "./utils/middlewares/logger.middleware";
@@ -20,6 +21,7 @@ import { LoggerMiddleware } from "./utils/middlewares/logger.middleware";
     UserModule,
     RecModule,
     ArticleModule,
+    InviteCodeModule,
   ],
   controllers: [],
   providers: [],
