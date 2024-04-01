@@ -1,4 +1,5 @@
 import {
+  AuthProvider,
   RecNetJwtPayload,
   verifyFirebaseJwt,
   verifyRecnetJwt,
@@ -15,3 +16,8 @@ export type AuthUser<
 > = Prop extends RecNetJwtPayloadProps
   ? RecNetJwtPayload["recnet"][Prop]
   : RecNetJwtPayload["recnet"];
+
+export type AuthFirebaseUser = {
+  provider: AuthProvider;
+  providerId: string;
+};

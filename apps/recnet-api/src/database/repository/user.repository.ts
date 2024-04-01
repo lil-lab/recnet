@@ -1,8 +1,10 @@
 import { Injectable } from "@nestjs/common";
-import { Prisma } from "@prisma/client";
+import { Prisma, Provider } from "@prisma/client";
 
 import PrismaConnectionProvider from "@recnet-api/database/prisma/prisma.connection.provider";
 import { getOffset } from "@recnet-api/utils";
+
+import { AuthProvider } from "@recnet/recnet-jwt";
 
 import {
   User,
@@ -52,6 +54,26 @@ export default class UserRepository {
     });
   }
 
+  public async login(
+    provider: AuthProvider,
+    providerId: string
+  ): Promise<User> {
+    const prismaProvider = this.transformToPrismaProvider(provider);
+    const where = {
+      provider_providerId: { provider: prismaProvider, providerId },
+    };
+    // update last login time
+    await this.prisma.user.update({
+      where,
+      data: { lastLoginAt: new Date() },
+    });
+
+    return this.prisma.user.findUniqueOrThrow({
+      where,
+      select: user.select,
+    });
+  }
+
   private transformUserFilterByToPrismaWhere(
     filter: UserFilterBy
   ): Prisma.UserWhereInput {
@@ -71,5 +93,14 @@ export default class UserRepository {
       ];
     }
     return where;
+  }
+
+  private transformToPrismaProvider(provider: AuthProvider): Provider {
+    switch (provider) {
+      case AuthProvider.Google:
+        return Provider.GOOGLE;
+      default:
+        throw new Error("Provider not supported");
+    }
   }
 }

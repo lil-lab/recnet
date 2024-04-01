@@ -6,9 +6,9 @@ import {
   ApiTags,
 } from "@nestjs/swagger";
 
-import { Auth } from "@recnet-api/utils/auth/auth.decorator";
-import { AuthUser } from "@recnet-api/utils/auth/auth.type";
-import { User } from "@recnet-api/utils/auth/auth.user.decorator";
+import { Auth, AuthFirebase } from "@recnet-api/utils/auth/auth.decorator";
+import { AuthFirebaseUser, AuthUser } from "@recnet-api/utils/auth/auth.type";
+import { FirebaseUser, User } from "@recnet-api/utils/auth/auth.user.decorator";
 import { RecnetExceptionFilter } from "@recnet-api/utils/filters/recnet.exception.filter";
 import { ZodValidationPipe } from "@recnet-api/utils/pipes/zod.validation.pipe";
 
@@ -40,6 +40,18 @@ export class UserController {
   }
 
   @ApiOperation({
+    summary: "User login",
+    description: "Get login user by provider and providerId.",
+  })
+  @ApiBearerAuth()
+  @Get("login")
+  @AuthFirebase()
+  public async login(@FirebaseUser() firebaseUser: AuthFirebaseUser) {
+    const { provider, providerId } = firebaseUser;
+    return this.userService.login(provider, providerId);
+  }
+
+  @ApiOperation({
     summary: "Get me",
     description: "Get the current user.",
   })
@@ -48,6 +60,7 @@ export class UserController {
   @Get("me")
   @Auth()
   public async getMe(@User() authUser: AuthUser): Promise<GetUserMeResponse> {
+    console.log(authUser);
     const { userId } = authUser;
     const user = await this.userService.getUser(userId);
     return { user };

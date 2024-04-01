@@ -8,6 +8,8 @@ import {
 import { UserFilterBy } from "@recnet-api/database/repository/user.repository.type";
 import { getOffset } from "@recnet-api/utils";
 
+import { AuthProvider } from "@recnet/recnet-jwt";
+
 import { User } from "./entities/user.entity";
 import { UserPreview } from "./entities/user.preview.entity";
 import { GetUsersResponse } from "./user.response";
@@ -40,6 +42,15 @@ export class UserService {
 
   public async getUser(userId: string): Promise<User> {
     const user: DbUser = await this.userRepository.findUserById(userId);
+    return this.transformUser(user);
+  }
+
+  public async login(provider: AuthProvider, providerId: string) {
+    const user: DbUser = await this.userRepository.login(provider, providerId);
+    return this.transformUser(user);
+  }
+
+  private async transformUser(user: DbUser): Promise<User> {
     const followingUserIds: string[] = user.following.map(
       (followingUser) => followingUser.followingId
     );
