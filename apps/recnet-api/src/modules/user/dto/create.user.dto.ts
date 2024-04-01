@@ -3,27 +3,34 @@ import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 import { UserRole } from "@recnet/recnet-api-model";
 
 export class CreateUserDto {
-  @ApiProperty()
+  @ApiProperty({ example: "joannechen1223" })
   handle: string;
 
-  @ApiProperty()
+  @ApiProperty({ example: "Joanne Chen" })
   displayName: string;
 
-  @ApiProperty()
+  @ApiProperty({ example: "https://example.com/photo.jpg" })
   photoUrl: string;
 
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({ example: "Cornell University" })
   affiliation: string | null;
 
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({ example: "I am an NLP Researcher." })
   bio: string | null;
 
-  @ApiProperty()
+  @ApiProperty({ example: "example@cornell.edu" })
   email: string;
 
-  @ApiProperty()
-  role: UserRole;
+  @ApiProperty({
+    description: "USER | ADMIN",
+    example: "USER",
+    default: "USER",
+  })
+  role: UserRole = "USER";
 
-  @ApiProperty()
+  @ApiProperty({
+    description: "Each invite code can only be used once.",
+    example: "0ca4-86yg-7d1k-qsvb",
+  })
   inviteCode: string;
 }

@@ -9,6 +9,7 @@ import {
 } from "@nestjs/common";
 import {
   ApiBearerAuth,
+  ApiCreatedResponse,
   ApiOkResponse,
   ApiOperation,
   ApiTags,
@@ -77,9 +78,15 @@ export class UserController {
     return { user };
   }
 
+  @ApiOperation({
+    summary: "Create me",
+    description: "Create the current user.",
+  })
+  @ApiCreatedResponse({ type: GetUserMeResponse })
+  @ApiBearerAuth()
   @Post("/me")
-  @AuthFirebase()
   @UsePipes(new ZodValidationPipe(postUserMeRequestSchema))
+  @AuthFirebase()
   public async createMe(
     @FirebaseUser() firebaseUser: AuthFirebaseUser,
     @Body() dto: CreateUserDto
