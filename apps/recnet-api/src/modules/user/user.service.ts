@@ -10,6 +10,7 @@ import { getOffset } from "@recnet-api/utils";
 
 import { AuthProvider } from "@recnet/recnet-jwt";
 
+import { CreateUserDto } from "./dto/create.user.dto";
 import { User } from "./entities/user.entity";
 import { UserPreview } from "./entities/user.preview.entity";
 import { GetUsersResponse } from "./user.response";
@@ -47,6 +48,27 @@ export class UserService {
 
   public async login(provider: AuthProvider, providerId: string) {
     const user: DbUser = await this.userRepository.login(provider, providerId);
+    return this.transformUser(user);
+  }
+
+  public async createUser(
+    provider: AuthProvider,
+    providerId: string,
+    dto: CreateUserDto
+  ): Promise<User> {
+    const createUserInput = {
+      provider,
+      providerId,
+      handle: dto.handle,
+      displayName: dto.displayName,
+      photoUrl: dto.photoUrl,
+      affiliation: dto.affiliation,
+      bio: dto.bio,
+      email: dto.email,
+      role: dto.role,
+      inviteCode: dto.inviteCode,
+    };
+    const user: DbUser = await this.userRepository.createUser(createUserInput);
     return this.transformUser(user);
   }
 

@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-import { userPreviewSchema, userSchema } from "../model";
+import { userPreviewSchema, userRoleSchema, userSchema } from "../model";
 
 // GET /users
 export const getUsersParamsSchema = z.object({
@@ -42,12 +42,13 @@ export type PatchUserMeResponse = z.infer<typeof patchUserMeResponseSchema>;
 // POST /users/me
 export const postUserMeRequestSchema = userPreviewSchema
   .omit({
+    id: true,
     numFollowers: true,
   })
   .extend({
-    provider: z.enum(["FACEBOOK", "GOOGLE", "GITHUB"]),
-    providerId: z.string(),
+    email: z.string(),
     inviteCode: z.string(),
+    role: userRoleSchema,
   });
 export type PostUserMeResquest = z.infer<typeof postUserMeRequestSchema>;
 

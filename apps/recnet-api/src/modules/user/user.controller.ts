@@ -1,4 +1,12 @@
-import { Controller, Get, Query, UseFilters, UsePipes } from "@nestjs/common";
+import {
+  Body,
+  Controller,
+  Get,
+  Post,
+  Query,
+  UseFilters,
+  UsePipes,
+} from "@nestjs/common";
 import {
   ApiBearerAuth,
   ApiOkResponse,
@@ -12,8 +20,12 @@ import { FirebaseUser, User } from "@recnet-api/utils/auth/auth.user.decorator";
 import { RecnetExceptionFilter } from "@recnet-api/utils/filters/recnet.exception.filter";
 import { ZodValidationPipe } from "@recnet-api/utils/pipes/zod.validation.pipe";
 
-import { getUsersParamsSchema } from "@recnet/recnet-api-model";
+import {
+  getUsersParamsSchema,
+  postUserMeRequestSchema,
+} from "@recnet/recnet-api-model";
 
+import { CreateUserDto } from "./dto/create.user.dto";
 import { QueryUsersDto } from "./dto/query.users.dto";
 import { GetUserMeResponse, GetUsersResponse } from "./user.response";
 import { UserService } from "./user.service";
@@ -60,9 +72,20 @@ export class UserController {
   @Get("me")
   @Auth()
   public async getMe(@User() authUser: AuthUser): Promise<GetUserMeResponse> {
-    console.log(authUser);
     const { userId } = authUser;
     const user = await this.userService.getUser(userId);
+    return { user };
+  }
+
+  @Post("/me")
+  @AuthFirebase()
+  @UsePipes(new ZodValidationPipe(postUserMeRequestSchema))
+  public async createMe(
+    @FirebaseUser() firebaseUser: AuthFirebaseUser,
+    @Body() dto: CreateUserDto
+  ): Promise<GetUserMeResponse> {
+    const { provider, providerId } = firebaseUser;
+    const user = await this.userService.createUser(provider, providerId, dto);
     return { user };
   }
 }

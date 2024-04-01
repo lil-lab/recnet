@@ -2,12 +2,7 @@ import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 
 import { UserRole } from "@recnet/recnet-api-model";
 
-import { UserPreview } from "./user.preview.entity";
-
-export class User {
-  @ApiProperty()
-  id: string;
-
+export class CreateUserDto {
   @ApiProperty()
   handle: string;
 
@@ -24,14 +19,11 @@ export class User {
   bio: string | null;
 
   @ApiProperty()
-  numFollowers: number;
-
-  @ApiProperty()
   email: string;
 
   @ApiProperty()
   role: UserRole;
 
   @ApiProperty()
-  following: UserPreview[];
+  inviteCode: string;
 }

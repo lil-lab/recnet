@@ -1,8 +1,10 @@
-import { Injectable } from "@nestjs/common";
+import { HttpStatus, Injectable } from "@nestjs/common";
 import { Prisma, Provider } from "@prisma/client";
 
 import PrismaConnectionProvider from "@recnet-api/database/prisma/prisma.connection.provider";
 import { getOffset } from "@recnet-api/utils";
+import { RecnetError } from "@recnet-api/utils/error/recnet.error";
+import { ErrorCode } from "@recnet-api/utils/error/recnet.error.const";
 
 import { AuthProvider } from "@recnet/recnet-jwt";
 
@@ -12,6 +14,7 @@ import {
   user,
   userPreview,
   UserFilterBy,
+  CreateUserInput,
 } from "./user.repository.type";
 
 @Injectable()
@@ -37,14 +40,21 @@ export default class UserRepository {
   public async countUsers(filter: UserFilterBy = {}): Promise<number> {
     const where: Prisma.UserWhereInput =
       this.transformUserFilterByToPrismaWhere(filter);
+
     return this.prisma.user.count({ where });
   }
 
   public async findUserById(userId: string): Promise<User> {
-    return this.prisma.user.findUniqueOrThrow({
-      where: { id: userId },
-      select: user.select,
-    });
+    let userFound: User;
+    try {
+      userFound = await this.prisma.user.findUniqueOrThrow({
+        where: { id: userId },
+        select: user.select,
+      });
+    } catch (error) {
+      throw new RecnetError(ErrorCode.DB_USER_NOT_FOUND, HttpStatus.NOT_FOUND);
+    }
+    return userFound;
   }
 
   public async findUserPreviewByIds(userIds: string[]): Promise<UserPreview[]> {
@@ -62,16 +72,44 @@ export default class UserRepository {
     const where = {
       provider_providerId: { provider: prismaProvider, providerId },
     };
-    // update last login time
-    await this.prisma.user.update({
-      where,
-      data: { lastLoginAt: new Date() },
-    });
+    let loginUser: User;
+    try {
+      // update last login time
+      loginUser = await this.prisma.user.update({
+        where,
+        data: { lastLoginAt: new Date() },
+        select: user.select,
+      });
+    } catch (error) {
+      throw new RecnetError(ErrorCode.DB_USER_NOT_FOUND, HttpStatus.NOT_FOUND);
+    }
 
-    return this.prisma.user.findUniqueOrThrow({
-      where,
-      select: user.select,
-    });
+    return loginUser;
+  }
+
+  public async createUser(createUserInput: CreateUserInput): Promise<User> {
+    const prismaCreateUserInput: Prisma.UserCreateInput = {
+      ...createUserInput,
+      provider: this.transformToPrismaProvider(createUserInput.provider),
+      lastLoginAt: new Date(),
+    };
+
+    let createdUser: User;
+    try {
+      createdUser = await this.prisma.user.create({
+        data: prismaCreateUserInput,
+        select: user.select,
+      });
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : undefined;
+      throw new RecnetError(
+        ErrorCode.DB_CREATE_USER_ERROR,
+        HttpStatus.BAD_REQUEST,
+        errorMessage
+      );
+    }
+
+    return createdUser;
   }
 
   private transformUserFilterByToPrismaWhere(
