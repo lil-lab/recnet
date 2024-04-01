@@ -23,7 +23,7 @@ export function RecCardSkeleton() {
         "border-[1px]",
         "border-gray-6",
         "rounded-[8px]",
-        "shadow-2"
+        "shadow-1"
       )}
     >
       <Flex
