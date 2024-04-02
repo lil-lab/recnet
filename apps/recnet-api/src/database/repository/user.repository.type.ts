@@ -53,3 +53,13 @@ export type CreateUserInput = {
   role: UserRole;
   inviteCode: string;
 };
+
+export type UpdateUserInput = {
+  handle?: string;
+  displayName?: string;
+  photoUrl?: string;
+  affiliation?: string | null;
+  bio?: string | null;
+  email?: string;
+  role?: UserRole;
+};

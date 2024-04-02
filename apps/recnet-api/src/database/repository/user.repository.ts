@@ -45,16 +45,12 @@ export default class UserRepository {
   }
 
   public async findUserById(userId: string): Promise<User> {
-    let userFound: User;
-    try {
-      userFound = await this.prisma.user.findUniqueOrThrow({
+    return this.throwWhenUserNotFound(() =>
+      this.prisma.user.findUniqueOrThrow({
         where: { id: userId },
         select: user.select,
-      });
-    } catch (error) {
-      throw new RecnetError(ErrorCode.DB_USER_NOT_FOUND, HttpStatus.NOT_FOUND);
-    }
-    return userFound;
+      })
+    );
   }
 
   public async findUserPreviewByIds(userIds: string[]): Promise<UserPreview[]> {
@@ -72,19 +68,14 @@ export default class UserRepository {
     const where = {
       provider_providerId: { provider: prismaProvider, providerId },
     };
-    let loginUser: User;
-    try {
-      // update last login time
-      loginUser = await this.prisma.user.update({
+
+    return this.throwWhenUserNotFound(() =>
+      this.prisma.user.update({
         where,
         data: { lastLoginAt: new Date() },
         select: user.select,
-      });
-    } catch (error) {
-      throw new RecnetError(ErrorCode.DB_USER_NOT_FOUND, HttpStatus.NOT_FOUND);
-    }
-
-    return loginUser;
+      })
+    );
   }
 
   public async createUser(createUserInput: CreateUserInput): Promise<User> {
@@ -120,8 +111,20 @@ export default class UserRepository {
         errorMessage
       );
     }
-
     return createdUser;
+  }
+
+  public async updateUser(
+    userId: string,
+    updateUserInput: Prisma.UserUpdateInput
+  ): Promise<User> {
+    return this.throwWhenUserNotFound(() =>
+      this.prisma.user.update({
+        where: { id: userId },
+        data: updateUserInput,
+        select: user.select,
+      })
+    );
   }
 
   private transformUserFilterByToPrismaWhere(
@@ -151,6 +154,28 @@ export default class UserRepository {
         return Provider.GOOGLE;
       default:
         throw new Error("Provider not supported");
+    }
+  }
+
+  private async throwWhenUserNotFound(functionToWrap: () => Promise<User>) {
+    try {
+      return await functionToWrap();
+    } catch (error) {
+      if (
+        error instanceof Prisma.PrismaClientKnownRequestError &&
+        error.code === "P2025"
+      ) {
+        throw new RecnetError(
+          ErrorCode.DB_USER_NOT_FOUND,
+          HttpStatus.NOT_FOUND
+        );
+      }
+      const errorMessage = error instanceof Error ? error.message : undefined;
+      throw new RecnetError(
+        ErrorCode.DB_UNKNOWN_ERROR,
+        HttpStatus.INTERNAL_SERVER_ERROR,
+        errorMessage
+      );
     }
   }
 }

@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   Get,
+  Patch,
   Post,
   Query,
   UseFilters,
@@ -23,11 +24,13 @@ import { ZodValidationPipe } from "@recnet-api/utils/pipes/zod.validation.pipe";
 
 import {
   getUsersParamsSchema,
+  patchUserMeRequestSchema,
   postUserMeRequestSchema,
 } from "@recnet/recnet-api-model";
 
 import { CreateUserDto } from "./dto/create.user.dto";
 import { QueryUsersDto } from "./dto/query.users.dto";
+import { UpdateUserDto } from "./dto/update.user.dto";
 import { GetUserMeResponse, GetUsersResponse } from "./user.response";
 import { UserService } from "./user.service";
 
@@ -93,6 +96,24 @@ export class UserController {
   ): Promise<GetUserMeResponse> {
     const { provider, providerId } = firebaseUser;
     const user = await this.userService.createUser(provider, providerId, dto);
+    return { user };
+  }
+
+  @ApiOperation({
+    summary: "Update me",
+    description: "Update the current user.",
+  })
+  @ApiOkResponse({ type: GetUserMeResponse })
+  @ApiBearerAuth()
+  @Patch("/me")
+  @UsePipes(new ZodValidationPipe(patchUserMeRequestSchema))
+  @Auth()
+  public async updateMe(
+    @User() authUser: AuthUser,
+    @Body() dto: UpdateUserDto
+  ): Promise<GetUserMeResponse> {
+    const { userId } = authUser;
+    const user = await this.userService.updateUser(userId, dto);
     return { user };
   }
 }

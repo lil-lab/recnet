@@ -7,6 +7,7 @@ export const ErrorCode = {
   INVALID_INVITE_CODE: 1005,
 
   // DB error codes
+  DB_UNKNOWN_ERROR: 2000,
   DB_USER_NOT_FOUND: 2001,
   DB_CREATE_USER_ERROR: 2002,
 };
@@ -19,6 +20,7 @@ export const errorMessages = {
   [ErrorCode.REC_UPDATE_OR_CREATE_RULE_VIOLATION]:
     "article and articleId cannot be null or have value at the same time",
   [ErrorCode.INVALID_INVITE_CODE]: "Invalid invite code",
+  [ErrorCode.DB_UNKNOWN_ERROR]: "Database error",
   [ErrorCode.DB_USER_NOT_FOUND]: "User not found",
   [ErrorCode.DB_CREATE_USER_ERROR]: "Error creating user",
 };

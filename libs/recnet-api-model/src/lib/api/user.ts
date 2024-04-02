@@ -31,7 +31,13 @@ export const getUserMeResponseSchema = z.object({
 export type GetUserMeResponse = z.infer<typeof getUserMeResponseSchema>;
 
 // PATCH /users/me
-export const patchUserMeRequestSchema = userSchema.partial();
+export const patchUserMeRequestSchema = userSchema
+  .omit({
+    id: true,
+    numFollowers: true,
+    following: true,
+  })
+  .partial();
 export type PatchUserMeRequest = z.infer<typeof patchUserMeRequestSchema>;
 
 export const patchUserMeResponseSchema = z.object({
