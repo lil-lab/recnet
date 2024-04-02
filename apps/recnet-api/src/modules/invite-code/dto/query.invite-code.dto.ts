@@ -1,4 +1,4 @@
-import { ApiProperty } from "@nestjs/swagger";
+import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 
 export class QueryInviteCodeDto {
   @ApiProperty()
@@ -7,8 +7,9 @@ export class QueryInviteCodeDto {
   @ApiProperty()
   pageSize: number;
 
-  @ApiProperty({
-    description: "Whether should return only used codes or not",
+  @ApiPropertyOptional({
+    description:
+      "If used is true, it will only return invite codes that have been used. If it's false, it will only return invite codes that haven't been used. Otherwise, it will return all invite codes.",
     required: false,
     default: undefined,
   })
