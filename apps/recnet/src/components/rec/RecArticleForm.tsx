@@ -14,7 +14,7 @@ import {
 } from "@radix-ui/react-icons";
 import * as Select from "@radix-ui/react-select";
 import { Text, Flex, Button, TextField, TextArea } from "@radix-ui/themes";
-import { forwardRef, useState, useEffect } from "react";
+import { forwardRef, useState } from "react";
 import { useForm, Controller, useFormState } from "react-hook-form";
 import { TailSpin } from "react-loader-spinner";
 import { toast } from "sonner";
@@ -32,7 +32,7 @@ import {
   numToMonth,
 } from "@recnet/recnet-date-fns";
 
-import { Article } from "@recnet/recnet-api-model";
+import { Article, Rec } from "@recnet/recnet-api-model";
 
 const Steps = {
   insertLink: {
@@ -108,12 +108,13 @@ const RecArticleFormSchema = z.object({
   month: z.number().optional(),
 });
 
-export function RecArticleForm(props: { onFinish?: () => void }) {
-  const { onFinish = () => {} } = props;
+export function RecArticleForm(props: {
+  onFinish?: () => void;
+  currentRec: Rec | null;
+}) {
+  const { onFinish = () => {}, currentRec } = props;
   const [step, setStep] = useState<Step>("insertLink");
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const { data } = trpc.getUpcomingRec.useQuery();
-  const currentRec = data?.rec ?? null;
 
   const {
     register,
@@ -131,25 +132,19 @@ export function RecArticleForm(props: { onFinish?: () => void }) {
   const { isDirty } = useFormState({ control });
 
   const [isSearchingForArticle, setIsSearchingForArticle] = useState(false);
-  const { data: articleData } = trpc.getArticleByLink.useQuery({
-    link: getValues("link"),
-  });
-  useEffect(() => {
-    // autofill form if articleData is available
-    if (articleData?.article) {
-      setValue("articleId", articleData.article.id);
-      setValue("doi", articleData.article.doi || undefined);
-      setValue("title", articleData.article.title);
-      setValue("author", articleData.article.author);
-      setValue("year", articleData.article.year);
-      setValue("month", articleData.article.month || undefined);
+  const { data: articleData, refetch } = trpc.getArticleByLink.useQuery(
+    {
+      link: getValues("link"),
+    },
+    {
+      enabled: false,
     }
-  }, [articleData, setValue]);
+  );
+
   const shouldDisablePrefilledFields = getValues("articleId") ? true : false;
 
   const insertRecMutation = trpc.addUpcomingRec.useMutation();
   const editRecMutation = trpc.editUpcomingRec.useMutation();
-  const deleteRecMutation = trpc.deleteUpcomingRec.useMutation();
   const utils = trpc.useUtils();
 
   return (
@@ -220,9 +215,17 @@ export function RecArticleForm(props: { onFinish?: () => void }) {
               className={cn("w-full")}
               onClick={async () => {
                 setIsSearchingForArticle(true);
-                await utils.getArticleByLink.invalidate({
-                  link: getValues("link"),
-                });
+                const { data } = await refetch();
+                const foundArticle = data?.article;
+                if (foundArticle) {
+                  // prefill if article is found
+                  setValue("articleId", foundArticle.id);
+                  setValue("doi", foundArticle.doi || undefined);
+                  setValue("title", foundArticle.title);
+                  setValue("author", foundArticle.author);
+                  setValue("year", foundArticle.year);
+                  setValue("month", foundArticle.month || undefined);
+                }
                 reset(undefined, {
                   keepValues: true,
                 });
@@ -329,7 +332,7 @@ export function RecArticleForm(props: { onFinish?: () => void }) {
                             "w-full",
                             "relative",
                             "placeholder:text-gray-2 text-gray-12",
-                            "data-[disabled]:bg-[#F2F2F5] data-[disabled]:cursor-not-allowed"
+                            "data-[disabled]:bg-[#F2F2F5] data-[disabled]:cursor-not-allowed data-[disabled]:text-gray-10"
                           )}
                           aria-label="Food"
                         >
@@ -423,29 +426,6 @@ export function RecArticleForm(props: { onFinish?: () => void }) {
                 "Submit"
               )}
             </Button>
-            {currentRec ? (
-              <Button
-                variant="outline"
-                color="red"
-                className="cursor-pointer"
-                onClick={async () => {
-                  try {
-                    await deleteRecMutation.mutateAsync({
-                      id: currentRec.id,
-                    });
-                    await utils.getUpcomingRec.invalidate();
-                    toast.success("Rec deleted successfully");
-                    onFinish();
-                  } catch (error) {
-                    console.error(error);
-                    toast.error("Failed to delete rec.");
-                    return;
-                  }
-                }}
-              >
-                Delete
-              </Button>
-            ) : null}
           </>
         )}
       </form>

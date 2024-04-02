@@ -22,6 +22,8 @@ import { cn } from "@recnet/recnet-web/utils/cn";
 import { useAuth } from "./AuthContext";
 import { UserDropdown } from "./Headerbar";
 
+import { RecForm } from "../components/rec/RecForm";
+
 function RecFormContent(props: { setOpen: (open: boolean) => void }) {
   const { setOpen } = props;
   const { user } = useAuth();
@@ -89,17 +91,22 @@ function RecFormContent(props: { setOpen: (open: boolean) => void }) {
           `Hi, ${user.displayName} 👋`
         )}
       </Text>
-      <Text size="2" className="text-gray-11 p-1" weight="medium">
-        {rec
-          ? "You can modify at anytime before this cycle ends."
-          : `Any interesting read this week?`}
-      </Text>
       <Flex className="w-full">
-        <RecArticleForm
-          onFinish={() => {
-            setOpen(false);
-          }}
-        />
+        {rec ? (
+          <RecForm
+            currentRec={rec}
+            onFinish={() => {
+              setOpen(false);
+            }}
+          />
+        ) : (
+          <RecArticleForm
+            currentRec={rec}
+            onFinish={() => {
+              setOpen(false);
+            }}
+          />
+        )}
       </Flex>
     </div>
   );
