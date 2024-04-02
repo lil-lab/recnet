@@ -1,10 +1,16 @@
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 
 export class QueryInviteCodeDto {
-  @ApiProperty()
+  @ApiProperty({
+    description: "Page number",
+    example: 1,
+  })
   page: number;
 
-  @ApiProperty()
+  @ApiProperty({
+    description: "Number of items per page",
+    example: 10,
+  })
   pageSize: number;
 
   @ApiPropertyOptional({
