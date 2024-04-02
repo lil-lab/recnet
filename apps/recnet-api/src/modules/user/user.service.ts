@@ -1,5 +1,6 @@
 import { HttpStatus, Inject, Injectable } from "@nestjs/common";
 
+import FollowingRecordRepository from "@recnet-api/database/repository/followingRecord.repository";
 import InviteCodeRepository from "@recnet-api/database/repository/inviteCode.repository";
 import UserRepository from "@recnet-api/database/repository/user.repository";
 import {
@@ -27,7 +28,9 @@ export class UserService {
     @Inject(UserRepository)
     private readonly userRepository: UserRepository,
     @Inject(InviteCodeRepository)
-    private readonly inviteCodeRepository: InviteCodeRepository
+    private readonly inviteCodeRepository: InviteCodeRepository,
+    @Inject(FollowingRecordRepository)
+    private readonly followingRecordRepository: FollowingRecordRepository
   ) {}
 
   public async getUsers(
@@ -105,6 +108,34 @@ export class UserService {
       ErrorCode.INVALID_INVITE_CODE,
       HttpStatus.BAD_REQUEST,
       errorMessage
+    );
+  }
+
+  public async followUser(
+    userId: string,
+    followingUserId: string
+  ): Promise<void> {
+    // validate if the user exists
+    await this.userRepository.findUserById(userId);
+    await this.userRepository.findUserById(followingUserId);
+
+    await this.followingRecordRepository.createFollowingRecord(
+      userId,
+      followingUserId
+    );
+  }
+
+  public async unfollowUser(
+    userId: string,
+    followingUserId: string
+  ): Promise<void> {
+    // validate if the user exists
+    await this.userRepository.findUserById(userId);
+    await this.userRepository.findUserById(followingUserId);
+
+    await this.followingRecordRepository.deleteFollowingRecord(
+      userId,
+      followingUserId
     );
   }
 

@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   HttpCode,
   HttpStatus,
@@ -25,14 +26,17 @@ import { RecnetExceptionFilter } from "@recnet-api/utils/filters/recnet.exceptio
 import { ZodValidationPipe } from "@recnet-api/utils/pipes/zod.validation.pipe";
 
 import {
+  deleteUserFollowParamsSchema,
   getUsersParamsSchema,
   patchUserMeRequestSchema,
+  postUserFollowRequestSchema,
   postUserMeRequestSchema,
   postUserValidateHandleRequestSchema,
   postUserValidateInviteCodeRequestSchema,
 } from "@recnet/recnet-api-model";
 
 import { CreateUserDto } from "./dto/create.user.dto";
+import { FollowUserDto, UnfollowUserDto } from "./dto/follow.user.dto";
 import { QueryUsersDto } from "./dto/query.users.dto";
 import { UpdateUserDto } from "./dto/update.user.dto";
 import {
@@ -138,8 +142,7 @@ export class UserController {
   public async validateHandle(
     @Body() dto: ValidateUserHandleDto
   ): Promise<void> {
-    const { handle } = dto;
-    return this.userService.validateHandle(handle);
+    return this.userService.validateHandle(dto.handle);
   }
 
   @ApiOperation({
@@ -155,7 +158,38 @@ export class UserController {
   public async validateInviteCode(
     @Body() dto: ValidateUserInviteCodeDto
   ): Promise<void> {
-    const { inviteCode } = dto;
-    return this.userService.validateInviteCode(inviteCode);
+    return this.userService.validateInviteCode(dto.inviteCode);
+  }
+
+  @ApiOperation({
+    summary: "Follow user",
+    description: "Follow a user.",
+  })
+  @Post("follow")
+  @ApiBearerAuth()
+  @UsePipes(new ZodValidationPipe(postUserFollowRequestSchema))
+  @Auth()
+  public async followUser(
+    @User() authUser: AuthUser,
+    @Body() dto: FollowUserDto
+  ): Promise<void> {
+    const { userId } = authUser;
+    return this.userService.followUser(userId, dto.userId);
+  }
+
+  @ApiOperation({
+    summary: "Unfollow user",
+    description: "Unfollow a user.",
+  })
+  @Delete("follow")
+  @ApiBearerAuth()
+  @UsePipes(new ZodValidationPipe(deleteUserFollowParamsSchema))
+  @Auth()
+  public async unfollowUser(
+    @User() authUser: AuthUser,
+    @Query() dto: UnfollowUserDto
+  ): Promise<void> {
+    const { userId } = authUser;
+    return this.userService.unfollowUser(userId, dto.userId);
   }
 }

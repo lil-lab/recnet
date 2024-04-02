@@ -45,11 +45,14 @@ export default class UserRepository {
   }
 
   public async findUserById(userId: string): Promise<User> {
-    return this.throwWhenUserNotFound(() =>
-      this.prisma.user.findUniqueOrThrow({
-        where: { id: userId },
-        select: user.select,
-      })
+    const where = { id: userId };
+    return this.throwWhenUserNotFound(
+      () =>
+        this.prisma.user.findUniqueOrThrow({
+          where,
+          select: user.select,
+        }),
+      where
     );
   }
 
@@ -76,12 +79,14 @@ export default class UserRepository {
       provider_providerId: { provider: prismaProvider, providerId },
     };
 
-    return this.throwWhenUserNotFound(() =>
-      this.prisma.user.update({
-        where,
-        data: { lastLoginAt: new Date() },
-        select: user.select,
-      })
+    return this.throwWhenUserNotFound(
+      () =>
+        this.prisma.user.update({
+          where,
+          data: { lastLoginAt: new Date() },
+          select: user.select,
+        }),
+      where
     );
   }
 
@@ -125,12 +130,15 @@ export default class UserRepository {
     userId: string,
     updateUserInput: Prisma.UserUpdateInput
   ): Promise<User> {
-    return this.throwWhenUserNotFound(() =>
-      this.prisma.user.update({
-        where: { id: userId },
-        data: updateUserInput,
-        select: user.select,
-      })
+    const where = { id: userId };
+    return this.throwWhenUserNotFound(
+      () =>
+        this.prisma.user.update({
+          where,
+          data: updateUserInput,
+          select: user.select,
+        }),
+      where
     );
   }
 
@@ -164,7 +172,10 @@ export default class UserRepository {
     }
   }
 
-  private async throwWhenUserNotFound(functionToWrap: () => Promise<User>) {
+  private async throwWhenUserNotFound(
+    functionToWrap: () => Promise<User>,
+    where?: Prisma.UserWhereUniqueInput
+  ): Promise<User> {
     try {
       return await functionToWrap();
     } catch (error) {
@@ -174,7 +185,9 @@ export default class UserRepository {
       ) {
         throw new RecnetError(
           ErrorCode.DB_USER_NOT_FOUND,
-          HttpStatus.NOT_FOUND
+          HttpStatus.NOT_FOUND,
+          undefined,
+          { where }
         );
       }
       const errorMessage = error instanceof Error ? error.message : undefined;
