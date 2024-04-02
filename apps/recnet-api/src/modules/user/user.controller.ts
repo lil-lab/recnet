@@ -2,6 +2,8 @@ import {
   Body,
   Controller,
   Get,
+  HttpCode,
+  HttpStatus,
   Patch,
   Post,
   Query,
@@ -26,11 +28,13 @@ import {
   getUsersParamsSchema,
   patchUserMeRequestSchema,
   postUserMeRequestSchema,
+  postUserValidateHandleRequestSchema,
 } from "@recnet/recnet-api-model";
 
 import { CreateUserDto } from "./dto/create.user.dto";
 import { QueryUsersDto } from "./dto/query.users.dto";
 import { UpdateUserDto } from "./dto/update.user.dto";
+import { ValidateUserHandleDto } from "./dto/validate.user.dto";
 import { GetUserMeResponse, GetUsersResponse } from "./user.response";
 import { UserService } from "./user.service";
 
@@ -115,5 +119,22 @@ export class UserController {
     const { userId } = authUser;
     const user = await this.userService.updateUser(userId, dto);
     return { user };
+  }
+
+  @ApiOperation({
+    summary: "Validate handle",
+    description: "Validate if the handle exists.",
+  })
+  @ApiOkResponse()
+  @ApiBearerAuth()
+  @Post("validate/handle")
+  @HttpCode(HttpStatus.OK)
+  @UsePipes(new ZodValidationPipe(postUserValidateHandleRequestSchema))
+  @AuthFirebase()
+  public async validateHandle(
+    @Body() dto: ValidateUserHandleDto
+  ): Promise<void> {
+    const { handle } = dto;
+    return this.userService.validateHandle(handle);
   }
 }

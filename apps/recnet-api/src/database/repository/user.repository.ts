@@ -53,6 +53,13 @@ export default class UserRepository {
     );
   }
 
+  public async findUserByHandle(handle: string): Promise<User | null> {
+    return this.prisma.user.findFirst({
+      where: { handle },
+      select: user.select,
+    });
+  }
+
   public async findUserPreviewByIds(userIds: string[]): Promise<UserPreview[]> {
     return this.prisma.user.findMany({
       select: userPreview.select,

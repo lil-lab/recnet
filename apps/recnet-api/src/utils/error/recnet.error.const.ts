@@ -5,6 +5,7 @@ export const ErrorCode = {
   REC_ALREADY_EXISTS: 1003,
   REC_UPDATE_OR_CREATE_RULE_VIOLATION: 1004,
   INVALID_INVITE_CODE: 1005,
+  HANDLE_EXISTS: 1006,
 
   // DB error codes
   DB_UNKNOWN_ERROR: 2000,
@@ -20,6 +21,7 @@ export const errorMessages = {
   [ErrorCode.REC_UPDATE_OR_CREATE_RULE_VIOLATION]:
     "article and articleId cannot be null or have value at the same time",
   [ErrorCode.INVALID_INVITE_CODE]: "Invalid invite code",
+  [ErrorCode.HANDLE_EXISTS]: "Handle already exists",
   [ErrorCode.DB_UNKNOWN_ERROR]: "Database error",
   [ErrorCode.DB_USER_NOT_FOUND]: "User not found",
   [ErrorCode.DB_CREATE_USER_ERROR]: "Error creating user",

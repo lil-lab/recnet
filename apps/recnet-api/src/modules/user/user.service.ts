@@ -127,4 +127,11 @@ export class UserService {
       numFollowers: user.followedBy.length,
     };
   }
+
+  public async validateHandle(handle: string): Promise<void> {
+    const user = await this.userRepository.findUserByHandle(handle);
+    if (user) {
+      throw new RecnetError(ErrorCode.HANDLE_EXISTS, HttpStatus.BAD_REQUEST);
+    }
+  }
 }
