@@ -10,8 +10,8 @@ import { useState } from "react";
 import { useAuth } from "@recnet/recnet-web/app/AuthContext";
 import { CutoffDropdown } from "@recnet/recnet-web/components/CutoffDropdown";
 import { RecNetLink } from "@recnet/recnet-web/components/Link";
-import { RecArticleForm } from "@recnet/recnet-web/components/RecArticleForm";
 import { Skeleton, SkeletonText } from "@recnet/recnet-web/components/Skeleton";
+import { RecArticleForm } from "@recnet/recnet-web/components/rec/RecArticleForm";
 import { cn } from "@recnet/recnet-web/utils/cn";
 
 import {
