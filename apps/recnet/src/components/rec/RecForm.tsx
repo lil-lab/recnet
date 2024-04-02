@@ -6,6 +6,7 @@ import {
   SewingPinIcon,
 } from "@radix-ui/react-icons";
 import { Text, Flex, Button, TextField, TextArea } from "@radix-ui/themes";
+import { AnimatePresence, motion } from "framer-motion";
 import { useState } from "react";
 import { useForm, useFormState } from "react-hook-form";
 import { TailSpin } from "react-loader-spinner";
@@ -50,11 +51,24 @@ export function RecForm(props: { onFinish?: () => void; currentRec: Rec }) {
   const utils = trpc.useUtils();
 
   return (
-    <div>
+    <AnimatePresence initial={false} mode="wait">
       {recNewArticle ? (
-        <RecArticleForm currentRec={currentRec} onFinish={onFinish} />
+        <motion.div
+          key="rec-article-form"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+        >
+          <RecArticleForm currentRec={currentRec} onFinish={onFinish} />
+        </motion.div>
       ) : (
-        <div className="flex flex-col gap-y-3">
+        <motion.div
+          key="rec-form"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className="flex flex-col gap-y-3"
+        >
           <Flex className="w-full">
             <Text
               size="2"
@@ -244,8 +258,8 @@ export function RecForm(props: { onFinish?: () => void; currentRec: Rec }) {
               Delete
             </Button>
           </form>
-        </div>
+        </motion.div>
       )}
-    </div>
+    </AnimatePresence>
   );
 }

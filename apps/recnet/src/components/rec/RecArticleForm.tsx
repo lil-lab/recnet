@@ -14,6 +14,7 @@ import {
 } from "@radix-ui/react-icons";
 import * as Select from "@radix-ui/react-select";
 import { Text, Flex, Button, TextField, TextArea } from "@radix-ui/themes";
+import { AnimatePresence, motion } from "framer-motion";
 import { forwardRef, useState } from "react";
 import { useForm, Controller, useFormState } from "react-hook-form";
 import { TailSpin } from "react-loader-spinner";
@@ -149,7 +150,25 @@ export function RecArticleForm(props: {
 
   return (
     <div className="flex flex-col gap-y-3">
-      {Steps[step].header(articleData?.article ?? null)}
+      <AnimatePresence initial={false} mode="wait">
+        <motion.div
+          key={`${step}-header`}
+          initial={{
+            opacity: 0,
+            y: 10,
+          }}
+          animate={{
+            opacity: 1,
+            y: 0,
+          }}
+          exit={{
+            opacity: 0,
+            y: -10,
+          }}
+        >
+          {Steps[step].header(articleData?.article ?? null)}
+        </motion.div>
+      </AnimatePresence>
       <form
         className="flex flex-col gap-y-[10px]"
         onSubmit={handleSubmit(async (data, e) => {
@@ -209,225 +228,244 @@ export function RecArticleForm(props: {
             </Text>
           ) : null}
         </div>
-        {step === "insertLink" ? (
-          <div>
-            <Button
-              className={cn("w-full")}
-              onClick={async () => {
-                setIsSearchingForArticle(true);
-                const { data } = await refetch();
-                const foundArticle = data?.article;
-                if (foundArticle) {
-                  // prefill if article is found
-                  setValue("articleId", foundArticle.id);
-                  setValue("doi", foundArticle.doi || undefined);
-                  setValue("title", foundArticle.title);
-                  setValue("author", foundArticle.author);
-                  setValue("year", foundArticle.year);
-                  setValue("month", foundArticle.month || undefined);
-                }
-                reset(undefined, {
-                  keepValues: true,
-                });
-                setStep("insertDetails");
-                setIsSearchingForArticle(false);
-              }}
-              disabled={formState.errors.link || !watch("link") ? true : false}
+        <AnimatePresence initial={false} mode="wait">
+          {step === "insertLink" ? (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              key="insertLinkForm"
             >
-              {isSearchingForArticle ? (
-                <TailSpin
-                  radius={"1"}
-                  visible={true}
-                  height="20"
-                  width="20"
-                  color={"#ffffff"}
-                  ariaLabel="line-wave-loading"
-                  wrapperClass="w-fit h-fit"
-                />
-              ) : (
-                "Next"
-              )}
-            </Button>
-          </div>
-        ) : (
-          <>
-            <div>
-              <TextField.Root>
-                <TextField.Slot>
-                  <SewingPinIcon width="16" height="16" />
-                </TextField.Slot>
-                <TextField.Input
-                  placeholder="Title"
-                  className="w-full"
-                  {...register("title", { required: true })}
-                  disabled={shouldDisablePrefilledFields}
-                />
-              </TextField.Root>
-              {formState.errors.title ? (
-                <Text size="1" color="red">
-                  {`${formState.errors.title.message}`}
-                </Text>
-              ) : null}
-            </div>
-            <div>
-              <TextField.Root>
-                <TextField.Slot>
-                  <PersonIcon width="16" height="16" />
-                </TextField.Slot>
-                <TextField.Input
-                  placeholder="Author(s)"
-                  className="w-full"
-                  {...register("author", { required: true })}
-                  disabled={shouldDisablePrefilledFields}
-                />
-              </TextField.Root>
-              {formState.errors.author ? (
-                <Text size="1" color="red">
-                  {`${formState.errors.author.message}`}
-                </Text>
-              ) : null}
-            </div>
-            <Flex className="gap-x-[10px]">
-              <div className="w-[40%]">
+              <Button
+                className={cn("w-full")}
+                onClick={async () => {
+                  setIsSearchingForArticle(true);
+                  const { data } = await refetch();
+                  const foundArticle = data?.article;
+                  if (foundArticle) {
+                    // prefill if article is found
+                    setValue("articleId", foundArticle.id);
+                    setValue("doi", foundArticle.doi || undefined);
+                    setValue("title", foundArticle.title);
+                    setValue("author", foundArticle.author);
+                    setValue("year", foundArticle.year);
+                    setValue("month", foundArticle.month || undefined);
+                  }
+                  reset(undefined, {
+                    keepValues: true,
+                  });
+                  setStep("insertDetails");
+                  setIsSearchingForArticle(false);
+                }}
+                disabled={
+                  formState.errors.link || !watch("link") ? true : false
+                }
+              >
+                {isSearchingForArticle ? (
+                  <TailSpin
+                    radius={"1"}
+                    visible={true}
+                    height="20"
+                    width="20"
+                    color={"#ffffff"}
+                    ariaLabel="line-wave-loading"
+                    wrapperClass="w-fit h-fit"
+                  />
+                ) : (
+                  "Next"
+                )}
+              </Button>
+            </motion.div>
+          ) : (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              key="insertDetailsForm"
+              className="flex flex-col gap-y-3"
+            >
+              <div>
                 <TextField.Root>
                   <TextField.Slot>
-                    <CalendarIcon width="16" height="16" />
+                    <SewingPinIcon width="16" height="16" />
                   </TextField.Slot>
                   <TextField.Input
-                    placeholder="Year"
+                    placeholder="Title"
                     className="w-full"
-                    {...register("year", { required: true })}
+                    {...register("title", { required: true })}
                     disabled={shouldDisablePrefilledFields}
                   />
                 </TextField.Root>
-                {formState.errors.year ? (
+                {formState.errors.title ? (
                   <Text size="1" color="red">
-                    {`${formState.errors.year.message}`}
+                    {`${formState.errors.title.message}`}
                   </Text>
                 ) : null}
               </div>
-              <div className="min-w-[50%] w-[60%]">
-                <Controller
-                  control={control}
-                  name="month"
-                  render={({ field }) => {
-                    const monthValue = getValues("month");
-                    return (
-                      <Select.Root
-                        key={watch("month")}
-                        value={monthValue ? numToMonth[monthValue] : undefined}
-                        onValueChange={(value) => {
-                          if (value === "empty") {
-                            field.onChange(undefined);
-                          } else {
-                            field.onChange(monthToNum[value as Month]);
-                          }
-                        }}
-                        disabled={shouldDisablePrefilledFields}
-                      >
-                        <Select.Trigger
-                          className={cn(
-                            "inline-flex items-center justify-start h-[32px] bg-white outline-none border-[1px] rounded-2 border-gray-6 text-[14px] leading-[14px] px-2",
-                            "data-[placeholder]:text-gray-9",
-                            "w-full",
-                            "relative",
-                            "placeholder:text-gray-2 text-gray-12",
-                            "data-[disabled]:bg-[#F2F2F5] data-[disabled]:cursor-not-allowed data-[disabled]:text-gray-10"
-                          )}
-                          aria-label="Food"
-                        >
-                          <Select.Icon className="pr-2">
-                            <CalendarIcon width="16" height="16" />
-                          </Select.Icon>
-                          <Select.Value
-                            placeholder="Month(optional)"
-                            className="h-fit"
-                          />
-                          <Select.Icon className="pl-2 absolute right-2">
-                            <ChevronDownIcon />
-                          </Select.Icon>
-                        </Select.Trigger>
-
-                        <Select.Portal>
-                          <Select.Content
-                            className={cn(
-                              "overflow-hidden bg-white rounded-[8px] border-[1px] border-gray-6",
-                              "shadow-[0px_10px_38px_-10px_rgba(22,_23,_24,_0.35),0px_10px_20px_-15px_rgba(22,_23,_24,_0.2)]"
-                            )}
-                          >
-                            <Select.ScrollUpButton className="flex items-center justify-center h-[25px] bg-white text-blue-10 cursor-default">
-                              <ChevronUpIcon />
-                            </Select.ScrollUpButton>
-                            <Select.Viewport className="p-1">
-                              <SelectItem value={`empty`}>Select...</SelectItem>
-                              {Months.map((month, idx) => {
-                                return (
-                                  <SelectItem
-                                    key={idx}
-                                    value={`${Months[idx]}`}
-                                  >
-                                    {month}
-                                  </SelectItem>
-                                );
-                              })}
-                            </Select.Viewport>
-                            <Select.ScrollDownButton className="flex items-center justify-center h-[25px] bg-white text-blue-10 cursor-default">
-                              <ChevronDownIcon />
-                            </Select.ScrollDownButton>
-                          </Select.Content>
-                        </Select.Portal>
-                      </Select.Root>
-                    );
-                  }}
-                />
-              </div>
-            </Flex>
-            <div>
-              <TextArea
-                placeholder="tl;dr"
-                className="min-h-[180px] border-[1px] border-gray-6"
-                autoFocus={false}
-                {...register("description", { required: true })}
-              />
-              <div className="w-full flex flex-row justify-between mt-1">
-                {formState.errors.description ? (
+              <div>
+                <TextField.Root>
+                  <TextField.Slot>
+                    <PersonIcon width="16" height="16" />
+                  </TextField.Slot>
+                  <TextField.Input
+                    placeholder="Author(s)"
+                    className="w-full"
+                    {...register("author", { required: true })}
+                    disabled={shouldDisablePrefilledFields}
+                  />
+                </TextField.Root>
+                {formState.errors.author ? (
                   <Text size="1" color="red">
-                    {`${formState.errors.description.message}`}
+                    {`${formState.errors.author.message}`}
                   </Text>
-                ) : (
-                  <div />
-                )}
-                <Text size="1" className="text-gray-11">
-                  {`${watch("description")?.length ?? 0}/280`}
-                </Text>
+                ) : null}
               </div>
-            </div>
-            <Text size="1" weight="medium" className="text-gray-9 p-1">
-              {`You can edit at anytime before this week's cutoff: ${getVerboseDateString(getNextCutOff())}.`}
-            </Text>
-            <Button
-              variant="solid"
-              color="blue"
-              className={cn("bg-blue-10", "cursor-pointer")}
-              type="submit"
-              disabled={isSubmitting}
-            >
-              {isSubmitting ? (
-                <TailSpin
-                  radius={"1"}
-                  visible={true}
-                  height="20"
-                  width="20"
-                  color={"#ffffff"}
-                  ariaLabel="line-wave-loading"
-                  wrapperClass="w-fit h-fit"
+              <Flex className="gap-x-[10px]">
+                <div className="w-[40%]">
+                  <TextField.Root>
+                    <TextField.Slot>
+                      <CalendarIcon width="16" height="16" />
+                    </TextField.Slot>
+                    <TextField.Input
+                      placeholder="Year"
+                      className="w-full"
+                      {...register("year", { required: true })}
+                      disabled={shouldDisablePrefilledFields}
+                    />
+                  </TextField.Root>
+                  {formState.errors.year ? (
+                    <Text size="1" color="red">
+                      {`${formState.errors.year.message}`}
+                    </Text>
+                  ) : null}
+                </div>
+                <div className="min-w-[50%] w-[60%]">
+                  <Controller
+                    control={control}
+                    name="month"
+                    render={({ field }) => {
+                      const monthValue = getValues("month");
+                      return (
+                        <Select.Root
+                          key={watch("month")}
+                          value={
+                            monthValue ? numToMonth[monthValue] : undefined
+                          }
+                          onValueChange={(value) => {
+                            if (value === "empty") {
+                              field.onChange(undefined);
+                            } else {
+                              field.onChange(monthToNum[value as Month]);
+                            }
+                          }}
+                          disabled={shouldDisablePrefilledFields}
+                        >
+                          <Select.Trigger
+                            className={cn(
+                              "inline-flex items-center justify-start h-[32px] bg-white outline-none border-[1px] rounded-2 border-gray-6 text-[14px] leading-[14px] px-2",
+                              "data-[placeholder]:text-gray-9",
+                              "w-full",
+                              "relative",
+                              "placeholder:text-gray-2 text-gray-12",
+                              "data-[disabled]:bg-[#F2F2F5] data-[disabled]:cursor-not-allowed data-[disabled]:text-gray-10"
+                            )}
+                            aria-label="Food"
+                          >
+                            <Select.Icon className="pr-2">
+                              <CalendarIcon width="16" height="16" />
+                            </Select.Icon>
+                            <Select.Value
+                              placeholder="Month(optional)"
+                              className="h-fit"
+                            />
+                            <Select.Icon className="pl-2 absolute right-2">
+                              <ChevronDownIcon />
+                            </Select.Icon>
+                          </Select.Trigger>
+
+                          <Select.Portal>
+                            <Select.Content
+                              className={cn(
+                                "overflow-hidden bg-white rounded-[8px] border-[1px] border-gray-6",
+                                "shadow-[0px_10px_38px_-10px_rgba(22,_23,_24,_0.35),0px_10px_20px_-15px_rgba(22,_23,_24,_0.2)]"
+                              )}
+                            >
+                              <Select.ScrollUpButton className="flex items-center justify-center h-[25px] bg-white text-blue-10 cursor-default">
+                                <ChevronUpIcon />
+                              </Select.ScrollUpButton>
+                              <Select.Viewport className="p-1">
+                                <SelectItem value={`empty`}>
+                                  Select...
+                                </SelectItem>
+                                {Months.map((month, idx) => {
+                                  return (
+                                    <SelectItem
+                                      key={idx}
+                                      value={`${Months[idx]}`}
+                                    >
+                                      {month}
+                                    </SelectItem>
+                                  );
+                                })}
+                              </Select.Viewport>
+                              <Select.ScrollDownButton className="flex items-center justify-center h-[25px] bg-white text-blue-10 cursor-default">
+                                <ChevronDownIcon />
+                              </Select.ScrollDownButton>
+                            </Select.Content>
+                          </Select.Portal>
+                        </Select.Root>
+                      );
+                    }}
+                  />
+                </div>
+              </Flex>
+              <div>
+                <TextArea
+                  placeholder="tl;dr"
+                  className="min-h-[180px] border-[1px] border-gray-6"
+                  autoFocus={false}
+                  {...register("description", { required: true })}
                 />
-              ) : (
-                "Submit"
-              )}
-            </Button>
-          </>
-        )}
+                <div className="w-full flex flex-row justify-between mt-1">
+                  {formState.errors.description ? (
+                    <Text size="1" color="red">
+                      {`${formState.errors.description.message}`}
+                    </Text>
+                  ) : (
+                    <div />
+                  )}
+                  <Text size="1" className="text-gray-11">
+                    {`${watch("description")?.length ?? 0}/280`}
+                  </Text>
+                </div>
+              </div>
+              <Text size="1" weight="medium" className="text-gray-9 p-1">
+                {`You can edit at anytime before this week's cutoff: ${getVerboseDateString(getNextCutOff())}.`}
+              </Text>
+              <Button
+                variant="solid"
+                color="blue"
+                className={cn("bg-blue-10", "cursor-pointer")}
+                type="submit"
+                disabled={isSubmitting}
+              >
+                {isSubmitting ? (
+                  <TailSpin
+                    radius={"1"}
+                    visible={true}
+                    height="20"
+                    width="20"
+                    color={"#ffffff"}
+                    ariaLabel="line-wave-loading"
+                    wrapperClass="w-fit h-fit"
+                  />
+                ) : (
+                  "Submit"
+                )}
+              </Button>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </form>
     </div>
   );
