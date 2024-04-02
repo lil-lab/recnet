@@ -169,9 +169,6 @@ export function LeftPanel() {
                 <ChevronLeft width="16" height="16" />
                 Back
               </div>
-              <Text size="2" className="text-gray-11 p-1" weight="medium">
-                {`Any interesting read this week?`}
-              </Text>
               <RecForm
                 onFinish={() => {
                   setIsRecFormOpen(false);
