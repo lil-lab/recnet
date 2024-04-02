@@ -6,13 +6,11 @@ import {
   HttpStatus,
   Logger,
 } from "@nestjs/common";
+import { Prisma } from "@prisma/client";
 import { Response } from "express";
 
 import { RecnetError } from "@recnet-api/utils/error/recnet.error";
-import {
-  ErrorCode,
-  errorMessages,
-} from "@recnet-api/utils/error/recnet.error.const";
+import { ErrorCode } from "@recnet-api/utils/error/recnet.error.const";
 
 @Catch()
 export class RecnetExceptionFilter implements ExceptionFilter {
@@ -23,22 +21,27 @@ export class RecnetExceptionFilter implements ExceptionFilter {
 
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<Response>();
+    let status = HttpStatus.INTERNAL_SERVER_ERROR;
+    let errorCode = ErrorCode.INTERNAL_SERVER_ERROR;
+    let extra = null;
 
-    const status =
-      exception instanceof HttpException || exception instanceof RecnetError
-        ? exception.getStatus()
-        : HttpStatus.INTERNAL_SERVER_ERROR;
-    const errorCode =
-      exception instanceof RecnetError
-        ? exception.getErrorCode()
-        : ErrorCode.INTERNAL_SERVER_ERROR;
+    if (exception instanceof Prisma.PrismaClientKnownRequestError) {
+      const prismaError = this.handlePrismaException(exception);
+      status = prismaError.status;
+      errorCode = prismaError.errorCode;
+      extra = prismaError.extra;
+    } else if (exception instanceof RecnetError) {
+      status = exception.getStatus();
+      errorCode = exception.getErrorCode();
+      extra = exception.getExtra();
+    } else if (exception instanceof HttpException) {
+      status = exception.getStatus();
+    }
 
     const message =
       exception instanceof HttpException
         ? exception.getResponse()
-        : exception instanceof RecnetError
-          ? exception.message
-          : errorMessages[ErrorCode.INTERNAL_SERVER_ERROR];
+        : exception.message;
 
     let error: {
       errorCode: number;
@@ -49,9 +52,33 @@ export class RecnetExceptionFilter implements ExceptionFilter {
       message,
     };
 
-    if (exception instanceof RecnetError && exception.getExtra() !== null) {
-      error = { ...error, extra: exception.getExtra() };
+    if (extra !== null) {
+      error = { ...error, extra };
     }
     response.status(status).json(error);
+  }
+
+  private handlePrismaException(
+    exception: Prisma.PrismaClientKnownRequestError
+  ): { status: HttpStatus; errorCode: number; extra: unknown } {
+    let status = HttpStatus.INTERNAL_SERVER_ERROR;
+    let errorCode = ErrorCode.DB_UNKNOWN_ERROR;
+    const extra = { meta: exception.meta };
+
+    switch (exception.code) {
+      case "P2002": {
+        errorCode = ErrorCode.DB_UNIQUE_CONSTRAINT;
+        status = HttpStatus.CONFLICT;
+        break;
+      }
+      case "P2025": {
+        errorCode = ErrorCode.DB_USER_NOT_FOUND;
+        status = HttpStatus.NOT_FOUND;
+        break;
+      }
+      default:
+        break;
+    }
+    return { status, errorCode, extra };
   }
 }

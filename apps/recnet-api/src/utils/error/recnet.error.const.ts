@@ -10,7 +10,7 @@ export const ErrorCode = {
   // DB error codes
   DB_UNKNOWN_ERROR: 2000,
   DB_USER_NOT_FOUND: 2001,
-  DB_CREATE_USER_ERROR: 2002,
+  DB_UNIQUE_CONSTRAINT: 2002,
 };
 
 export const errorMessages = {
@@ -24,5 +24,5 @@ export const errorMessages = {
   [ErrorCode.HANDLE_EXISTS]: "Handle already exists",
   [ErrorCode.DB_UNKNOWN_ERROR]: "Database error",
   [ErrorCode.DB_USER_NOT_FOUND]: "User not found",
-  [ErrorCode.DB_CREATE_USER_ERROR]: "Error creating user",
+  [ErrorCode.DB_UNIQUE_CONSTRAINT]: "Unique constraint violation",
 };

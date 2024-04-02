@@ -67,7 +67,7 @@ export class UserService {
     providerId: string,
     dto: CreateUserDto
   ): Promise<User> {
-    this.validateInviteCode(dto.inviteCode);
+    await this.validateInviteCode(dto.inviteCode);
 
     const createUserInput: CreateUserInput = {
       ...dto,
@@ -97,18 +97,21 @@ export class UserService {
   public async validateInviteCode(inviteCode: string): Promise<void> {
     const inviteCodeFound =
       await this.inviteCodeRepository.findInviteCode(inviteCode);
+    console.log(inviteCodeFound);
 
-    let errorMessage: string | undefined;
     if (!inviteCodeFound) {
-      errorMessage = "Invite code does not exist.";
+      throw new RecnetError(
+        ErrorCode.INVALID_INVITE_CODE,
+        HttpStatus.BAD_REQUEST,
+        "Invite code does not exist."
+      );
     } else if (inviteCodeFound.usedById) {
-      errorMessage = "Invite code has already been used.";
+      throw new RecnetError(
+        ErrorCode.INVALID_INVITE_CODE,
+        HttpStatus.BAD_REQUEST,
+        "Invite code has already been used."
+      );
     }
-    throw new RecnetError(
-      ErrorCode.INVALID_INVITE_CODE,
-      HttpStatus.BAD_REQUEST,
-      errorMessage
-    );
   }
 
   public async followUser(

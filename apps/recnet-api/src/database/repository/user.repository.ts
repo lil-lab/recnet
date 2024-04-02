@@ -1,10 +1,8 @@
-import { HttpStatus, Injectable } from "@nestjs/common";
+import { Injectable } from "@nestjs/common";
 import { Prisma, Provider } from "@prisma/client";
 
 import PrismaConnectionProvider from "@recnet-api/database/prisma/prisma.connection.provider";
 import { getOffset } from "@recnet-api/utils";
-import { RecnetError } from "@recnet-api/utils/error/recnet.error";
-import { ErrorCode } from "@recnet-api/utils/error/recnet.error.const";
 
 import { AuthProvider } from "@recnet/recnet-jwt";
 
@@ -46,14 +44,10 @@ export default class UserRepository {
 
   public async findUserById(userId: string): Promise<User> {
     const where = { id: userId };
-    return this.throwWhenUserNotFound(
-      () =>
-        this.prisma.user.findUniqueOrThrow({
-          where,
-          select: user.select,
-        }),
-      where
-    );
+    return this.prisma.user.findUniqueOrThrow({
+      where,
+      select: user.select,
+    });
   }
 
   public async findUserByHandle(handle: string): Promise<User | null> {
@@ -79,15 +73,11 @@ export default class UserRepository {
       provider_providerId: { provider: prismaProvider, providerId },
     };
 
-    return this.throwWhenUserNotFound(
-      () =>
-        this.prisma.user.update({
-          where,
-          data: { lastLoginAt: new Date() },
-          select: user.select,
-        }),
-      where
-    );
+    return this.prisma.user.update({
+      where,
+      data: { lastLoginAt: new Date() },
+      select: user.select,
+    });
   }
 
   public async createUser(createUserInput: CreateUserInput): Promise<User> {
@@ -97,33 +87,22 @@ export default class UserRepository {
       lastLoginAt: new Date(),
     };
 
-    let createdUser: User;
-    try {
-      createdUser = await this.prisma.$transaction(async (prisma) => {
-        const userInTransaction = await prisma.user.create({
-          data: prismaCreateUserInput,
-          select: user.select,
-        });
-
-        await prisma.inviteCode.update({
-          where: { code: createUserInput.inviteCode },
-          data: {
-            usedById: userInTransaction.id,
-            usedAt: new Date(),
-          },
-        });
-
-        return userInTransaction;
+    return await this.prisma.$transaction(async (prisma) => {
+      const userInTransaction = await prisma.user.create({
+        data: prismaCreateUserInput,
+        select: user.select,
       });
-    } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : undefined;
-      throw new RecnetError(
-        ErrorCode.DB_CREATE_USER_ERROR,
-        HttpStatus.BAD_REQUEST,
-        errorMessage
-      );
-    }
-    return createdUser;
+
+      await prisma.inviteCode.update({
+        where: { code: createUserInput.inviteCode },
+        data: {
+          usedById: userInTransaction.id,
+          usedAt: new Date(),
+        },
+      });
+
+      return userInTransaction;
+    });
   }
 
   public async updateUser(
@@ -131,15 +110,11 @@ export default class UserRepository {
     updateUserInput: Prisma.UserUpdateInput
   ): Promise<User> {
     const where = { id: userId };
-    return this.throwWhenUserNotFound(
-      () =>
-        this.prisma.user.update({
-          where,
-          data: updateUserInput,
-          select: user.select,
-        }),
-      where
-    );
+    return this.prisma.user.update({
+      where,
+      data: updateUserInput,
+      select: user.select,
+    });
   }
 
   private transformUserFilterByToPrismaWhere(
@@ -169,33 +144,6 @@ export default class UserRepository {
         return Provider.GOOGLE;
       default:
         throw new Error("Provider not supported");
-    }
-  }
-
-  private async throwWhenUserNotFound(
-    functionToWrap: () => Promise<User>,
-    where?: Prisma.UserWhereUniqueInput
-  ): Promise<User> {
-    try {
-      return await functionToWrap();
-    } catch (error) {
-      if (
-        error instanceof Prisma.PrismaClientKnownRequestError &&
-        error.code === "P2025"
-      ) {
-        throw new RecnetError(
-          ErrorCode.DB_USER_NOT_FOUND,
-          HttpStatus.NOT_FOUND,
-          undefined,
-          { where }
-        );
-      }
-      const errorMessage = error instanceof Error ? error.message : undefined;
-      throw new RecnetError(
-        ErrorCode.DB_UNKNOWN_ERROR,
-        HttpStatus.INTERNAL_SERVER_ERROR,
-        errorMessage
-      );
     }
   }
 }
