@@ -75,7 +75,7 @@ const RecFormSchema = z.object({
     .refine((val) => {
       return val >= 0;
     }, "Year should be a positive number"),
-  month: z.coerce.number().optional(),
+  month: z.number().optional(),
 });
 
 export function RecForm(props: {
@@ -102,32 +102,34 @@ export function RecForm(props: {
     getValues,
     control,
     setValue,
+    reset,
   } = useForm({
     resolver: zodResolver(RecFormSchema),
     mode: "onBlur",
   });
   const { isDirty } = useFormState({ control });
 
+  const [isSearchingForArticle, setIsSearchingForArticle] = useState(false);
+  const { data: articleData } = trpc.getArticleByLink.useQuery({
+    link: getValues("link"),
+  });
+  useEffect(() => {
+    // autofill form if articleData is available
+    if (articleData?.article) {
+      setValue("articleId", articleData.article.id);
+      setValue("doi", articleData.article.doi || undefined);
+      setValue("title", articleData.article.title);
+      setValue("author", articleData.article.author);
+      setValue("year", articleData.article.year);
+      setValue("month", articleData.article.month || undefined);
+    }
+  }, [articleData, setValue]);
+  const shouldDisablePrefilledFields = getValues("articleId") ? true : false;
+
   const insertRecMutation = trpc.addUpcomingRec.useMutation();
   const editRecMutation = trpc.editUpcomingRec.useMutation();
   const deleteRecMutation = trpc.deleteUpcomingRec.useMutation();
   const utils = trpc.useUtils();
-  const { data: articleData } = trpc.getArticleByLink.useQuery({
-    link: getValues("link"),
-  });
-
-  // autofill form if articleData is available
-  useEffect(() => {
-    if (articleData?.article) {
-      setValue("articleId", articleData.article.id);
-      setValue("doi", articleData.article.doi);
-      setValue("title", articleData.article.title);
-      setValue("author", articleData.article.author);
-      setValue("year", articleData.article.year);
-      setValue("month", articleData.article.month);
-    }
-  }, [articleData, setValue]);
-  const shouldDisablePrefilledFields = getValues("articleId") ? true : false;
 
   return (
     <form
@@ -195,13 +197,31 @@ export function RecForm(props: {
           <Button
             className={cn("w-full")}
             onClick={async () => {
+              setIsSearchingForArticle(true);
               await utils.getArticleByLink.invalidate({
                 link: getValues("link"),
               });
+              reset(undefined, {
+                keepValues: true,
+              });
               setShouldRevealForm(true);
+              setIsSearchingForArticle(false);
             }}
+            disabled={formState.errors.link || !watch("link") ? true : false}
           >
-            Next
+            {isSearchingForArticle ? (
+              <TailSpin
+                radius={"1"}
+                visible={true}
+                height="20"
+                width="20"
+                color={"#ffffff"}
+                ariaLabel="line-wave-loading"
+                wrapperClass="w-fit h-fit"
+              />
+            ) : (
+              "Next"
+            )}
           </Button>
         </div>
       ) : (
