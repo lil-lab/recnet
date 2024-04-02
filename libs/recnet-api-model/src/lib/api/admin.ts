@@ -29,7 +29,7 @@ export type GetInviteCodesResponse = z.infer<
 
 // POST /inviteCodes
 export const postInviteCodesRequestSchema = z.object({
-  numCodes: z.number(),
+  numCodes: z.number().min(1).max(20),
   ownerId: z.string(),
 });
 export type PostInviteCodesRequest = z.infer<
