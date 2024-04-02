@@ -87,7 +87,7 @@ const SelectItem = forwardRef<HTMLDivElement, Select.SelectItemProps>(
 );
 SelectItem.displayName = "SelectItem";
 
-const RecFormSchema = z.object({
+const RecArticleFormSchema = z.object({
   articleId: z.string().optional(),
   doi: z.string().optional(),
   link: z.string().url(),
@@ -108,18 +108,11 @@ const RecFormSchema = z.object({
   month: z.number().optional(),
 });
 
-export function RecForm(props: {
+export function RecArticleForm(props: {
   onFinish?: () => void;
   currentRec: Rec | null;
-  onUpdateSuccess?: () => void;
-  onDeleteSuccess?: () => void;
 }) {
-  const {
-    onFinish = () => {},
-    currentRec,
-    onUpdateSuccess = () => {},
-    onDeleteSuccess = () => {},
-  } = props;
+  const { onFinish = () => {}, currentRec } = props;
   const [step, setStep] = useState<Step>("insertLink");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -133,7 +126,7 @@ export function RecForm(props: {
     setValue,
     reset,
   } = useForm({
-    resolver: zodResolver(RecFormSchema),
+    resolver: zodResolver(RecArticleFormSchema),
     mode: "onBlur",
   });
   const { isDirty } = useFormState({ control });
@@ -169,7 +162,7 @@ export function RecForm(props: {
           setIsSubmitting(true);
           e?.preventDefault();
           // parse using zod schema
-          const res = RecFormSchema.safeParse(data);
+          const res = RecArticleFormSchema.safeParse(data);
           if (!res.success) {
             // should not happen, just in case and for typescript to narrow down type
             console.error("Invalid form data.");
@@ -193,7 +186,6 @@ export function RecForm(props: {
               await insertRecMutation.mutateAsync(res.data);
               toast.success("We got your rec! 🎉");
             }
-            onUpdateSuccess();
             await utils.getUpcomingRec.invalidate();
             onFinish();
             setIsSubmitting(false);
@@ -442,7 +434,6 @@ export function RecForm(props: {
                     await deleteRecMutation.mutateAsync({
                       id: currentRec.id,
                     });
-                    await onDeleteSuccess();
                     await utils.getUpcomingRec.invalidate();
                     toast.success("Rec deleted successfully");
                     onFinish();

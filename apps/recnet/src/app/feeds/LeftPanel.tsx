@@ -10,7 +10,7 @@ import { useState } from "react";
 import { useAuth } from "@recnet/recnet-web/app/AuthContext";
 import { CutoffDropdown } from "@recnet/recnet-web/components/CutoffDropdown";
 import { RecNetLink } from "@recnet/recnet-web/components/Link";
-import { RecForm } from "@recnet/recnet-web/components/RecForm";
+import { RecArticleForm } from "@recnet/recnet-web/components/RecArticleForm";
 import { Skeleton, SkeletonText } from "@recnet/recnet-web/components/Skeleton";
 import { cn } from "@recnet/recnet-web/utils/cn";
 
@@ -169,7 +169,7 @@ export function LeftPanel() {
                 <ChevronLeft width="16" height="16" />
                 Back
               </div>
-              <RecForm
+              <RecArticleForm
                 onFinish={() => {
                   setIsRecFormOpen(false);
                 }}
