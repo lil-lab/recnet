@@ -64,16 +64,7 @@ export class UserService {
     providerId: string,
     dto: CreateUserDto
   ): Promise<User> {
-    const { inviteCode } = dto;
-    const inviteCodeFound =
-      await this.inviteCodeRepository.findInviteCode(inviteCode);
-
-    if (!inviteCodeFound || inviteCodeFound.usedById) {
-      throw new RecnetError(
-        ErrorCode.INVALID_INVITE_CODE,
-        HttpStatus.BAD_REQUEST
-      );
-    }
+    this.validateInviteCode(dto.inviteCode);
 
     const createUserInput: CreateUserInput = {
       ...dto,
@@ -91,6 +82,30 @@ export class UserService {
       updateUserInput
     );
     return this.transformUser(user);
+  }
+
+  public async validateHandle(handle: string): Promise<void> {
+    const user = await this.userRepository.findUserByHandle(handle);
+    if (user) {
+      throw new RecnetError(ErrorCode.HANDLE_EXISTS, HttpStatus.BAD_REQUEST);
+    }
+  }
+
+  public async validateInviteCode(inviteCode: string): Promise<void> {
+    const inviteCodeFound =
+      await this.inviteCodeRepository.findInviteCode(inviteCode);
+
+    let errorMessage: string | undefined;
+    if (!inviteCodeFound) {
+      errorMessage = "Invite code does not exist.";
+    } else if (inviteCodeFound.usedById) {
+      errorMessage = "Invite code has already been used.";
+    }
+    throw new RecnetError(
+      ErrorCode.INVALID_INVITE_CODE,
+      HttpStatus.BAD_REQUEST,
+      errorMessage
+    );
   }
 
   private async transformUser(user: DbUser): Promise<User> {
@@ -126,12 +141,5 @@ export class UserService {
       bio: user.bio,
       numFollowers: user.followedBy.length,
     };
-  }
-
-  public async validateHandle(handle: string): Promise<void> {
-    const user = await this.userRepository.findUserByHandle(handle);
-    if (user) {
-      throw new RecnetError(ErrorCode.HANDLE_EXISTS, HttpStatus.BAD_REQUEST);
-    }
   }
 }

@@ -29,12 +29,16 @@ import {
   patchUserMeRequestSchema,
   postUserMeRequestSchema,
   postUserValidateHandleRequestSchema,
+  postUserValidateInviteCodeRequestSchema,
 } from "@recnet/recnet-api-model";
 
 import { CreateUserDto } from "./dto/create.user.dto";
 import { QueryUsersDto } from "./dto/query.users.dto";
 import { UpdateUserDto } from "./dto/update.user.dto";
-import { ValidateUserHandleDto } from "./dto/validate.user.dto";
+import {
+  ValidateUserHandleDto,
+  ValidateUserInviteCodeDto,
+} from "./dto/validate.user.dto";
 import { GetUserMeResponse, GetUsersResponse } from "./user.response";
 import { UserService } from "./user.service";
 
@@ -136,5 +140,22 @@ export class UserController {
   ): Promise<void> {
     const { handle } = dto;
     return this.userService.validateHandle(handle);
+  }
+
+  @ApiOperation({
+    summary: "Validate invite code",
+    description: "Validate if the invite exists and has not been used.",
+  })
+  @ApiOkResponse()
+  @ApiBearerAuth()
+  @Post("validate/invite-code")
+  @HttpCode(HttpStatus.OK)
+  @UsePipes(new ZodValidationPipe(postUserValidateInviteCodeRequestSchema))
+  @AuthFirebase()
+  public async validateInviteCode(
+    @Body() dto: ValidateUserInviteCodeDto
+  ): Promise<void> {
+    const { inviteCode } = dto;
+    return this.userService.validateInviteCode(inviteCode);
   }
 }
