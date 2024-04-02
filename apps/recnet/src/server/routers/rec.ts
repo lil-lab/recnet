@@ -113,6 +113,7 @@ export const recRouter = router({
   addUpcomingRec: checkRecnetJWTProcedure
     .input(
       z.object({
+        // add articleId and doi
         link: z.string().url(),
         title: z.string().min(1),
         author: z.string().min(1),
@@ -146,8 +147,10 @@ export const recRouter = router({
   editUpcomingRec: checkRecnetJWTProcedure
     .input(
       z.object({
+        // REFACTOR_AFTER_MIGRATION: don't need id here
         id: z.string(),
         data: z.object({
+          // add articleId and doi
           link: z.string().url(),
           title: z.string().min(1),
           author: z.string().min(1),

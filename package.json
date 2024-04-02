@@ -55,6 +55,7 @@
     "server-only": "^0.0.1",
     "sonner": "^1.4.32",
     "tailwind-merge": "^2.2.1",
+    "tailwindcss-radix": "^3.0.3",
     "tslib": "^2.3.0",
     "zod": "^3.22.4"
   },
