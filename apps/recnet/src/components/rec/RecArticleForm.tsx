@@ -32,7 +32,7 @@ import {
   numToMonth,
 } from "@recnet/recnet-date-fns";
 
-import { Article, Rec } from "@recnet/recnet-api-model";
+import { Article } from "@recnet/recnet-api-model";
 
 const Steps = {
   insertLink: {
@@ -108,13 +108,12 @@ const RecArticleFormSchema = z.object({
   month: z.number().optional(),
 });
 
-export function RecArticleForm(props: {
-  onFinish?: () => void;
-  currentRec: Rec | null;
-}) {
-  const { onFinish = () => {}, currentRec } = props;
+export function RecArticleForm(props: { onFinish?: () => void }) {
+  const { onFinish = () => {} } = props;
   const [step, setStep] = useState<Step>("insertLink");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const { data } = trpc.getUpcomingRec.useQuery();
+  const currentRec = data?.rec ?? null;
 
   const {
     register,

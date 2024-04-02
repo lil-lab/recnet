@@ -99,7 +99,6 @@ function RecFormContent(props: { setOpen: (open: boolean) => void }) {
           onFinish={() => {
             setOpen(false);
           }}
-          currentRec={rec ?? null}
         />
       </Flex>
     </div>

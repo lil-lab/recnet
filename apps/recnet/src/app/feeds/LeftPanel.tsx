@@ -173,7 +173,6 @@ export function LeftPanel() {
                 onFinish={() => {
                   setIsRecFormOpen(false);
                 }}
-                currentRec={rec}
               />
             </motion.div>
           ) : (
