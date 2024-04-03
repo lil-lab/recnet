@@ -1,7 +1,7 @@
 import { HttpStatus, Inject, Injectable } from "@nestjs/common";
 
 import FollowingRecordRepository from "@recnet-api/database/repository/followingRecord.repository";
-import InviteCodeRepository from "@recnet-api/database/repository/inviteCode.repository";
+import InviteCodeRepository from "@recnet-api/database/repository/invite-code.repository";
 import UserRepository from "@recnet-api/database/repository/user.repository";
 import {
   CreateUserInput,
@@ -105,7 +105,7 @@ export class UserService {
         HttpStatus.BAD_REQUEST,
         "Invite code does not exist."
       );
-    } else if (inviteCodeFound.usedById) {
+    } else if (inviteCodeFound.usedBy) {
       throw new RecnetError(
         ErrorCode.INVALID_INVITE_CODE,
         HttpStatus.BAD_REQUEST,
