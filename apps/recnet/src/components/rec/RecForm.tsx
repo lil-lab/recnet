@@ -14,6 +14,9 @@ import { toast } from "sonner";
 import { z } from "zod";
 
 import { trpc } from "@recnet/recnet-web/app/_trpc/client";
+import { ReportEmailAccount } from "@recnet/recnet-web/app/not-found";
+import { Accordion } from "@recnet/recnet-web/components/Accordion";
+import { RecNetLink } from "@recnet/recnet-web/components/Link";
 import { RecArticleForm } from "@recnet/recnet-web/components/rec/RecArticleForm";
 import { cn } from "@recnet/recnet-web/utils/cn";
 
@@ -215,6 +218,21 @@ export function RecForm(props: { onFinish?: () => void; currentRec: Rec }) {
             <Text size="1" weight="medium" className="text-gray-9 p-1">
               {`You can edit at anytime before this week's cutoff: ${getVerboseDateString(getNextCutOff())}.`}
             </Text>
+            <div className="flex flex-col w-full">
+              <Accordion
+                title="Why I can't edit the article details?"
+                className="text-blue-11"
+                titleClassName="text-[12px]"
+              >
+                <p className="text-gray-10 my-1 leading-2 text-[12px]">
+                  The article details are prefilled from our database. If you
+                  think the details are incorrect, please{" "}
+                  <RecNetLink href={`mailto:${ReportEmailAccount}`}>
+                    contact us
+                  </RecNetLink>
+                </p>
+              </Accordion>
+            </div>
             <Button
               variant="solid"
               color="blue"

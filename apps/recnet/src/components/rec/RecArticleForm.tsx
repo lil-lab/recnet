@@ -22,6 +22,7 @@ import { toast } from "sonner";
 import * as z from "zod";
 
 import { trpc } from "@recnet/recnet-web/app/_trpc/client";
+import { ReportEmailAccount } from "@recnet/recnet-web/app/not-found";
 import { cn } from "@recnet/recnet-web/utils/cn";
 
 import {
@@ -35,6 +36,9 @@ import {
 
 import { Article, Rec } from "@recnet/recnet-api-model";
 
+import { Accordion } from "../Accordion";
+import { RecNetLink } from "../Link";
+
 const Steps = {
   insertLink: {
     header: (article: Article | null) => (
@@ -44,6 +48,9 @@ const Steps = {
         </Text>
       </Flex>
     ),
+    footer: (article: Article | null) => {
+      return null;
+    },
   },
   insertDetails: {
     header: (article: Article | null) => {
@@ -59,6 +66,28 @@ const Steps = {
             </Text>
           )}
         </Flex>
+      );
+    },
+    footer: (article: Article | null) => {
+      if (!article) {
+        return null;
+      }
+      return (
+        <div className="flex flex-col w-full">
+          <Accordion
+            title="Why I can't edit the article details?"
+            className="text-blue-11"
+            titleClassName="text-[12px]"
+          >
+            <p className="text-gray-10 my-1 leading-2 text-[12px]">
+              The article details are prefilled from our database. If you think
+              the details are incorrect, please{" "}
+              <RecNetLink href={`mailto:${ReportEmailAccount}`}>
+                contact us
+              </RecNetLink>
+            </p>
+          </Accordion>
+        </div>
       );
     },
   },
@@ -442,6 +471,22 @@ export function RecArticleForm(props: {
               <Text size="1" weight="medium" className="text-gray-9 p-1">
                 {`You can edit at anytime before this week's cutoff: ${getVerboseDateString(getNextCutOff())}.`}
               </Text>
+              <AnimatePresence initial={false} mode="wait">
+                <motion.div
+                  key={`${step}-footer`}
+                  initial={{
+                    opacity: 0,
+                  }}
+                  animate={{
+                    opacity: 1,
+                  }}
+                  exit={{
+                    opacity: 0,
+                  }}
+                >
+                  {Steps[step].footer(articleData?.article ?? null)}
+                </motion.div>
+              </AnimatePresence>
               <Button
                 variant="solid"
                 color="blue"
