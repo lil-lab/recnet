@@ -1,16 +1,18 @@
-import { UseGuards } from "@nestjs/common";
+import { UseGuards, applyDecorators } from "@nestjs/common";
 
-import {
-  firebaseJwtPayloadSchema,
-  recnetJwtPayloadSchema,
-  verifyFirebaseJwt,
-  verifyRecnetJwt,
-} from "@recnet/recnet-jwt";
+import { verifyFirebaseJwt, verifyRecnetJwt } from "@recnet/recnet-jwt";
+
+import { UserRole } from "@recnet/recnet-api-model";
 
 import { AuthGuard } from "./auth.guard";
+import { RoleGuard } from "./role.guard";
 
-export const Auth = () =>
-  UseGuards(new AuthGuard(verifyRecnetJwt, recnetJwtPayloadSchema));
+// RoleGuard must be placed after AuthGuard since it need to access the user info in the request
+export const Auth = (allowedRoles?: UserRole[]) => {
+  return applyDecorators(
+    UseGuards(new AuthGuard(verifyRecnetJwt)),
+    UseGuards(RoleGuard(allowedRoles))
+  );
+};
 
-export const AuthFirebase = () =>
-  UseGuards(new AuthGuard(verifyFirebaseJwt, firebaseJwtPayloadSchema));
+export const AuthFirebase = () => UseGuards(new AuthGuard(verifyFirebaseJwt));

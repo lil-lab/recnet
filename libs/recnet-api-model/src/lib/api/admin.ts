@@ -6,7 +6,7 @@ import { inviteCodeSchema } from "../model";
 export const getStatsResponseSchema = z.object({
   numUsers: z.number(),
   numRecs: z.number(),
-  numRecsOverTime: z.record(z.number(), z.number()),
+  numRecsOverTime: z.record(z.string(), z.number()),
   numUpcomingRecs: z.number(),
 });
 export type GetStatsResponse = z.infer<typeof getStatsResponseSchema>;
@@ -29,9 +29,16 @@ export type GetInviteCodesResponse = z.infer<
 
 // POST /inviteCodes
 export const postInviteCodesRequestSchema = z.object({
-  numCodes: z.number(),
+  numCodes: z.number().min(1).max(20),
   ownerId: z.string(),
 });
 export type PostInviteCodesRequest = z.infer<
   typeof postInviteCodesRequestSchema
+>;
+
+export const postInviteCodesResponseSchema = z.object({
+  codes: z.array(z.string()),
+});
+export type PostInviteCodesResponse = z.infer<
+  typeof postInviteCodesResponseSchema
 >;

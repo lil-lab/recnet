@@ -8,14 +8,11 @@ import { Request } from "express";
 
 import { getPublicKey } from "@recnet/recnet-jwt";
 
-import { JwtPayloadSchema, VerifyJwtFunction } from "./auth.type";
+import { VerifyJwtFunction } from "./auth.type";
 
 @Injectable()
 export class AuthGuard implements CanActivate {
-  constructor(
-    private readonly verifyJwt: VerifyJwtFunction,
-    private readonly payloadSchema: JwtPayloadSchema
-  ) {}
+  constructor(private readonly verifyJwt: VerifyJwtFunction) {}
 
   async canActivate(context: ExecutionContext) {
     const request = context.switchToHttp().getRequest();
