@@ -72,15 +72,25 @@ export function RecForm(props: { onFinish?: () => void; currentRec: Rec }) {
           exit={{ opacity: 0 }}
           className="flex flex-col gap-y-3"
         >
-          <Flex className="w-full">
+          <Flex direction={"column"} className="w-full">
             <Text
               size="2"
               weight="medium"
-              className="text-blue-11 p-1 cursor-pointer hover:underline"
+              className="text-gray-11 p-1"
               onClick={() => setRecNewArticle(true)}
             >
-              Recommend another article?
+              You can modify at anytime before this cycle ends.
             </Text>
+            <div className="flex flex-row justify-start w-full">
+              <Text
+                size="1"
+                weight={"medium"}
+                className="text-blue-11 p-1 cursor-pointer hover:underline"
+                onClick={() => setRecNewArticle(true)}
+              >
+                {`Recommend another article?`}
+              </Text>
+            </div>
           </Flex>
           <form
             className="flex flex-col gap-y-[10px]"
