@@ -45,10 +45,10 @@ export const FirebaseUser = createParamDecorator<undefined, ExecutionContext>(
         "Invalid JWT payload"
       );
     }
-    const rawFirebaseUser = firebaseJwtPayload.data.firebase;
+    const rawFirebaseUser = firebaseJwtPayload.data;
 
     // transform the rawFirebaseUser to a FirebaseUser object
-    const provider = rawFirebaseUser.sign_in_provider;
+    const provider = rawFirebaseUser.source_sign_in_provider;
     let providerId: string | null = null;
 
     if (!provider || !Object.values(AuthProvider).includes(provider)) {
@@ -61,7 +61,7 @@ export const FirebaseUser = createParamDecorator<undefined, ExecutionContext>(
 
     if (provider === AuthProvider.Google) {
       const identities = googleProviderIdentitySchema.safeParse(
-        rawFirebaseUser.identities
+        rawFirebaseUser.firebase.identities
       );
       if (
         !identities.success ||

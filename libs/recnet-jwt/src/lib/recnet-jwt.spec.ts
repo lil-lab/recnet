@@ -20,8 +20,8 @@ function generateFirebaseJWT(sk: string) {
         "google.com": ["123"],
         email: ["example.com"],
       },
-      sign_in_provider: "google.com",
     },
+    source_sign_in_provider: "google.com",
   });
   return sign(payload, sk, {
     algorithm: "RS256",
