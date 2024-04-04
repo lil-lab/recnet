@@ -97,7 +97,6 @@ export class UserService {
   public async validateInviteCode(inviteCode: string): Promise<void> {
     const inviteCodeFound =
       await this.inviteCodeRepository.findInviteCode(inviteCode);
-    console.log(inviteCodeFound);
 
     if (!inviteCodeFound) {
       throw new RecnetError(
