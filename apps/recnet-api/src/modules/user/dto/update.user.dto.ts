@@ -1,7 +1,5 @@
 import { ApiPropertyOptional } from "@nestjs/swagger";
 
-import { UserRole } from "@recnet/recnet-api-model";
-
 export class UpdateUserDto {
   @ApiPropertyOptional({ example: "joannechen1223" })
   handle?: string;
@@ -20,11 +18,4 @@ export class UpdateUserDto {
 
   @ApiPropertyOptional({ example: "example@cornell.edu" })
   email?: string;
-
-  @ApiPropertyOptional({
-    description: "USER | ADMIN",
-    example: "USER",
-    default: "USER",
-  })
-  role?: UserRole = "USER";
 }

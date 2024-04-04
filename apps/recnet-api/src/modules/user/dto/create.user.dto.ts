@@ -1,7 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 
-import { UserRole } from "@recnet/recnet-api-model";
-
 export class CreateUserDto {
   @ApiProperty({ example: "joannechen1223" })
   handle: string;
@@ -20,13 +18,6 @@ export class CreateUserDto {
 
   @ApiProperty({ example: "example@cornell.edu" })
   email: string;
-
-  @ApiProperty({
-    description: "USER | ADMIN",
-    example: "USER",
-    default: "USER",
-  })
-  role: UserRole = "USER";
 
   @ApiProperty({
     description: "Each invite code can only be used once.",

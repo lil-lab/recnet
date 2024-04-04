@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-import { userPreviewSchema, userRoleSchema, userSchema } from "../model";
+import { userPreviewSchema, userSchema } from "../model";
 
 // GET /users
 export const getUsersParamsSchema = z.object({
@@ -36,6 +36,7 @@ export const patchUserMeRequestSchema = userSchema
     id: true,
     numFollowers: true,
     following: true,
+    role: true,
   })
   .partial();
 export type PatchUserMeRequest = z.infer<typeof patchUserMeRequestSchema>;
@@ -54,9 +55,8 @@ export const postUserMeRequestSchema = userPreviewSchema
   .extend({
     email: z.string(),
     inviteCode: z.string(),
-    role: userRoleSchema,
   });
-export type PostUserMeResquest = z.infer<typeof postUserMeRequestSchema>;
+export type PostUserMeRequest = z.infer<typeof postUserMeRequestSchema>;
 
 export const postUserMeResponseSchema = z.object({
   user: userSchema,
