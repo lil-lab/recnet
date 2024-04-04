@@ -14,6 +14,13 @@ import {
 export default class InviteCodeRepository {
   constructor(private readonly prisma: PrismaConnectionProvider) {}
 
+  public async findInviteCode(code: string): Promise<InviteCode | null> {
+    return this.prisma.inviteCode.findFirst({
+      where: { code },
+      select: inviteCode.select,
+    });
+  }
+
   public async createInviteCode(
     codes: string[],
     ownerId: string

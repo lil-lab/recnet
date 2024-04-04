@@ -1,5 +1,7 @@
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 
+import { UserRole } from "@recnet/recnet-api-model";
+
 import { UserPreview } from "./user.preview.entity";
 
 export class User {
@@ -28,7 +30,7 @@ export class User {
   email: string;
 
   @ApiProperty()
-  role: string;
+  role: UserRole;
 
   @ApiProperty()
   following: UserPreview[];
