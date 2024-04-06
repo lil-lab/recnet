@@ -74,9 +74,12 @@ export class UserController {
   @ApiBearerAuth()
   @Get("login")
   @AuthFirebase()
-  public async login(@FirebaseUser() firebaseUser: AuthFirebaseUser) {
+  public async login(
+    @FirebaseUser() firebaseUser: AuthFirebaseUser
+  ): Promise<GetUserMeResponse> {
     const { provider, providerId } = firebaseUser;
-    return this.userService.login(provider, providerId);
+    const user = await this.userService.login(provider, providerId);
+    return { user };
   }
 
   @ApiOperation({
