@@ -1,9 +1,11 @@
 import { TRPCError } from "@trpc/server";
 import { AxiosInstance } from "axios";
+import axios from "axios";
 import { Tokens } from "next-firebase-auth-edge";
 import { z } from "zod";
 
 import { ErrorMessages, UserRole } from "@recnet/recnet-web/constant";
+import { serverEnv } from "@recnet/recnet-web/serverEnv";
 import { getTokenServerSide } from "@recnet/recnet-web/utils/getTokenServerSide";
 
 import {
@@ -34,6 +36,16 @@ export async function getUserByTokens(
   return userSchema.parse(data.user);
 }
 
+function createRecnetApiInstanceWithToken(tokens: Tokens) {
+  const { token } = tokens;
+  return axios.create({
+    baseURL: serverEnv.RECNET_API_ENDPOINT,
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+}
+
 export const checkFirebaseJWTProcedure = publicProcedure.use(async (opts) => {
   const tokens = await getTokenServerSide();
   const parseRes = firebaseJwtPayloadSchema.safeParse(tokens?.decodedToken);
@@ -43,6 +55,7 @@ export const checkFirebaseJWTProcedure = publicProcedure.use(async (opts) => {
       message: ErrorMessages.MISSING_FIREBASE_SECRET,
     });
   }
+
   return opts.next({
     ctx: {
       ...opts.ctx,
@@ -65,11 +78,14 @@ export const checkRecnetJWTProcedure = publicProcedure.use(async (opts) => {
     });
   }
   const user = await getUserByTokens(tokens, opts.ctx.recnetApi);
+  const recnetApiInstance = createRecnetApiInstanceWithToken(tokens);
+
   return opts.next({
     ctx: {
       ...opts.ctx,
       tokens: parseRes.data,
       user: user,
+      recnetApi: recnetApiInstance,
     },
   });
 });
@@ -94,11 +110,14 @@ export const checkIsAdminProcedure = publicProcedure.use(async (opts) => {
     }
   }
   const user = await getUserByTokens(tokens, opts.ctx.recnetApi);
+  const recnetApiInstance = createRecnetApiInstanceWithToken(tokens);
+
   return opts.next({
     ctx: {
       ...opts.ctx,
       tokens: parseRes.data,
       user,
+      recnetApi: recnetApiInstance,
     },
   });
 });

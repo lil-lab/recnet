@@ -11,6 +11,8 @@ import {
   getUserLoginResponseSchema,
   userPreviewSchema,
   userSchema,
+  postUserFollowRequestSchema,
+  deleteUserFollowParamsSchema,
 } from "@recnet/recnet-api-model";
 
 import {
@@ -49,40 +51,23 @@ export const userRouter = router({
       return getUserLoginResponseSchema.parse(data);
     }),
   follow: checkRecnetJWTProcedure
-    .input(
-      z.object({
-        targetUserId: z.string(),
-      })
-    )
+    .input(postUserFollowRequestSchema)
     .mutation(async (opts) => {
-      const { id: userId } = opts.ctx.user;
-      const { targetUserId } = opts.input;
-      // add to [id] user followers
-      await db.doc(`users/${targetUserId}`).update({
-        followers: FieldValue.arrayUnion(userId),
-      });
-
-      // add to current user following
-      await db.doc(`users/${userId}`).update({
-        following: FieldValue.arrayUnion(targetUserId),
+      const { userId } = opts.input;
+      const { recnetApi } = opts.ctx;
+      await recnetApi.post("/users/follow", {
+        userId,
       });
     }),
   unfollow: checkRecnetJWTProcedure
-    .input(
-      z.object({
-        targetUserId: z.string(),
-      })
-    )
+    .input(deleteUserFollowParamsSchema)
     .mutation(async (opts) => {
-      const { id: userId } = opts.ctx.user;
-      const { targetUserId } = opts.input;
-      // remove from [id] user followers
-      await db.doc(`users/${targetUserId}`).update({
-        followers: FieldValue.arrayRemove(userId),
-      });
-      // remove from current user following
-      await db.doc(`users/${userId}`).update({
-        following: FieldValue.arrayRemove(targetUserId),
+      const { userId } = opts.input;
+      const { recnetApi } = opts.ctx;
+      await recnetApi.delete("/users/follow", {
+        params: {
+          userId,
+        },
       });
     }),
   checkUserHandleValid: checkFirebaseJWTProcedure

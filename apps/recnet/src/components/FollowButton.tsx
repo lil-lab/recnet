@@ -36,7 +36,7 @@ export function FollowButton(props: FollowButtonProps) {
         setIsLoading(true);
         if (isFollowing) {
           try {
-            await unfollowMutation.mutateAsync({ targetUserId: user.id });
+            await unfollowMutation.mutateAsync({ userId: user.id });
             await revalidateUser();
             toast.success(`Successfully unfollowed ${user.displayName}`);
           } catch (e) {
@@ -44,7 +44,7 @@ export function FollowButton(props: FollowButtonProps) {
           }
         } else {
           try {
-            await followMutation.mutateAsync({ targetUserId: user.id });
+            await followMutation.mutateAsync({ userId: user.id });
             await revalidateUser();
             toast.success(`You're following ${user.displayName}`);
           } catch (e) {
