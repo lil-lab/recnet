@@ -5,7 +5,7 @@ function CustomApp({ Component, pageProps }: AppProps) {
   return (
     <>
       <Head>
-        <title>Welcome to recnet-docs!</title>
+        <title>Welcome to recnet-docs.</title>
       </Head>
       <main className="app">
         <Component {...pageProps} />
