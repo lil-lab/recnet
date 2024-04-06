@@ -43,19 +43,21 @@ export const userRouter = router({
     .output(getUserLoginResponseSchema)
     .mutation(async (opts) => {
       const { tokens, recnetApi } = opts.ctx;
-      const { data } = await recnetApi.get("/users/login", {
-        headers: {
-          Authorization: `Bearer ${tokens.token}`,
-        },
-      });
-      const userData = getUserLoginResponseSchema.safeParse(data);
-      if (!userData.success) {
+      try {
+        const { data } = await recnetApi.get("/users/login", {
+          headers: {
+            Authorization: `Bearer ${tokens.token}`,
+          },
+        });
+        return getUserLoginResponseSchema.parse(data);
+      } catch (e) {
+        // TODO: use if else statement to catch the correct error
+        // handle user first login and throw this error to redirect to the signup page
         throw new TRPCError({
           code: "NOT_FOUND",
           message: ErrorMessages.USER_NOT_FOUND,
         });
       }
-      return userData.data;
     }),
   follow: checkRecnetJWTProcedure
     .input(postUserFollowRequestSchema)
