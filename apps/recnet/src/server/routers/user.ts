@@ -13,6 +13,8 @@ import {
   userSchema,
   postUserFollowRequestSchema,
   deleteUserFollowParamsSchema,
+  postUserValidateInviteCodeRequestSchema,
+  postUserValidateHandleRequestSchema,
 } from "@recnet/recnet-api-model";
 
 import {
@@ -80,11 +82,7 @@ export const userRouter = router({
       });
     }),
   checkUserHandleValid: checkFirebaseJWTProcedure
-    .input(
-      z.object({
-        handle: z.string(),
-      })
-    )
+    .input(postUserValidateHandleRequestSchema)
     .output(
       z.object({
         isValid: z.boolean(),
@@ -92,38 +90,42 @@ export const userRouter = router({
     )
     .mutation(async (opts) => {
       const { handle } = opts.input;
-      const querySnapshot = await db
-        .collection("users")
-        .where("username", "==", handle)
-        .limit(1)
-        .get();
-      return {
-        isValid: querySnapshot.empty,
-      };
+      const { recnetApi } = opts.ctx;
+      try {
+        await recnetApi.post("/users/validate/handle", {
+          handle,
+        });
+        return {
+          isValid: true,
+        };
+      } catch (e) {
+        return {
+          isValid: false,
+        };
+      }
     }),
   checkInviteCodeValid: checkFirebaseJWTProcedure
-    .input(
-      z.object({
-        code: z.string(),
-      })
-    )
+    .input(postUserValidateInviteCodeRequestSchema)
     .output(
       z.object({
         isValid: z.boolean(),
       })
     )
     .mutation(async (opts) => {
-      const { code } = opts.input;
-      const ref = db.doc(`invite-codes/${code}`);
-      const docSnap = await ref.get();
-      if (docSnap.exists) {
+      const { inviteCode } = opts.input;
+      const { recnetApi } = opts.ctx;
+      try {
+        await recnetApi.post("/users/validate/invite-code", {
+          inviteCode,
+        });
         return {
-          isValid: docSnap.data()?.used === false,
+          isValid: true,
+        };
+      } catch (e) {
+        return {
+          isValid: false,
         };
       }
-      return {
-        isValid: false,
-      };
     }),
   getUserByHandle: publicProcedure
     .input(

@@ -100,7 +100,7 @@ export default function OnboardPage() {
           // verify invite code is valid
           const { isValid: inviteCodeValid } =
             await checkInviteCodeValidMutation.mutateAsync({
-              code: res.data.inviteCode,
+              inviteCode: res.data.inviteCode,
             });
           if (!inviteCodeValid) {
             setError(
