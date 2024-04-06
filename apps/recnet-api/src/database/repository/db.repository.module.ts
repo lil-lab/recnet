@@ -1,12 +1,14 @@
 import { Module } from "@nestjs/common";
 
-import UserRepository from "./user.repository";
+import { PrismaModule } from "@recnet-api/database/prisma/prisma.module";
 
-import { PrismaModule } from "../prisma/prisma.module";
+import ArticleRepository from "./article.repository";
+import RecRepository from "./rec.repository";
+import UserRepository from "./user.repository";
 
 @Module({
   imports: [PrismaModule],
-  providers: [UserRepository],
-  exports: [UserRepository],
+  providers: [UserRepository, RecRepository, ArticleRepository],
+  exports: [UserRepository, RecRepository, ArticleRepository],
 })
 export class DbRepositoryModule {}
