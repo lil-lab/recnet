@@ -86,6 +86,7 @@ export const checkFirebaseJWTProcedure = publicProcedure.use(async (opts) => {
   }
   return opts.next({
     ctx: {
+      ...opts.ctx,
       tokens,
     },
   });
@@ -107,6 +108,7 @@ export const checkRecnetJWTProcedure = publicProcedure.use(async (opts) => {
   const user = await getUserByTokens(tokens);
   return opts.next({
     ctx: {
+      ...opts.ctx,
       tokens: parseRes.data,
       user: user,
     },
@@ -135,6 +137,7 @@ export const checkIsAdminProcedure = publicProcedure.use(async (opts) => {
   const user = await getUserByTokens(tokens);
   return opts.next({
     ctx: {
+      ...opts.ctx,
       tokens: parseRes.data,
       user,
     },
