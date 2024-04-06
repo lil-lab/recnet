@@ -15,7 +15,7 @@ export default class RecRepository {
   public async findRecs(
     page: number,
     pageSize: number,
-    filter: RecFilterBy
+    filter: RecFilterBy = {}
   ): Promise<Rec[]> {
     return this.prisma.recommendation.findMany({
       select: rec.select,
@@ -26,7 +26,7 @@ export default class RecRepository {
     });
   }
 
-  public async countRecs(filter: RecFilterBy): Promise<number> {
+  public async countRecs(filter: RecFilterBy = {}): Promise<number> {
     return this.prisma.recommendation.count({
       where: this.transformRecFilterByToPrismaWhere(filter),
     });
@@ -103,6 +103,19 @@ export default class RecRepository {
         id: recId,
       },
     });
+  }
+
+  public async getRecCountPerCutoff() {
+    const recCounts = await this.prisma.recommendation.groupBy({
+      by: ["cutoff"],
+      _count: {
+        _all: true,
+      },
+    });
+    return recCounts.map((entry) => ({
+      cutoff: entry.cutoff,
+      count: entry._count._all,
+    }));
   }
 
   private transformRecFilterByToPrismaWhere(

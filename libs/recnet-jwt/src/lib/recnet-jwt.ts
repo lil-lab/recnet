@@ -13,9 +13,23 @@ export const recnetJwtPayloadSchema = z
   .passthrough();
 export type RecNetJwtPayload = z.infer<typeof recnetJwtPayloadSchema>;
 
-export const firebaseJwtPayloadSchema = recnetJwtPayloadSchema
-  .omit({
-    recnet: true,
+export enum AuthProvider {
+  Google = "google.com",
+  // Add other providers here if needed
+}
+export const providerSchema = z.nativeEnum(AuthProvider);
+
+export const googleProviderIdentitySchema = z.object({
+  [AuthProvider.Google]: z.array(z.string()),
+  email: z.array(z.string()),
+});
+
+export const firebaseJwtPayloadSchema = z
+  .object({
+    firebase: z.object({
+      identities: z.record(z.array(z.string())),
+    }),
+    source_sign_in_provider: providerSchema,
   })
   .passthrough();
 export type FirebaseJwtPayload = z.infer<typeof firebaseJwtPayloadSchema>;
