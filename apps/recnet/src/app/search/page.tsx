@@ -1,11 +1,13 @@
 "use client";
 
-import { Button, Text } from "@radix-ui/themes";
+import { Text } from "@radix-ui/themes";
 import { InfiniteData } from "@tanstack/react-query";
 import { useMemo } from "react";
+import InfiniteScroll from "react-infinite-scroll-component";
 
 import { useAuth } from "@recnet/recnet-web/app/AuthContext";
 import { GoBackButton } from "@recnet/recnet-web/components/GoBackButton";
+import { LoadingBox } from "@recnet/recnet-web/components/LoadingBox";
 import { UserList } from "@recnet/recnet-web/components/UserCard";
 import { cn } from "@recnet/recnet-web/utils/cn";
 import { shuffleArray } from "@recnet/recnet-web/utils/shuffle";
@@ -38,21 +40,22 @@ export default function SearchResultPage({
 }) {
   const { user } = useAuth();
   const query = searchParams["q"];
-  const { data, isPending, fetchNextPage } = trpc.search.useInfiniteQuery(
-    {
-      keyword: query,
-      pageSize: 20,
-    },
-    {
-      getNextPageParam: (lastPage, allPages) => {
-        if (!lastPage.hasNext) {
-          return null;
-        }
-        return allPages.length + 1;
+  const { data, isPending, fetchNextPage, hasNextPage } =
+    trpc.search.useInfiniteQuery(
+      {
+        keyword: query,
+        pageSize: 20,
       },
-      initialCursor: 1,
-    }
-  );
+      {
+        getNextPageParam: (lastPage, allPages) => {
+          if (!lastPage.hasNext) {
+            return null;
+          }
+          return allPages.length + 1;
+        },
+        initialCursor: 1,
+      }
+    );
 
   const users = useMemo(
     () => getShuffledUsersFromInfiniteQuery(data, user?.id),
@@ -60,8 +63,7 @@ export default function SearchResultPage({
   );
 
   if (isPending) {
-    // TODO: Add loading animation
-    return <div>Loading...</div>;
+    return <LoadingBox className="h-[95svh]" />;
   }
 
   return (
@@ -78,18 +80,23 @@ export default function SearchResultPage({
       )}
     >
       <GoBackButton />
-      <Button
-        className="w-full"
-        onClick={() => {
-          fetchNextPage();
-        }}
-      >
-        Load More
-      </Button>
       <Text size="7" className="text-gray-12 font-medium">{`${
         users.length
       } result${users.length > 1 ? "s" : ""}`}</Text>
-      {users.length === 0 ? <NotFoundBlock /> : <UserList users={users} />}
+      {users.length === 0 ? (
+        <NotFoundBlock />
+      ) : (
+        <InfiniteScroll
+          dataLength={users.length}
+          next={fetchNextPage}
+          hasMore={hasNextPage}
+          loader={<LoadingBox className="h-[200px]" />}
+          endMessage={null}
+          className="p-1"
+        >
+          <UserList users={users} />
+        </InfiniteScroll>
+      )}
     </div>
   );
 }

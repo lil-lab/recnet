@@ -1,7 +1,6 @@
 "use client";
 
 import { Flex, Table, Text } from "@radix-ui/themes";
-import { TailSpin } from "react-loader-spinner";
 
 import { trpc } from "@recnet/recnet-web/app/_trpc/client";
 import {
@@ -11,6 +10,7 @@ import {
 import { Avatar } from "@recnet/recnet-web/components/Avatar";
 import { CopiableInviteCode } from "@recnet/recnet-web/components/InviteCode";
 import { RecNetLink } from "@recnet/recnet-web/components/Link";
+import { LoadingBox } from "@recnet/recnet-web/components/LoadingBox";
 import { cn } from "@recnet/recnet-web/utils/cn";
 
 import { formatDate } from "@recnet/recnet-date-fns";
@@ -30,19 +30,7 @@ const TableUserCard = (props: { user: UserPreview }) => {
 };
 
 const TableLoader = () => {
-  return (
-    <Flex className="justify-center items-center w-full h-[300px]">
-      <TailSpin
-        radius={"3"}
-        visible={true}
-        height="40"
-        width="40"
-        color={"#909090"}
-        ariaLabel="line-wave-loading"
-        wrapperClass="w-fit h-fit"
-      />
-    </Flex>
-  );
+  return <LoadingBox className="h-[300px]" />;
 };
 
 export default function InviteCodeMonitorPage() {

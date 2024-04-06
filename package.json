@@ -51,6 +51,7 @@
     "react-dom": "^18.2.0",
     "react-email": "2.0.0",
     "react-hook-form": "^7.50.0",
+    "react-infinite-scroll-component": "^6.1.0",
     "react-loader-spinner": "^6.1.6",
     "recnet-api": "link:dist/apps/recnet-api",
     "reflect-metadata": "^0.1.13",
