@@ -6,7 +6,12 @@ import { UserRole } from "@recnet/recnet-web/constant";
 import { ErrorMessages } from "@recnet/recnet-web/constant";
 import { db } from "@recnet/recnet-web/firebase/admin";
 
-import { userPreviewSchema, userSchema } from "@recnet/recnet-api-model";
+import {
+  getUserMeResponseSchema,
+  getUserLoginResponseSchema,
+  userPreviewSchema,
+  userSchema,
+} from "@recnet/recnet-api-model";
 
 import {
   checkFirebaseJWTProcedure,
@@ -18,46 +23,30 @@ import {
 import { publicProcedure, router } from "../trpc";
 
 export const userRouter = router({
-  login: checkFirebaseJWTProcedure
-    .output(
-      z.object({
-        user: userSchema,
-      })
-    )
-    .mutation(async (opts) => {
-      // REFACTOR_AFTER_MIGRATION: use /users/login POST to get user and set custom claims
-      const { tokens } = opts.ctx;
-      const { decodedToken } = tokens;
-      const email = decodedToken.email;
-      const querySnapshot = await db
-        .collection("users")
-        .where("email", "==", email)
-        .limit(1)
-        .get();
-
-      if (querySnapshot.empty) {
-        throw new TRPCError({
-          code: "NOT_FOUND",
-          message: ErrorMessages.USER_NOT_FOUND,
-        });
+  getMe: publicProcedure
+    .output(z.union([getUserMeResponseSchema, z.object({ user: z.null() })]))
+    .query(async (opts) => {
+      const { tokens, recnetApi } = opts.ctx;
+      if (!tokens) {
+        return {
+          user: null,
+        };
       }
-      const user = userSchema.parse({
-        id: querySnapshot.docs[0].id,
-        handle: querySnapshot.docs[0].data().username,
-        displayName: querySnapshot.docs[0].data().displayName,
-        photoUrl: querySnapshot.docs[0].data().photoURL,
-        affiliation: querySnapshot.docs[0].data().affiliation || null,
-        bio: querySnapshot.docs[0].data().bio || null,
-        numFollowers: querySnapshot.docs[0].data().followers.length,
-        email: querySnapshot.docs[0].data().email,
-        role: querySnapshot.docs[0].data().role
-          ? UserRole.ADMIN
-          : UserRole.USER,
-        following: [], // temperory set to empty since it's unused and will be removed after migration
-      });
+      const user = await getUserByTokens(tokens, recnetApi);
       return {
         user,
       };
+    }),
+  login: checkFirebaseJWTProcedure
+    .output(getUserLoginResponseSchema)
+    .mutation(async (opts) => {
+      const { tokens, recnetApi } = opts.ctx;
+      const { data } = await recnetApi.get("/users/login", {
+        headers: {
+          Authorization: `Bearer ${tokens.token}`,
+        },
+      });
+      return getUserLoginResponseSchema.parse(data);
     }),
   follow: checkRecnetJWTProcedure
     .input(
@@ -319,20 +308,6 @@ export const userRouter = router({
           role: docSnap.data()?.role ? UserRole.ADMIN : UserRole.USER,
           following: [], // temperory set to empty since it's unused and will be removed after migration
         }),
-      };
-    }),
-  getMe: publicProcedure
-    .output(z.object({ user: userSchema.nullable() }))
-    .query(async (opts) => {
-      const { tokens } = opts.ctx;
-      if (!tokens) {
-        return {
-          user: null,
-        };
-      }
-      const user = await getUserByTokens(tokens);
-      return {
-        user,
       };
     }),
   getNumOfUsers: checkIsAdminProcedure
