@@ -11,6 +11,7 @@ export enum ErrorMessages {
   // user
   USER_NOT_FOUND = "User not found",
   USER_HANDLE_USED = "User handle already used",
+  USER_MISSING_FIREBASE_USER_DATA = "User missing Firebase user data",
   // rec
   REC_NOT_FOUND = "Rec not found",
   // invite-code

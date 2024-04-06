@@ -13,6 +13,7 @@ import { z } from "zod";
 
 import { useAuth } from "@recnet/recnet-web/app/AuthContext";
 import { trpc } from "@recnet/recnet-web/app/_trpc/client";
+import { ErrorMessages } from "@recnet/recnet-web/constant";
 import { getFirebaseApp } from "@recnet/recnet-web/firebase/client";
 import { cn } from "@recnet/recnet-web/utils/cn";
 import { setRecnetCustomClaims } from "@recnet/recnet-web/utils/setRecnetCustomClaims";
@@ -120,14 +121,22 @@ export default function OnboardPage() {
           // mark invite code as used
           setMessage("Creating user...");
           const firebaseUser = getAuth(getFirebaseApp()).currentUser;
+          if (
+            !firebaseUser?.displayName ||
+            !firebaseUser?.email ||
+            !firebaseUser?.photoURL
+          ) {
+            throw new Error(ErrorMessages.USER_MISSING_FIREBASE_USER_DATA);
+          }
           try {
             const { user: createdUser } = await createUserMutation.mutateAsync({
-              userInfo: {
-                inviteCode: res.data.inviteCode,
-                handle: res.data.handle,
-                affiliation: res.data.affiliation ?? null,
-              },
-              firebaseUser: firebaseUser,
+              inviteCode: res.data.inviteCode,
+              handle: res.data.handle,
+              affiliation: res.data.affiliation ?? null,
+              displayName: firebaseUser.displayName,
+              email: firebaseUser.email,
+              photoUrl: firebaseUser.photoURL,
+              bio: null,
             });
             // set custom claims
             await setRecnetCustomClaims(createdUser.role, createdUser.id);
