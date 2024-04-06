@@ -2,7 +2,6 @@ import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 
 import { ErrorMessages } from "@recnet/recnet-web/constant";
-import { db } from "@recnet/recnet-web/firebase/admin";
 
 import {
   getUserMeResponseSchema,
@@ -17,6 +16,7 @@ import {
   patchUserMeResponseSchema,
   postUserMeRequestSchema,
   postUserMeResponseSchema,
+  getStatsResponseSchema,
 } from "@recnet/recnet-api-model";
 
 import {
@@ -184,10 +184,12 @@ export const userRouter = router({
     }),
   getNumOfUsers: checkIsAdminProcedure
     .output(z.object({ num: z.number() }))
-    .query(async () => {
-      const users = await db.collection("users").get();
+    .query(async (opts) => {
+      const { recnetApi } = opts.ctx;
+      const { data } = await recnetApi.get("/stats");
+      const statsData = getStatsResponseSchema.parse(data);
       return {
-        num: users.size,
+        num: statsData.numUsers,
       };
     }),
 });
