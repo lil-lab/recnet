@@ -15,6 +15,7 @@ import {
   deleteUserFollowParamsSchema,
   postUserValidateInviteCodeRequestSchema,
   postUserValidateHandleRequestSchema,
+  getUsersParamsSchema,
 } from "@recnet/recnet-api-model";
 
 import {
@@ -40,6 +41,39 @@ export const userRouter = router({
       return {
         user,
       };
+    }),
+  getUserByHandle: publicProcedure
+    .input(
+      z.object({
+        handle: z.string(),
+      })
+    )
+    .output(
+      z.object({
+        user: userPreviewSchema.nullable(),
+      })
+    )
+    .query(async (opts) => {
+      const { handle } = opts.input;
+      const { recnetApi } = opts.ctx;
+      try {
+        const { data } = await recnetApi.get("/users", {
+          params: {
+            ...getUsersParamsSchema.parse({
+              handle: handle,
+              page: 1,
+              pageSize: 1,
+            }),
+          },
+        });
+        return {
+          user: userPreviewSchema.parse(data.users[0]),
+        };
+      } catch (e) {
+        return {
+          user: null,
+        };
+      }
     }),
   login: checkFirebaseJWTProcedure
     .output(getUserLoginResponseSchema)
@@ -126,47 +160,6 @@ export const userRouter = router({
           isValid: false,
         };
       }
-    }),
-  getUserByHandle: publicProcedure
-    .input(
-      z.object({
-        handle: z.string(),
-      })
-    )
-    .output(
-      z.object({
-        user: userPreviewSchema.nullable(),
-      })
-    )
-    .query(async (opts) => {
-      const { handle } = opts.input;
-      const querySnapshot = await db
-        .collection("users")
-        .where("username", "==", handle)
-        .limit(1)
-        .get();
-      if (querySnapshot.empty) {
-        return {
-          user: null,
-        };
-      }
-      const userParsedRes = userPreviewSchema.safeParse({
-        id: querySnapshot.docs[0].id,
-        handle: querySnapshot.docs[0].data().username,
-        displayName: querySnapshot.docs[0].data().displayName,
-        photoUrl: querySnapshot.docs[0].data().photoURL,
-        affiliation: querySnapshot.docs[0].data().affiliation || null,
-        bio: querySnapshot.docs[0].data().bio || null,
-        numFollowers: querySnapshot.docs[0].data().followers.length,
-      });
-      if (userParsedRes.success) {
-        return {
-          user: userParsedRes.data,
-        };
-      }
-      return {
-        user: null,
-      };
     }),
   createUser: checkFirebaseJWTProcedure
     .input(
