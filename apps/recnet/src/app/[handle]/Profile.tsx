@@ -100,7 +100,7 @@ function EditProfileDialog(props: { handle: string }) {
               const oldHandle = user.handle;
               const updatedData = await updateProfileMutation.mutateAsync(
                 {
-                  newData: res.data,
+                  ...res.data,
                 },
                 {
                   onError: (error) => {

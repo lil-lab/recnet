@@ -16,6 +16,8 @@ import {
   postUserValidateInviteCodeRequestSchema,
   postUserValidateHandleRequestSchema,
   getUsersParamsSchema,
+  patchUserMeRequestSchema,
+  patchUserMeResponseSchema,
 } from "@recnet/recnet-api-model";
 
 import {
@@ -238,66 +240,14 @@ export const userRouter = router({
       };
     }),
   updateUser: checkRecnetJWTProcedure
-    .input(
-      z.object({
-        newData: userSchema.partial(),
-      })
-    )
-    .output(
-      z.object({
-        user: userSchema,
-      })
-    )
+    .input(patchUserMeRequestSchema)
+    .output(patchUserMeResponseSchema)
     .mutation(async (opts) => {
-      const { newData } = opts.input;
-      const userId = opts.ctx.tokens.decodedToken.recnet.userId;
-      const { handle, displayName, affiliation } = newData;
-      const docRef = db.doc(`users/${userId}`);
-      const docSnap = await docRef.get();
-
-      if (!docSnap.exists) {
-        throw new TRPCError({
-          code: "NOT_FOUND",
-          message: ErrorMessages.USER_NOT_FOUND,
-        });
-      }
-
-      if (handle != docSnap?.data?.()?.username) {
-        if (handle) {
-          // check if username is unique
-          const snapshot = await db
-            .collection("users")
-            .where("username", "==", handle)
-            .get();
-          if (!snapshot.empty) {
-            throw new TRPCError({
-              code: "CONFLICT",
-              message: ErrorMessages.USER_HANDLE_USED,
-            });
-          }
-        }
-      }
-
-      const data = {
-        username: handle,
-        displayName: displayName,
-        affiliation: affiliation,
-      };
-      await docRef.set(data, { merge: true });
-      return {
-        user: userSchema.parse({
-          id: userId,
-          handle: handle,
-          displayName: displayName,
-          photoUrl: docSnap.data()?.photoURL,
-          affiliation: affiliation,
-          bio: docSnap.data()?.bio ?? null,
-          numFollowers: docSnap.data()?.followers.length,
-          email: docSnap.data()?.email,
-          role: docSnap.data()?.role ? UserRole.ADMIN : UserRole.USER,
-          following: [], // temperory set to empty since it's unused and will be removed after migration
-        }),
-      };
+      const { recnetApi } = opts.ctx;
+      const { data } = await recnetApi.patch("/users/me", {
+        ...opts.input,
+      });
+      return patchUserMeResponseSchema.parse(data);
     }),
   getNumOfUsers: checkIsAdminProcedure
     .output(z.object({ num: z.number() }))
