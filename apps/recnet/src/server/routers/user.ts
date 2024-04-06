@@ -48,7 +48,14 @@ export const userRouter = router({
           Authorization: `Bearer ${tokens.token}`,
         },
       });
-      return getUserLoginResponseSchema.parse(data);
+      const userData = getUserLoginResponseSchema.safeParse(data);
+      if (!userData.success) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: ErrorMessages.USER_NOT_FOUND,
+        });
+      }
+      return userData.data;
     }),
   follow: checkRecnetJWTProcedure
     .input(postUserFollowRequestSchema)
