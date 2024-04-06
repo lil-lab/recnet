@@ -32,6 +32,7 @@
     "@visx/shape": "^3.5.0",
     "@visx/tooltip": "^3.3.0",
     "@visx/vendor": "^3.5.0",
+    "axios": "^1.6.8",
     "chance": "^1.1.11",
     "clsx": "^2.1.0",
     "firebase": "^10.7.2",
