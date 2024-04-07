@@ -1,8 +1,6 @@
-import { TRPCError } from "@trpc/server";
 import { FieldValue } from "firebase-admin/firestore";
 import { z } from "zod";
 
-import { ErrorMessages } from "@recnet/recnet-web/constant";
 import { db } from "@recnet/recnet-web/firebase/admin";
 
 import { numToMonth } from "@recnet/recnet-date-fns";
@@ -26,6 +24,44 @@ import {
 import { router } from "../trpc";
 
 export const recRouter = router({
+  getHistoricalRecs: publicApiProcedure
+    .input(
+      z.object({
+        userId: z.string(),
+        cursor: z.number(),
+        pageSize: z.number(),
+      })
+    )
+    .output(getRecsResponseSchema)
+    .query(async (opts) => {
+      const { userId, cursor: page, pageSize } = opts.input;
+      const { recnetApi } = opts.ctx;
+      const { data } = await recnetApi.get("/recs", {
+        params: {
+          ...getRecsParamsSchema.parse({ userId, page, pageSize }),
+        },
+      });
+      return getRecsResponseSchema.parse(data);
+    }),
+  getFeeds: checkRecnetJWTProcedure
+    .input(
+      z.object({
+        cutoff: z.number(),
+        cursor: z.number(),
+        pageSize: z.number(),
+      })
+    )
+    .output(getRecsFeedsResponseSchema)
+    .query(async (opts) => {
+      const { cutoff, cursor: page, pageSize } = opts.input;
+      const { recnetApi } = opts.ctx;
+      const { data } = await recnetApi.get("/recs/feeds", {
+        params: {
+          ...getRecsFeedsParamsSchema.parse({ cutoff, page, pageSize }),
+        },
+      });
+      return getRecsFeedsResponseSchema.parse(data);
+    }),
   getUpcomingRec: checkRecnetJWTProcedure
     .output(getRecsUpcomingResponseSchema)
     .query(async (opts) => {
@@ -109,44 +145,6 @@ export const recRouter = router({
     const { recnetApi } = opts.ctx;
     await recnetApi.delete(`/recs/upcoming`);
   }),
-  getHistoricalRecs: publicApiProcedure
-    .input(
-      z.object({
-        userId: z.string(),
-        cursor: z.number(),
-        pageSize: z.number(),
-      })
-    )
-    .output(getRecsResponseSchema)
-    .query(async (opts) => {
-      const { userId, cursor: page, pageSize } = opts.input;
-      const { recnetApi } = opts.ctx;
-      const { data } = await recnetApi.get("/recs", {
-        params: {
-          ...getRecsParamsSchema.parse({ userId, page, pageSize }),
-        },
-      });
-      return getRecsResponseSchema.parse(data);
-    }),
-  getFeeds: checkRecnetJWTProcedure
-    .input(
-      z.object({
-        cutoff: z.number(),
-        cursor: z.number(),
-        pageSize: z.number(),
-      })
-    )
-    .output(getRecsFeedsResponseSchema)
-    .query(async (opts) => {
-      const { cutoff, cursor: page, pageSize } = opts.input;
-      const { recnetApi } = opts.ctx;
-      const { data } = await recnetApi.get("/recs/feeds", {
-        params: {
-          ...getRecsFeedsParamsSchema.parse({ cutoff, page, pageSize }),
-        },
-      });
-      return getRecsFeedsResponseSchema.parse(data);
-    }),
   getNumOfRecs: checkIsAdminProcedure
     .output(
       z.object({
