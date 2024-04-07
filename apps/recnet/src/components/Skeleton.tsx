@@ -1,30 +1,21 @@
-import { Text } from "@radix-ui/themes";
+import { Text, Skeleton as RadixSkeleton } from "@radix-ui/themes";
 import React, { ComponentProps } from "react";
 
-import { cn } from "@recnet/recnet-web/utils/cn";
-
-type SkeletonProps = React.PropsWithChildren<
-  React.HTMLAttributes<HTMLDivElement> & {
-    className?: string;
-  }
->;
+type SkeletonProps = ComponentProps<typeof RadixSkeleton>;
 
 export function Skeleton(props: SkeletonProps) {
-  const { children, className, ...rest } = props;
-  return (
-    <div className={cn("bg-gray-5", "animate-skeleton", className)} {...rest}>
-      <div className="invisible overflow-hidden">{children}</div>
-    </div>
-  );
+  return <RadixSkeleton {...props} />;
 }
 
-type SkeletonTextProps = ComponentProps<typeof Text>;
+type SkeletonTextProps = ComponentProps<typeof RadixSkeleton> & {
+  size?: ComponentProps<typeof Text>["size"];
+};
 
 export function SkeletonText(props: SkeletonTextProps) {
-  const { className, children, ...rest } = props;
+  const { className, children, size, ...rest } = props;
   return (
-    <Skeleton className={className}>
-      <Text {...rest}>{children ?? "Skeleton"}</Text>
-    </Skeleton>
+    <RadixSkeleton className={className} {...rest}>
+      <Text size={size}>{children ?? "Skeleton"}</Text>
+    </RadixSkeleton>
   );
 }
