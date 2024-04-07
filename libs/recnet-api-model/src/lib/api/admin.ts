@@ -11,7 +11,7 @@ export const getStatsResponseSchema = z.object({
 });
 export type GetStatsResponse = z.infer<typeof getStatsResponseSchema>;
 
-// GET /inviteCodes
+// GET /invite-codes
 export const getInviteCodesParamsSchema = z.object({
   page: z.coerce.number(),
   pageSize: z.coerce.number(),
@@ -27,7 +27,7 @@ export type GetInviteCodesResponse = z.infer<
   typeof getInviteCodesResponseSchema
 >;
 
-// POST /inviteCodes
+// POST /invite-codes
 export const postInviteCodesRequestSchema = z.object({
   numCodes: z.number().min(1).max(20),
   ownerId: z.string(),
