@@ -22,7 +22,7 @@ export default class RecRepository {
       where: this.transformRecFilterByToPrismaWhere(filter),
       take: pageSize,
       skip: getOffset(page, pageSize),
-      orderBy: { id: Prisma.SortOrder.asc },
+      orderBy: { cutoff: Prisma.SortOrder.desc },
     });
   }
 
