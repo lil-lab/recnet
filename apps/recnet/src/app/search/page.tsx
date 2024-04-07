@@ -18,6 +18,8 @@ import { NotFoundBlock } from "./NotFound";
 
 import { trpc } from "../_trpc/client";
 
+const PAGE_SIZE = 20;
+
 export const getShuffledUsersFromInfiniteQuery = (
   infiniteQueryData: InfiniteData<GetUsersResponse> | undefined,
   shuffleKey: string | undefined
@@ -44,7 +46,7 @@ export default function SearchResultPage({
     trpc.search.useInfiniteQuery(
       {
         keyword: query,
-        pageSize: 20,
+        pageSize: PAGE_SIZE,
       },
       {
         getNextPageParam: (lastPage, allPages) => {

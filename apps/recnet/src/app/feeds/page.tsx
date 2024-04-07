@@ -24,6 +24,8 @@ import { GetRecsFeedsResponse, Rec } from "@recnet/recnet-api-model";
 import { useAuth } from "../AuthContext";
 import { trpc } from "../_trpc/client";
 
+const PAGE_SIZE = 5;
+
 const getShuffledRecsFromInfiniteQuery = (
   infiniteQueryData: InfiniteData<GetRecsFeedsResponse> | undefined,
   shuffleKey: string | undefined
@@ -72,7 +74,7 @@ export default function FeedPage({
     trpc.getFeeds.useInfiniteQuery(
       {
         cutoff: cutoff.getTime(),
-        pageSize: 5,
+        pageSize: PAGE_SIZE,
       },
       {
         getNextPageParam: (lastPage, allPages) => {
