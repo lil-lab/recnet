@@ -56,7 +56,7 @@ function InviteCodeGenerateForm() {
             const res = await generateInviteCodeMutation.mutateAsync(
               {
                 ownerHandle: handle,
-                num: data.count,
+                numCodes: data.count,
               },
               {
                 onError: (error) => {
@@ -73,7 +73,7 @@ function InviteCodeGenerateForm() {
                 },
               }
             );
-            setNewInviteCodes(res.inviteCodes);
+            setNewInviteCodes(res.codes);
             setIsModalOpen(true);
           } catch (error) {
             console.error(error);

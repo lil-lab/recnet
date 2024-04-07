@@ -13,6 +13,9 @@ import {
   UserPreview,
   userPreviewSchema,
   inviteCodeSchema,
+  postInviteCodesRequestSchema,
+  postInviteCodesResponseSchema,
+  getUsersParamsSchema,
 } from "@recnet/recnet-api-model";
 
 import { checkIsAdminProcedure } from "./middleware";
@@ -125,50 +128,38 @@ export const inviteCodeRouter = router({
     }),
   generateInviteCode: checkIsAdminProcedure
     .input(
-      z.object({
+      postInviteCodesRequestSchema.omit({ ownerId: true }).extend({
         ownerHandle: z.string(),
-        num: z.number(),
       })
     )
-    .output(
-      z.object({
-        inviteCodes: z.array(z.string()),
-      })
-    )
+    .output(postInviteCodesResponseSchema)
     .mutation(async (opts) => {
-      const { ownerHandle, num } = opts.input;
+      const { ownerHandle, numCodes } = opts.input;
+      const { recnetApi } = opts.ctx;
       // check if owner exists
-      const querySnapshot = await db
-        .collection("users")
-        .where("username", "==", ownerHandle)
-        .limit(1)
-        .get();
-      if (querySnapshot.empty) {
+      const { data: ownerData } = await recnetApi.get("/users", {
+        params: {
+          ...getUsersParamsSchema.parse({
+            handle: ownerHandle,
+            page: 1,
+            pageSize: 1,
+          }),
+        },
+      });
+      const userParseRes = userPreviewSchema.safeParse(ownerData.users[0]);
+      if (!userParseRes.success) {
         throw new TRPCError({
           code: "NOT_FOUND",
           message: ErrorMessages.USER_NOT_FOUND,
         });
       }
-      const ownerId = querySnapshot.docs[0].id;
-
-      const inviteCodes = Array.from({ length: num }, () => {
-        return getNewInviteCode();
+      const ownerId = userParseRes.data.id;
+      const { data } = await recnetApi.post("invite-codes", {
+        ...postInviteCodesRequestSchema.parse({
+          ownerId,
+          numCodes,
+        }),
       });
-
-      await Promise.all(
-        inviteCodes.map(async (inviteCode) => {
-          await db.collection("invite-codes").doc(inviteCode).set({
-            id: inviteCode,
-            issuedTo: ownerId,
-            createdAt: FieldValue.serverTimestamp(),
-            issuedAt: FieldValue.serverTimestamp(),
-            used: false,
-            usedAt: null,
-            usedBy: null,
-          });
-        })
-      );
-
-      return { inviteCodes };
+      return postInviteCodesResponseSchema.parse(data);
     }),
 });
