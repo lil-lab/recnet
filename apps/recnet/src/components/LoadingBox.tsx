@@ -4,17 +4,14 @@ import { TailSpin } from "react-loader-spinner";
 
 import { cn } from "../utils/cn";
 
-interface LoadingBoxProps extends React.ComponentProps<typeof Flex> {
+interface LoadingBoxProps {
   className?: string;
 }
 
 export function LoadingBox(props: LoadingBoxProps) {
-  const { className, ...rest } = props;
+  const { className } = props;
   return (
-    <Flex
-      className={cn("justify-center items-center w-full", className)}
-      {...rest}
-    >
+    <Flex className={cn("justify-center items-center w-full", className)}>
       <TailSpin
         radius={"3"}
         visible={true}

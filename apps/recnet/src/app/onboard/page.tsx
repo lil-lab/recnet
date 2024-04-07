@@ -156,13 +156,13 @@ export default function OnboardPage() {
       >
         <div className="flex flex-col gap-y-1">
           <Text>Invite code</Text>
-          <TextField.Root className="w-full" size="3">
-            <TextField.Input
-              placeholder="Please enter your invite code here"
-              autoFocus
-              {...register("inviteCode")}
-            />
-          </TextField.Root>
+          <TextField.Root
+            className="w-full"
+            size="3"
+            placeholder="Please enter your invite code here"
+            autoFocus
+            {...register("inviteCode")}
+          />
           {formState.errors.inviteCode ? (
             <Text size="1" color="red">
               {formState.errors.inviteCode.message}
@@ -171,13 +171,12 @@ export default function OnboardPage() {
         </div>
         <div className="flex flex-col gap-y-1">
           <Text>User handle</Text>
-          <TextField.Root className="w-full" size="3">
+          <TextField.Root className="w-full" size="3" {...register("handle")}>
             <TextField.Slot>
               <Text size="3" weight="medium">
                 @
               </Text>
             </TextField.Slot>
-            <TextField.Input {...register("handle")} />
           </TextField.Root>
           {formState.errors.handle ? (
             <Text size="1" color="red">
@@ -187,14 +186,15 @@ export default function OnboardPage() {
         </div>
         <div className="flex flex-col gap-y-1">
           <Text>Affiliation</Text>
-          <TextField.Root className="w-full" size="3">
+          <TextField.Root
+            className="w-full"
+            size="3"
+            placeholder="(Optional)"
+            {...register("affiliation")}
+          >
             <TextField.Slot>
               <HomeIcon width={16} height={16} />
             </TextField.Slot>
-            <TextField.Input
-              placeholder="(Optional)"
-              {...register("affiliation")}
-            />
           </TextField.Root>
         </div>
         <Button

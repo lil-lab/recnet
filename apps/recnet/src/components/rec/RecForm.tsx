@@ -128,71 +128,66 @@ export function RecForm(props: { onFinish?: () => void; currentRec: Rec }) {
             })}
           >
             <div>
-              <TextField.Root>
+              <TextField.Root
+                className="w-full"
+                autoFocus
+                disabled
+                value={currentRec.article.link}
+              >
                 <TextField.Slot>
                   <Link2Icon width="16" height="16" />
                 </TextField.Slot>
-                <TextField.Input
-                  className="w-full"
-                  autoFocus
-                  disabled
-                  value={currentRec.article.link}
-                />
               </TextField.Root>
             </div>
             <div>
-              <TextField.Root>
+              <TextField.Root
+                className="w-full"
+                value={currentRec.article.title}
+                disabled
+              >
                 <TextField.Slot>
                   <SewingPinIcon width="16" height="16" />
                 </TextField.Slot>
-                <TextField.Input
-                  className="w-full"
-                  value={currentRec.article.title}
-                  disabled
-                />
               </TextField.Root>
             </div>
             <div>
-              <TextField.Root>
+              <TextField.Root
+                className="w-full"
+                value={currentRec.article.author}
+                disabled
+              >
                 <TextField.Slot>
                   <PersonIcon width="16" height="16" />
                 </TextField.Slot>
-                <TextField.Input
-                  className="w-full"
-                  value={currentRec.article.author}
-                  disabled
-                />
               </TextField.Root>
             </div>
             <Flex className="gap-x-[10px]">
               <div className="w-[40%]">
-                <TextField.Root>
+                <TextField.Root
+                  placeholder="Year"
+                  className="w-full"
+                  value={currentRec.article.year}
+                  disabled
+                >
                   <TextField.Slot>
                     <CalendarIcon width="16" height="16" />
                   </TextField.Slot>
-                  <TextField.Input
-                    placeholder="Year"
-                    className="w-full"
-                    value={currentRec.article.year}
-                    disabled
-                  />
                 </TextField.Root>
               </div>
               <div className="min-w-[50%] w-[60%]">
-                <TextField.Root>
+                <TextField.Root
+                  placeholder="Month(optional)"
+                  className="w-full"
+                  value={
+                    currentRec.article.month
+                      ? numToMonth[currentRec.article.month]
+                      : undefined
+                  }
+                  disabled
+                >
                   <TextField.Slot>
                     <CalendarIcon width="16" height="16" />
                   </TextField.Slot>
-                  <TextField.Input
-                    placeholder="Month(optional)"
-                    className="w-full"
-                    value={
-                      currentRec.article.month
-                        ? numToMonth[currentRec.article.month]
-                        : undefined
-                    }
-                    disabled
-                  />
                 </TextField.Root>
               </div>
             </Flex>

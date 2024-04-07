@@ -254,17 +254,16 @@ export function RecArticleForm(props: {
         })}
       >
         <div>
-          <TextField.Root>
+          <TextField.Root
+            placeholder="Link to paper"
+            className="w-full"
+            autoFocus
+            {...register("link", { required: true })}
+            disabled={step === "insertDetails"}
+          >
             <TextField.Slot>
               <Link2Icon width="16" height="16" />
             </TextField.Slot>
-            <TextField.Input
-              placeholder="Link to paper"
-              className="w-full"
-              autoFocus
-              {...register("link", { required: true })}
-              disabled={step === "insertDetails"}
-            />
           </TextField.Root>
           {formState.errors.link ? (
             <Text size="1" color="red">
@@ -329,16 +328,15 @@ export function RecArticleForm(props: {
               className="flex flex-col gap-y-3"
             >
               <div>
-                <TextField.Root>
+                <TextField.Root
+                  placeholder="Title"
+                  className="w-full"
+                  {...register("title", { required: true })}
+                  disabled={shouldDisablePrefilledFields}
+                >
                   <TextField.Slot>
                     <SewingPinIcon width="16" height="16" />
                   </TextField.Slot>
-                  <TextField.Input
-                    placeholder="Title"
-                    className="w-full"
-                    {...register("title", { required: true })}
-                    disabled={shouldDisablePrefilledFields}
-                  />
                 </TextField.Root>
                 {formState.errors.title ? (
                   <Text size="1" color="red">
@@ -347,16 +345,15 @@ export function RecArticleForm(props: {
                 ) : null}
               </div>
               <div>
-                <TextField.Root>
+                <TextField.Root
+                  placeholder="Author(s)"
+                  className="w-full"
+                  {...register("author", { required: true })}
+                  disabled={shouldDisablePrefilledFields}
+                >
                   <TextField.Slot>
                     <PersonIcon width="16" height="16" />
                   </TextField.Slot>
-                  <TextField.Input
-                    placeholder="Author(s)"
-                    className="w-full"
-                    {...register("author", { required: true })}
-                    disabled={shouldDisablePrefilledFields}
-                  />
                 </TextField.Root>
                 {formState.errors.author ? (
                   <Text size="1" color="red">
@@ -366,16 +363,15 @@ export function RecArticleForm(props: {
               </div>
               <Flex className="gap-x-[10px]">
                 <div className="w-[40%]">
-                  <TextField.Root>
+                  <TextField.Root
+                    placeholder="Year"
+                    className="w-full"
+                    {...register("year", { required: true })}
+                    disabled={shouldDisablePrefilledFields}
+                  >
                     <TextField.Slot>
                       <CalendarIcon width="16" height="16" />
                     </TextField.Slot>
-                    <TextField.Input
-                      placeholder="Year"
-                      className="w-full"
-                      {...register("year", { required: true })}
-                      disabled={shouldDisablePrefilledFields}
-                    />
                   </TextField.Root>
                   {formState.errors.year ? (
                     <Text size="1" color="red">
