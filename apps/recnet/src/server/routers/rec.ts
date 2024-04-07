@@ -19,6 +19,8 @@ import {
 
 import {
   Rec,
+  getRecsFeedsResponseSchema,
+  getRecsFeedsParamsSchema,
   getStatsResponseSchema,
   recSchema,
   userPreviewSchema,
@@ -280,107 +282,21 @@ export const recRouter = router({
   getFeeds: checkRecnetJWTProcedure
     .input(
       z.object({
-        cutoffTs: z.number(),
+        cutoff: z.number(),
+        cursor: z.number(),
+        pageSize: z.number(),
       })
     )
-    .output(
-      z.object({
-        recs: z.array(recSchema),
-      })
-    )
+    .output(getRecsFeedsResponseSchema)
     .query(async (opts) => {
-      const { cutoffTs } = opts.input;
-      const { id: userId } = opts.ctx.user;
-      const docRef = db.doc(`users/${userId}`);
-      const docSnap = await docRef.get();
-      const data = docSnap.data();
-      if (!data) {
-        throw new TRPCError({
-          code: "NOT_FOUND",
-          message: ErrorMessages.USER_NOT_FOUND,
-        });
-      }
-      const following = data.following;
-      if (following.length === 0) {
-        return {
-          recs: [],
-        };
-      }
-
-      // batch the recs every 30 items
-      // since firestore has a limit for "IN" query, it supports up to 30 comparison values.
-      // so we need to batch the following list
-      // https://cloud.google.com/firestore/docs/query-data/queries
-      const followingBatches: string[] = [];
-      const batchSize = 30;
-      for (let i = 0; i < following.length; i += batchSize) {
-        followingBatches.push(following.slice(i, i + batchSize));
-      }
-
-      const recs: (Rec | null)[] = [];
-      for (let i = 0; i < followingBatches.length; i++) {
-        const batch = followingBatches[i];
-        const querySnapshot = await db
-          .collection("recommendations")
-          .where("userId", "in", batch)
-          .where("cutoff", "==", Timestamp.fromMillis(cutoffTs))
-          .get();
-
-        const batchRecs = await Promise.all(
-          querySnapshot.docs.map(async (doc) => {
-            // get userPreview for each rec
-            const unparsedUser = await db
-              .doc(`users/${doc.data().userId}`)
-              .get();
-            const userData = unparsedUser.data();
-            if (!userData) {
-              return null;
-            }
-
-            // parse rec
-            const res = recSchema.safeParse({
-              id: doc.id,
-              description: doc.data().description,
-              cutoff: getDateFromFirebaseTimestamp(
-                doc.data().cutoff
-              ).toISOString(),
-              user: {
-                id: unparsedUser.id,
-                handle: userData.username,
-                displayName: userData.displayName,
-                photoUrl: userData.photoURL,
-                affiliation: userData?.affiliation || null,
-                bio: userData?.bio || null,
-                numFollowers: userData?.followers?.length ?? 0,
-              },
-              article: {
-                id: doc.id,
-                doi: null,
-                title: doc.data().title,
-                author: doc.data().author,
-                link: doc.data().link,
-                year: parseInt(doc.data().year),
-                month: !doc.data().month
-                  ? null
-                  : monthToNum[doc.data().month as Month],
-                isVerified: false,
-              },
-            });
-            if (res.success) {
-              return res.data;
-            } else {
-              console.error("Failed to parse rec", res.error);
-              return null;
-            }
-          })
-        );
-        recs.push(...batchRecs);
-      }
-
-      const seed = userId;
-      return {
-        recs: shuffleArray(recs.filter(notEmpty), seed),
-      };
+      const { cutoff, cursor: page, pageSize } = opts.input;
+      const { recnetApi } = opts.ctx;
+      const { data } = await recnetApi.get("/recs/feeds", {
+        params: {
+          ...getRecsFeedsParamsSchema.parse({ cutoff, page, pageSize }),
+        },
+      });
+      return getRecsFeedsResponseSchema.parse(data);
     }),
   getNumOfRecs: checkIsAdminProcedure
     .output(
