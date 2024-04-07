@@ -293,7 +293,7 @@ export function RecArticleForm(props: {
                     setValue("title", foundArticle.title);
                     setValue("author", foundArticle.author);
                     setValue("year", foundArticle.year);
-                    setValue("month", foundArticle.month || undefined);
+                    setValue("month", foundArticle.month ?? undefined);
                   }
                   reset(undefined, {
                     keepValues: true,
@@ -392,9 +392,7 @@ export function RecArticleForm(props: {
                       return (
                         <Select.Root
                           key={watch("month")}
-                          value={
-                            monthValue ? numToMonth[monthValue] : undefined
-                          }
+                          value={numToMonth?.[monthValue] ?? undefined}
                           onValueChange={(value) => {
                             if (value === "empty") {
                               field.onChange(undefined);
