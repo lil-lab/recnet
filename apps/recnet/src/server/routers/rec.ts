@@ -1,13 +1,10 @@
 import { TRPCError } from "@trpc/server";
 import { FieldValue } from "firebase-admin/firestore";
 import { Timestamp } from "firebase-admin/firestore";
-import groupBy from "lodash.groupby";
 import { z } from "zod";
 
 import { ErrorMessages } from "@recnet/recnet-web/constant";
 import { db } from "@recnet/recnet-web/firebase/admin";
-import { notEmpty } from "@recnet/recnet-web/utils/notEmpty";
-import { shuffleArray } from "@recnet/recnet-web/utils/shuffle";
 
 import { getNextCutOff } from "@recnet/recnet-date-fns";
 import {
@@ -18,12 +15,13 @@ import {
 } from "@recnet/recnet-date-fns";
 
 import {
-  Rec,
   getRecsFeedsResponseSchema,
   getRecsFeedsParamsSchema,
   getStatsResponseSchema,
   recSchema,
   userPreviewSchema,
+  getRecsResponseSchema,
+  getRecsParamsSchema,
 } from "@recnet/recnet-api-model";
 
 import { checkIsAdminProcedure, checkRecnetJWTProcedure } from "./middleware";
@@ -212,72 +210,20 @@ export const recRouter = router({
     .input(
       z.object({
         userId: z.string(),
+        cursor: z.number(),
+        pageSize: z.number(),
       })
     )
-    .output(
-      z.object({
-        recs: z.array(recSchema),
-      })
-    )
+    .output(getRecsResponseSchema)
     .query(async (opts) => {
-      const { userId } = opts.input;
-      const querySnapshot = await db
-        .collection("recommendations")
-        .where("userId", "==", userId)
-        .where("cutoff", "!=", Timestamp.fromMillis(getNextCutOff().getTime()))
-        .orderBy("cutoff", "desc")
-        .get();
-      const userRef = db.doc(`users/${userId}`);
-      const userSnap = await userRef.get();
-      const userData = userSnap.data();
-      if (!userData) {
-        throw new TRPCError({
-          code: "NOT_FOUND",
-          message: ErrorMessages.USER_NOT_FOUND,
-        });
-      }
-      const userPreviewData = userPreviewSchema.parse({
-        id: userSnap.id,
-        handle: userData.username,
-        displayName: userData.displayName,
-        photoUrl: userData.photoURL,
-        affiliation: userData.affiliation || null,
-        bio: userData.bio || null,
-        numFollowers: userData.followers.length,
+      const { userId, cursor: page, pageSize } = opts.input;
+      const { recnetApi } = opts.ctx;
+      const { data } = await recnetApi.get("/recs", {
+        params: {
+          ...getRecsParamsSchema.parse({ userId, page, pageSize }),
+        },
       });
-      const recs = await Promise.all(
-        querySnapshot.docs.map(async (doc) => {
-          const postData = doc.data();
-          if (!postData) {
-            return null;
-          }
-          const parseRes = recSchema.safeParse({
-            id: doc.id,
-            description: postData.description,
-            cutoff: getDateFromFirebaseTimestamp(postData.cutoff).toISOString(),
-            user: userPreviewData,
-            article: {
-              id: doc.id,
-              doi: null,
-              title: postData.title,
-              author: postData.author,
-              link: postData.link,
-              year: parseInt(postData.year),
-              month: !postData.month
-                ? null
-                : monthToNum[postData.month as Month],
-              isVerified: false,
-            },
-          });
-          if (parseRes.success) {
-            return parseRes.data;
-          }
-          return null;
-        })
-      );
-      return {
-        recs: recs.filter(notEmpty),
-      };
+      return getRecsResponseSchema.parse(data);
     }),
   getFeeds: checkRecnetJWTProcedure
     .input(

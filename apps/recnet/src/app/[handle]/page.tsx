@@ -1,10 +1,9 @@
-import { Text } from "@radix-ui/themes";
 import { notFound } from "next/navigation";
 
 import { serverClient } from "@recnet/recnet-web/app/_trpc/serverClient";
-import { RecCard } from "@recnet/recnet-web/components/RecCard";
 import { cn } from "@recnet/recnet-web/utils/cn";
 
+import { HistoricalRecs } from "./HistoricalRecs";
 import { Profile } from "./Profile";
 
 export default async function UserProfilePage({
@@ -19,7 +18,6 @@ export default async function UserProfilePage({
   if (!user) {
     notFound();
   }
-  const { recs } = await serverClient.getHistoricalRecs({ userId: user.id });
 
   return (
     <div
@@ -29,22 +27,11 @@ export default async function UserProfilePage({
         `min-h-[90svh]`,
         "flex",
         "flex-col",
-        "p-8",
-        "gap-y-6"
+        "p-8"
       )}
     >
       <Profile handle={handle} />
-      {recs.length > 0 ? (
-        recs.map((rec, idx) => {
-          return <RecCard key={`${rec.id}-${idx}`} recs={[rec]} showDate />;
-        })
-      ) : (
-        <div className="h-[150px] w-full flex justify-center items-center">
-          <Text size="3" className="text-gray-10">
-            No recommendations yet.
-          </Text>
-        </div>
-      )}
+      <HistoricalRecs userId={user.id} />
     </div>
   );
 }
