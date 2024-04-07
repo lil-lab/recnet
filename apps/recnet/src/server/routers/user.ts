@@ -80,13 +80,9 @@ export const userRouter = router({
   login: checkFirebaseJWTProcedure
     .output(getUserLoginResponseSchema)
     .mutation(async (opts) => {
-      const { tokens, recnetApi } = opts.ctx;
+      const { recnetApi } = opts.ctx;
       try {
-        const { data } = await recnetApi.get("/users/login", {
-          headers: {
-            Authorization: `Bearer ${tokens.token}`,
-          },
-        });
+        const { data } = await recnetApi.get("/users/login");
         return getUserLoginResponseSchema.parse(data);
       } catch (e) {
         // TODO: use if else statement to catch the correct error
