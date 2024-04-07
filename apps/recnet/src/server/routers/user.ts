@@ -24,17 +24,17 @@ import {
   checkFirebaseJWTProcedure,
   checkIsAdminProcedure,
   checkRecnetJWTProcedure,
+  publicApiProcedure,
   getUserByTokens,
 } from "./middleware";
 
-import { publicProcedure, router } from "../trpc";
+import { router } from "../trpc";
 
 export const userRouter = router({
-  getMe: publicProcedure
+  getMe: publicApiProcedure
     .output(z.union([getUserMeResponseSchema, z.object({ user: z.null() })]))
     .query(async (opts) => {
-      const { recnetApi } = opts.ctx;
-      const tokens = await getTokenServerSide();
+      const { recnetApi, tokens } = opts.ctx;
       if (!tokens) {
         return {
           user: null,
@@ -45,7 +45,7 @@ export const userRouter = router({
         user,
       };
     }),
-  getUserByHandle: publicProcedure
+  getUserByHandle: publicApiProcedure
     .input(
       z.object({
         handle: z.string(),

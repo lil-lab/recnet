@@ -46,6 +46,17 @@ function createRecnetApiInstanceWithToken(tokens: Tokens) {
   });
 }
 
+export const publicApiProcedure = publicProcedure.use(async (opts) => {
+  const tokens = await getTokenServerSide();
+
+  return opts.next({
+    ctx: {
+      ...opts.ctx,
+      tokens,
+    },
+  });
+});
+
 export const checkFirebaseJWTProcedure = publicProcedure.use(async (opts) => {
   const tokens = await getTokenServerSide();
   const parseRes = firebaseJwtPayloadSchema.safeParse(tokens?.decodedToken);

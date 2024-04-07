@@ -24,9 +24,13 @@ import {
   getRecsParamsSchema,
 } from "@recnet/recnet-api-model";
 
-import { checkIsAdminProcedure, checkRecnetJWTProcedure } from "./middleware";
+import {
+  checkIsAdminProcedure,
+  checkRecnetJWTProcedure,
+  publicApiProcedure,
+} from "./middleware";
 
-import { publicProcedure, router } from "../trpc";
+import { router } from "../trpc";
 
 export const recRouter = router({
   getUpcomingRec: checkRecnetJWTProcedure
@@ -206,7 +210,7 @@ export const recRouter = router({
         });
       }
     }),
-  getHistoricalRecs: publicProcedure
+  getHistoricalRecs: publicApiProcedure
     .input(
       z.object({
         userId: z.string(),

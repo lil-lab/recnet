@@ -5,10 +5,12 @@ import {
   getUsersParamsSchema,
 } from "@recnet/recnet-api-model";
 
-import { publicProcedure, router } from "../trpc";
+import { publicApiProcedure } from "./middleware";
+
+import { router } from "../trpc";
 
 export const publicRouter = router({
-  search: publicProcedure
+  search: publicApiProcedure
     .input(
       z.object({
         keyword: z.string(),
