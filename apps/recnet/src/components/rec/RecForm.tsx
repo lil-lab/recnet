@@ -270,9 +270,7 @@ export function RecForm(props: { onFinish?: () => void; currentRec: Rec }) {
               className="cursor-pointer"
               onClick={async () => {
                 try {
-                  await deleteRecMutation.mutateAsync({
-                    id: currentRec.id,
-                  });
+                  await deleteRecMutation.mutateAsync();
                   await utils.getUpcomingRec.invalidate();
                   toast.success("Rec deleted successfully");
                   onFinish();

@@ -105,32 +105,10 @@ export const recRouter = router({
         { merge: true }
       );
     }),
-  deleteUpcomingRec: checkRecnetJWTProcedure
-    .input(z.object({ id: z.string() }))
-    .mutation(async (opts) => {
-      const { id } = opts.input;
-      const { id: userId } = opts.ctx.user;
-      const docRef = db.doc(`recommendations/${id}`);
-      const docSnap = await docRef.get();
-      if (docSnap.exists) {
-        // delete from user postIds
-        const userRef = db.doc(`users/${userId}`);
-        await userRef.set(
-          {
-            postIds: FieldValue.arrayRemove(id),
-          },
-          { merge: true }
-        );
-        // delete post
-        await docRef.delete();
-      } else {
-        // post doens't exist
-        throw new TRPCError({
-          code: "NOT_FOUND",
-          message: ErrorMessages.REC_NOT_FOUND,
-        });
-      }
-    }),
+  deleteUpcomingRec: checkRecnetJWTProcedure.mutation(async (opts) => {
+    const { recnetApi } = opts.ctx;
+    await recnetApi.delete(`/recs/upcoming`);
+  }),
   getHistoricalRecs: publicApiProcedure
     .input(
       z.object({
