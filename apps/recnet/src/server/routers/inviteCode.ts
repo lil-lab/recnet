@@ -9,6 +9,7 @@ import {
   postInviteCodesResponseSchema,
   getUsersParamsSchema,
   getInviteCodesResponseSchema,
+  getInviteCodesParamsSchema,
 } from "@recnet/recnet-api-model";
 
 import { checkIsAdminProcedure } from "./middleware";
@@ -30,9 +31,11 @@ export const inviteCodeRouter = router({
       const { recnetApi } = opts.ctx;
       const { data } = await recnetApi.get("/invite-codes", {
         params: {
-          page,
-          pageSize,
-          used,
+          ...getInviteCodesParamsSchema.parse({
+            page,
+            pageSize,
+            used,
+          }),
         },
       });
       return getInviteCodesResponseSchema.parse(data);

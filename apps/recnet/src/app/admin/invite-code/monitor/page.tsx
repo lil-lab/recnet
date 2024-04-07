@@ -1,7 +1,8 @@
 "use client";
 
-import { Flex, Table, Text } from "@radix-ui/themes";
+import { Flex, Table, Text, SegmentedControl } from "@radix-ui/themes";
 import { InfiniteData } from "@tanstack/react-query";
+import { useRouter } from "next/navigation";
 import { useEffect, useMemo } from "react";
 import { useInView } from "react-intersection-observer";
 
@@ -53,11 +54,20 @@ const TableLoader = () => {
   return <LoadingBox className="h-[300px]" />;
 };
 
-export default function InviteCodeMonitorPage() {
+export default function InviteCodeMonitorPage({
+  searchParams,
+}: {
+  searchParams: {
+    used?: string;
+  };
+}) {
+  const router = useRouter();
+  const { used } = searchParams;
   const { data, isPending, hasNextPage, fetchNextPage, isFetching } =
     trpc.getAllInviteCodes.useInfiniteQuery(
       {
         pageSize: INIVITE_CODE_PAGE_SIZE,
+        used: used === "true" ? true : used === "false" ? false : undefined,
       },
       {
         initialCursor: 1,
@@ -90,6 +100,26 @@ export default function InviteCodeMonitorPage() {
         <AdminSectionTitle description="View who used the invite codes. Sorted in reverse-chronological order.">
           Invite Code Monitor
         </AdminSectionTitle>
+        <div className="flex w-full justify-end items-center">
+          <SegmentedControl.Root
+            defaultValue={
+              used === "true" ? "used" : used === "false" ? "not-used" : "all"
+            }
+            onValueChange={(v) => {
+              if (v === "all") {
+                router.replace("/admin/invite-code/monitor");
+                return;
+              }
+              router.replace(`/admin/invite-code/monitor?used=${v === "used"}`);
+            }}
+          >
+            <SegmentedControl.Item value={"all"}>All</SegmentedControl.Item>
+            <SegmentedControl.Item value="used">Used</SegmentedControl.Item>
+            <SegmentedControl.Item value="not-used">
+              Unused
+            </SegmentedControl.Item>
+          </SegmentedControl.Root>
+        </div>
         <AdminSectionBox>
           {!isPending ? (
             <Table.Root className="w-full max-h-[60svh] overflow-x-scroll relative table-fixed">
@@ -106,7 +136,10 @@ export default function InviteCodeMonitorPage() {
 
               <Table.Body>
                 {inviteCodes.map((inviteCode) => (
-                  <Table.Row className="align-middle" key={inviteCode.code}>
+                  <Table.Row
+                    className="align-middle"
+                    key={inviteCode.code + used}
+                  >
                     <Table.RowHeaderCell>
                       <CopiableInviteCode inviteCode={inviteCode.code} />
                     </Table.RowHeaderCell>
