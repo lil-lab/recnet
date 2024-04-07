@@ -66,88 +66,26 @@ export const recRouter = router({
       return getRecsUpcomingResponseSchema.parse(data);
     }),
   addUpcomingRec: checkRecnetJWTProcedure
-    .input(
-      z.object({
-        articleId: z.string().optional(),
-        doi: z.string().optional(),
-        link: z.string().url(),
-        title: z.string().min(1),
-        author: z.string().min(1),
-        description: z.string().max(280).min(1),
-        year: z.number(),
-        month: z.number().optional(),
-      })
-    )
+    .input(postRecsUpcomingRequestSchema)
     .mutation(async (opts) => {
       const { recnetApi } = opts.ctx;
-      const { articleId, doi, link, title, author, description, year, month } =
-        opts.input;
-      if (articleId) {
-        await recnetApi.post("/recs/upcoming", {
-          ...postRecsUpcomingRequestSchema.parse({
-            articleId,
-            article: null,
-            description,
-          }),
-        });
-      } else {
-        await recnetApi.post("/recs/upcoming", {
-          ...postRecsUpcomingRequestSchema.parse({
-            articleId: null,
-            article: {
-              doi: doi ?? null,
-              title,
-              link,
-              author,
-              year,
-              month: month ?? null,
-            },
-            description,
-          }),
-        });
-      }
+      const { articleId, article, description } = opts.input;
+      await recnetApi.post("/recs/upcoming", {
+        articleId,
+        article,
+        description,
+      });
     }),
   editUpcomingRec: checkRecnetJWTProcedure
-    .input(
-      z.object({
-        articleId: z.string().optional(),
-        doi: z.string().optional(),
-        link: z.string().url(),
-        title: z.string().min(1),
-        author: z.string().min(1),
-        description: z.string().max(280).min(1),
-        year: z.number(),
-        month: z.number().optional(),
-      })
-    )
+    .input(patchRecsUpcomingRequestSchema)
     .mutation(async (opts) => {
       const { recnetApi } = opts.ctx;
-      const { articleId, doi, link, title, author, description, year, month } =
-        opts.input;
-      if (articleId) {
-        await recnetApi.patch(`/recs/upcoming`, {
-          ...patchRecsUpcomingRequestSchema.parse({
-            articleId,
-            article: null,
-            description,
-          }),
-        });
-      } else {
-        await recnetApi.patch(`/recs/upcoming`, {
-          ...patchRecsUpcomingRequestSchema.parse({
-            articleId: null,
-            article: {
-              doi: doi ?? null,
-              title,
-              link,
-              author,
-              year,
-              month: month ?? null,
-            },
-            description,
-          }),
-        });
-      }
+      const { articleId, article, description } = opts.input;
+      await recnetApi.patch(`/recs/upcoming`, {
+        articleId,
+        article,
+        description,
+      });
     }),
   deleteUpcomingRec: checkRecnetJWTProcedure.mutation(async (opts) => {
     const { recnetApi } = opts.ctx;

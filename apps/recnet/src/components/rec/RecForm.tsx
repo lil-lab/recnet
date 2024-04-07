@@ -112,14 +112,8 @@ export function RecForm(props: { onFinish?: () => void; currentRec: Rec }) {
               }
               try {
                 await editRecMutation.mutateAsync({
-                  // REFACTOR_AFTER_MIGRATION: use spread operator to prefill rest fields
                   articleId: currentRec.article.id,
-                  doi: currentRec.article.doi ?? undefined,
-                  link: currentRec.article.link,
-                  title: currentRec.article.title,
-                  author: currentRec.article.author,
-                  year: currentRec.article.year,
-                  month: currentRec.article.month ?? undefined,
+                  article: null,
                   description: res.data.description,
                 });
                 toast.success("Rec updated successfully.");

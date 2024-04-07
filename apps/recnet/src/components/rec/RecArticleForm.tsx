@@ -34,7 +34,7 @@ import {
   numToMonth,
 } from "@recnet/recnet-date-fns";
 
-import { Article, Rec } from "@recnet/recnet-api-model";
+import { Article, Rec, RecFormSubmission } from "@recnet/recnet-api-model";
 
 import { Accordion } from "../Accordion";
 import { RecNetLink } from "../Link";
@@ -218,13 +218,29 @@ export function RecArticleForm(props: {
           }
           try {
             // if currentRec exists, update, else insert new rec
+            const formSubmissionData: RecFormSubmission = res.data.articleId
+              ? {
+                  articleId: res.data.articleId,
+                  article: null,
+                  description: res.data.description,
+                }
+              : {
+                  articleId: null,
+                  article: {
+                    doi: res.data.doi ?? null,
+                    link: res.data.link,
+                    title: res.data.title,
+                    author: res.data.author,
+                    year: res.data.year,
+                    month: res.data.month ?? null,
+                  },
+                  description: res.data.description,
+                };
             if (currentRec) {
-              await editRecMutation.mutateAsync({
-                ...res.data,
-              });
+              await editRecMutation.mutateAsync(formSubmissionData);
               toast.success("Rec updated successfully.");
             } else {
-              await insertRecMutation.mutateAsync(res.data);
+              await insertRecMutation.mutateAsync(formSubmissionData);
               toast.success("We got your rec! 🎉");
             }
             await utils.getUpcomingRec.invalidate();
