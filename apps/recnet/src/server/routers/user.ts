@@ -2,7 +2,6 @@ import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 
 import { ErrorMessages } from "@recnet/recnet-web/constant";
-import { getTokenServerSide } from "@recnet/recnet-web/utils/getTokenServerSide";
 
 import {
   getUserMeResponseSchema,
