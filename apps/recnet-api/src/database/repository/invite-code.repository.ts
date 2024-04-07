@@ -44,7 +44,7 @@ export default class InviteCodeRepository {
       where: this.transformInviteCodeFilterByToPrismaWhere(filter),
       take: pageSize,
       skip: getOffset(page, pageSize),
-      orderBy: { issuedAt: Prisma.SortOrder.desc },
+      orderBy: { usedAt: "desc" },
     });
   }
 
