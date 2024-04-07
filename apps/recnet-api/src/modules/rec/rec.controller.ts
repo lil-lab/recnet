@@ -58,7 +58,6 @@ export class RecController {
   @ApiOkResponse({ type: GetRecsResponse })
   @ApiBearerAuth()
   @Get()
-  @Auth()
   @UsePipes(new ZodValidationPipe(getRecsParamsSchema))
   public async getRecs(@Query() dto: QueryRecsDto): Promise<GetRecsResponse> {
     const { page, pageSize, userId } = dto;
