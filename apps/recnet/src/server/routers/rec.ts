@@ -1,9 +1,4 @@
-import { FieldValue } from "firebase-admin/firestore";
 import { z } from "zod";
-
-import { db } from "@recnet/recnet-web/firebase/admin";
-
-import { numToMonth } from "@recnet/recnet-date-fns";
 
 import {
   getRecsFeedsResponseSchema,
@@ -13,6 +8,7 @@ import {
   getRecsParamsSchema,
   getRecsUpcomingResponseSchema,
   postRecsUpcomingRequestSchema,
+  patchRecsUpcomingRequestSchema,
 } from "@recnet/recnet-api-model";
 
 import {
@@ -114,32 +110,44 @@ export const recRouter = router({
   editUpcomingRec: checkRecnetJWTProcedure
     .input(
       z.object({
-        // REFACTOR_AFTER_MIGRATION: don't need id here
-        id: z.string(),
-        data: z.object({
-          articleId: z.string().optional(),
-          doi: z.string().optional(),
-          link: z.string().url(),
-          title: z.string().min(1),
-          author: z.string().min(1),
-          description: z.string().max(280).min(1),
-          year: z.number(),
-          month: z.number().optional(),
-        }),
+        articleId: z.string().optional(),
+        doi: z.string().optional(),
+        link: z.string().url(),
+        title: z.string().min(1),
+        author: z.string().min(1),
+        description: z.string().max(280).min(1),
+        year: z.number(),
+        month: z.number().optional(),
       })
     )
     .mutation(async (opts) => {
-      const { id, data } = opts.input;
-      const postRef = db.doc(`recommendations/${id}`);
-      await postRef.set(
-        {
-          ...data,
-          updatedAt: FieldValue.serverTimestamp(),
-          year: data.year.toString(),
-          month: data.month ? numToMonth[data.month] : "",
-        },
-        { merge: true }
-      );
+      const { recnetApi } = opts.ctx;
+      const { articleId, doi, link, title, author, description, year, month } =
+        opts.input;
+      if (articleId) {
+        await recnetApi.patch(`/recs/upcoming`, {
+          ...patchRecsUpcomingRequestSchema.parse({
+            articleId,
+            article: null,
+            description,
+          }),
+        });
+      } else {
+        await recnetApi.patch(`/recs/upcoming`, {
+          ...patchRecsUpcomingRequestSchema.parse({
+            articleId: null,
+            article: {
+              doi: doi ?? null,
+              title,
+              link,
+              author,
+              year,
+              month: month ?? null,
+            },
+            description,
+          }),
+        });
+      }
     }),
   deleteUpcomingRec: checkRecnetJWTProcedure.mutation(async (opts) => {
     const { recnetApi } = opts.ctx;

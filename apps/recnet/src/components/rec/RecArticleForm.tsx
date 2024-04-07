@@ -220,8 +220,7 @@ export function RecArticleForm(props: {
             // if currentRec exists, update, else insert new rec
             if (currentRec) {
               await editRecMutation.mutateAsync({
-                data: res.data,
-                id: currentRec.id,
+                ...res.data,
               });
               toast.success("Rec updated successfully.");
             } else {
