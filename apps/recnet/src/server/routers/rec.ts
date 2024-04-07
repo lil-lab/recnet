@@ -17,7 +17,12 @@ import {
   Month,
 } from "@recnet/recnet-date-fns";
 
-import { Rec, recSchema, userPreviewSchema } from "@recnet/recnet-api-model";
+import {
+  Rec,
+  getStatsResponseSchema,
+  recSchema,
+  userPreviewSchema,
+} from "@recnet/recnet-api-model";
 
 import { checkIsAdminProcedure, checkRecnetJWTProcedure } from "./middleware";
 
@@ -384,10 +389,11 @@ export const recRouter = router({
       })
     )
     .query(async (opts) => {
-      const recs = await db.collection("recommendations").get();
-      const recCount = recs.size;
+      const { recnetApi } = opts.ctx;
+      const { data } = await recnetApi.get("/stats");
+      const statsData = getStatsResponseSchema.parse(data);
       return {
-        num: recCount,
+        num: statsData.numRecs,
       };
     }),
   getNumOfUpcomingRecs: checkIsAdminProcedure
@@ -397,13 +403,11 @@ export const recRouter = router({
       })
     )
     .query(async (opts) => {
-      const cutOff = getNextCutOff();
-      const recsThisCycle = await db
-        .collection("recommendations")
-        .where("cutoff", "==", Timestamp.fromMillis(cutOff.getTime()))
-        .get();
+      const { recnetApi } = opts.ctx;
+      const { data } = await recnetApi.get("/stats");
+      const statsData = getStatsResponseSchema.parse(data);
       return {
-        num: recsThisCycle.size,
+        num: statsData.numUpcomingRecs,
       };
     }),
   getRecCountByCycle: checkIsAdminProcedure
@@ -412,43 +416,12 @@ export const recRouter = router({
         recCountByCycle: z.record(z.number()),
       })
     )
-    .query(async () => {
-      const recs = await db.collection("recommendations").get();
-      const schema = z.object({
-        cutoff: z.object({
-          _seconds: z.number(),
-          _nanoseconds: z.number(),
-        }),
-        id: z.string(),
-      });
-      const filteredRecs = recs.docs
-        .map((doc) => {
-          const data = doc.data();
-          // parse by rec schema
-          const res = schema.safeParse({ ...data, id: doc.id });
-          if (res.success) {
-            return res.data;
-          } else {
-            // console.error("Failed to parse rec", res.error);
-            return null;
-          }
-        })
-        .filter(notEmpty);
-      const recsGroupByCycle = groupBy(filteredRecs, (doc) => {
-        const date = getDateFromFirebaseTimestamp(doc.cutoff);
-        return date.getTime();
-      });
-      const recCountByCycle: Record<string, number> = Object.keys(
-        recsGroupByCycle
-      ).reduce(
-        (acc, key) => ({
-          ...acc,
-          [key]: recsGroupByCycle[key].length,
-        }),
-        {}
-      );
+    .query(async (opts) => {
+      const { recnetApi } = opts.ctx;
+      const { data } = await recnetApi.get("/stats");
+      const statsData = getStatsResponseSchema.parse(data);
       return {
-        recCountByCycle,
+        recCountByCycle: statsData.numRecsOverTime,
       };
     }),
 });
