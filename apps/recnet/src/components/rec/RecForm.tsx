@@ -9,7 +9,6 @@ import { Text, Flex, Button, TextField, TextArea } from "@radix-ui/themes";
 import { AnimatePresence, motion } from "framer-motion";
 import { useState } from "react";
 import { useForm, useFormState } from "react-hook-form";
-import { TailSpin } from "react-loader-spinner";
 import { toast } from "sonner";
 import { z } from "zod";
 
@@ -235,20 +234,9 @@ export function RecForm(props: { onFinish?: () => void; currentRec: Rec }) {
               className={cn("bg-blue-10", "cursor-pointer")}
               type="submit"
               disabled={isSubmitting}
+              loading={isSubmitting}
             >
-              {isSubmitting ? (
-                <TailSpin
-                  radius={"1"}
-                  visible={true}
-                  height="20"
-                  width="20"
-                  color={"#ffffff"}
-                  ariaLabel="line-wave-loading"
-                  wrapperClass="w-fit h-fit"
-                />
-              ) : (
-                "Submit"
-              )}
+              Submit
             </Button>
             <Button
               variant="outline"

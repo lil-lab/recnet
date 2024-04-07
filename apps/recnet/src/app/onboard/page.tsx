@@ -7,7 +7,6 @@ import { AnimatePresence, motion } from "framer-motion";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { TailSpin } from "react-loader-spinner";
 import { toast } from "sonner";
 import { z } from "zod";
 
@@ -206,20 +205,9 @@ export default function OnboardPage() {
           })}
           type="submit"
           disabled={!formState.isValid}
+          loading={isLoading}
         >
-          {isLoading ? (
-            <TailSpin
-              radius={"1"}
-              visible={true}
-              height="20"
-              width="20"
-              color={"#ffffff"}
-              ariaLabel="line-wave-loading"
-              wrapperClass="w-fit h-fit"
-            />
-          ) : (
-            "Submit"
-          )}
+          Submit
         </Button>
       </form>
     </div>

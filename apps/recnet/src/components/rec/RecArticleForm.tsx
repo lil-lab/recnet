@@ -17,7 +17,6 @@ import { Text, Flex, Button, TextField, TextArea } from "@radix-ui/themes";
 import { AnimatePresence, motion } from "framer-motion";
 import { forwardRef, useState } from "react";
 import { useForm, Controller, useFormState } from "react-hook-form";
-import { TailSpin } from "react-loader-spinner";
 import { toast } from "sonner";
 import * as z from "zod";
 
@@ -303,20 +302,9 @@ export function RecArticleForm(props: {
                 disabled={
                   formState.errors.link || !watch("link") ? true : false
                 }
+                loading={isSearchingForArticle}
               >
-                {isSearchingForArticle ? (
-                  <TailSpin
-                    radius={"1"}
-                    visible={true}
-                    height="20"
-                    width="20"
-                    color={"#ffffff"}
-                    ariaLabel="line-wave-loading"
-                    wrapperClass="w-fit h-fit"
-                  />
-                ) : (
-                  "Next"
-                )}
+                Find
               </Button>
             </motion.div>
           ) : (
@@ -502,20 +490,9 @@ export function RecArticleForm(props: {
                 className={cn("bg-blue-10", "cursor-pointer")}
                 type="submit"
                 disabled={isSubmitting}
+                loading={isSubmitting}
               >
-                {isSubmitting ? (
-                  <TailSpin
-                    radius={"1"}
-                    visible={true}
-                    height="20"
-                    width="20"
-                    color={"#ffffff"}
-                    ariaLabel="line-wave-loading"
-                    wrapperClass="w-fit h-fit"
-                  />
-                ) : (
-                  "Submit"
-                )}
+                Submit
               </Button>
             </motion.div>
           )}
