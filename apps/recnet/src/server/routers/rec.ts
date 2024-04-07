@@ -1,27 +1,20 @@
 import { TRPCError } from "@trpc/server";
 import { FieldValue } from "firebase-admin/firestore";
-import { Timestamp } from "firebase-admin/firestore";
 import { z } from "zod";
 
 import { ErrorMessages } from "@recnet/recnet-web/constant";
 import { db } from "@recnet/recnet-web/firebase/admin";
 
-import { getNextCutOff } from "@recnet/recnet-date-fns";
-import {
-  getDateFromFirebaseTimestamp,
-  numToMonth,
-  monthToNum,
-  Month,
-} from "@recnet/recnet-date-fns";
+import { numToMonth } from "@recnet/recnet-date-fns";
 
 import {
   getRecsFeedsResponseSchema,
   getRecsFeedsParamsSchema,
   getStatsResponseSchema,
-  recSchema,
-  userPreviewSchema,
   getRecsResponseSchema,
   getRecsParamsSchema,
+  getRecsUpcomingResponseSchema,
+  postRecsUpcomingRequestSchema,
 } from "@recnet/recnet-api-model";
 
 import {
@@ -34,90 +27,11 @@ import { router } from "../trpc";
 
 export const recRouter = router({
   getUpcomingRec: checkRecnetJWTProcedure
-    .output(
-      z.object({
-        rec: recSchema.nullable(),
-      })
-    )
+    .output(getRecsUpcomingResponseSchema)
     .query(async (opts) => {
-      // REFACTOR_AFTER_MIGRATION
-      const { tokens } = opts.ctx;
-      const email = tokens.decodedToken.email as string;
-      const querySnapshot = await db
-        .collection("users")
-        .where("email", "==", email)
-        .limit(1)
-        .get();
-      if (querySnapshot.empty) {
-        throw new TRPCError({
-          code: "NOT_FOUND",
-          message: ErrorMessages.USER_NOT_FOUND,
-        });
-      }
-      const user = querySnapshot.docs[0].data();
-      if (
-        !user.postIds ||
-        !Array.isArray(user.postIds) ||
-        user.postIds.length === 0
-      ) {
-        return {
-          rec: null,
-        };
-      }
-      const latestRecId = user.postIds[user.postIds.length - 1];
-      const recRef = db.doc(`recommendations/${latestRecId}`);
-      const recSnap = await recRef.get();
-      if (recSnap.exists) {
-        const postData = recSnap.data();
-        if (!postData) {
-          return {
-            rec: null,
-          };
-        }
-        // check if the rec is for the current cycle
-        const cutOff = getNextCutOff();
-        if (
-          getDateFromFirebaseTimestamp(postData.cutoff).getTime() !==
-          cutOff.getTime()
-        ) {
-          return {
-            rec: null,
-          };
-        }
-
-        const userPreviewData = userPreviewSchema.parse({
-          id: user.seed,
-          handle: user.username,
-          displayName: user.displayName,
-          photoUrl: user.photoURL,
-          affiliation: user?.affiliation ?? null,
-          bio: user?.bio ?? null,
-          numFollowers: user.followers.length,
-        });
-        const recData = recSchema.parse({
-          id: latestRecId,
-          description: postData.description,
-          cutoff: getDateFromFirebaseTimestamp(postData.cutoff).toISOString(),
-          user: userPreviewData,
-          article: {
-            id: latestRecId,
-            doi: null,
-            title: postData.title,
-            author: postData.author,
-            link: postData.link,
-            year: parseInt(postData.year),
-            month: !postData.month ? null : monthToNum[postData.month as Month],
-            isVerified: false,
-          },
-        });
-        return {
-          rec: recData,
-        };
-      } else {
-        return {
-          rec: null,
-        };
-      }
+      const { recnetApi } = opts.ctx;
+      const { data } = await recnetApi.get("/recs/upcoming");
+      return getRecsUpcomingResponseSchema.parse(data);
     }),
   addUpcomingRec: checkRecnetJWTProcedure
     .input(
@@ -133,26 +47,33 @@ export const recRouter = router({
       })
     )
     .mutation(async (opts) => {
-      const { user } = opts.ctx;
-      const data = opts.input;
-      // add rec to recommendations collection
-      const { id } = await db.collection("recommendations").add({
-        ...data,
-        createdAt: FieldValue.serverTimestamp(),
-        cutoff: Timestamp.fromMillis(getNextCutOff().getTime()),
-        email: user.email,
-        userId: user.id,
-        year: data.year.toString(),
-        month: data.month ? numToMonth[data.month] : "",
-      });
-      // update user's recs
-      const userRef = db.doc(`users/${user.id}`);
-      await userRef.set(
-        {
-          postIds: FieldValue.arrayUnion(id),
-        },
-        { merge: true }
-      );
+      const { recnetApi } = opts.ctx;
+      const { articleId, doi, link, title, author, description, year, month } =
+        opts.input;
+      if (articleId) {
+        await recnetApi.post("/recs/upcoming", {
+          ...postRecsUpcomingRequestSchema.parse({
+            articleId,
+            article: null,
+            description,
+          }),
+        });
+      } else {
+        await recnetApi.post("/recs/upcoming", {
+          ...postRecsUpcomingRequestSchema.parse({
+            articleId: null,
+            article: {
+              doi: doi ?? null,
+              title,
+              link,
+              author,
+              year,
+              month: month ?? null,
+            },
+            description,
+          }),
+        });
+      }
     }),
   editUpcomingRec: checkRecnetJWTProcedure
     .input(
