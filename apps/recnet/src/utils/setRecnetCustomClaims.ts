@@ -1,6 +1,8 @@
 "use server";
 import "server-only";
+import { cookies } from "next/headers";
 import { getFirebaseAuth } from "next-firebase-auth-edge";
+import { refreshServerCookies } from "next-firebase-auth-edge/lib/next/cookies";
 
 import { ErrorMessages } from "@recnet/recnet-web/constant";
 import { authConfig } from "@recnet/recnet-web/serverEnv";
@@ -19,10 +21,17 @@ export async function setRecnetCustomClaims(role: UserRole, userId: string) {
   }
   const { decodedToken } = tokens;
   const { uid } = decodedToken;
-  setCustomUserClaims(uid, {
+  await setCustomUserClaims(uid, {
     recnet: {
       role,
       userId,
     },
+  });
+  await refreshServerCookies(cookies(), {
+    apiKey: authConfig.apiKey,
+    serviceAccount: authConfig.serviceAccount,
+    cookieName: authConfig.cookieName,
+    cookieSignatureKeys: authConfig.cookieSignatureKeys,
+    cookieSerializeOptions: authConfig.cookieSerializeOptions,
   });
 }

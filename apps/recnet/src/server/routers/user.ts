@@ -2,6 +2,7 @@ import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 
 import { ErrorMessages } from "@recnet/recnet-web/constant";
+import { getTokenServerSide } from "@recnet/recnet-web/utils/getTokenServerSide";
 
 import {
   getUserMeResponseSchema,
@@ -32,7 +33,8 @@ export const userRouter = router({
   getMe: publicProcedure
     .output(z.union([getUserMeResponseSchema, z.object({ user: z.null() })]))
     .query(async (opts) => {
-      const { tokens, recnetApi } = opts.ctx;
+      const { recnetApi } = opts.ctx;
+      const tokens = await getTokenServerSide();
       if (!tokens) {
         return {
           user: null,
