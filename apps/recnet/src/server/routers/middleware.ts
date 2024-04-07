@@ -66,11 +66,13 @@ export const checkFirebaseJWTProcedure = publicProcedure.use(async (opts) => {
       message: ErrorMessages.MISSING_FIREBASE_SECRET,
     });
   }
+  const recnetApiInstance = createRecnetApiInstanceWithToken(tokens);
 
   return opts.next({
     ctx: {
       ...opts.ctx,
       tokens,
+      recnetApi: recnetApiInstance,
     },
   });
 });
