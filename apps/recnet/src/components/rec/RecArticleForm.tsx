@@ -38,6 +38,8 @@ import { Article, Rec, RecFormSubmission } from "@recnet/recnet-api-model";
 import { Accordion } from "../Accordion";
 import { RecNetLink } from "../Link";
 
+const AnimationDuration = 0.2; // seconds
+
 const Steps = {
   insertLink: {
     header: (article: Article | null) => (
@@ -153,6 +155,7 @@ export function RecArticleForm(props: {
     getValues,
     control,
     setValue,
+    setFocus,
     reset,
   } = useForm({
     resolver: zodResolver(RecArticleFormSchema),
@@ -192,6 +195,9 @@ export function RecArticleForm(props: {
           exit={{
             opacity: 0,
             y: -10,
+          }}
+          transition={{
+            duration: AnimationDuration,
           }}
         >
           {Steps[step].header(articleData?.article ?? null)}
@@ -276,6 +282,7 @@ export function RecArticleForm(props: {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
+              transition={{ duration: AnimationDuration }}
               key="insertLinkForm"
             >
               <Button
@@ -298,6 +305,10 @@ export function RecArticleForm(props: {
                   });
                   setStep("insertDetails");
                   setIsSearchingForArticle(false);
+                  setTimeout(
+                    () => setFocus(foundArticle ? "description" : "title"),
+                    AnimationDuration * 1000 + 100
+                  );
                 }}
                 disabled={
                   formState.errors.link || !watch("link") ? true : false
@@ -312,6 +323,7 @@ export function RecArticleForm(props: {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
+              transition={{ duration: AnimationDuration }}
               key="insertDetailsForm"
               className="flex flex-col gap-y-3"
             >
