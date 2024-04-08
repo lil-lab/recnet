@@ -44,7 +44,7 @@ export function RecForm(props: { onFinish?: () => void; currentRec: Rec }) {
     defaultValues: {
       description: currentRec.description,
     },
-    mode: "onBlur",
+    mode: "onTouched",
   });
   const { isDirty } = useFormState({ control });
 

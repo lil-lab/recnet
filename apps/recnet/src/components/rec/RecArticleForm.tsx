@@ -159,7 +159,7 @@ export function RecArticleForm(props: {
     reset,
   } = useForm({
     resolver: zodResolver(RecArticleFormSchema),
-    mode: "onBlur",
+    mode: "onTouched",
   });
   const { isDirty } = useFormState({ control });
 

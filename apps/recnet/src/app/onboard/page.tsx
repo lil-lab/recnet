@@ -39,7 +39,7 @@ export default function OnboardPage() {
       handle: undefined,
       affiliation: undefined,
     },
-    mode: "onBlur",
+    mode: "onTouched",
   });
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);

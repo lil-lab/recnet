@@ -68,7 +68,7 @@ function EditProfileDialog(props: { handle: string }) {
       handle: user?.handle,
       affiliation: user?.affiliation,
     },
-    mode: "onBlur",
+    mode: "onTouched",
   });
   const { isDirty } = useFormState({ control: control });
 
