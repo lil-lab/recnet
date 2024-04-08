@@ -87,7 +87,7 @@ export function RecForm(props: { onFinish?: () => void; currentRec: Rec }) {
                 className="text-blue-11 p-1 cursor-pointer hover:underline"
                 onClick={() => setRecNewArticle(true)}
               >
-                {`Recommend another article?`}
+                {`Recommend a different paper?`}
               </Text>
             </div>
           </Flex>

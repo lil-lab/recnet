@@ -79,8 +79,8 @@ const Steps = {
             titleClassName="text-[12px]"
           >
             <p className="text-gray-10 my-1 leading-2 text-[12px]">
-              The article details are prefilled from our database. If you think
-              the details are incorrect, please{" "}
+              The article details are prefilled from our database. If the
+              details are incorrect, please{" "}
               <RecNetLink href={`mailto:${ReportEmailAccount}`}>
                 contact us
               </RecNetLink>
