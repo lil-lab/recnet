@@ -30,4 +30,15 @@ export const publicRouter = router({
       });
       return getUsersResponseSchema.parse(data);
     }),
+  apiHealthCheck: publicApiProcedure
+    .output(z.object({ ok: z.boolean() }))
+    .query(async (opts) => {
+      const { recnetApi } = opts.ctx;
+      try {
+        await recnetApi.get("/health");
+        return { ok: true };
+      } catch {
+        return { ok: false };
+      }
+    }),
 });
