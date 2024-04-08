@@ -8,8 +8,10 @@
   },
   "auth": "Authentication",
   "db": "Database",
+  "dto": "Data Transfer Object",
   "recnet-web-concepts": "Recnet-specific",
   "recnet-api-concepts": "Recnet-api-specific",
+  "shared-libs": "Shared Libraries",
   "others": {
     "type": "separator",
     "title": "Others"
