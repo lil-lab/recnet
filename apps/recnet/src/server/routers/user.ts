@@ -33,13 +33,13 @@ export const userRouter = router({
   getMe: publicApiProcedure
     .output(z.union([getUserMeResponseSchema, z.object({ user: z.null() })]))
     .query(async (opts) => {
-      const { recnetApi, tokens } = opts.ctx;
+      const { tokens } = opts.ctx;
       if (!tokens) {
         return {
           user: null,
         };
       }
-      const user = await getUserByTokens(tokens, recnetApi);
+      const user = await getUserByTokens();
       return {
         user,
       };

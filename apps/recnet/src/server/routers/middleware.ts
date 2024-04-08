@@ -1,5 +1,4 @@
 import { TRPCError } from "@trpc/server";
-import { AxiosInstance } from "axios";
 import axios from "axios";
 import { Tokens } from "next-firebase-auth-edge";
 import { z } from "zod";
@@ -18,24 +17,30 @@ import { userSchema } from "@recnet/recnet-api-model";
 import { publicProcedure } from "../trpc";
 
 /**
- * @param tokens Tokens: user tokens from next-firebase-auth-edge
- * @param recnetApi AxiosInstance: axios instance for recnet api
- * @returns User: parsed by userSchema
+ * @returns User: User
  *
+ * Use the tokens in cookies to get the user from the recnet api
+ * Throw error if not authenticated (no tokens in cookies)
  * Note: Internal function and used in trpc middlewares or procedures
  */
-export async function getUserByTokens(
-  tokens: Tokens,
-  recnetApi: AxiosInstance
-) {
-  const { data } = await recnetApi.get("/users/me", {
-    headers: {
-      Authorization: `Bearer ${tokens.token}`,
-    },
-  });
+export async function getUserByTokens() {
+  const tokens = await getTokenServerSide();
+  if (!tokens) {
+    throw new TRPCError({
+      code: "UNAUTHORIZED",
+      message: ErrorMessages.MISSING_FIREBASE_SECRET,
+    });
+  }
+  const recnetApi = createRecnetApiInstanceWithToken(tokens);
+  const { data } = await recnetApi.get("/users/me");
   return userSchema.parse(data.user);
 }
 
+/**
+ * @returns recnetApiInstance: AxiosInstance
+ *
+ * Note: Internal function and used in trpc middlewares or procedures
+ */
 function createRecnetApiInstanceWithToken(tokens: Tokens) {
   const { token } = tokens;
   return axios.create({
@@ -90,7 +95,7 @@ export const checkRecnetJWTProcedure = publicProcedure.use(async (opts) => {
       message: ErrorMessages.MISSING_RECNET_SECRET,
     });
   }
-  const user = await getUserByTokens(tokens, opts.ctx.recnetApi);
+  const user = await getUserByTokens();
   const recnetApiInstance = createRecnetApiInstanceWithToken(tokens);
 
   return opts.next({
@@ -122,7 +127,7 @@ export const checkIsAdminProcedure = publicProcedure.use(async (opts) => {
       });
     }
   }
-  const user = await getUserByTokens(tokens, opts.ctx.recnetApi);
+  const user = await getUserByTokens();
   const recnetApiInstance = createRecnetApiInstanceWithToken(tokens);
 
   return opts.next({
