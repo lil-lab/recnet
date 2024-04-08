@@ -402,7 +402,7 @@ export function RecArticleForm(props: {
                             className={cn(
                               "inline-flex items-center justify-start h-[32px] bg-white outline-none border-[1px] rounded-2 border-gray-6 text-[14px] leading-[14px] px-2",
                               "data-[placeholder]:text-gray-9",
-                              "w-full",
+                              "w-full focus:border-blue-8 focus:ring-1 focus:ring-blue-8",
                               "relative",
                               "placeholder:text-gray-2 text-gray-12",
                               "data-[disabled]:bg-[#F2F2F5] data-[disabled]:cursor-not-allowed data-[disabled]:text-gray-10"
