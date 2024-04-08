@@ -11,8 +11,8 @@ echo "DIR: $DIR"
 echo "PWD: $PWD"
 
 # Put them in .env file under the current directory
-echo "PRIVATE_KEY='$(cat jwtRS256.key)'" > "$PWD/.env.local"
-echo "PUBLIC_KEY='$(cat jwtRS256.key.pub)'" >> "$PWD/.env.local"
+echo "VITE_PRIVATE_KEY='$(cat jwtRS256.key)'" > ".env.local"
+echo "VITE_PUBLIC_KEY='$(cat jwtRS256.key.pub)'" >> ".env.local"
 
 echo "Generated jwtRS256.key and jwtRS256.key.pub and put them in .env.local file."
 # Clean up
