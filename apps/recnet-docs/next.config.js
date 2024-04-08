@@ -9,6 +9,7 @@ if (process.cwd() !== __dirname) {
 const { composePlugins, withNx } = require("@nx/next");
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
+// @ts-expect-error: not typed
 const withNextra = require("nextra")({
   theme: "nextra-theme-docs",
   themeConfig: "./theme.config.jsx",
