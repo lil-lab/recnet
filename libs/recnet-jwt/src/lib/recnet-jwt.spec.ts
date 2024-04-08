@@ -14,7 +14,15 @@ const envSchema = z.object({
 });
 
 function generateFirebaseJWT(sk: string) {
-  const payload = firebaseJwtPayloadSchema.parse({});
+  const payload = firebaseJwtPayloadSchema.parse({
+    firebase: {
+      identities: {
+        "google.com": ["123"],
+        email: ["example.com"],
+      },
+    },
+    source_sign_in_provider: "google.com",
+  });
   return sign(payload, sk, {
     algorithm: "RS256",
   });

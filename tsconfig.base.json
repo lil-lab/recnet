@@ -14,6 +14,7 @@
     "skipLibCheck": true,
     "skipDefaultLibCheck": true,
     "paths": {
+      "@recnet-api/*": ["apps/recnet-api/src/*"],
       "@recnet/recnet-api-model": ["libs/recnet-api-model/src/index.ts"],
       "@recnet/recnet-date-fns": ["libs/recnet-date-fns/src/index.ts"],
       "@recnet/recnet-jwt": ["libs/recnet-jwt/src/index.ts"],

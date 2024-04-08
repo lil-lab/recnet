@@ -31,7 +31,14 @@ export const getUserMeResponseSchema = z.object({
 export type GetUserMeResponse = z.infer<typeof getUserMeResponseSchema>;
 
 // PATCH /users/me
-export const patchUserMeRequestSchema = userSchema.partial();
+export const patchUserMeRequestSchema = userSchema
+  .omit({
+    id: true,
+    numFollowers: true,
+    following: true,
+    role: true,
+  })
+  .partial();
 export type PatchUserMeRequest = z.infer<typeof patchUserMeRequestSchema>;
 
 export const patchUserMeResponseSchema = z.object({
@@ -42,14 +49,14 @@ export type PatchUserMeResponse = z.infer<typeof patchUserMeResponseSchema>;
 // POST /users/me
 export const postUserMeRequestSchema = userPreviewSchema
   .omit({
+    id: true,
     numFollowers: true,
   })
   .extend({
-    provider: z.enum(["FACEBOOK", "GOOGLE", "GITHUB"]),
-    providerId: z.string(),
+    email: z.string(),
     inviteCode: z.string(),
   });
-export type PostUserMeResquest = z.infer<typeof postUserMeRequestSchema>;
+export type PostUserMeRequest = z.infer<typeof postUserMeRequestSchema>;
 
 export const postUserMeResponseSchema = z.object({
   user: userSchema,

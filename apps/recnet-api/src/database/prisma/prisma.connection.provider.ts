@@ -1,15 +1,10 @@
 import { execSync } from "child_process";
 
-import { Injectable, OnModuleInit } from "@nestjs/common";
+import { Inject, Injectable, OnModuleInit } from "@nestjs/common";
+import { ConfigType } from "@nestjs/config";
 import { PrismaClient } from "@prisma/client";
 
-const postgresConfig = {
-  host: process.env.RDS_HOSTNAME,
-  port: parseInt(process.env.RDS_PORT, 10),
-  database: process.env.RDS_DB_NAME,
-  username: process.env.RDS_USERNAME,
-  password: process.env.RDS_PASSWORD,
-};
+import { DBConfig, PrismaConfig } from "@recnet-api/config/common.config";
 
 @Injectable()
 export class PrismaConnectionProvider
@@ -18,12 +13,16 @@ export class PrismaConnectionProvider
 {
   private prismaUrl: string;
 
-  constructor() {
-    const connectionUrl = `postgresql://${postgresConfig.username}:${encodeURIComponent(
-      postgresConfig.password
-    )}@${postgresConfig.host}:${postgresConfig.port}/${
-      postgresConfig.database
-    }?schema=recnet`;
+  constructor(
+    @Inject(DBConfig.KEY)
+    private dbConfig: ConfigType<typeof DBConfig>,
+    @Inject(PrismaConfig.KEY)
+    private prismaConfig: ConfigType<typeof PrismaConfig>
+  ) {
+    const { host, port, database, username, password } = dbConfig;
+    const connectionUrl = `postgresql://${username}:${encodeURIComponent(
+      password
+    )}@${host}:${port}/${database}?schema=recnet`;
 
     super({
       datasources: {
@@ -39,11 +38,9 @@ export class PrismaConnectionProvider
   async onModuleInit() {
     await this.$connect();
 
-    const prismaSchema = process.env.PRISMA_SCHEMA || "prisma/schema.prisma";
-
-    if (process.env.DB_MIGRATE === "true") {
+    if (this.prismaConfig.migrate) {
       execSync(
-        `export PRISMA_DATABASE_URL=${this.prismaUrl} && npx prisma migrate deploy --schema=${prismaSchema}`,
+        `export PRISMA_DATABASE_URL=${this.prismaUrl} && npx prisma migrate deploy --schema=${this.prismaConfig.schema}`,
         { stdio: "inherit" }
       );
     }

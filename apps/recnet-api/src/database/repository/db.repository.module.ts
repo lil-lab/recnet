@@ -1,12 +1,28 @@
 import { Module } from "@nestjs/common";
 
-import UserRepository from "./user.repository";
+import { PrismaModule } from "@recnet-api/database/prisma/prisma.module";
 
-import { PrismaModule } from "../prisma/prisma.module";
+import ArticleRepository from "./article.repository";
+import FollowingRecordRepository from "./followingRecord.repository";
+import InviteCodeRepository from "./invite-code.repository";
+import RecRepository from "./rec.repository";
+import UserRepository from "./user.repository";
 
 @Module({
   imports: [PrismaModule],
-  providers: [UserRepository],
-  exports: [UserRepository],
+  providers: [
+    ArticleRepository,
+    FollowingRecordRepository,
+    InviteCodeRepository,
+    RecRepository,
+    UserRepository,
+  ],
+  exports: [
+    ArticleRepository,
+    FollowingRecordRepository,
+    InviteCodeRepository,
+    RecRepository,
+    UserRepository,
+  ],
 })
 export class DbRepositoryModule {}
