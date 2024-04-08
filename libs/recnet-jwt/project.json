@@ -37,15 +37,6 @@
         "cwd": ".",
         "forwardAllArgs": false
       }
-    },
-    "cleanupTest": {
-      "executor": "nx:run-commands",
-      "dependsOn": ["test"],
-      "options": {
-        "commands": ["rm .env.local"],
-        "cwd": ".",
-        "forwardAllArgs": false
-      }
     }
   },
   "tags": ["type:utils"]
