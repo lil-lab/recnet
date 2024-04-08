@@ -400,16 +400,16 @@ export function RecArticleForm(props: {
                         >
                           <Select.Trigger
                             className={cn(
-                              "inline-flex items-center justify-start h-[32px] bg-white outline-none border-[1px] rounded-2 border-gray-6 text-[14px] leading-[14px] px-2",
-                              "data-[placeholder]:text-gray-9",
+                              "inline-flex items-center justify-start h-[32px] light:bg-white outline-none border-[1px] rounded-2 border-gray-7 text-[14px] leading-[14px] px-2",
+                              "light:data-[placeholder]:text-gray-9 dark:data-[placeholder]:text-gray-10",
                               "w-full focus:border-blue-8 focus:ring-1 focus:ring-blue-8",
                               "relative",
-                              "placeholder:text-gray-2 text-gray-12",
-                              "data-[disabled]:bg-[#F2F2F5] data-[disabled]:cursor-not-allowed data-[disabled]:text-gray-10"
+                              "placeholder:text-gray-2",
+                              "light:data-[disabled]:bg-[#F2F2F5] dark:data-[disabled]:bg-[#202123] data-[disabled]:cursor-not-allowed light:data-[disabled]:text-gray-10 dark:data-[disabled]:text-gray-11"
                             )}
                             aria-label="Food"
                           >
-                            <Select.Icon className="pr-2">
+                            <Select.Icon className="pr-2 light:text-gray-10 dark:text-gray-11">
                               <CalendarIcon width="16" height="16" />
                             </Select.Icon>
                             <Select.Value
@@ -424,7 +424,7 @@ export function RecArticleForm(props: {
                           <Select.Portal>
                             <Select.Content
                               className={cn(
-                                "overflow-hidden bg-white rounded-[8px] border-[1px] border-gray-6",
+                                "overflow-hidden light:bg-white dark:bg-slate-2 rounded-[8px] border-[1px] border-gray-6",
                                 "shadow-[0px_10px_38px_-10px_rgba(22,_23,_24,_0.35),0px_10px_20px_-15px_rgba(22,_23,_24,_0.2)]"
                               )}
                             >

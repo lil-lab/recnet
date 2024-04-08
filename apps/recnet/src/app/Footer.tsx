@@ -1,8 +1,9 @@
 "use client";
 
-import { GitHubLogoIcon } from "@radix-ui/react-icons";
+import { GitHubLogoIcon, MoonIcon, SunIcon } from "@radix-ui/react-icons";
 import { Text, Flex } from "@radix-ui/themes";
 import Link from "next/link";
+import { useTheme } from "next-themes";
 
 import { cn } from "@recnet/recnet-web/utils/cn";
 
@@ -10,6 +11,7 @@ import { trpc } from "./_trpc/client";
 
 function Footer() {
   const { data, isPending } = trpc.apiHealthCheck.useQuery();
+  const { theme, setTheme } = useTheme();
 
   return (
     <div
@@ -25,7 +27,7 @@ function Footer() {
         "flex-col",
         "sm:flex-row",
         "text-gray-8",
-        "h-fit my-1 gap-y-1",
+        "h-fit mb-4 gap-y-1",
         "sm:h-[44px]"
       )}
     >
@@ -46,8 +48,12 @@ function Footer() {
         </Text>
       </Flex>
       <Text size="1">© 2024 RecNet. All rights reserved.</Text>
-      <Flex gap="2" className="items-center hidden sm:flex">
-        <Link href="https://github.com/lil-lab/recnet" target="_blank">
+      <Flex gap="2" className="items-center">
+        <Link
+          href="https://github.com/lil-lab/recnet"
+          target="_blank"
+          className="mx-1"
+        >
           <GitHubLogoIcon
             width="20"
             height="20"
@@ -59,6 +65,40 @@ function Footer() {
             )}
           />
         </Link>
+        <button
+          onClick={() => {
+            setTheme("dark");
+          }}
+          className={cn(
+            "hover:scale-[105%]",
+            "transition-transform",
+            "cursor-pointer",
+            "ease-in-out",
+            "p-1 rounded-[999px]",
+            {
+              "bg-gray-4 bg-opacity-5": theme === "dark",
+            }
+          )}
+        >
+          <MoonIcon width="20" height="20" />
+        </button>
+        <button
+          onClick={() => {
+            setTheme("light");
+          }}
+          className={cn(
+            "hover:scale-[105%]",
+            "transition-transform",
+            "cursor-pointer",
+            "ease-in-out",
+            "p-1 rounded-[999px]",
+            {
+              "bg-gray-3 bg-opacity-5": theme === "light",
+            }
+          )}
+        >
+          <SunIcon width="20" height="20" />
+        </button>
       </Flex>
     </div>
   );

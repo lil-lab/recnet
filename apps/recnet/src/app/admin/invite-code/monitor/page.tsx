@@ -123,7 +123,7 @@ export default function InviteCodeMonitorPage({
         <AdminSectionBox>
           {!isPending ? (
             <Table.Root className="w-full max-h-[60svh] overflow-x-scroll relative table-fixed">
-              <Table.Header className="sticky top-0 bg-white z-[500]">
+              <Table.Header className="sticky top-0 light:bg-white dark:bg-slate-1 z-[500]">
                 <Table.Row>
                   <Table.ColumnHeaderCell className="w-[400px]">
                     Code

@@ -9,6 +9,7 @@ import {
 import { Dialog, Text, Button, Flex, DropdownMenu } from "@radix-ui/themes";
 import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
+import { useTheme } from "next-themes";
 import { useState } from "react";
 import { toast } from "sonner";
 
@@ -151,6 +152,7 @@ function MobileNavigator() {
   const { login } = useGoogleLogin();
 
   const [open, setOpen] = useState(false);
+  const { theme } = useTheme();
 
   return (
     <div
@@ -168,7 +170,10 @@ function MobileNavigator() {
         "h-fit",
         "py-4",
         "bg-gradient-to-t",
-        "from-white",
+        {
+          "from-white": theme === "light",
+          "from-black": theme === "dark",
+        },
         "to-[#ffffff10]",
         "backdrop-blur-md",
         "sticky",

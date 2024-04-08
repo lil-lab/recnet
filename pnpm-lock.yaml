@@ -115,6 +115,9 @@ dependencies:
   next-firebase-auth-edge:
     specifier: ^1.4.1
     version: 1.4.1(next@14.1.0)
+  next-themes:
+    specifier: ^0.3.0
+    version: 0.3.0(react-dom@18.2.0)(react@18.2.0)
   next13-progressbar:
     specifier: ^1.2.0
     version: 1.2.0(next@14.1.0)(react@18.2.0)
@@ -13928,6 +13931,16 @@ packages:
       encoding: 0.1.13
       jose: 4.15.5
       next: 14.1.0(@babel/core@7.24.4)(react-dom@18.2.0)(react@18.2.0)
+    dev: false
+
+  /next-themes@0.3.0(react-dom@18.2.0)(react@18.2.0):
+    resolution: {integrity: sha512-/QHIrsYpd6Kfk7xakK4svpDI5mmXP0gfvCoJdGpZQ2TOrQZmsW0QxjaiLn8wbIKjtm4BTSqLoix4lxYYOnLJ/w==}
+    peerDependencies:
+      react: ^16.8 || ^17 || ^18
+      react-dom: ^16.8 || ^17 || ^18
+    dependencies:
+      react: 18.2.0
+      react-dom: 18.2.0(react@18.2.0)
     dev: false
 
   /next13-progressbar@1.2.0(next@14.1.0)(react@18.2.0):
