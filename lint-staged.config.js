@@ -16,7 +16,7 @@ module.exports = {
       return `nx affected:lint --fix --files=${files.join(",")}`;
     },
     (files) => {
-      return `nx format:write --files=${files.join(",")}`;
+      return `nx format:check --files=${files.join(",")}`;
     },
   ],
 };
