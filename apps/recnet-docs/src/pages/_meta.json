@@ -1,3 +1,22 @@
 {
-  "index": "Introduction"
+  "index": "Introduction",
+  "contributing": "Contribution Guidelines",
+  "setup": "Setting up environment",
+  "concepts": {
+    "type": "separator",
+    "title": "Concepts"
+  },
+  "auth": "Authentication",
+  "db": "Database",
+  "recnet-web-concepts": "Recnet-specific",
+  "recnet-api-concepts": "Recnet-api-specific",
+  "others": {
+    "type": "separator",
+    "title": "Others"
+  },
+  "api_docs": {
+    "title": "API Documentation",
+    "href": "https://api.recnet.io/api",
+    "newWindow": true
+  }
 }
