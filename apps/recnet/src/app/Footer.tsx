@@ -27,8 +27,9 @@ function Footer() {
         "flex-col",
         "sm:flex-row",
         "text-gray-8",
-        "h-fit mb-4 gap-y-1",
-        "sm:h-[44px]"
+        "h-fit gap-y-1",
+        "sm:h-[44px]",
+        "mb-4 sm:mb-0"
       )}
     >
       <Flex gap="2" className="items-center">
