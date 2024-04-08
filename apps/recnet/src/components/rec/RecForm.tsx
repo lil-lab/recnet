@@ -194,7 +194,7 @@ export function RecForm(props: { onFinish?: () => void; currentRec: Rec }) {
               <TextArea
                 placeholder="tl;dr"
                 className="min-h-[180px] border-[1px] border-gray-6"
-                autoFocus={false}
+                autoFocus
                 {...register("description", { required: true })}
               />
               <div className="w-full flex flex-row justify-between mt-1">
