@@ -13,9 +13,23 @@ export const recnetJwtPayloadSchema = z
   .passthrough();
 export type RecNetJwtPayload = z.infer<typeof recnetJwtPayloadSchema>;
 
-export const firebaseJwtPayloadSchema = recnetJwtPayloadSchema
-  .omit({
-    recnet: true,
+export enum AuthProvider {
+  Google = "google.com",
+  // Add other providers here if needed
+}
+export const providerSchema = z.nativeEnum(AuthProvider);
+
+export const googleProviderIdentitySchema = z.object({
+  [AuthProvider.Google]: z.array(z.string()),
+  email: z.array(z.string()),
+});
+
+export const firebaseJwtPayloadSchema = z
+  .object({
+    firebase: z.object({
+      identities: z.record(z.array(z.string())),
+    }),
+    source_sign_in_provider: providerSchema,
   })
   .passthrough();
 export type FirebaseJwtPayload = z.infer<typeof firebaseJwtPayloadSchema>;
@@ -41,7 +55,7 @@ export async function getPublicKey(token: string): Promise<string> {
   const res = await fetch(
     `https://www.googleapis.com/robot/v1/metadata/x509/securetoken@system.gserviceaccount.com`
   );
-  const keys = await res.json();
+  const keys = (await res.json()) as Record<string, unknown>;
   const publicKey = keys[header.kid];
   if (!publicKey) {
     throw new Error("Public key not found");

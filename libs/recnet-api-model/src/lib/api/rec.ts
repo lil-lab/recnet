@@ -37,7 +37,7 @@ export type GetRecsResponse = z.infer<typeof getRecsResponseSchema>;
 export const getRecsFeedsParamsSchema = z.object({
   page: z.coerce.number(),
   pageSize: z.coerce.number(),
-  cutoff: z.coerce.number(), // timestamp
+  cutoff: z.coerce.number().optional(), // timestamp
 });
 export type GetRecsFeedsParams = z.infer<typeof getRecsFeedsParamsSchema>;
 
@@ -79,14 +79,6 @@ export const patchRecsUpcomingResponseSchema = z.object({
 });
 export type PatchRecsUpcomingResponse = z.infer<
   typeof patchRecsUpcomingResponseSchema
->;
-
-// DELETE /recs/upcoming
-export const deleteRecsUpcomingParamsSchema = z.object({
-  recId: z.string(),
-});
-export type DeleteRecsUpcomingParams = z.infer<
-  typeof deleteRecsUpcomingParamsSchema
 >;
 
 // GET /articles

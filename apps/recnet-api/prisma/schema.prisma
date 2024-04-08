@@ -6,6 +6,7 @@
 
 generator client {
   provider = "prisma-client-js"
+  previewFeatures = ["fullTextSearch"]
 }
 
 datasource db {
@@ -29,6 +30,7 @@ model User {
   id            String     @id @db.VarChar(64) @default(uuid()) // Primary key, UUID type
   provider      Provider   // Enum type
   providerId    String     @db.VarChar(128)
+  @@unique([provider, providerId])
   email         String     @db.VarChar(128) @unique
   handle        String     @db.VarChar(32) @unique
   displayName   String     @db.VarChar(32)
@@ -75,7 +77,7 @@ model Article {
   id          String    @id @db.VarChar(64) @default(uuid())
   doi         String?   @db.VarChar(32)
   title       String    @db.VarChar(256)
-  author      String    
+  author      String
   link        String    @db.VarChar(256)
   year        Int       @db.SmallInt
   month       Int?      @db.SmallInt
@@ -88,7 +90,7 @@ model Article {
 
 model InviteCode {
   id          Int       @id @default(autoincrement())
-  code        String    @db.VarChar(64)
+  code        String    @db.VarChar(64) @unique
   ownerId     String    @db.VarChar(64)
   issuedAt    DateTime  @default(now())
   usedById    String?   @db.VarChar(64) @unique
