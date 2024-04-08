@@ -15,7 +15,12 @@ export type GetStatsResponse = z.infer<typeof getStatsResponseSchema>;
 export const getInviteCodesParamsSchema = z.object({
   page: z.coerce.number(),
   pageSize: z.coerce.number(),
-  used: z.coerce.boolean().optional(),
+  // ref: https://github.com/colinhacks/zod/issues/1630#issuecomment-1710498376
+  // since z.coerce.boolean will parse "false" as true, need this workaround for api to properly parse "false" as false
+  used: z
+    .union([z.boolean(), z.literal("true"), z.literal("false")])
+    .transform((value) => value === true || value === "true")
+    .optional(),
 });
 export type GetInviteCodesParams = z.infer<typeof getInviteCodesParamsSchema>;
 
