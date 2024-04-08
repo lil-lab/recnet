@@ -16,7 +16,7 @@
     },
     "test": {
       "executor": "@nx/vite:test",
-      "dependsOn": ["setupEnv"],
+      "dependsOn": ["prepareTest"],
       "outputs": ["{options.reportsDirectory}"],
       "options": {
         "reportsDirectory": "../../coverage/libs/recnet-jwt"
@@ -30,11 +30,20 @@
         "forwardAllArgs": false
       }
     },
-    "setupEnv": {
+    "prepareTest": {
       "executor": "nx:run-commands",
       "options": {
-        "commands": ["./scripts/genRS256KeyPair.sh"],
-        "cwd": "libs/recnet-jwt",
+        "commands": ["libs/recnet-jwt/scripts/genRS256KeyPair.sh"],
+        "cwd": ".",
+        "forwardAllArgs": false
+      }
+    },
+    "cleanupTest": {
+      "executor": "nx:run-commands",
+      "dependsOn": ["test"],
+      "options": {
+        "commands": ["rm .env.local"],
+        "cwd": ".",
         "forwardAllArgs": false
       }
     }
