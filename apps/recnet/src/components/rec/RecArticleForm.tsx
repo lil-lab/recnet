@@ -43,7 +43,7 @@ const Steps = {
     header: (article: Article | null) => (
       <Flex className="w-full">
         <Text size="2" className="text-gray-11 p-1" weight="medium">
-          {`Give us the link to the article you want to recommend! Let us do the rest.`}
+          {`Please enter the link to the paper. If this is an arXiv paper, please use the abstract page.`}
         </Text>
       </Flex>
     ),
