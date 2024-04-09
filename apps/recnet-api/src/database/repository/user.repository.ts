@@ -129,10 +129,14 @@ export default class UserRepository {
     }
 
     if (filter.keyword) {
-      const searchStr = filter.keyword.split(" ").join(" | ");
+      const keywords = filter.keyword.split(" ");
+      const searchStr = keywords.join(" | ");
       where.OR = [
         { handle: { search: searchStr } },
         { displayName: { search: searchStr } },
+        // add contains search to handle partial match
+        ...keywords.map((w) => ({ handle: { contains: w } })),
+        ...keywords.map((w) => ({ displayName: { contains: w } })),
       ];
     }
     return where;
