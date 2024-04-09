@@ -1,0 +1,25 @@
+{
+  "index": "Introduction",
+  "contributing": "Contribution Guidelines",
+  "setup": "Setting up environment",
+  "concepts": {
+    "type": "separator",
+    "title": "Concepts"
+  },
+  "auth": "Authentication",
+  "db": "Database",
+  "dto": "Data Transfer Object",
+  "ci": "Continuous Integration",
+  "recnet-web-concepts": "Recnet-specific",
+  "recnet-api-concepts": "Recnet-api-specific",
+  "shared-libs": "Shared Libraries",
+  "others": {
+    "type": "separator",
+    "title": "Others"
+  },
+  "api_docs": {
+    "title": "API Documentation",
+    "href": "https://api.recnet.io/api",
+    "newWindow": true
+  }
+}
