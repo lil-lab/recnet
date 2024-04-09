@@ -37,6 +37,7 @@ import { Article, Rec, RecFormSubmission } from "@recnet/recnet-api-model";
 
 import { Accordion } from "../Accordion";
 import { RecNetLink } from "../Link";
+import { useTheme } from "next-themes";
 
 const AnimationDuration = 0.2; // seconds
 
@@ -146,6 +147,7 @@ export function RecArticleForm(props: {
   const { onFinish = () => {}, currentRec } = props;
   const [step, setStep] = useState<Step>("insertLink");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const { theme } = useTheme();
 
   const {
     register,
@@ -400,12 +402,18 @@ export function RecArticleForm(props: {
                         >
                           <Select.Trigger
                             className={cn(
-                              "inline-flex items-center justify-start h-[32px] light:bg-white outline-none border-[1px] rounded-2 border-gray-7 text-[14px] leading-[14px] px-2",
+                              "inline-flex items-center justify-start h-[32px] light:bg-white dark:bg-slate-1 outline-none border-[1px] rounded-2 border-gray-7 text-[14px] leading-[14px] px-2",
                               "light:data-[placeholder]:text-gray-9 dark:data-[placeholder]:text-gray-10",
                               "w-full focus:border-blue-8 focus:ring-1 focus:ring-blue-8",
                               "relative",
                               "placeholder:text-gray-2",
-                              "light:data-[disabled]:bg-[#F2F2F5] dark:data-[disabled]:bg-[#202123] data-[disabled]:cursor-not-allowed light:data-[disabled]:text-gray-10 dark:data-[disabled]:text-gray-11"
+                              "data-[disabled]:cursor-not-allowed light:data-[disabled]:text-gray-10 dark:data-[disabled]:text-gray-11",
+                              {
+                                "data-[disabled]:bg-[#F2F2F5]":
+                                  theme === "light",
+                                "data-[disabled]:bg-[#202123]":
+                                  theme === "dark",
+                              }
                             )}
                             aria-label="Food"
                           >
