@@ -9,8 +9,8 @@ import {
 } from "./recnet-jwt";
 
 const envSchema = z.object({
-  PRIVATE_KEY: z.string().transform((s) => s.replace(/\\n/gm, "\n")),
-  PUBLIC_KEY: z.string().transform((s) => s.replace(/\\n/gm, "\n")),
+  VITE_PRIVATE_KEY: z.string().transform((s) => s.replace(/\\n/gm, "\n")),
+  VITE_PUBLIC_KEY: z.string().transform((s) => s.replace(/\\n/gm, "\n")),
 });
 
 function generateFirebaseJWT(sk: string) {
@@ -42,11 +42,11 @@ function generateRecnetJWT(sk: string) {
 
 describe("Verify", async () => {
   const env = envSchema.parse(process.env);
-  const publicKey = env.PUBLIC_KEY;
+  const publicKey = env.VITE_PUBLIC_KEY;
   const fakePublicKey = publicKey.replace("A", "B");
 
-  const firebaseJWT = generateFirebaseJWT(env.PRIVATE_KEY);
-  const recnetJWT = generateRecnetJWT(env.PRIVATE_KEY);
+  const firebaseJWT = generateFirebaseJWT(env.VITE_PRIVATE_KEY);
+  const recnetJWT = generateRecnetJWT(env.VITE_PRIVATE_KEY);
 
   test("Should be able to decode firebaseJWT if using correct public key", async () => {
     const payload = verifyJwt(firebaseJWT, publicKey, firebaseJwtPayloadSchema);

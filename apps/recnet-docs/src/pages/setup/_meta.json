@@ -1,0 +1,4 @@
+{
+  "setup_fe": "RecNet",
+  "setup_be": "RecNet-Api"
+}
