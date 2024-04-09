@@ -59,6 +59,3 @@ next-env.d.ts
 
 # misc
 apps/**/pnpm-lock.yaml
-
-# ignore pages under this directory
-/pages
