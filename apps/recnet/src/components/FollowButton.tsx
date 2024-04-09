@@ -2,7 +2,6 @@
 
 import { Button } from "@radix-ui/themes";
 import { useState } from "react";
-import { TailSpin } from "react-loader-spinner";
 import { toast } from "sonner";
 
 import { useAuth } from "@recnet/recnet-web/app/AuthContext";
@@ -36,7 +35,7 @@ export function FollowButton(props: FollowButtonProps) {
         setIsLoading(true);
         if (isFollowing) {
           try {
-            await unfollowMutation.mutateAsync({ targetUserId: user.id });
+            await unfollowMutation.mutateAsync({ userId: user.id });
             await revalidateUser();
             toast.success(`Successfully unfollowed ${user.displayName}`);
           } catch (e) {
@@ -44,7 +43,7 @@ export function FollowButton(props: FollowButtonProps) {
           }
         } else {
           try {
-            await followMutation.mutateAsync({ targetUserId: user.id });
+            await followMutation.mutateAsync({ userId: user.id });
             await revalidateUser();
             toast.success(`You're following ${user.displayName}`);
           } catch (e) {
@@ -55,23 +54,10 @@ export function FollowButton(props: FollowButtonProps) {
       }}
       color={me ? "blue" : "gray"}
       disabled={!!me && me.id === user.id}
+      loading={isLoading}
       {...rest}
     >
-      {isLoading ? (
-        <TailSpin
-          radius={"1"}
-          visible={true}
-          height="20"
-          width="20"
-          color={isFollowing ? "#2191FF" : "#ffffff"}
-          ariaLabel="line-wave-loading"
-          wrapperClass="w-fit h-fit"
-        />
-      ) : isFollowing ? (
-        "Unfollow"
-      ) : (
-        "Follow"
-      )}
+      {isFollowing ? "Unfollow" : "Follow"}
     </Button>
   );
 }

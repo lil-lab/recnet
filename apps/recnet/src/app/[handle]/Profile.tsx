@@ -68,7 +68,7 @@ function EditProfileDialog(props: { handle: string }) {
       handle: user?.handle,
       affiliation: user?.affiliation,
     },
-    mode: "onBlur",
+    mode: "onTouched",
   });
   const { isDirty } = useFormState({ control: control });
 
@@ -100,7 +100,7 @@ function EditProfileDialog(props: { handle: string }) {
               const oldHandle = user.handle;
               const updatedData = await updateProfileMutation.mutateAsync(
                 {
-                  newData: res.data,
+                  ...res.data,
                 },
                 {
                   onError: (error) => {
@@ -142,7 +142,7 @@ function EditProfileDialog(props: { handle: string }) {
               <Text as="div" size="2" mb="1" weight="medium">
                 Name
               </Text>
-              <TextField.Input
+              <TextField.Root
                 placeholder="Enter your name"
                 {...register("displayName")}
               />
@@ -156,7 +156,7 @@ function EditProfileDialog(props: { handle: string }) {
               <Text as="div" size="2" mb="1" weight="medium">
                 User Handle
               </Text>
-              <TextField.Input
+              <TextField.Root
                 placeholder="Enter user handle"
                 {...register("handle")}
               />
@@ -170,7 +170,7 @@ function EditProfileDialog(props: { handle: string }) {
               <Text as="div" size="2" mb="1" weight="medium">
                 Affiliation
               </Text>
-              <TextField.Input
+              <TextField.Root
                 placeholder="Enter your affiliation"
                 {...register("affiliation")}
               />

@@ -120,7 +120,8 @@ export function Headerbar() {
         "md:px-16",
         "py-[10px]",
         "shadow-4",
-        "bg-white",
+        "light:bg-white",
+        "dark:bg-slate-1",
         "border-b-[1px]",
         "border-slate-8",
         "sticky",
@@ -134,24 +135,24 @@ export function Headerbar() {
             RecNet
           </Text>
         </Link>
-        <TextField.Root className="hidden sm:flex">
+        <TextField.Root
+          className="hidden sm:flex"
+          placeholder="Search for users..."
+          size="2"
+          ref={searchInputRef}
+          value={searchQuery}
+          onChange={(event) => {
+            setSearchQuery(event.target.value);
+          }}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              handleSearch();
+            }
+          }}
+        >
           <TextField.Slot>
             <MagnifyingGlassIcon width="16" height="16" />
           </TextField.Slot>
-          <TextField.Input
-            placeholder="Search for users..."
-            size="2"
-            ref={searchInputRef}
-            value={searchQuery}
-            onChange={(event) => {
-              setSearchQuery(event.target.value);
-            }}
-            onKeyDown={(e) => {
-              if (e.key === "Enter") {
-                handleSearch();
-              }
-            }}
-          />
           <TextField.Slot>
             <Kbd size="1">{isAppleDevice ? `⌘ K` : "Ctrl+K"}</Kbd>
           </TextField.Slot>
@@ -198,20 +199,18 @@ export function Headerbar() {
                   "duration-200",
                   "sm:hidden"
                 )}
+                placeholder="Search for users..."
+                size="2"
+                value={searchQuery}
+                onChange={(event) => {
+                  setSearchQuery(event.target.value);
+                }}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    handleSearch();
+                  }
+                }}
               >
-                <TextField.Input
-                  placeholder="Search for users..."
-                  size="2"
-                  value={searchQuery}
-                  onChange={(event) => {
-                    setSearchQuery(event.target.value);
-                  }}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter") {
-                      handleSearch();
-                    }
-                  }}
-                />
                 <TextField.Slot>
                   <Cross1Icon
                     width="16"

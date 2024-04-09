@@ -29,7 +29,7 @@ export function StatBox({
     >
       <div
         className={cn(
-          "flex flex-row gap-x-1 text-gray-11 text-[14px] font-medium items-center sticky left-0 top-0 bg-white z-10"
+          "flex flex-row gap-x-1 text-gray-11 text-[14px] font-medium items-center sticky left-0 top-0 z-10"
         )}
       >
         {icon}

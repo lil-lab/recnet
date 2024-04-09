@@ -10,7 +10,11 @@ export default async function FeedPageLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const user = await getUserServerSide();
+  const user = await getUserServerSide({
+    notRegisteredCallback: () => {
+      redirect("/onboard");
+    },
+  });
   if (!user) {
     redirect("/");
   }

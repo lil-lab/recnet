@@ -2,6 +2,7 @@ import { GoogleAnalytics } from "@next/third-parties/google";
 import { Theme } from "@radix-ui/themes";
 import type { Metadata } from "next";
 import localFont from "next/font/local";
+import { ThemeProvider } from "next-themes";
 import { Toaster } from "sonner";
 
 import { Footer } from "@recnet/recnet-web/app/Footer";
@@ -125,7 +126,7 @@ export default async function RootLayout({
 }>) {
   const user = await getUserServerSide();
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       {clientEnv.NEXT_PUBLIC_ENV === "prod" ? (
         <GoogleAnalytics
           gaId={clientEnv.NEXT_PUBLIC_GA_TRACKING_ID as string}
@@ -136,15 +137,17 @@ export default async function RootLayout({
           <ProgressbarProvider>
             <AuthProvider serverUser={user}>
               <HistoryProvider>
-                <Theme accentColor="blue">
-                  <Headerbar />
-                  <Toaster position="top-right" richColors offset={80} />
-                  <div className="min-h-[90svh] flex justify-center">
-                    {children}
-                  </div>
-                  <Footer />
-                  <MobileNavigator />
-                </Theme>
+                <ThemeProvider attribute="class">
+                  <Theme accentColor="blue">
+                    <Headerbar />
+                    <Toaster position="top-right" richColors offset={80} />
+                    <div className="min-h-[90svh] flex justify-center">
+                      {children}
+                    </div>
+                    <Footer />
+                    <MobileNavigator />
+                  </Theme>
+                </ThemeProvider>
               </HistoryProvider>
             </AuthProvider>
           </ProgressbarProvider>

@@ -18,11 +18,11 @@ export const getUsersResponseSchema = z.object({
 });
 export type GetUsersResponse = z.infer<typeof getUsersResponseSchema>;
 
-// POST /users/login
-export const postUserLoginResponseSchema = z.object({
+// GET /users/login
+export const getUserLoginResponseSchema = z.object({
   user: userSchema,
 });
-export type PostUserLoginResponse = z.infer<typeof postUserLoginResponseSchema>;
+export type GetUserLoginResponse = z.infer<typeof getUserLoginResponseSchema>;
 
 // GET /users/me
 export const getUserMeResponseSchema = z.object({

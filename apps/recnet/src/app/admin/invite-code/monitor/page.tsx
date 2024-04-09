@@ -1,7 +1,10 @@
 "use client";
 
-import { Flex, Table, Text } from "@radix-ui/themes";
-import { TailSpin } from "react-loader-spinner";
+import { Flex, Table, Text, SegmentedControl } from "@radix-ui/themes";
+import { InfiniteData } from "@tanstack/react-query";
+import { useRouter } from "next/navigation";
+import { useEffect, useMemo } from "react";
+import { useInView } from "react-intersection-observer";
 
 import { trpc } from "@recnet/recnet-web/app/_trpc/client";
 import {
@@ -11,11 +14,29 @@ import {
 import { Avatar } from "@recnet/recnet-web/components/Avatar";
 import { CopiableInviteCode } from "@recnet/recnet-web/components/InviteCode";
 import { RecNetLink } from "@recnet/recnet-web/components/Link";
+import { LoadingBox } from "@recnet/recnet-web/components/LoadingBox";
 import { cn } from "@recnet/recnet-web/utils/cn";
 
 import { formatDate } from "@recnet/recnet-date-fns";
 
-import { UserPreview } from "@recnet/recnet-api-model";
+import {
+  GetInviteCodesResponse,
+  InviteCode,
+  UserPreview,
+} from "@recnet/recnet-api-model";
+
+const INIVITE_CODE_PAGE_SIZE = 30;
+
+const getInviteCodesFromInfiniteQuery = (
+  infiniteQueryData: InfiniteData<GetInviteCodesResponse> | undefined
+) => {
+  if (!infiniteQueryData) {
+    return [];
+  }
+  return (infiniteQueryData?.pages ?? []).reduce((acc, page) => {
+    return [...acc, ...page.inviteCodes];
+  }, [] as InviteCode[]);
+};
 
 const TableUserCard = (props: { user: UserPreview }) => {
   const { user } = props;
@@ -30,25 +51,48 @@ const TableUserCard = (props: { user: UserPreview }) => {
 };
 
 const TableLoader = () => {
-  return (
-    <Flex className="justify-center items-center w-full h-[300px]">
-      <TailSpin
-        radius={"3"}
-        visible={true}
-        height="40"
-        width="40"
-        color={"#909090"}
-        ariaLabel="line-wave-loading"
-        wrapperClass="w-fit h-fit"
-      />
-    </Flex>
-  );
+  return <LoadingBox className="h-[300px]" />;
 };
 
-export default function InviteCodeMonitorPage() {
-  const { data, isPending, isFetching } = trpc.getAllInviteCodes.useQuery();
-  const inviteCodes = data?.inviteCodes ?? [];
-  const isLoading = isPending || isFetching;
+export default function InviteCodeMonitorPage({
+  searchParams,
+}: {
+  searchParams: {
+    used?: string;
+  };
+}) {
+  const router = useRouter();
+  const { used } = searchParams;
+  const { data, isPending, hasNextPage, fetchNextPage, isFetching } =
+    trpc.getAllInviteCodes.useInfiniteQuery(
+      {
+        pageSize: INIVITE_CODE_PAGE_SIZE,
+        used: used === "true" ? true : used === "false" ? false : undefined,
+      },
+      {
+        initialCursor: 1,
+        getNextPageParam: (lastPage, allPages) => {
+          if (!lastPage.hasNext) {
+            return null;
+          }
+          return allPages.length + 1;
+        },
+      }
+    );
+  const inviteCodes = useMemo(
+    () => getInviteCodesFromInfiniteQuery(data),
+    [data]
+  );
+
+  const { ref: tableBottomRef, inView: tableBottomInView } = useInView({
+    threshold: 0,
+  });
+
+  useEffect(() => {
+    if (tableBottomInView && hasNextPage) {
+      fetchNextPage();
+    }
+  }, [tableBottomInView, hasNextPage, fetchNextPage]);
 
   return (
     <div className={cn("w-full", "md:w-[85%]", "flex", "flex-col", "gap-y-4")}>
@@ -56,10 +100,30 @@ export default function InviteCodeMonitorPage() {
         <AdminSectionTitle description="View who used the invite codes. Sorted in reverse-chronological order.">
           Invite Code Monitor
         </AdminSectionTitle>
+        <div className="flex w-full justify-end items-center">
+          <SegmentedControl.Root
+            defaultValue={
+              used === "true" ? "used" : used === "false" ? "not-used" : "all"
+            }
+            onValueChange={(v) => {
+              if (v === "all") {
+                router.replace("/admin/invite-code/monitor");
+                return;
+              }
+              router.replace(`/admin/invite-code/monitor?used=${v === "used"}`);
+            }}
+          >
+            <SegmentedControl.Item value={"all"}>All</SegmentedControl.Item>
+            <SegmentedControl.Item value="used">Used</SegmentedControl.Item>
+            <SegmentedControl.Item value="not-used">
+              Unused
+            </SegmentedControl.Item>
+          </SegmentedControl.Root>
+        </div>
         <AdminSectionBox>
-          {inviteCodes && !isLoading ? (
-            <Table.Root className="w-full max-h-[60svh] relative table-fixed">
-              <Table.Header className="sticky top-0 bg-white z-[500]">
+          {!isPending ? (
+            <Table.Root className="w-full max-h-[60svh] overflow-x-scroll relative table-fixed">
+              <Table.Header className="sticky top-0 light:bg-white dark:bg-slate-1 z-[500]">
                 <Table.Row>
                   <Table.ColumnHeaderCell className="w-[400px]">
                     Code
@@ -71,62 +135,40 @@ export default function InviteCodeMonitorPage() {
               </Table.Header>
 
               <Table.Body>
-                {inviteCodes
-                  .filter((c) => c.usedBy)
-                  .map((inviteCode) => (
-                    <Table.Row className="align-middle" key={inviteCode.code}>
-                      <Table.RowHeaderCell>
-                        <CopiableInviteCode inviteCode={inviteCode.code} />
-                      </Table.RowHeaderCell>
-                      <Table.Cell>
-                        {inviteCode.usedAt
-                          ? formatDate(new Date(inviteCode.usedAt))
-                          : "-"}
-                      </Table.Cell>
-                      <Table.Cell>
-                        {inviteCode.usedBy ? (
-                          <TableUserCard user={inviteCode.usedBy} />
-                        ) : (
-                          "-"
-                        )}
-                      </Table.Cell>
-                      <Table.Cell>
-                        <TableUserCard user={inviteCode.owner} />
-                      </Table.Cell>
-                    </Table.Row>
-                  ))}
-              </Table.Body>
-            </Table.Root>
-          ) : (
-            <TableLoader />
-          )}
-        </AdminSectionBox>
-        <AdminSectionTitle>Unused Invite Codes</AdminSectionTitle>
-        <AdminSectionBox>
-          {inviteCodes && !isLoading ? (
-            <Table.Root className="w-full max-h-[60svh] relative">
-              <Table.Header className="sticky top-0 bg-white z-[500]">
+                {inviteCodes.map((inviteCode) => (
+                  <Table.Row
+                    className="align-middle"
+                    key={inviteCode.code + used}
+                  >
+                    <Table.RowHeaderCell>
+                      <CopiableInviteCode inviteCode={inviteCode.code} />
+                    </Table.RowHeaderCell>
+                    <Table.Cell>
+                      {inviteCode.usedAt
+                        ? formatDate(new Date(inviteCode.usedAt))
+                        : "-"}
+                    </Table.Cell>
+                    <Table.Cell>
+                      {inviteCode.usedBy ? (
+                        <TableUserCard user={inviteCode.usedBy} />
+                      ) : (
+                        "-"
+                      )}
+                    </Table.Cell>
+                    <Table.Cell>
+                      <TableUserCard user={inviteCode.owner} />
+                    </Table.Cell>
+                  </Table.Row>
+                ))}
                 <Table.Row>
-                  <Table.ColumnHeaderCell className="md:w-[30%]">
-                    Code
-                  </Table.ColumnHeaderCell>
-                  <Table.ColumnHeaderCell>Owner</Table.ColumnHeaderCell>
+                  <Table.Cell colSpan={4} ref={tableBottomRef}>
+                    {isFetching ? (
+                      <LoadingBox className="h-[200px]" />
+                    ) : (
+                      <div className="w-full h-[1px]" />
+                    )}
+                  </Table.Cell>
                 </Table.Row>
-              </Table.Header>
-
-              <Table.Body>
-                {inviteCodes
-                  .filter((c) => !c.usedBy)
-                  .map((inviteCode) => (
-                    <Table.Row className="align-middle" key={inviteCode.code}>
-                      <Table.RowHeaderCell>
-                        <CopiableInviteCode inviteCode={inviteCode.code} />
-                      </Table.RowHeaderCell>
-                      <Table.Cell>
-                        <TableUserCard user={inviteCode.owner} />
-                      </Table.Cell>
-                    </Table.Row>
-                  ))}
               </Table.Body>
             </Table.Root>
           ) : (
