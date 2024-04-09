@@ -80,6 +80,14 @@
         "forwardAllArgs": false
       }
     },
+    "db:dump": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": ["sh apps/recnet-api/scripts/dbDumpAndRestore.sh"],
+        "cwd": ".",
+        "forwardAllArgs": false
+      }
+    },
     "sync-package-lock": {
       "executor": "nx:run-commands",
       "options": {
