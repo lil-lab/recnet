@@ -11,6 +11,7 @@ const config = {
       return <>{title}</>;
     },
   },
+  docsRepositoryBase: "https://github.com/lil-lab/recnet",
   // ... other theme options
 };
 
