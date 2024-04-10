@@ -44,7 +44,7 @@ export function AnnouncementCard(props: AnnouncementCardProps) {
             "sm:flex-row",
             "sm:justify-between",
             "sm:items-center",
-            "text-gray-11",
+            "text-gray-11 dark:text-gray-12",
             "text-[14px]",
             className
           )}
@@ -60,7 +60,7 @@ export function AnnouncementCard(props: AnnouncementCardProps) {
           <div className="w-full flex flex-row justify-end sm:justify-start gap-x-2 items-center sm:w-fit">
             <Button
               variant="ghost"
-              className="text-gray-10 cursor-pointer text-[12px] transition-all ease-in-out"
+              className="text-gray-10 dark:text-gray-11 cursor-pointer text-[12px] transition-all ease-in-out"
               onClick={() => {
                 localStorage.setItem(localStorageKey, "true");
                 setShow(false);
