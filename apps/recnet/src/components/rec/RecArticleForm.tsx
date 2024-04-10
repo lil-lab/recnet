@@ -37,7 +37,6 @@ import { Article, Rec, RecFormSubmission } from "@recnet/recnet-api-model";
 
 import { Accordion } from "../Accordion";
 import { RecNetLink } from "../Link";
-import { useTheme } from "next-themes";
 
 const AnimationDuration = 0.2; // seconds
 
@@ -147,7 +146,6 @@ export function RecArticleForm(props: {
   const { onFinish = () => {}, currentRec } = props;
   const [step, setStep] = useState<Step>("insertLink");
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const { theme } = useTheme();
 
   const {
     register,
@@ -402,22 +400,16 @@ export function RecArticleForm(props: {
                         >
                           <Select.Trigger
                             className={cn(
-                              "inline-flex items-center justify-start h-[32px] light:bg-white dark:bg-slate-1 outline-none border-[1px] rounded-2 border-gray-7 text-[14px] leading-[14px] px-2",
-                              "light:data-[placeholder]:text-gray-9 dark:data-[placeholder]:text-gray-10",
+                              "inline-flex items-center justify-start h-[32px] bg-white dark:bg-slate-1 outline-none border-[1px] rounded-2 border-gray-7 text-[14px] leading-[14px] px-2",
+                              "data-[placeholder]:text-gray-9 dark:data-[placeholder]:text-gray-10",
                               "w-full focus:border-blue-8 focus:ring-1 focus:ring-blue-8",
                               "relative",
                               "placeholder:text-gray-2",
-                              "data-[disabled]:cursor-not-allowed light:data-[disabled]:text-gray-10 dark:data-[disabled]:text-gray-11",
-                              {
-                                "data-[disabled]:bg-[#F2F2F5]":
-                                  theme === "light",
-                                "data-[disabled]:bg-[#202123]":
-                                  theme === "dark",
-                              }
+                              "data-[disabled]:bg-[#F2F2F5] dark:data-[disabled]:bg-[#202123] data-[disabled]:cursor-not-allowed data-[disabled]:text-gray-10 dark:data-[disabled]:text-gray-11"
                             )}
                             aria-label="Food"
                           >
-                            <Select.Icon className="pr-2 light:text-gray-10 dark:text-gray-11">
+                            <Select.Icon className="pr-2 text-gray-10 dark:text-gray-11">
                               <CalendarIcon width="16" height="16" />
                             </Select.Icon>
                             <Select.Value
@@ -432,7 +424,7 @@ export function RecArticleForm(props: {
                           <Select.Portal>
                             <Select.Content
                               className={cn(
-                                "overflow-hidden light:bg-white dark:bg-slate-2 rounded-[8px] border-[1px] border-gray-6",
+                                "overflow-hidden bg-white dark:bg-slate-2 rounded-[8px] border-[1px] border-gray-6",
                                 "shadow-[0px_10px_38px_-10px_rgba(22,_23,_24,_0.35),0px_10px_20px_-15px_rgba(22,_23,_24,_0.2)]"
                               )}
                             >

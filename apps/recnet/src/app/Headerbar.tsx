@@ -120,7 +120,7 @@ export function Headerbar() {
         "md:px-16",
         "py-[10px]",
         "shadow-4",
-        "light:bg-white",
+        "bg-white",
         "dark:bg-slate-1",
         "border-b-[1px]",
         "border-slate-8",

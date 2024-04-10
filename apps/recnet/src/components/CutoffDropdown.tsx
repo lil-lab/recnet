@@ -60,7 +60,7 @@ export function CutoffDropdown(props: {
     >
       <Select.Trigger
         className={cn(
-          "inline-flex items-center justify-end h-[32px] light:bg-white dark:bg-slate-1 outline-none text-[14px] leading-[14px] px-2",
+          "inline-flex items-center justify-end h-[32px] bg-white dark:bg-slate-1 outline-none text-[14px] leading-[14px] px-2",
           "data-[placeholder]:text-gray-9",
           "w-fit",
           "text-gray-9"
@@ -78,7 +78,7 @@ export function CutoffDropdown(props: {
       <Select.Portal>
         <Select.Content
           className={cn(
-            "overflow-hidden light:bg-white dark:bg-slate-2 rounded-[8px] border-[1px] border-gray-6 py-2",
+            "overflow-hidden bg-white dark:bg-slate-2 rounded-[8px] border-[1px] border-gray-6 py-2",
             "shadow-[0px_10px_38px_-10px_rgba(22,_23,_24,_0.35),0px_10px_20px_-15px_rgba(22,_23,_24,_0.2)]"
           )}
         >
