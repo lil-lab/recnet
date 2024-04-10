@@ -1,5 +1,3 @@
-import { Timestamp } from "firebase/firestore";
-
 const CYCLE_DUE_DAY = 2;
 export const WeekTs = 604800000 as const;
 export const START_DATE = new Date(2023, 9, 24);
@@ -96,15 +94,6 @@ export const getVerboseDateString = (date: Date): string => {
       .format(date)
       .replaceAll(",", " ") + ` ${localTime}`
   );
-};
-
-// TODO: Remove after migration to new date format
-export const getDateFromFirebaseTimestamp = (ts: {
-  _seconds: number;
-  _nanoseconds: number;
-}): Date => {
-  const timestamp = new Timestamp(ts._seconds, ts._nanoseconds);
-  return timestamp.toDate();
 };
 
 export const formatDate = (date: Date): string => {
