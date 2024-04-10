@@ -1,6 +1,6 @@
 "use client";
 import { Cross1Icon } from "@radix-ui/react-icons";
-import { Button } from "@radix-ui/themes";
+import { Button, Text } from "@radix-ui/themes";
 import { AnimatePresence, motion } from "framer-motion";
 import React, { useState } from "react";
 
@@ -37,11 +37,13 @@ export function AnnouncementCard(props: AnnouncementCardProps) {
             "p-4",
             "rounded-4",
             "border-[1px] border-blue-8",
-            "bg-blue-4",
+            "bg-blueA-5",
             "flex",
-            "flex-row",
-            "justify-between",
-            "items-center",
+            "flex-col",
+            "gap-y-2",
+            "sm:flex-row",
+            "sm:justify-between",
+            "sm:items-center",
             "text-gray-11",
             "text-[14px]",
             className
@@ -50,11 +52,12 @@ export function AnnouncementCard(props: AnnouncementCardProps) {
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -20 }}
         >
-          <div className="flex flex-row max-w-[90%] gap-x-2 items-center">
-            <div>{icon || "📢"}</div>
-            {children}
+          <div className="flex flex-row w-full sm:max-w-[80%] gap-x-2 items-center flex-wrap">
+            <Text>
+              <span className="mr-1">{icon || "📢"}</span> {children}
+            </Text>
           </div>
-          <div className="flex flex-row gap-x-2 items-center">
+          <div className="w-full flex flex-row justify-end sm:justify-start gap-x-2 items-center sm:w-fit">
             <Button
               variant="ghost"
               className="text-gray-10 cursor-pointer text-[12px] transition-all ease-in-out"
