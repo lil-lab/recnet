@@ -81,6 +81,9 @@ function Footer() {
               sideOffset={5}
               alignOffset={5}
               className="text-gray-10"
+              onCloseAutoFocus={(e) => {
+                e.preventDefault();
+              }}
             >
               <DropdownMenu.Item
                 className="cursor-pointer"
