@@ -68,7 +68,11 @@ function Footer() {
         </Link>
         <button
           onClick={() => {
-            setTheme("dark");
+            if (theme === "dark") {
+              setTheme("system");
+            } else {
+              setTheme("dark");
+            }
           }}
           className={cn(
             "hover:scale-[105%]",
@@ -85,7 +89,11 @@ function Footer() {
         </button>
         <button
           onClick={() => {
-            setTheme("light");
+            if (theme === "light") {
+              setTheme("system");
+            } else {
+              setTheme("light");
+            }
           }}
           className={cn(
             "hover:scale-[105%]",
