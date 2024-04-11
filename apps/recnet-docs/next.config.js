@@ -2,6 +2,8 @@
 const fs = require("fs");
 const path = require("path");
 
+console.log("cwd: ", process.cwd());
+
 // if pages directory does not exist
 const pagesDir = path.resolve(__dirname, "./src/pages");
 const rootPagesDir = path.resolve(__dirname, "../../pages");
