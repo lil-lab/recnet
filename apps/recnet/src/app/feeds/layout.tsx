@@ -36,8 +36,8 @@ export default async function FeedPageLayout({
           className="w-[80%] md:w-[65%] mt-8"
           announcementKey="email-temp-not-working"
         >
-          Weekly email digest feature is temporarily not working. Will be back
-          soon.
+          Email digests are temporarily offline while we complete our backend
+          migration. We expect to re-activate them by April 21.
         </AnnouncementCard>
         {children}
       </div>
