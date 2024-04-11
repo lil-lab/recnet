@@ -7,6 +7,7 @@ const pagesDir = path.resolve(__dirname, "./src/pages");
 const rootPagesDir = path.resolve(__dirname, "../../pages");
 if (!fs.existsSync(rootPagesDir)) {
   // copy all files from pageDir to rootPagesDir
+  console.log(`Copying ${pagesDir} to ${rootPagesDir}`);
   fs.mkdirSync(rootPagesDir);
   fs.cpSync(pagesDir, rootPagesDir, {
     recursive: true,
