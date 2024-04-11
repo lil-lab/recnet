@@ -71,8 +71,7 @@ export default async function Home() {
           "text-transparent",
           "bg-clip-text",
           "text-center",
-          "mt-12",
-          "md:mt-0"
+          "mt-[64px]"
         )}
       >
         Welcome to RecNet
