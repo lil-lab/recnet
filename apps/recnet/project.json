@@ -7,17 +7,25 @@
     "typecheck": {
       "executor": "nx:run-commands",
       "options": {
-        "commands": ["tsc -p tsconfig.json --noEmit"],
-        "cwd": "apps/recnet",
-        "forwardAllArgs": false
+        "commands": [
+          {
+            "command": "tsc -p tsconfig.json --noEmit",
+            "forwardAllArgs": false
+          }
+        ],
+        "cwd": "apps/recnet"
       }
     },
     "email:dev": {
       "executor": "nx:run-commands",
       "options": {
-        "commands": ["email dev"],
-        "cwd": "apps/recnet",
-        "forwardAllArgs": false
+        "commands": [
+          {
+            "command": "email dev",
+            "forwardAllArgs": false
+          }
+        ],
+        "cwd": "apps/recnet"
       }
     }
   },

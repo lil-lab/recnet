@@ -25,17 +25,25 @@
     "typecheck": {
       "executor": "nx:run-commands",
       "options": {
-        "commands": ["tsc -p tsconfig.json --noEmit"],
-        "cwd": "libs/recnet-jwt",
-        "forwardAllArgs": false
+        "commands": [
+          {
+            "command": "tsc -p tsconfig.json --noEmit",
+            "forwardAllArgs": false
+          }
+        ],
+        "cwd": "libs/recnet-jwt"
       }
     },
     "prepareTest": {
       "executor": "nx:run-commands",
       "options": {
-        "commands": ["scripts/genRS256KeyPair.sh"],
-        "cwd": "libs/recnet-jwt",
-        "forwardAllArgs": false
+        "commands": [
+          {
+            "command": "scripts/genRS256KeyPair.sh",
+            "forwardAllArgs": false
+          }
+        ],
+        "cwd": "libs/recnet-jwt"
       }
     }
   },
