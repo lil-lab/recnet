@@ -2,8 +2,6 @@
 const fs = require("fs");
 const path = require("path");
 
-console.log("cwd: ", process.cwd());
-
 // ref: https://github.com/shuding/nextra/issues/454#issuecomment-1907150823
 const destPagesPath = path.join(__dirname, "../../pages");
 fs.symlink("apps/recnet-docs/src/pages", destPagesPath, "dir", (e) => {
