@@ -1,8 +1,16 @@
 //@ts-check
+const fs = require("fs");
+const path = require("path");
 
-// ref: https://github.com/shuding/nextra/issues/454#issuecomment-2028475942
-if (process.cwd() !== __dirname) {
-  process.chdir(__dirname);
+// if pages directory does not exist
+const pagesDir = path.resolve(__dirname, "./src/pages");
+const rootPagesDir = path.resolve(__dirname, "../../pages");
+if (!fs.existsSync(rootPagesDir)) {
+  // copy all files from pageDir to rootPagesDir
+  fs.mkdirSync(rootPagesDir);
+  fs.cpSync(pagesDir, rootPagesDir, {
+    recursive: true,
+  });
 }
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
