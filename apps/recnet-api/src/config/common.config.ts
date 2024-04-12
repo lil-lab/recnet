@@ -16,3 +16,7 @@ export const PrismaConfig = registerAs("prisma", () => ({
   schema: parsedEnv.PRISMA_SCHEMA,
   migrate: parsedEnv.DB_MIGRATE,
 }));
+
+export const ResendConfig = registerAs("resend", () => ({
+  apiKey: parsedEnv.RESEND_API_KEY,
+}));

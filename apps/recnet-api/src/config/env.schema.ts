@@ -16,6 +16,8 @@ export const EnvSchema = z.object({
   // prisma config
   PRISMA_SCHEMA: z.string().optional().default("prisma/schema.prisma"),
   DB_MIGRATE: z.coerce.boolean().optional().default(false),
+  // resend config
+  RESEND_API_KEY: z.string(),
 });
 
 export const parseEnv = (env: Record<string, string | undefined>) => {

@@ -59,6 +59,7 @@
     "react-intersection-observer": "^9.8.1",
     "recnet-api": "link:dist/apps/recnet-api",
     "reflect-metadata": "^0.1.13",
+    "resend": "^3.2.0",
     "rxjs": "^7.8.0",
     "server-only": "^0.0.1",
     "sonner": "^1.4.32",
