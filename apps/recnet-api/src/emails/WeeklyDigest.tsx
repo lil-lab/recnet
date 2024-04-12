@@ -94,8 +94,8 @@ function MockEmailRecCard() {
 }
 
 const WeeklyDigest = (props: { recsGroupByTitle?: Record<string, Rec[]> }) => {
-  const { recsGroupByTitle: recsDict = {} } = props;
-  const recsCount = Object.keys(recsDict).length;
+  const { recsGroupByTitle = {} } = props;
+  const recsCount = Object.keys(recsGroupByTitle).length;
   return (
     <Html>
       <Tailwind
@@ -153,8 +153,8 @@ const WeeklyDigest = (props: { recsGroupByTitle?: Record<string, Rec[]> }) => {
                 )}
               </Text>
             </Section>
-            {Object.keys(recsDict).map((key, i) => {
-              const recs = recsDict[key];
+            {Object.keys(recsGroupByTitle).map((key, i) => {
+              const recs = recsGroupByTitle[key];
               return (
                 <React.Fragment key={i}>
                   <Hr />
