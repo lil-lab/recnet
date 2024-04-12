@@ -93,8 +93,8 @@ function MockEmailRecCard() {
   );
 }
 
-const WeeklyDigest = (props: { recsDict?: Record<string, Rec[]> }) => {
-  const { recsDict = {} } = props;
+const WeeklyDigest = (props: { recsGroupByTitle?: Record<string, Rec[]> }) => {
+  const { recsGroupByTitle: recsDict = {} } = props;
   const recsCount = Object.keys(recsDict).length;
   return (
     <Html>

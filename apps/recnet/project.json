@@ -15,18 +15,6 @@
         ],
         "cwd": "apps/recnet"
       }
-    },
-    "email:dev": {
-      "executor": "nx:run-commands",
-      "options": {
-        "commands": [
-          {
-            "command": "email dev",
-            "forwardAllArgs": false
-          }
-        ],
-        "cwd": "apps/recnet"
-      }
     }
   },
   "tags": ["type:app"]

@@ -114,6 +114,18 @@
         ],
         "cwd": "."
       }
+    },
+    "email:dev": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          {
+            "command": "email dev -p 3001 --dir src/emails",
+            "forwardAllArgs": false
+          }
+        ],
+        "cwd": "apps/recnet-api"
+      }
     }
   },
   "tags": ["type:app"]
