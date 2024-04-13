@@ -11,8 +11,6 @@ export class EmailController {
     result: "success";
   }> {
     // for testing purposes, hard code the user id
-    return this.emailService.sendWeeklyDigest(
-      "507a46bf-ed5d-4876-a780-b63c45d8b592"
-    );
+    return this.emailService.sendWeeklyDigest("YOUR_USER_ID");
   }
 }
