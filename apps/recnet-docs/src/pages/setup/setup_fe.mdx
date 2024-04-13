@@ -7,3 +7,31 @@ import { Callout } from 'nextra/components'
 # RecNet
 
 RecNet(or RecNet-web) is the web application for [Recnet](https://www.recnet.io/). Powered by [Next.js](https://nextjs.org).
+
+## Requirements
+
+- Nextjs >= 14
+
+## Local Development
+
+### Installation
+
+```bash
+pnpm install
+```
+
+### Prepare environment
+
+1. Copy from sample file
+
+```bash
+cp apps/recnet/.env.sample apps/recnet/.env.local
+```
+
+2. Fill out the env variables
+
+### Start the app server
+
+```bash
+nx dev recnet
+```
