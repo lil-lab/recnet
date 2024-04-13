@@ -42,7 +42,7 @@ function EmailRecCard(props: EmailRecCardProps) {
       </Container>
       {recs.map((rec, idx) => {
         return (
-          <Container key={idx} className="px-4 pt-1">
+          <Container key={`${rec.user.id}-${idx}`} className="px-4 pt-1">
             <div className="flex flex-row items-center gap-x-4">
               <Img
                 src={rec.user.photoUrl}
@@ -156,7 +156,7 @@ const WeeklyDigest = (props: { recsGroupByTitle?: Record<string, Rec[]> }) => {
             {Object.keys(recsGroupByTitle).map((key, i) => {
               const recs = recsGroupByTitle[key];
               return (
-                <React.Fragment key={i}>
+                <React.Fragment key={`${key}-${i}`}>
                   <Hr />
                   <EmailRecCard recs={recs} />
                 </React.Fragment>
