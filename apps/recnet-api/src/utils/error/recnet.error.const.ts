@@ -11,6 +11,9 @@ export const ErrorCode = {
   DB_UNKNOWN_ERROR: 2000,
   DB_USER_NOT_FOUND: 2001,
   DB_UNIQUE_CONSTRAINT: 2002,
+
+  // Task Scheduler error codes
+  EMAIL_SEND_ERROR: 3000,
 };
 
 export const errorMessages = {

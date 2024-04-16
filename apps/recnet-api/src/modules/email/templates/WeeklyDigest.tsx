@@ -16,6 +16,8 @@ import {
 } from "@react-email/components";
 import * as React from "react";
 
+import { formatDate } from "@recnet/recnet-date-fns";
+
 import { Rec } from "@recnet/recnet-api-model";
 
 interface EmailRecCardProps {
@@ -184,6 +186,11 @@ const WeeklyDigest = (props: { recsGroupByTitle?: Record<string, Rec[]> }) => {
       </Tailwind>
     </Html>
   );
+};
+
+export const WeeklyDigestSubject = (cutOffDate: Date, nodeEnv: string) => {
+  const devPrefix = nodeEnv !== "production" ? "[DEV] " : "";
+  return `${devPrefix}[Recnet] Your Weekly Digest for ${formatDate(cutOffDate)}`;
 };
 
 export default WeeklyDigest;

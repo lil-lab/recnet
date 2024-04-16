@@ -128,7 +128,7 @@
       "options": {
         "commands": [
           {
-            "command": "email dev -p 3001 --dir src/emails",
+            "command": "email dev -p 3001 --dir src/email/templates",
             "forwardAllArgs": false
           }
         ],

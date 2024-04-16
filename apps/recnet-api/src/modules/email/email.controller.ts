@@ -1,18 +1,40 @@
-import { Controller, Get } from "@nestjs/common";
+import { Body, Controller, HttpStatus, Inject, Post } from "@nestjs/common";
+import { ConfigType } from "@nestjs/config";
+import { ApiCreatedResponse, ApiOperation } from "@nestjs/swagger";
+
+import { AppConfig } from "@recnet-api/config/common.config";
+import { RecnetError } from "@recnet-api/utils/error/recnet.error";
+import { ErrorCode } from "@recnet-api/utils/error/recnet.error.const";
 
 import { EmailService } from "./email.service";
 
 @Controller("mail")
 export class EmailController {
-  constructor(private readonly emailService: EmailService) {}
+  constructor(
+    @Inject(AppConfig.KEY)
+    private readonly appConfig: ConfigType<typeof AppConfig>,
+    private readonly emailService: EmailService
+  ) {}
 
-  @Get("test")
-  public async testSendingWeeklyDigest(): Promise<{
-    result: "success";
+  /* Development only */
+  @ApiOperation({
+    summary: "Send weekly digest email to the designated user.",
+    description: "This endpoint is for development only.",
+  })
+  @ApiCreatedResponse()
+  @Post("test")
+  public async testSendingWeeklyDigest(
+    @Body("userId") userId: string
+  ): Promise<{
+    success: boolean;
   }> {
-    // for testing purposes, hard code the user id
-    return this.emailService.sendWeeklyDigest(
-      "507a46bf-ed5d-4876-a780-b63c45d8b592"
-    );
+    if (this.appConfig.nodeEnv === "production") {
+      throw new RecnetError(
+        ErrorCode.INTERNAL_SERVER_ERROR,
+        HttpStatus.INTERNAL_SERVER_ERROR,
+        "This endpoint is only for development"
+      );
+    }
+    return this.emailService.sendWeeklyDigest(userId);
   }
 }
