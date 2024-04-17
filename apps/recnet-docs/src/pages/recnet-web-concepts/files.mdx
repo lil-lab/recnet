@@ -4,6 +4,30 @@ import { Callout } from 'nextra/components'
   The document is under construction now. Some information may be missing.
 </Callout>
 
-To be continued...
+# File structures
 
-Will talk about the file structure of RecNet.
+```
+recnet
+  |
+  |--- src
+        |
+        |--- app # pages and layout and un-shared components
+        |
+        |--- components # shared components
+        |
+        |--- fonts # font files
+        |
+        |--- hooks # React hooks
+        |
+        |--- server # trpc config and routers
+        |
+        |--- utils # utils functions
+        |
+        |--- clientEnv.ts # env variables which will be exposed to client-side
+        |
+        |--- serverEnv.ts # env variables which will be only used server-side
+        |
+        |--- middleware.ts # Next.js middleware, used by next-firebase-auth-edge
+        |
+        |--- constant.ts
+```
