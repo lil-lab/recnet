@@ -35,6 +35,6 @@ export class EmailController {
         "This endpoint is only for development"
       );
     }
-    return this.emailService.sendWeeklyDigest(userId);
+    return this.emailService.sendTestEmail(userId);
   }
 }

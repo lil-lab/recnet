@@ -1,5 +1,6 @@
 import { MiddlewareConsumer, Module } from "@nestjs/common";
 import { ConfigModule } from "@nestjs/config";
+import { ScheduleModule } from "@nestjs/schedule";
 
 import * as CommonConfigs from "./config/common.config";
 import { parseEnv } from "./config/env.schema";
@@ -19,6 +20,7 @@ import { LoggerMiddleware } from "./utils/middlewares/logger.middleware";
       validate: (env) => parseEnv(env),
       load: [...Object.values(CommonConfigs)],
     }),
+    ScheduleModule.forRoot(),
     HealthModule,
     UserModule,
     RecModule,

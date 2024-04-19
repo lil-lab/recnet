@@ -12,6 +12,7 @@
     "@nestjs/config": "^3.2.0",
     "@nestjs/core": "^10.0.2",
     "@nestjs/platform-express": "^10.0.2",
+    "@nestjs/schedule": "^4.0.2",
     "@nestjs/swagger": "^7.3.0",
     "@next/third-parties": "^14.1.0",
     "@prisma/client": "5.10.2",

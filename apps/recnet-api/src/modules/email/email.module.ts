@@ -1,24 +1,22 @@
 import { Module } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
-import { createTransport, Transporter } from "nodemailer";
 
 import { DbRepositoryModule } from "@recnet-api/database/repository/db.repository.module";
 
 import { MAIL_TRANSPORTER } from "./email.const";
 import { EmailController } from "./email.controller";
 import { EmailService } from "./email.service";
+import { Transporter } from "./email.type";
+import EmailDevTransporter from "./transporters/email.dev.transporters";
+import EmailTransporter from "./transporters/email.transporters";
 
 const transporterFactory = (configService: ConfigService): Transporter => {
+  const nodeEnv = configService.get("app").nodeEnv;
   const nodemailerConfig = configService.get("nodemailer");
 
-  const { service, host, port, secure, user, pass } = nodemailerConfig;
-  return createTransport({
-    service,
-    host,
-    port,
-    secure,
-    auth: { user, pass },
-  });
+  return nodeEnv === "production"
+    ? new EmailTransporter(nodemailerConfig)
+    : new EmailDevTransporter(nodemailerConfig);
 };
 
 @Module({

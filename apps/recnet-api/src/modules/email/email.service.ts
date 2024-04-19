@@ -1,8 +1,8 @@
-import { HttpStatus, Inject, Injectable } from "@nestjs/common";
+import { Inject, Injectable, Logger } from "@nestjs/common";
 import { ConfigType } from "@nestjs/config";
+import { Cron } from "@nestjs/schedule";
 import { render } from "@react-email/render";
 import groupBy from "lodash.groupby";
-import { Transporter } from "nodemailer";
 
 import { AppConfig, NodemailerConfig } from "@recnet-api/config/common.config";
 import RecRepository from "@recnet-api/database/repository/rec.repository";
@@ -11,13 +11,13 @@ import {
   RecFilterBy,
 } from "@recnet-api/database/repository/rec.repository.type";
 import UserRepository from "@recnet-api/database/repository/user.repository";
+import { User as DbUser } from "@recnet-api/database/repository/user.repository.type";
 import { Rec } from "@recnet-api/modules/rec/entities/rec.entity";
-import { RecnetError } from "@recnet-api/utils/error/recnet.error";
-import { ErrorCode } from "@recnet-api/utils/error/recnet.error.const";
 
 import { getLatestCutOff } from "@recnet/recnet-date-fns";
 
 import { MAIL_TRANSPORTER, MAX_REC_PER_MAIL } from "./email.const";
+import { SendMailResult, Transporter } from "./email.type";
 import WeeklyDigest, { WeeklyDigestSubject } from "./templates/WeeklyDigest";
 
 @Injectable()
@@ -35,9 +35,39 @@ export class EmailService {
     private readonly recRepository: RecRepository
   ) {}
 
-  public async sendWeeklyDigest(id: string): Promise<{ success: boolean }> {
-    const user = await this.userRepository.findUserById(id);
+  @Cron("45 * * * * *")
+  public async weeklyDigestCron(): Promise<void> {
+    const logger = new Logger("WeeklyDigestCron");
+
+    logger.log("Start weekly digest cron");
     const cutoff = getLatestCutOff();
+
+    const users = await this.userRepository.findAllUsers();
+    const promises = users.map((user) => this.sendWeeklyDigest(user, cutoff));
+    const results = await Promise.all(promises);
+
+    const success = results.filter(
+      (result) => result.success && !result.skip
+    ).length;
+    const errorUserIds = results
+      .filter((result) => !result.success)
+      .map((result) => result.userId);
+
+    logger.log(
+      `Finish weekly digest cron: ${success} emails sent, ${errorUserIds.length} errors`
+    );
+  }
+
+  public async sendTestEmail(userId: string): Promise<{ success: boolean }> {
+    const user = await this.userRepository.findUserById(userId);
+    const cutoff = getLatestCutOff();
+    return this.sendWeeklyDigest(user, cutoff);
+  }
+
+  private async sendWeeklyDigest(
+    user: DbUser,
+    cutoff: Date
+  ): Promise<SendMailResult> {
     const followings = user.following.map(
       (following: { followingId: string }) => following.followingId
     );
@@ -45,6 +75,7 @@ export class EmailService {
       userIds: followings,
       cutoff,
     };
+
     // cap the number of recs to send in an email by MAX_REC_PER_MAIL
     const dbRecs = await this.recRepository.findRecs(
       1,
@@ -65,18 +96,15 @@ export class EmailService {
       subject: WeeklyDigestSubject(cutoff, this.appConfig.nodeEnv),
       html: render(WeeklyDigest({ recsGroupByTitle })),
     };
+
+    let result;
     try {
-      const info = await this.transporter.sendMail(mailOptions);
-      console.log(`Email sent: ${info.response}`);
+      result = await this.transporter.sendMail(user, mailOptions);
     } catch (e) {
-      throw new RecnetError(
-        ErrorCode.EMAIL_SEND_ERROR,
-        HttpStatus.INTERNAL_SERVER_ERROR,
-        `Failed to send weekly digest email for user ${id}: ${e}`
-      );
+      return { success: false, userId: user.id };
     }
 
-    return { success: true };
+    return result;
   }
 
   private getRecFromDbRec(dbRec: DbRec): Rec {

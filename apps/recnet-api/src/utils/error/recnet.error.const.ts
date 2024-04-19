@@ -12,7 +12,7 @@ export const ErrorCode = {
   DB_USER_NOT_FOUND: 2001,
   DB_UNIQUE_CONSTRAINT: 2002,
 
-  // Task Scheduler error codes
+  // Third party error codes
   EMAIL_SEND_ERROR: 3000,
 };
 
