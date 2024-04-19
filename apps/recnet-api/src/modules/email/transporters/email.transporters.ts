@@ -1,4 +1,4 @@
-import { HttpStatus, Inject, Injectable } from "@nestjs/common";
+import { HttpStatus, Inject, Injectable, Logger } from "@nestjs/common";
 import { ConfigType } from "@nestjs/config";
 import { createTransport, Transporter, SendMailOptions } from "nodemailer";
 
@@ -11,6 +11,7 @@ import { SendMailResult } from "../email.type";
 
 @Injectable()
 class EmailTransporter {
+  private logger: Logger = new Logger(EmailTransporter.name);
   private transporter: Transporter;
 
   constructor(
@@ -32,13 +33,15 @@ class EmailTransporter {
     mailOptions: SendMailOptions
   ): Promise<SendMailResult> {
     try {
-      console.log("Sending email to", user.handle, mailOptions.to);
-      // await this.transporter.sendMail(mailOptions);
+      await this.transporter.sendMail(mailOptions);
     } catch (error) {
+      const errorMsg = `Failed to send weekly digest email ${user.id}: ${error}`;
+      this.logger.error(errorMsg);
+
       throw new RecnetError(
         ErrorCode.EMAIL_SEND_ERROR,
         HttpStatus.INTERNAL_SERVER_ERROR,
-        `Failed to send weekly digest email ${user.id}: ${error}`
+        errorMsg
       );
     }
     return { success: true };
