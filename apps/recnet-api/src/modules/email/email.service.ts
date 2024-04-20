@@ -1,6 +1,7 @@
 import { Inject, Injectable, Logger } from "@nestjs/common";
 import { ConfigType } from "@nestjs/config";
 import { Cron } from "@nestjs/schedule";
+import { CronStatus } from "@prisma/client";
 import { render } from "@react-email/render";
 import groupBy from "lodash.groupby";
 
@@ -12,6 +13,7 @@ import {
 } from "@recnet-api/database/repository/rec.repository.type";
 import UserRepository from "@recnet-api/database/repository/user.repository";
 import { User as DbUser } from "@recnet-api/database/repository/user.repository.type";
+import WeeklyDigestCronLogRepository from "@recnet-api/database/repository/weekly-digest-cron-log.repository";
 import { Rec } from "@recnet-api/modules/rec/entities/rec.entity";
 
 import { getLatestCutOff } from "@recnet/recnet-date-fns";
@@ -32,7 +34,9 @@ export class EmailService {
     @Inject(UserRepository)
     private readonly userRepository: UserRepository,
     @Inject(RecRepository)
-    private readonly recRepository: RecRepository
+    private readonly recRepository: RecRepository,
+    @Inject(WeeklyDigestCronLogRepository)
+    private readonly weeklyDigestCronLogRepository: WeeklyDigestCronLogRepository
   ) {}
 
   @Cron("45 * * * * *")
@@ -41,21 +45,42 @@ export class EmailService {
 
     logger.log("Start weekly digest cron");
     const cutoff = getLatestCutOff();
+    const cronLog =
+      await this.weeklyDigestCronLogRepository.createWeeklyDigestCronLog(
+        cutoff
+      );
 
-    const users = await this.userRepository.findAllUsers();
-    const promises = users.map((user) => this.sendWeeklyDigest(user, cutoff));
-    const results = await Promise.all(promises);
+    try {
+      const users = await this.userRepository.findAllUsers();
+      const promises = users.map((user) => this.sendWeeklyDigest(user, cutoff));
+      const results = await Promise.all(promises);
 
-    const success = results.filter(
-      (result) => result.success && !result.skip
-    ).length;
-    const errorUserIds = results
-      .filter((result) => !result.success)
-      .map((result) => result.userId);
+      const successCount = results.filter(
+        (result) => result.success && !result.skip
+      ).length;
+      const errorUserIds = results
+        .filter((result) => !result.success)
+        .map((result) => result.userId)
+        .filter((userId) => userId !== undefined) as string[];
 
-    logger.log(
-      `Finish weekly digest cron: ${success} emails sent, ${errorUserIds.length} errors`
-    );
+      // log the successful result to DB
+      await this.weeklyDigestCronLogRepository.updateWeeklyDigestCronLog(
+        cronLog.id,
+        { status: CronStatus.SUCCESS, result: { successCount, errorUserIds } }
+      );
+      logger.log(
+        `Finish weekly digest cron: ${successCount} emails sent, ${errorUserIds.length} errors`
+      );
+    } catch (error) {
+      logger.error(`Error in weekly digest cron: ${error}`);
+
+      // log the failed result to DB
+      const errorMsg = error instanceof Error ? error.message : "Unknown error";
+      await this.weeklyDigestCronLogRepository.updateWeeklyDigestCronLog(
+        cronLog.id,
+        { status: CronStatus.FAILURE, errorMsg }
+      );
+    }
   }
 
   public async sendTestEmail(userId: string): Promise<{ success: boolean }> {
