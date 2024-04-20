@@ -1,6 +1,11 @@
 import { Body, Controller, HttpStatus, Inject, Post } from "@nestjs/common";
 import { ConfigType } from "@nestjs/config";
-import { ApiCreatedResponse, ApiOperation, ApiTags } from "@nestjs/swagger";
+import {
+  ApiBody,
+  ApiCreatedResponse,
+  ApiOperation,
+  ApiTags,
+} from "@nestjs/swagger";
 
 import { AppConfig } from "@recnet-api/config/common.config";
 import { RecnetError } from "@recnet-api/utils/error/recnet.error";
@@ -23,6 +28,14 @@ export class EmailController {
     description: "This endpoint is for development only.",
   })
   @ApiCreatedResponse()
+  @ApiBody({
+    schema: {
+      properties: {
+        userId: { type: "string" },
+      },
+      required: ["userId"],
+    },
+  })
   @Post("test")
   public async testSendingWeeklyDigest(
     @Body("userId") userId: string
