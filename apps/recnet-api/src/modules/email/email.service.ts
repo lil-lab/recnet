@@ -68,10 +68,10 @@ export class EmailService {
         .filter((userId) => userId !== undefined) as string[];
 
       // log the successful result to DB
-      await this.weeklyDigestCronLogRepository.updateWeeklyDigestCronLog(
-        cronLog.id,
-        { status: CronStatus.SUCCESS, result: { successCount, errorUserIds } }
-      );
+      await this.weeklyDigestCronLogRepository.endWeeklyDigestCron(cronLog.id, {
+        status: CronStatus.SUCCESS,
+        result: { successCount, errorUserIds },
+      });
       logger.log(
         `Finish weekly digest cron: ${successCount} emails sent, ${errorUserIds.length} errors`
       );
@@ -80,10 +80,10 @@ export class EmailService {
 
       // log the failed result to DB
       const errorMsg = error instanceof Error ? error.message : "Unknown error";
-      await this.weeklyDigestCronLogRepository.updateWeeklyDigestCronLog(
-        cronLog.id,
-        { status: CronStatus.FAILURE, errorMsg }
-      );
+      await this.weeklyDigestCronLogRepository.endWeeklyDigestCron(cronLog.id, {
+        status: CronStatus.FAILURE,
+        errorMsg,
+      });
     }
   }
 

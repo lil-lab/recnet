@@ -19,7 +19,7 @@ export default class WeeklyDigestCronLogRepository {
     });
   }
 
-  public async updateWeeklyDigestCronLog(
+  public async endWeeklyDigestCron(
     id: number,
     data: {
       status: CronStatus;
