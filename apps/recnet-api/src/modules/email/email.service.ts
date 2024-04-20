@@ -18,7 +18,11 @@ import { Rec } from "@recnet-api/modules/rec/entities/rec.entity";
 
 import { getLatestCutOff } from "@recnet/recnet-date-fns";
 
-import { MAIL_TRANSPORTER, MAX_REC_PER_MAIL } from "./email.const";
+import {
+  MAIL_TRANSPORTER,
+  MAX_REC_PER_MAIL,
+  WEEKLY_DIGEST_CRON,
+} from "./email.const";
 import { SendMailResult, Transporter } from "./email.type";
 import WeeklyDigest, { WeeklyDigestSubject } from "./templates/WeeklyDigest";
 
@@ -39,7 +43,7 @@ export class EmailService {
     private readonly weeklyDigestCronLogRepository: WeeklyDigestCronLogRepository
   ) {}
 
-  @Cron("45 * * * * *")
+  @Cron(WEEKLY_DIGEST_CRON)
   public async weeklyDigestCron(): Promise<void> {
     const logger = new Logger("WeeklyDigestCron");
 
