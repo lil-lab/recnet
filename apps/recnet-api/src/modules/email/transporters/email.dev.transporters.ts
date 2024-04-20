@@ -9,6 +9,8 @@ import { ErrorCode } from "@recnet-api/utils/error/recnet.error.const";
 
 import { SendMailResult } from "../email.type";
 
+const devHandleWhitelist = ["joannechen1223", "swh00tw"];
+
 @Injectable()
 class EmailDevTransporter {
   private logger: Logger = new Logger(EmailDevTransporter.name);
@@ -32,8 +34,8 @@ class EmailDevTransporter {
     user: DbUser,
     mailOptions: SendMailOptions
   ): Promise<SendMailResult> {
-    // hardcode the recipient to be joannechen1223 in dev environment
-    if (user.handle !== "joannechen1223") {
+    // hardcode the recipient to be joannechen1223 and swh00tw in dev environment
+    if (!devHandleWhitelist.includes(user.handle)) {
       return { success: true, skip: true };
     }
 
