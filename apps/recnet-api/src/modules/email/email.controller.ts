@@ -1,6 +1,6 @@
 import { Body, Controller, HttpStatus, Inject, Post } from "@nestjs/common";
 import { ConfigType } from "@nestjs/config";
-import { ApiCreatedResponse, ApiOperation } from "@nestjs/swagger";
+import { ApiCreatedResponse, ApiOperation, ApiTags } from "@nestjs/swagger";
 
 import { AppConfig } from "@recnet-api/config/common.config";
 import { RecnetError } from "@recnet-api/utils/error/recnet.error";
@@ -8,6 +8,7 @@ import { ErrorCode } from "@recnet-api/utils/error/recnet.error.const";
 
 import { EmailService } from "./email.service";
 
+@ApiTags("mail")
 @Controller("mail")
 export class EmailController {
   constructor(

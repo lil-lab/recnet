@@ -43,7 +43,7 @@ export class EmailService {
     private readonly weeklyDigestCronLogRepository: WeeklyDigestCronLogRepository
   ) {}
 
-  @Cron(WEEKLY_DIGEST_CRON)
+  @Cron(WEEKLY_DIGEST_CRON, { utcOffset: 0 })
   public async weeklyDigestCron(): Promise<void> {
     const logger = new Logger("WeeklyDigestCron");
 
