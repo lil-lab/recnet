@@ -4,6 +4,7 @@ const { join } = require("path");
 
 /** @type {import('tailwindcss').Config} */
 module.exports = {
+  darkMode: "class",
   content: [
     join(
       __dirname,
@@ -34,6 +35,6 @@ module.exports = {
       },
     },
   },
-  plugins: [],
+  plugins: [require("tailwindcss-radix")()],
   presets: [radixThemePreset],
 };

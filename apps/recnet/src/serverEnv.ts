@@ -8,6 +8,7 @@ const serverConfigSchema = z.object({
   CRON_SECRET: z.string(),
   NEXT_PUBLIC_FIREBASE_API_KEY: z.string(),
   NEXT_PUBLIC_FIREBASE_PROJECT_ID: z.string(),
+  RECNET_API_ENDPOINT: z.string(),
 });
 
 const serverConfigRes = serverConfigSchema.safeParse({
@@ -18,6 +19,7 @@ const serverConfigRes = serverConfigSchema.safeParse({
   CRON_SECRET: process.env.CRON_SECRET,
   NEXT_PUBLIC_FIREBASE_API_KEY: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
   NEXT_PUBLIC_FIREBASE_PROJECT_ID: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
+  RECNET_API_ENDPOINT: process.env.RECNET_API_ENDPOINT,
 });
 
 if (!serverConfigRes.success) {

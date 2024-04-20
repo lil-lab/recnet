@@ -7,12 +7,12 @@ import { AnimatePresence, motion } from "framer-motion";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { TailSpin } from "react-loader-spinner";
 import { toast } from "sonner";
 import { z } from "zod";
 
 import { useAuth } from "@recnet/recnet-web/app/AuthContext";
 import { trpc } from "@recnet/recnet-web/app/_trpc/client";
+import { ErrorMessages } from "@recnet/recnet-web/constant";
 import { getFirebaseApp } from "@recnet/recnet-web/firebase/client";
 import { cn } from "@recnet/recnet-web/utils/cn";
 import { setRecnetCustomClaims } from "@recnet/recnet-web/utils/setRecnetCustomClaims";
@@ -39,7 +39,7 @@ export default function OnboardPage() {
       handle: undefined,
       affiliation: undefined,
     },
-    mode: "onBlur",
+    mode: "onTouched",
   });
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
@@ -100,7 +100,7 @@ export default function OnboardPage() {
           // verify invite code is valid
           const { isValid: inviteCodeValid } =
             await checkInviteCodeValidMutation.mutateAsync({
-              code: res.data.inviteCode,
+              inviteCode: res.data.inviteCode,
             });
           if (!inviteCodeValid) {
             setError(
@@ -120,14 +120,22 @@ export default function OnboardPage() {
           // mark invite code as used
           setMessage("Creating user...");
           const firebaseUser = getAuth(getFirebaseApp()).currentUser;
+          if (
+            !firebaseUser?.displayName ||
+            !firebaseUser?.email ||
+            !firebaseUser?.photoURL
+          ) {
+            throw new Error(ErrorMessages.USER_MISSING_FIREBASE_USER_DATA);
+          }
           try {
             const { user: createdUser } = await createUserMutation.mutateAsync({
-              userInfo: {
-                inviteCode: res.data.inviteCode,
-                handle: res.data.handle,
-                affiliation: res.data.affiliation ?? null,
-              },
-              firebaseUser: firebaseUser,
+              inviteCode: res.data.inviteCode,
+              handle: res.data.handle,
+              affiliation: res.data.affiliation ?? null,
+              displayName: firebaseUser.displayName,
+              email: firebaseUser.email,
+              photoUrl: firebaseUser.photoURL,
+              bio: null,
             });
             // set custom claims
             await setRecnetCustomClaims(createdUser.role, createdUser.id);
@@ -147,13 +155,13 @@ export default function OnboardPage() {
       >
         <div className="flex flex-col gap-y-1">
           <Text>Invite code</Text>
-          <TextField.Root className="w-full" size="3">
-            <TextField.Input
-              placeholder="Please enter your invite code here"
-              autoFocus
-              {...register("inviteCode")}
-            />
-          </TextField.Root>
+          <TextField.Root
+            className="w-full"
+            size="3"
+            placeholder="Please enter your invite code here"
+            autoFocus
+            {...register("inviteCode")}
+          />
           {formState.errors.inviteCode ? (
             <Text size="1" color="red">
               {formState.errors.inviteCode.message}
@@ -162,13 +170,12 @@ export default function OnboardPage() {
         </div>
         <div className="flex flex-col gap-y-1">
           <Text>User handle</Text>
-          <TextField.Root className="w-full" size="3">
+          <TextField.Root className="w-full" size="3" {...register("handle")}>
             <TextField.Slot>
               <Text size="3" weight="medium">
                 @
               </Text>
             </TextField.Slot>
-            <TextField.Input {...register("handle")} />
           </TextField.Root>
           {formState.errors.handle ? (
             <Text size="1" color="red">
@@ -178,14 +185,15 @@ export default function OnboardPage() {
         </div>
         <div className="flex flex-col gap-y-1">
           <Text>Affiliation</Text>
-          <TextField.Root className="w-full" size="3">
+          <TextField.Root
+            className="w-full"
+            size="3"
+            placeholder="(Optional)"
+            {...register("affiliation")}
+          >
             <TextField.Slot>
               <HomeIcon width={16} height={16} />
             </TextField.Slot>
-            <TextField.Input
-              placeholder="(Optional)"
-              {...register("affiliation")}
-            />
           </TextField.Root>
         </div>
         <Button
@@ -197,20 +205,9 @@ export default function OnboardPage() {
           })}
           type="submit"
           disabled={!formState.isValid}
+          loading={isLoading}
         >
-          {isLoading ? (
-            <TailSpin
-              radius={"1"}
-              visible={true}
-              height="20"
-              width="20"
-              color={"#ffffff"}
-              ariaLabel="line-wave-loading"
-              wrapperClass="w-fit h-fit"
-            />
-          ) : (
-            "Submit"
-          )}
+          Submit
         </Button>
       </form>
     </div>

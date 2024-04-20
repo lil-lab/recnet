@@ -5,8 +5,9 @@ import { redirect } from "next/navigation";
 import { cn } from "@recnet/recnet-web/utils/cn";
 import { getUserServerSide } from "@recnet/recnet-web/utils/getUserServerSide";
 
-import { AnnouncementBanner } from "./AnnouncementBanner";
 import { LoginButton } from "./LoginButton";
+
+import { AnnouncementCard } from "../components/AnnouncementCard";
 
 const cards = [
   {
@@ -48,13 +49,18 @@ export default async function Home() {
         "px-4"
       )}
     >
-      <AnnouncementBanner />
+      <AnnouncementCard
+        announcementKey="invite-only"
+        className="w-[95%] sm:w-[90%] md:w-[65%] lg:w-[55%] sm:fixed sm:top-[64px] sm:mt-4"
+      >
+        RecNet is under early development. Signing up requires an invite code.
+      </AnnouncementCard>
       <Text
         className={cn(
           "text-[60px]",
           "leading-[48px]",
-          "md:text-[72px]",
-          "md:leading-[60px]",
+          "sm:text-[72px]",
+          "sm:leading-[60px]",
           "font-bold",
           "w-fit",
           "h-fit",
@@ -65,8 +71,7 @@ export default async function Home() {
           "text-transparent",
           "bg-clip-text",
           "text-center",
-          "mt-12",
-          "md:mt-0"
+          "mt-[64px]"
         )}
       >
         Welcome to RecNet
@@ -74,7 +79,7 @@ export default async function Home() {
       <Text
         size={{
           initial: "5",
-          md: "6",
+          sm: "6",
         }}
         className="text-gray-11 text-center w-[80%]"
       >
@@ -86,13 +91,14 @@ export default async function Home() {
           <Link href="/about">Learn more</Link>
         </Button>
       </div>
+
       <div
         className={cn(
           "py-6",
           "gap-6",
           "flex",
           "flex-col",
-          "md:flex-row",
+          "sm:flex-row",
           "px-10"
         )}
       >

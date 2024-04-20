@@ -56,7 +56,7 @@ function InviteCodeGenerateForm() {
             const res = await generateInviteCodeMutation.mutateAsync(
               {
                 ownerHandle: handle,
-                num: data.count,
+                numCodes: data.count,
               },
               {
                 onError: (error) => {
@@ -73,7 +73,7 @@ function InviteCodeGenerateForm() {
                 },
               }
             );
-            setNewInviteCodes(res.inviteCodes);
+            setNewInviteCodes(res.codes);
             setIsModalOpen(true);
           } catch (error) {
             console.error(error);
@@ -91,22 +91,21 @@ function InviteCodeGenerateForm() {
             <Text size="1" className="text-gray-10">
               Number of Codes
             </Text>
-            <TextField.Root>
+            <TextField.Root
+              type="number"
+              {...register("count", {
+                onBlur: (e) => {
+                  if (e.target.value == "" || parseInt(e.target.value) < 1) {
+                    setValue("count", 1, {
+                      shouldValidate: true,
+                    });
+                  }
+                },
+              })}
+            >
               <TextField.Slot>
                 <HashIcon size="12" className="text-gray-10" />
               </TextField.Slot>
-              <TextField.Input
-                type="number"
-                {...register("count", {
-                  onBlur: (e) => {
-                    if (e.target.value == "" || parseInt(e.target.value) < 1) {
-                      setValue("count", 1, {
-                        shouldValidate: true,
-                      });
-                    }
-                  },
-                })}
-              />
             </TextField.Root>
             {formState.errors.count ? (
               <Text size="1" color="red">
@@ -118,15 +117,14 @@ function InviteCodeGenerateForm() {
             <Text size="1" className="text-gray-10">
               {`Owner's user handle`}
             </Text>
-            <TextField.Root className="w-full">
+            <TextField.Root
+              className="w-full"
+              placeholder="Optional"
+              {...register("owner")}
+            >
               <TextField.Slot>
                 <AtSignIcon size="12" className="text-gray-10" />
               </TextField.Slot>
-              <TextField.Input
-                placeholder="Optional"
-                className="w-full"
-                {...register("owner")}
-              />
             </TextField.Root>
             {formState.errors.owner ? (
               <Text size="1" color="red">

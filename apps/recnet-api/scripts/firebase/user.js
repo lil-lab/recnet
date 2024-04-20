@@ -39,7 +39,10 @@ async function main() {
         lastLoginAt: data.lastLoginAt
           ? new Date(parseInt(data.lastLoginAt))
           : new Date(), // default to now
-        role: data.role && data.role === "ADMIN" ? "ADMIN" : "USER",
+        role:
+          data?.role && (data.role === "ADMIN" || data.role === "admin")
+            ? "ADMIN"
+            : "USER",
         affiliation: data.affiliation ?? null,
         bio: null,
       });

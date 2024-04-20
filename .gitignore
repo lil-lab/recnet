@@ -60,3 +60,9 @@ next-env.d.ts
 
 # misc
 apps/**/pnpm-lock.yaml
+
+# pages under this directory
+pages/
+
+# nx migration files
+migrations.json

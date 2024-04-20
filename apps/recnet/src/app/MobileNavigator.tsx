@@ -9,18 +9,21 @@ import {
 import { Dialog, Text, Button, Flex, DropdownMenu } from "@radix-ui/themes";
 import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
+import { useTheme } from "next-themes";
 import { useState } from "react";
 import { toast } from "sonner";
 
 import { trpc } from "@recnet/recnet-web/app/_trpc/client";
-import { RecForm } from "@recnet/recnet-web/components/RecForm";
 import { SkeletonText, Skeleton } from "@recnet/recnet-web/components/Skeleton";
+import { RecArticleForm } from "@recnet/recnet-web/components/rec/RecArticleForm";
 import { UserRole } from "@recnet/recnet-web/constant";
 import { useGoogleLogin } from "@recnet/recnet-web/firebase/auth";
 import { cn } from "@recnet/recnet-web/utils/cn";
 
 import { useAuth } from "./AuthContext";
 import { UserDropdown } from "./Headerbar";
+
+import { RecForm } from "../components/rec/RecForm";
 
 function RecFormContent(props: { setOpen: (open: boolean) => void }) {
   const { setOpen } = props;
@@ -89,18 +92,22 @@ function RecFormContent(props: { setOpen: (open: boolean) => void }) {
           `Hi, ${user.displayName} 👋`
         )}
       </Text>
-      <Text size="2" className="text-gray-11 p-1" weight="medium">
-        {rec
-          ? "You can modify at anytime before this cycle ends."
-          : `Any interesting read this week?`}
-      </Text>
       <Flex className="w-full">
-        <RecForm
-          onFinish={() => {
-            setOpen(false);
-          }}
-          currentRec={rec ?? null}
-        />
+        {rec ? (
+          <RecForm
+            currentRec={rec}
+            onFinish={() => {
+              setOpen(false);
+            }}
+          />
+        ) : (
+          <RecArticleForm
+            currentRec={rec}
+            onFinish={() => {
+              setOpen(false);
+            }}
+          />
+        )}
       </Flex>
     </div>
   );
@@ -145,6 +152,7 @@ function MobileNavigator() {
   const { login } = useGoogleLogin();
 
   const [open, setOpen] = useState(false);
+  const { theme } = useTheme();
 
   return (
     <div
@@ -162,7 +170,10 @@ function MobileNavigator() {
         "h-fit",
         "py-4",
         "bg-gradient-to-t",
-        "from-white",
+        {
+          "from-white": theme === "light",
+          "from-black": theme === "dark",
+        },
         "to-[#ffffff10]",
         "backdrop-blur-md",
         "sticky",

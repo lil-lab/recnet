@@ -7,9 +7,13 @@
     "typecheck": {
       "executor": "nx:run-commands",
       "options": {
-        "commands": ["tsc -p tsconfig.json --noEmit"],
-        "cwd": "apps/recnet-api",
-        "forwardAllArgs": false
+        "commands": [
+          {
+            "command": "tsc -p tsconfig.json --noEmit",
+            "forwardAllArgs": false
+          }
+        ],
+        "cwd": "apps/recnet-api"
       }
     },
     "serve": {
@@ -31,53 +35,72 @@
     "clean": {
       "executor": "nx:run-commands",
       "options": {
-        "commands": ["rm -rf dist"],
-        "cwd": ".",
-        "forwardAllArgs": false
+        "commands": [
+          {
+            "command": "rm -rf dist",
+            "forwardAllArgs": false
+          }
+        ],
+        "cwd": "."
       }
     },
     "prisma:generate": {
       "executor": "nx:run-commands",
       "options": {
         "commands": [
-          "pnpx prisma generate --schema=apps/recnet-api/prisma/schema.prisma"
+          {
+            "command": "pnpx prisma generate --schema=apps/recnet-api/prisma/schema.prisma",
+            "forwardAllArgs": false
+          }
         ],
-        "cwd": ".",
-        "forwardAllArgs": false
+        "cwd": "."
       }
     },
     "prisma:migrate": {
       "executor": "nx:run-commands",
       "options": {
-        "commands": ["sh apps/recnet-api/scripts/dbMigrate.sh"],
-        "cwd": ".",
-        "forwardAllArgs": true
+        "commands": [
+          {
+            "command": "sh apps/recnet-api/scripts/dbMigrate.sh",
+            "forwardAllArgs": true
+          }
+        ],
+        "cwd": "."
       }
     },
     "prisma:deploy": {
       "executor": "nx:run-commands",
       "options": {
         "commands": [
-          "pnpx prisma migrate deploy --schema=apps/recnet-api/prisma/schema.prisma"
+          {
+            "command": "pnpx prisma migrate deploy --schema=apps/recnet-api/prisma/schema.prisma",
+            "forwardAllArgs": false
+          }
         ],
-        "cwd": ".",
-        "forwardAllArgs": false
+        "cwd": "."
       }
     },
     "prisma:studio": {
       "executor": "nx:run-commands",
       "options": {
-        "commands": ["pnpx prisma studio"],
-        "cwd": "apps/recnet-api",
-        "forwardAllArgs": false
+        "commands": [
+          {
+            "command": "pnpx prisma studio",
+            "forwardAllArgs": false
+          }
+        ],
+        "cwd": "apps/recnet-api"
       }
     },
     "deploy": {
       "executor": "nx:run-commands",
       "options": {
-        "commands": ["node dist/apps/recnet-api/main.js"],
-        "cwd": ".",
-        "forwardAllArgs": false
+        "commands": [
+          {
+            "command": "node dist/apps/recnet-api/main.js"
+          }
+        ],
+        "cwd": "."
       }
     },
     "db:dump": {
@@ -92,11 +115,24 @@
       "executor": "nx:run-commands",
       "options": {
         "commands": [
-          "# TODO: delete this target once https://github.com/nrwl/nx/issues/21651 is fixed",
-          "cp pnpm-lock.yaml apps/recnet-api/"
+          {
+            "command": "cp pnpm-lock.yaml apps/recnet-api/",
+            "forwardAllArgs": false
+          }
         ],
-        "cwd": ".",
-        "forwardAllArgs": false
+        "cwd": "."
+      }
+    },
+    "email:dev": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          {
+            "command": "email dev -p 3001 --dir src/modules/email/templates",
+            "forwardAllArgs": false
+          }
+        ],
+        "cwd": "apps/recnet-api"
       }
     }
   },

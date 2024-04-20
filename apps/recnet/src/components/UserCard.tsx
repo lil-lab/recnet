@@ -3,18 +3,14 @@
 import { HomeIcon, PersonIcon } from "@radix-ui/react-icons";
 import { Flex, Text, Grid } from "@radix-ui/themes";
 
-import { useAuth } from "@recnet/recnet-web/app/AuthContext";
 import { Avatar } from "@recnet/recnet-web/components/Avatar";
 import { FollowButton } from "@recnet/recnet-web/components/FollowButton";
 import { RecNetLink } from "@recnet/recnet-web/components/Link";
 import { cn } from "@recnet/recnet-web/utils/cn";
-import { shuffleArray } from "@recnet/recnet-web/utils/shuffle";
 
 import { UserPreview } from "@recnet/recnet-api-model";
 
 export function UserList({ users }: { users: UserPreview[] }) {
-  const { user } = useAuth();
-  const shuffledUsers = user?.id ? shuffleArray(users, user.id) : users;
   return (
     <Grid
       columns={{
@@ -24,7 +20,7 @@ export function UserList({ users }: { users: UserPreview[] }) {
       }}
       gap="4"
     >
-      {shuffledUsers.map((user, idx) => (
+      {users.map((user, idx) => (
         <UserCard key={`${user.handle}-${idx}`} user={user} />
       ))}
     </Grid>
