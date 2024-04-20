@@ -2,9 +2,9 @@ import { redirect } from "next/navigation";
 import React from "react";
 
 import { LeftPanel } from "@recnet/recnet-web/app/feeds/LeftPanel";
+import { AnnouncementCard } from "@recnet/recnet-web/components/AnnouncementCard";
 import { cn } from "@recnet/recnet-web/utils/cn";
 import { getUserServerSide } from "@recnet/recnet-web/utils/getUserServerSide";
-import { AnnouncementCard } from "@recnet/recnet-web/components/AnnouncementCard";
 
 export default async function FeedPageLayout({
   children,

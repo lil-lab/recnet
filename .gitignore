@@ -49,6 +49,7 @@ Thumbs.db
 .env.development.local
 .env.test.local
 .env.production.local
+.env.dbdump.local
 
 # eslint
 .eslintcache
@@ -59,3 +60,9 @@ next-env.d.ts
 
 # misc
 apps/**/pnpm-lock.yaml
+
+# pages under this directory
+pages/
+
+# nx migration files
+migrations.json

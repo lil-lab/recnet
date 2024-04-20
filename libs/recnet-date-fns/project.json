@@ -17,9 +17,13 @@
     "typecheck": {
       "executor": "nx:run-commands",
       "options": {
-        "commands": ["tsc -p tsconfig.json --noEmit"],
-        "cwd": "libs/recnet-date-fns",
-        "forwardAllArgs": false
+        "commands": [
+          {
+            "command": "tsc -p tsconfig.json --noEmit",
+            "forwardAllArgs": false
+          }
+        ],
+        "cwd": "libs/recnet-date-fns"
       }
     },
     "test": {
