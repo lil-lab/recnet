@@ -10,9 +10,11 @@ fi
 search_string="$1"
 
 # Install dependencies using pnpm
+echo "ℹ️ Installing dependencies..."
 pnpm install
 
 # Check affected projects, looking for the absence of the provided string
+echo "ℹ️ Checking affected projects..."
 pnpm nx show projects --affected --base=master | (! grep -q "$search_string")
 
 # Capture the exit status of the grep command (negated)
