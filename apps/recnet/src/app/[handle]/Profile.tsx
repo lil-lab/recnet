@@ -61,7 +61,7 @@ const EditUserProfileSchema = z.object({
     .optional(),
   bio: z
     .string()
-    .max(160, "Bio must contain at most 160 character(s)")
+    .max(200, "Bio must contain at most 160 character(s)")
     .optional(),
 });
 
