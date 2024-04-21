@@ -15,10 +15,18 @@ pnpm install
 
 # Check affected projects, looking for the absence of the provided string
 echo "ℹ️ Checking affected projects..."
-pnpm nx show projects --affected --base=master | (! grep -qx "$search_string")
+pnpm nx show projects --affected --base=master | (grep -qx "$search_string")
 
-# Capture the exit status of the grep command (negated)
+# Capture the exit status of the grep command
 exit_status=$?
 
-# Exit the script with the negated grep command's exit status
-exit $exit_status
+# print the exit status
+if [ $exit_status -eq 0 ]; then
+    echo "✅ The provided string is present in the affected projects."
+    echo "ℹ️ New Build is required"
+    exit 1
+else
+    echo "❌ The provided string is not present in the affected projects."
+    echo "ℹ️ No new build is required"
+    exit 0
+fi
