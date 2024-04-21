@@ -15,11 +15,13 @@ pnpm install
 
 # Check affected projects, looking for the absence of the provided string
 echo "ℹ️ Checking affected projects..."
-pnpm nx show projects --affected --base=master --head=$VERCEL_GIT_COMMIT_SHA | (grep -qx "$search_string")
+echo "Affected projects: "
+pnpm nx show projects --affected --base=master | (grep -x "$search_string")
 
 # Capture the exit status of the grep command
 exit_status=$?
 
+echo ""
 # print the exit status
 if [ $exit_status -eq 0 ]; then
     echo "✅ The provided string is present in the affected projects."
