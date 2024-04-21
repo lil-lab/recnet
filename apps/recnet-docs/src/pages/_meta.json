@@ -17,6 +17,7 @@
     "type": "separator",
     "title": "Others"
   },
+  "scripts": "Scripts",
   "api_docs": {
     "title": "API Documentation",
     "href": "https://api.recnet.io/api",
