@@ -18,4 +18,4 @@ bash scripts/vercel-build-ignore.sh recnet-docs
 
 The script will exit with 0 if the given app need to be ignored in [Vercel build step](https://vercel.com/docs/projects/overview#ignored-build-step), otherwise exit with 1. (Create new build)
 
-Under the hood, it uses the `pnpm nx show projects --affected --base=master` command to show all affected projects by current changes. And use `grep` to check if the given app is in the list.
+Under the hood, it uses the `pnpm nx show projects --affected` command to show all affected projects by current changes. And use `grep` to check if the given app is in the list.
