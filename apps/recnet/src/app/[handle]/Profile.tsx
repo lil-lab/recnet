@@ -85,8 +85,6 @@ function EditProfileDialog(props: { handle: string }) {
     });
   const { isDirty } = useFormState({ control: control });
 
-  console.log(watch());
-
   const updateProfileMutation = trpc.updateUser.useMutation();
 
   return (
