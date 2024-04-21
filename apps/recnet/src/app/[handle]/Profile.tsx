@@ -255,13 +255,13 @@ export function Profile(props: { handle: string }) {
 
   return (
     <div className={cn("flex-col", "gap-y-6", "flex")}>
-      <Flex className="items-center p-3 gap-x-6">
+      <Flex className="items-start p-3 gap-x-6">
         <Flex>
           <Avatar user={data.user} className={cn("w-[80px]", "h-[80px]")} />
         </Flex>
         <Flex className="flex-grow flex-col justify-between h-full">
           <Flex className="justify-between items-center">
-            <Flex className="p-2 sm:items-center gap-x-4 text-gray-11 flex-col sm:flex-row">
+            <Flex className="p-2 sm:p-1 sm:items-center gap-x-4 text-gray-11 flex-col sm:flex-row">
               <Text
                 size={{
                   initial: "5",
@@ -273,9 +273,10 @@ export function Profile(props: { handle: string }) {
               </Text>
               <Text
                 size={{
-                  initial: "3",
-                  sm: "4",
+                  initial: "2",
+                  sm: "3",
                 }}
+                className="text-gray-10 font-mono"
               >
                 {"@" + data.user.handle}
               </Text>
@@ -288,22 +289,29 @@ export function Profile(props: { handle: string }) {
               )}
             </Flex>
           </Flex>
+          {data.user.bio ? (
+            <Flex className="w-full p-2 sm:p-1">
+              <Text size="3" className="text-gray-11">
+                {data.user.bio}
+              </Text>
+            </Flex>
+          ) : null}
           <Flex className="sm:items-center gap-x-[10px] p-2 sm:p-1 flex-wrap flex-col sm:flex-row">
             {data.user.affiliation ? (
               <Flex className="items-center gap-x-1 text-gray-11">
                 <HomeIcon width="16" height="16" />
-                <Text size="3">{data.user.affiliation}</Text>
-                <Text size="3" className="sm:ml-[6px] hidden sm:inline-block">
+                <Text size="2">{data.user.affiliation}</Text>
+                <Text size="2" className="sm:ml-[6px] hidden sm:inline-block">
                   /
                 </Text>
               </Flex>
             ) : null}
             <Flex className="items-center gap-x-1 text-gray-11">
-              <Text size="3">{`${data.user.numFollowers} Follower${data.user.numFollowers > 1 ? "s" : ""}`}</Text>
+              <Text size="2">{`${data.user.numFollowers} Follower${data.user.numFollowers > 1 ? "s" : ""}`}</Text>
             </Flex>
             {isMe ? (
               <Flex className="items-center gap-x-1 text-gray-11">
-                <Text size="3" className="sm:mr-[6px] hidden sm:inline-block">
+                <Text size="2" className="sm:mr-[6px] hidden sm:inline-block">
                   /
                 </Text>
                 <RecNetLink
@@ -312,7 +320,7 @@ export function Profile(props: { handle: string }) {
                     underline: "always",
                   }}
                 >
-                  <Text size="3">{`${me.following.length} Following${me.following.length > 1 ? "s" : ""}`}</Text>
+                  <Text size="2">{`${me.following.length} Following${me.following.length > 1 ? "s" : ""}`}</Text>
                 </RecNetLink>
               </Flex>
             ) : null}
