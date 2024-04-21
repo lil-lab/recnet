@@ -35,6 +35,12 @@ export default class UserRepository {
     });
   }
 
+  public async findAllUsers(): Promise<User[]> {
+    return this.prisma.user.findMany({
+      select: user.select,
+    });
+  }
+
   public async countUsers(filter: UserFilterBy = {}): Promise<number> {
     const where: Prisma.UserWhereInput =
       this.transformUserFilterByToPrismaWhere(filter);
