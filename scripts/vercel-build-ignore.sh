@@ -15,6 +15,8 @@ pnpm install
 
 # Check affected projects, looking for the absence of the provided string
 echo "ℹ️ Checking affected projects..."
+echo "Previous commit: $VERCEL_GIT_PREVIOUS_SHA"
+echo "Current commit: $VERCEL_GIT_COMMIT_SHA"
 echo "Affected projects: "
 pnpm nx show projects --affected --base=$VERCEL_GIT_PREVIOUS_SHA --head=$VERCEL_GIT_COMMIT_SHA | (grep -x "$search_string")
 
