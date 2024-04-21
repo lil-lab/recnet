@@ -10,10 +10,10 @@ export class UpdateUserDto {
   @ApiPropertyOptional({ example: "https://example.com/photo.jpg" })
   photoUrl?: string;
 
-  @ApiPropertyOptional({ example: "Cornell University" })
+  @ApiPropertyOptional({ example: "Cornell University", maximum: 64 })
   affiliation?: string | null;
 
-  @ApiPropertyOptional({ example: "I am an NLP Researcher." })
+  @ApiPropertyOptional({ example: "I am an NLP Researcher.", maximum: 200 })
   bio?: string | null;
 
   @ApiPropertyOptional({ example: "example@cornell.edu" })
