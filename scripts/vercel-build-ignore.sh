@@ -13,18 +13,27 @@ search_string="$1"
 echo "ℹ️ Installing dependencies..."
 pnpm install
 
-# Check affected projects, looking for the absence of the provided string
-echo "ℹ️ Checking affected projects..."
-echo "Previous commit: $VERCEL_GIT_PREVIOUS_SHA"
-echo "Current commit: $VERCEL_GIT_COMMIT_SHA"
-echo "Affected projects: "
-pnpm nx show projects --affected --base=$VERCEL_GIT_PREVIOUS_SHA --head=$VERCEL_GIT_COMMIT_SHA | (grep -x "$search_string")
+# Define base and head commits for nx command
+base_commit=$VERCEL_GIT_PREVIOUS_SHA
+head_commit=$VERCEL_GIT_COMMIT_SHA
+
+# Use HEAD^ if previous SHA is not set
+if [ -z "$base_commit" ]; then
+    base_commit="HEAD^"
+fi
+
+# Display the commits being compared
+echo "ℹ️ Checking affected projects. Comparing between $base_commit and $head_commit..."
+echo "Affected projects:"
+
+# Run nx to show affected projects and check for the specified string
+pnpm nx show projects --affected --base=$base_commit --head=$head_commit | grep -x "$search_string"
 
 # Capture the exit status of the grep command
 exit_status=$?
 
 echo ""
-# print the exit status
+# Print the exit status and decide build necessity
 if [ $exit_status -eq 0 ]; then
     echo "✅ The provided string is present in the affected projects."
     echo "ℹ️ New Build is required"
