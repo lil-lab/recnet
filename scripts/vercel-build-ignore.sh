@@ -15,7 +15,7 @@ pnpm install
 
 # Check affected projects, looking for the absence of the provided string
 echo "ℹ️ Checking affected projects..."
-pnpm nx show projects --affected --base=master | (! grep -q "$search_string")
+pnpm nx show projects --affected --base=master | (! grep -qx "$search_string")
 
 # Capture the exit status of the grep command (negated)
 exit_status=$?
