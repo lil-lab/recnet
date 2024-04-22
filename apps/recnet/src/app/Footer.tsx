@@ -7,7 +7,7 @@ import {
   MoonIcon,
   SunIcon,
 } from "@radix-ui/react-icons";
-import { Text, Flex, DropdownMenu, Button } from "@radix-ui/themes";
+import { Text, Flex, DropdownMenu, Button, Tooltip } from "@radix-ui/themes";
 import Link from "next/link";
 import { useTheme } from "next-themes";
 import { useState, useEffect } from "react";
@@ -47,10 +47,21 @@ function Footer() {
       )}
     >
       <Flex gap="4">
-        <Flex gap="1" className="items-center">
-          <CommitIcon width="18" height="18" />
-          <Text size="1">{clientEnv.NEXT_PUBLIC_APP_VERSION}</Text>
-        </Flex>
+        <Tooltip content="Click to view changelogs">
+          <Link href="https://github.com/lil-lab/recnet/blob/master/apps/recnet/CHANGELOG.md">
+            <Flex gap="1" className="items-center">
+              <CommitIcon width="18" height="18" />
+              <Text size="1">{clientEnv.NEXT_PUBLIC_APP_VERSION}</Text>
+            </Flex>
+          </Link>
+        </Tooltip>
+        {clientEnv.NEXT_PUBLIC_ENV !== "production" ? (
+          <Flex className="items-center">
+            <Text size="1">
+              {clientEnv.NEXT_PUBLIC_VERCEL_GIT_COMMIT_REF || "Local"}
+            </Text>
+          </Flex>
+        ) : null}
         <Flex gap="2" className="items-center">
           <div
             className={cn("rounded-[999px]", "w-2", "h-2", {
