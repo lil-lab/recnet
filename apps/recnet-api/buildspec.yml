@@ -6,6 +6,7 @@ phases:
       nodejs: 18
     commands:
       - npm i -g pnpm
+      - pnpm -v
       - rm -rf node_modules
       - pnpm i --frozen-lockfile
   pre_build:
