@@ -55,17 +55,6 @@ function Footer() {
             </Flex>
           </Link>
         </Tooltip>
-        {clientEnv.NEXT_PUBLIC_ENV !== "production" ? (
-          <Flex className="items-center">
-            <Tooltip
-              content={clientEnv.NEXT_PUBLIC_VERCEL_GIT_COMMIT_REF || "Local"}
-            >
-              <Text size="1" className="max-w-[80px] truncate">
-                {clientEnv.NEXT_PUBLIC_VERCEL_GIT_COMMIT_REF || "Local"}
-              </Text>
-            </Tooltip>
-          </Flex>
-        ) : null}
         <Flex gap="2" className="items-center">
           <div
             className={cn("rounded-[999px]", "w-2", "h-2", {
@@ -161,6 +150,17 @@ function Footer() {
             )}
           />
         </Link>
+        {clientEnv.NEXT_PUBLIC_ENV !== "production" ? (
+          <Flex className="items-center">
+            <Tooltip
+              content={clientEnv.NEXT_PUBLIC_VERCEL_GIT_COMMIT_REF || "Local"}
+            >
+              <Text size="1" className="max-w-[80px] truncate">
+                {clientEnv.NEXT_PUBLIC_VERCEL_GIT_COMMIT_REF || "Local"}
+              </Text>
+            </Tooltip>
+          </Flex>
+        ) : null}
       </Flex>
     </div>
   );
