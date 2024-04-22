@@ -15,6 +15,18 @@
         ],
         "cwd": "apps/recnet"
       }
+    },
+    "version": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          {
+            "command": "commit-and-tag-version",
+            "forwardAllArgs": true
+          }
+        ],
+        "cwd": "apps/recnet"
+      }
     }
   },
   "tags": ["type:app"]
