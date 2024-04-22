@@ -18,3 +18,4 @@
 - [ ] Paste the testing link
 - [ ] Clear `console.log` or `console.error` for debug usage
 - [ ] Update the documentation `recnet-docs` if needed
+- [ ] Version bump in `package.json` if needed
