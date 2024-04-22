@@ -9,6 +9,8 @@ import { forwardRef } from "react";
 
 import { cn } from "@recnet/recnet-web/utils/cn";
 
+import { getCutOffFromStartDate } from "@recnet/recnet-date-fns";
+
 const SelectItem = forwardRef<HTMLDivElement, Select.SelectItemProps>(
   ({ children, className, ...props }, forwardedRef) => {
     return (
@@ -32,14 +34,12 @@ const SelectItem = forwardRef<HTMLDivElement, Select.SelectItemProps>(
 );
 SelectItem.displayName = "SelectItem";
 
-export function CutoffDropdown(props: {
-  currentCutoff: Date;
-  cutoffs: Date[];
-}) {
-  const { currentCutoff, cutoffs } = props;
+export function CutoffDropdown(props: { currentSelectedCutoff: Date }) {
+  const { currentSelectedCutoff } = props;
+  const cutoffs = getCutOffFromStartDate();
   const router = useRouter();
   // use timestamp's string as default value and select value
-  const defaultValue = currentCutoff.getTime().toString();
+  const defaultValue = currentSelectedCutoff.getTime().toString();
 
   const tsToDateString = (tsString: string): string => {
     const ts = parseInt(tsString);
@@ -82,7 +82,7 @@ export function CutoffDropdown(props: {
             "shadow-[0px_10px_38px_-10px_rgba(22,_23,_24,_0.35),0px_10px_20px_-15px_rgba(22,_23,_24,_0.2)]"
           )}
         >
-          <Select.ScrollUpButton className="flex items-center justify-center h-[25px] bg-white text-blue-10 cursor-default">
+          <Select.ScrollUpButton className="flex items-center justify-center h-[25px] bg-white dark:bg-slate-2 text-blue-10 cursor-default">
             <ChevronUpIcon />
           </Select.ScrollUpButton>
           <Select.Viewport className="p-1">
@@ -96,7 +96,7 @@ export function CutoffDropdown(props: {
               );
             })}
           </Select.Viewport>
-          <Select.ScrollDownButton className="flex items-center justify-center h-[25px] bg-white text-blue-10 cursor-default">
+          <Select.ScrollDownButton className="flex items-center justify-center h-[25px] bg-white dark:bg-slate-2 text-blue-10 cursor-default">
             <ChevronDownIcon />
           </Select.ScrollDownButton>
         </Select.Content>

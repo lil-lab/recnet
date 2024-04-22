@@ -9,14 +9,12 @@ import { useState } from "react";
 
 import { useAuth } from "@recnet/recnet-web/app/AuthContext";
 import { CutoffDropdown } from "@recnet/recnet-web/components/CutoffDropdown";
-import { RecNetLink } from "@recnet/recnet-web/components/Link";
 import { Skeleton, SkeletonText } from "@recnet/recnet-web/components/Skeleton";
 import { RecArticleForm } from "@recnet/recnet-web/components/rec/RecArticleForm";
 import { RecForm } from "@recnet/recnet-web/components/rec/RecForm";
 import { cn } from "@recnet/recnet-web/utils/cn";
 
 import {
-  getCutOffFromStartDate,
   getCutOff,
   getLatestCutOff,
   getNextCutOff,
@@ -24,6 +22,8 @@ import {
 } from "@recnet/recnet-date-fns";
 
 import { Rec } from "@recnet/recnet-api-model";
+
+import { CutoffDatePicker } from "./CutoffDatePicker";
 
 import { trpc } from "../_trpc/client";
 
@@ -117,7 +117,6 @@ export function LeftPanel() {
   const searchParams = useSearchParams();
   const date = searchParams.get("date");
   const cutoff = date ? getCutOff(new Date(date)) : getLatestCutOff();
-  const cutoffs = getCutOffFromStartDate();
   const { data, isPending, isFetching } = trpc.getUpcomingRec.useQuery();
   const rec = data?.rec ?? null;
 
@@ -213,29 +212,7 @@ export function LeftPanel() {
                 <Text size="1" weight={"medium"} className="text-gray-11">
                   Previous cycles
                 </Text>
-                <div className="flex flex-col py-1 px-2 gap-y-2">
-                  {cutoffs.map((d, idx) => {
-                    const year = d.getFullYear();
-                    const month = d.getMonth() + 1;
-                    const day = d.getDate();
-                    const key = `${month}/${day}/${year}`;
-                    return (
-                      <RecNetLink
-                        href={`/feeds?date=${key}`}
-                        key={idx}
-                        radixLinkProps={{
-                          size: "1",
-                          weight:
-                            cutoff.getTime() === d.getTime()
-                              ? "bold"
-                              : "regular",
-                        }}
-                      >
-                        {key}
-                      </RecNetLink>
-                    );
-                  })}
-                </div>
+                <CutoffDatePicker currentSelectedCutoff={cutoff} />
               </div>
             </motion.div>
           )}
@@ -251,7 +228,7 @@ export function LeftPanel() {
           "pt-4"
         )}
       >
-        <CutoffDropdown currentCutoff={cutoff} cutoffs={cutoffs} />
+        <CutoffDropdown currentSelectedCutoff={cutoff} />
       </div>
     </>
   );
