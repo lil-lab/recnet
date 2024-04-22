@@ -57,9 +57,13 @@ function Footer() {
         </Tooltip>
         {clientEnv.NEXT_PUBLIC_ENV !== "production" ? (
           <Flex className="items-center">
-            <Text size="1">
-              {clientEnv.NEXT_PUBLIC_VERCEL_GIT_COMMIT_REF || "Local"}
-            </Text>
+            <Tooltip
+              content={clientEnv.NEXT_PUBLIC_VERCEL_GIT_COMMIT_REF || "Local"}
+            >
+              <Text size="1" className="max-w-[80px] truncate">
+                {clientEnv.NEXT_PUBLIC_VERCEL_GIT_COMMIT_REF || "Local"}
+              </Text>
+            </Tooltip>
           </Flex>
         ) : null}
         <Flex gap="2" className="items-center">
