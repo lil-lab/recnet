@@ -6,6 +6,7 @@ phases:
       nodejs: 18
     commands:
       - npm i -g pnpm
+      - rm -rf node_modules
       - pnpm i --frozen-lockfile
   pre_build:
     commands:
@@ -13,6 +14,7 @@ phases:
       - pnpm nx prisma:generate recnet-api
   build:
     commands:
+      - pnpm webpack-cli
       - pnpm nx build recnet-api
   post_build:
     commands:
