@@ -8,6 +8,7 @@ export const clientEnvSchema = z.object({
   NEXT_PUBLIC_GA_TRACKING_ID: z.string(),
   NEXT_PUBLIC_ENV: z.string(),
   NEXT_PUBLIC_BASE_URL: z.string(),
+  NEXT_PUBLIC_APP_VERSION: z.string(),
 });
 
 const clientEnvRes = clientEnvSchema.safeParse({
@@ -19,6 +20,7 @@ const clientEnvRes = clientEnvSchema.safeParse({
   NEXT_PUBLIC_GA_TRACKING_ID: process.env.NEXT_PUBLIC_GA_TRACKING_ID,
   NEXT_PUBLIC_ENV: process.env.NEXT_PUBLIC_ENV,
   NEXT_PUBLIC_BASE_URL: process.env.NEXT_PUBLIC_BASE_URL,
+  NEXT_PUBLIC_APP_VERSION: process.env.NEXT_PUBLIC_APP_VERSION,
 });
 
 if (!clientEnvRes.success) {

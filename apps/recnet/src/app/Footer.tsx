@@ -1,6 +1,7 @@
 "use client";
 
 import {
+  CommitIcon,
   GearIcon,
   GitHubLogoIcon,
   MoonIcon,
@@ -14,6 +15,8 @@ import { useState, useEffect } from "react";
 import { cn } from "@recnet/recnet-web/utils/cn";
 
 import { trpc } from "./_trpc/client";
+
+import { clientEnv } from "../clientEnv";
 
 function Footer() {
   const { data, isPending } = trpc.apiHealthCheck.useQuery();
@@ -43,21 +46,27 @@ function Footer() {
         "mb-4 sm:mb-0"
       )}
     >
-      <Flex gap="2" className="items-center">
-        <div
-          className={cn("rounded-[999px]", "w-2", "h-2", {
-            "bg-gray-8": isPending,
-            "bg-green-8": data?.ok && !isPending,
-            "bg-red-8": !data?.ok && !isPending,
-          })}
-        />
-        <Text size="1">
-          {isPending
-            ? "Checking API service..."
-            : data?.ok
-              ? "All systems normal"
-              : "API service is down"}
-        </Text>
+      <Flex gap="4">
+        <Flex gap="1" className="items-center">
+          <CommitIcon width="18" height="18" />
+          <Text size="1">{clientEnv.NEXT_PUBLIC_APP_VERSION}</Text>
+        </Flex>
+        <Flex gap="2" className="items-center">
+          <div
+            className={cn("rounded-[999px]", "w-2", "h-2", {
+              "bg-gray-8": isPending,
+              "bg-green-8": data?.ok && !isPending,
+              "bg-red-8": !data?.ok && !isPending,
+            })}
+          />
+          <Text size="1">
+            {isPending
+              ? "Checking API service..."
+              : data?.ok
+                ? "All systems normal"
+                : "API service is down"}
+          </Text>
+        </Flex>
       </Flex>
       <Text size="1">© 2024 RecNet. All rights reserved.</Text>
       <Flex gap="2" className="items-center">
