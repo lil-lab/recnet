@@ -128,6 +128,9 @@
       "options": {
         "commands": [
           {
+            "command": "echo 'delete this target once https://github.com/nrwl/nx/issues/21651 is fixed'"
+          },
+          {
             "command": "email dev -p 3001 --dir src/modules/email/templates",
             "forwardAllArgs": false
           }
