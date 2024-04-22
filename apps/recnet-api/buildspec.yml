@@ -5,7 +5,7 @@ phases:
     runtime-versions:
       nodejs: 18
     commands:
-      - npm i -g pnpm
+      - npm i -g pnpm@8
       - pnpm -v
       - rm -rf node_modules
       - pnpm i --frozen-lockfile
