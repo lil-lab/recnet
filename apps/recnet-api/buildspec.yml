@@ -14,7 +14,7 @@ phases:
       - pnpm nx prisma:generate recnet-api
   build:
     commands:
-      - pnpm nx build recnet-api
+      - pnpm nx build recnet-api --verbose
   post_build:
     commands:
       - rm -rf node_modules
