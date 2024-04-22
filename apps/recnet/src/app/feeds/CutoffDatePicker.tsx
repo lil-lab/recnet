@@ -2,11 +2,16 @@
 
 import { useCalendar } from "@h6s/calendar";
 import { Button, Popover, Flex } from "@radix-ui/themes";
+import { useState } from "react";
 
 import { RecNetLink } from "@recnet/recnet-web/components/Link";
 import { cn } from "@recnet/recnet-web/utils/cn";
 
-import { getCutOffFromStartDate, START_DATE } from "@recnet/recnet-date-fns";
+import {
+  formatDate,
+  getCutOffFromStartDate,
+  START_DATE,
+} from "@recnet/recnet-date-fns";
 
 const MAX_CUTOFFS_DISPLAY = 5;
 
@@ -17,10 +22,7 @@ function getWeekDay(date: Date) {
 }
 
 function getFeedPageLink(date: Date) {
-  const year = date.getFullYear();
-  const month = date.getMonth() + 1;
-  const day = date.getDate();
-  return `/feeds?date=${month}/${day}/${year}`;
+  return `/feeds?date=${formatDate(date)}`;
 }
 
 interface CutoffDatePickerProps {
@@ -29,11 +31,11 @@ interface CutoffDatePickerProps {
 
 export function CutoffDatePicker(props: CutoffDatePickerProps) {
   const { currentSelectedCutoff } = props;
+  const [isOpen, setIsOpen] = useState(false);
   const cutoffs = getCutOffFromStartDate();
   const {
     headers,
     body,
-    view,
     month: currentSelectedMonth,
     year: currentSelectedYear,
     navigation,
@@ -55,10 +57,7 @@ export function CutoffDatePicker(props: CutoffDatePickerProps) {
   return (
     <div className="flex flex-col py-1 px-2 gap-y-2">
       {cutoffs.slice(0, MAX_CUTOFFS_DISPLAY).map((d, idx) => {
-        const year = d.getFullYear();
-        const month = d.getMonth() + 1;
-        const day = d.getDate();
-        const key = `${month}/${day}/${year}`;
+        const key = formatDate(d);
         return (
           <RecNetLink
             href={getFeedPageLink(d)}
@@ -75,7 +74,12 @@ export function CutoffDatePicker(props: CutoffDatePickerProps) {
           </RecNetLink>
         );
       })}
-      <Popover.Root>
+      <Popover.Root
+        open={isOpen}
+        onOpenChange={(open) => {
+          setIsOpen(open);
+        }}
+      >
         <Popover.Trigger>
           <Button variant="ghost" className="w-fit cursor-pointer" size="1">
             More
@@ -162,7 +166,19 @@ export function CutoffDatePicker(props: CutoffDatePickerProps) {
                       }
                       return (
                         <td key={dayKey} className={cn(tableCellBaseClass)}>
-                          <RecNetLink href={getFeedPageLink(value)}>
+                          <RecNetLink
+                            href={getFeedPageLink(value)}
+                            radixLinkProps={{
+                              className: cn({
+                                "font-bold":
+                                  formatDate(currentSelectedCutoff) ===
+                                  formatDate(value),
+                              }),
+                              onClick: () => {
+                                setIsOpen(false);
+                              },
+                            }}
+                          >
                             {value.getDate()}
                           </RecNetLink>
                         </td>
