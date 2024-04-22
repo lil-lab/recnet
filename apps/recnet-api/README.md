@@ -1,4 +1,4 @@
-# Recnet-api
+# RecNet-Api
 
 Recnet-api is a backend API service for [Recnet](https://www.recnet.io/). Powered by Node.js and [NestJS](https://nestjs.com/), it offers scalable solutions for paper recommendation, news feed system and academic social media network.
 
@@ -12,7 +12,7 @@ Recnet-api is a backend API service for [Recnet](https://www.recnet.io/). Powere
 - [Notion](https://www.notion.so/RecNet-f8440e23b4e54af4a9636e84ed101815)
 - Swagger API Doc
   - [dev](https://dev-api.recnet.io/api)
-  - prod
+  - [prod](https://api.recnet.io/api)
 
 ## Local Development
 
@@ -51,10 +51,17 @@ docker stop recnet-postgres
 docker rm recnet-postgres
 ```
 
-2. Run migration
+2. Dump the remote database to local
 
 ```bash
-nx prisma:deploy recnet-api
+# if you don't have Postgres CLI, install libpq first
+brew install libpq  # macOS
+
+# copy from sample file and modify the .env.dbdump.local
+cp apps/recnet-api/scripts/.env.dbdump.sample apps/recnet-api/scripts/.env.dbdump.local
+
+# dump the remote database to local
+nx db:dump recnet-api
 ```
 
 3. Run Prisma Studio to see database at `localhost:5555`.

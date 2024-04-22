@@ -103,6 +103,14 @@
         "cwd": "."
       }
     },
+    "db:dump": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": ["sh apps/recnet-api/scripts/dbDumpAndRestore.sh"],
+        "cwd": ".",
+        "forwardAllArgs": false
+      }
+    },
     "sync-package-lock": {
       "executor": "nx:run-commands",
       "options": {
@@ -113,6 +121,18 @@
           }
         ],
         "cwd": "."
+      }
+    },
+    "email:dev": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          {
+            "command": "email dev -p 3001 --dir src/modules/email/templates",
+            "forwardAllArgs": false
+          }
+        ],
+        "cwd": "apps/recnet-api"
       }
     }
   },

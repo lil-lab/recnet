@@ -26,6 +26,12 @@ enum Role {
   USER
 }
 
+enum CronStatus {
+  SUCCESS
+  FAILURE
+  IN_PROGRESS
+}
+
 model User {
   id            String     @id @db.VarChar(64) @default(uuid()) // Primary key, UUID type
   provider      Provider   // Enum type
@@ -98,4 +104,15 @@ model InviteCode {
 
   owner       User      @relation("InviteCodeOwner", fields: [ownerId], references: [id])
   usedBy      User?     @relation("InviteCodeUsedBy", fields: [usedById], references: [id])
+}
+
+model WeeklyDigestCronLog {
+  id          Int       @id @default(autoincrement())
+  cutoff      DateTime
+  startTime   DateTime  @default(now())
+  endTime     DateTime?
+  status      CronStatus
+  result      Json?
+  errorMsg    String?
+  createdAt   DateTime  @default(now())
 }
