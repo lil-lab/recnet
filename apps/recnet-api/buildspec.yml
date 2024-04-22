@@ -22,7 +22,7 @@ phases:
       - rm -rf node_modules
       - cp -R apps/recnet-api/prisma/ dist/apps/recnet-api/prisma
       - cd dist/apps/recnet-api
-      - pnpm install --prod --frozen-lockfile
+      - pnpm install --prod
       - pnpx prisma generate --schema=prisma/schema.prisma
 
 artifacts:
