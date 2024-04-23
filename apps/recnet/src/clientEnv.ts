@@ -6,8 +6,12 @@ export const clientEnvSchema = z.object({
   NEXT_PUBLIC_FIREBASE_PROJECT_ID: z.string(),
   NEXT_PUBLIC_FIREBASE_APP_ID: z.string(),
   NEXT_PUBLIC_GA_TRACKING_ID: z.string(),
-  NEXT_PUBLIC_ENV: z.string(),
+  NEXT_PUBLIC_ENV: z
+    .enum(["development", "production", "preview"])
+    .default("development"),
   NEXT_PUBLIC_BASE_URL: z.string(),
+  NEXT_PUBLIC_APP_VERSION: z.string(),
+  NEXT_PUBLIC_VERCEL_GIT_COMMIT_REF: z.string().optional(),
 });
 
 const clientEnvRes = clientEnvSchema.safeParse({
@@ -17,8 +21,11 @@ const clientEnvRes = clientEnvSchema.safeParse({
   NEXT_PUBLIC_FIREBASE_PROJECT_ID: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
   NEXT_PUBLIC_FIREBASE_APP_ID: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
   NEXT_PUBLIC_GA_TRACKING_ID: process.env.NEXT_PUBLIC_GA_TRACKING_ID,
-  NEXT_PUBLIC_ENV: process.env.NEXT_PUBLIC_ENV,
+  NEXT_PUBLIC_ENV: process.env.NEXT_PUBLIC_VERCEL_ENV, // comsume from nextjs preset env vars: https://vercel.com/docs/projects/environment-variables/system-environment-variables#framework-environment-variables
   NEXT_PUBLIC_BASE_URL: process.env.NEXT_PUBLIC_BASE_URL,
+  NEXT_PUBLIC_APP_VERSION: process.env.NEXT_PUBLIC_APP_VERSION,
+  NEXT_PUBLIC_VERCEL_GIT_COMMIT_REF:
+    process.env.NEXT_PUBLIC_VERCEL_GIT_COMMIT_REF, // comsume from nextjs preset env vars: https://vercel.com/docs/projects/environment-variables/system-environment-variables#framework-environment-variables
 });
 
 if (!clientEnvRes.success) {
