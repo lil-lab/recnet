@@ -164,13 +164,4 @@ export default class UserRepository {
         throw new Error("Provider not supported");
     }
   }
-
-  private incensitiveContains(field: string, word: string) {
-    return {
-      [field]: {
-        contains: word,
-        mode: Prisma.QueryMode.insensitive,
-      },
-    };
-  }
 }
