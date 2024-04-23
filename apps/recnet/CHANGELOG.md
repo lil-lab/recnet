@@ -2,13 +2,21 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
-## [1.2.0](https://github.com/lil-lab/recnet/compare/v1.1.0...v1.2.0) (2024-04-22)
-
+## [1.3.0](https://github.com/lil-lab/recnet/compare/v1.2.0...v1.3.0) (2024-04-23)
 
 ### Features
 
-* **footer:** add branch indicator and shows only at preview and development environment ([7c762b5](https://github.com/lil-lab/recnet/commit/7c762b52782f795bcb68223f3b330a529f331239))
-* **footer:** add Version Tag ([a5e3b8c](https://github.com/lil-lab/recnet/commit/a5e3b8c0702fefcd1e6663e312d7df4a6211dc7c))
+- adjust bio char limit ([635529c](https://github.com/lil-lab/recnet/commit/635529cf68205fa32fc7b911d72d33a7db5544cd))
+- **profile page:** add new field to form: bio, adjust bio display style and skeleton ([2a1e7db](https://github.com/lil-lab/recnet/commit/2a1e7db626c9f9bd23468e8e8211b6bcf8e42d12))
+- **profile page:** add new field to form: bio, adjust bio display style and skeleton ([8f9f6a7](https://github.com/lil-lab/recnet/commit/8f9f6a75c161bd9f5834023d62059dedde4b6c5e))
+- **profile page:** add user bio display field ([e318445](https://github.com/lil-lab/recnet/commit/e318445c537a67d0a0dc24493829bca61003c4e1))
+
+## [1.2.0](https://github.com/lil-lab/recnet/compare/v1.1.0...v1.2.0) (2024-04-22)
+
+### Features
+
+- **footer:** add branch indicator and shows only at preview and development environment ([7c762b5](https://github.com/lil-lab/recnet/commit/7c762b52782f795bcb68223f3b330a529f331239))
+- **footer:** add Version Tag ([a5e3b8c](https://github.com/lil-lab/recnet/commit/a5e3b8c0702fefcd1e6663e312d7df4a6211dc7c))
 
 ## 1.1.0 (2024-04-22)
 
