@@ -2,7 +2,14 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { HomeIcon } from "@radix-ui/react-icons";
-import { Dialog, Button, Flex, Text, TextField } from "@radix-ui/themes";
+import {
+  Dialog,
+  Button,
+  Flex,
+  Text,
+  TextField,
+  TextArea,
+} from "@radix-ui/themes";
 import { TRPCClientError } from "@trpc/client";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -52,6 +59,10 @@ const EditUserProfileSchema = z.object({
     .string()
     .max(64, "Affiliation must contain at most 64 character(s)")
     .optional(),
+  bio: z
+    .string()
+    .max(200, "Bio must contain at most 160 character(s)")
+    .optional(),
 });
 
 function EditProfileDialog(props: { handle: string }) {
@@ -61,15 +72,17 @@ function EditProfileDialog(props: { handle: string }) {
   const [open, setOpen] = useState(false);
   const { user, revalidateUser } = useAuth();
 
-  const { register, handleSubmit, formState, setError, control } = useForm({
-    resolver: zodResolver(EditUserProfileSchema),
-    defaultValues: {
-      displayName: user?.displayName,
-      handle: user?.handle,
-      affiliation: user?.affiliation,
-    },
-    mode: "onTouched",
-  });
+  const { register, handleSubmit, formState, setError, control, watch } =
+    useForm({
+      resolver: zodResolver(EditUserProfileSchema),
+      defaultValues: {
+        displayName: user?.displayName,
+        handle: user?.handle,
+        affiliation: user?.affiliation,
+        bio: user?.bio,
+      },
+      mode: "onTouched",
+    });
   const { isDirty } = useFormState({ control: control });
 
   const updateProfileMutation = trpc.updateUser.useMutation();
@@ -180,6 +193,21 @@ function EditProfileDialog(props: { handle: string }) {
                 </Text>
               ) : null}
             </label>
+            <label>
+              <Text as="div" size="2" mb="1" weight="medium">
+                Bio
+              </Text>
+              <TextArea
+                placeholder="Enter your bio"
+                {...register("bio")}
+                className="h-[100px]"
+              />
+              {formState.errors.bio ? (
+                <Text size="1" color="red">
+                  {formState.errors.bio.message}
+                </Text>
+              ) : null}
+            </label>
           </Flex>
 
           <Flex gap="3" mt="4" justify="end">
@@ -219,7 +247,7 @@ export function Profile(props: { handle: string }) {
   if (isPending || isFetching) {
     return (
       <div className={cn("flex-col", "gap-y-6", "flex")}>
-        <Flex className="items-center p-3 gap-x-6">
+        <Flex className="items-start p-3 gap-x-6">
           <Flex>
             <Skeleton className="w-[80px] h-[80px] rounded-[999px]" />
           </Flex>
@@ -239,8 +267,12 @@ export function Profile(props: { handle: string }) {
                 </Button>
               </Flex>
             </Flex>
+            <Flex className="w-full p-2 sm:p-1 my-1 flex-col gap-y-1">
+              <SkeletonText size="2" className="w-[50%]" />
+              <SkeletonText size="2" className="w-[50%]" />
+            </Flex>
             <Flex className="items-center gap-x-[10px] p-1">
-              <SkeletonText className="h-fit min-w-[300px]" size="3" />
+              <SkeletonText className="h-fit min-w-[300px]" size="2" />
             </Flex>
           </Flex>
         </Flex>
@@ -255,13 +287,13 @@ export function Profile(props: { handle: string }) {
 
   return (
     <div className={cn("flex-col", "gap-y-6", "flex")}>
-      <Flex className="items-center p-3 gap-x-6">
+      <Flex className="items-start p-3 gap-x-6">
         <Flex>
           <Avatar user={data.user} className={cn("w-[80px]", "h-[80px]")} />
         </Flex>
         <Flex className="flex-grow flex-col justify-between h-full">
           <Flex className="justify-between items-center">
-            <Flex className="p-2 sm:items-center gap-x-4 text-gray-11 flex-col sm:flex-row">
+            <Flex className="p-2 sm:p-1 sm:items-center gap-x-4 text-gray-11 flex-col sm:flex-row">
               <Text
                 size={{
                   initial: "5",
@@ -273,9 +305,10 @@ export function Profile(props: { handle: string }) {
               </Text>
               <Text
                 size={{
-                  initial: "3",
-                  sm: "4",
+                  initial: "2",
+                  sm: "3",
                 }}
+                className="text-gray-10 font-mono"
               >
                 {"@" + data.user.handle}
               </Text>
@@ -288,22 +321,29 @@ export function Profile(props: { handle: string }) {
               )}
             </Flex>
           </Flex>
+          {data.user.bio ? (
+            <Flex className="w-full p-2 sm:p-1 my-1">
+              <Text size="2" className="text-gray-11 whitespace-pre-line">
+                {data.user.bio}
+              </Text>
+            </Flex>
+          ) : null}
           <Flex className="sm:items-center gap-x-[10px] p-2 sm:p-1 flex-wrap flex-col sm:flex-row">
             {data.user.affiliation ? (
               <Flex className="items-center gap-x-1 text-gray-11">
                 <HomeIcon width="16" height="16" />
-                <Text size="3">{data.user.affiliation}</Text>
-                <Text size="3" className="sm:ml-[6px] hidden sm:inline-block">
+                <Text size="2">{data.user.affiliation}</Text>
+                <Text size="2" className="sm:ml-[6px] hidden sm:inline-block">
                   /
                 </Text>
               </Flex>
             ) : null}
             <Flex className="items-center gap-x-1 text-gray-11">
-              <Text size="3">{`${data.user.numFollowers} Follower${data.user.numFollowers > 1 ? "s" : ""}`}</Text>
+              <Text size="2">{`${data.user.numFollowers} Follower${data.user.numFollowers > 1 ? "s" : ""}`}</Text>
             </Flex>
             {isMe ? (
               <Flex className="items-center gap-x-1 text-gray-11">
-                <Text size="3" className="sm:mr-[6px] hidden sm:inline-block">
+                <Text size="2" className="sm:mr-[6px] hidden sm:inline-block">
                   /
                 </Text>
                 <RecNetLink
@@ -312,7 +352,7 @@ export function Profile(props: { handle: string }) {
                     underline: "always",
                   }}
                 >
-                  <Text size="3">{`${me.following.length} Following${me.following.length > 1 ? "s" : ""}`}</Text>
+                  <Text size="2">{`${me.following.length} Following${me.following.length > 1 ? "s" : ""}`}</Text>
                 </RecNetLink>
               </Flex>
             ) : null}

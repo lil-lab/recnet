@@ -127,7 +127,7 @@ export default async function RootLayout({
   const user = await getUserServerSide();
   return (
     <html lang="en" suppressHydrationWarning>
-      {clientEnv.NEXT_PUBLIC_ENV === "prod" ? (
+      {clientEnv.NEXT_PUBLIC_ENV === "production" ? (
         <GoogleAnalytics
           gaId={clientEnv.NEXT_PUBLIC_GA_TRACKING_ID as string}
         />
