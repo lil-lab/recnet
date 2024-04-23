@@ -127,6 +127,12 @@ export default class UserRepository {
     filter: UserFilterBy
   ): Prisma.UserWhereInput {
     const where: Prisma.UserWhereInput = {};
+    const insensitiveContains = (field: string, word: string) => ({
+      [field]: {
+        contains: word,
+        mode: Prisma.QueryMode.insensitive,
+      },
+    });
     if (filter.handle) {
       where.handle = filter.handle;
     }
@@ -142,9 +148,9 @@ export default class UserRepository {
         { displayName: { search: searchStr } },
         { affiliation: { search: searchStr } },
         // add contains search to handle partial match
-        ...keywords.map((w) => ({ handle: { contains: w } })),
-        ...keywords.map((w) => ({ displayName: { contains: w } })),
-        ...keywords.map((w) => ({ affiliation: { contains: w } })),
+        ...keywords.map((w) => insensitiveContains("handle", w)),
+        ...keywords.map((w) => insensitiveContains("displayName", w)),
+        ...keywords.map((w) => insensitiveContains("affiliation", w)),
       ];
     }
     return where;
@@ -157,5 +163,14 @@ export default class UserRepository {
       default:
         throw new Error("Provider not supported");
     }
+  }
+
+  private incensitiveContains(field: string, word: string) {
+    return {
+      [field]: {
+        contains: word,
+        mode: Prisma.QueryMode.insensitive,
+      },
+    };
   }
 }
