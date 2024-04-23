@@ -89,7 +89,7 @@ export function CutoffDatePicker(props: CutoffDatePickerProps) {
           <Flex className="justify-center items-center w-full p-2 mb-2">
             <Button
               variant="ghost"
-              className="mr-auto"
+              className="mr-auto cursor-pointer"
               disabled={firstDayOfPrevMonth < START_DATE}
               onClick={() => {
                 navigation.toPrev();
@@ -103,7 +103,7 @@ export function CutoffDatePicker(props: CutoffDatePickerProps) {
             </div>
             <Button
               variant="ghost"
-              className=" ml-auto"
+              className=" ml-auto cursor-pointer"
               disabled={firstDayOfNextMonth > now}
               onClick={() => {
                 navigation.toNext();
