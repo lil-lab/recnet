@@ -134,6 +134,7 @@ export function CutoffDatePicker(props: CutoffDatePickerProps) {
                     {days.map(({ key: dayKey, value }) => {
                       const tableCellWeekDay = value.getDay();
                       const tableCellMonth = value.getMonth();
+                      value.setUTCHours(23, 59, 59, 999);
                       if (
                         tableCellMonth !== currentSelectedMonth ||
                         value > now ||
