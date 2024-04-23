@@ -21,7 +21,7 @@
       "options": {
         "commands": [
           {
-            "command": "commit-and-tag-version",
+            "command": "commit-and-tag-version -t recnet-web-v",
             "forwardAllArgs": true
           }
         ],
