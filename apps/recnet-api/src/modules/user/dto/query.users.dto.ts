@@ -24,8 +24,8 @@ export class QueryUsersDto {
 
   @ApiPropertyOptional({
     description:
-      "The keyword to search for in the user's handle or displayName. If multiple words are provided with space, they are treated as an OR search.",
-    example: "joanne",
+      "The keyword to search for in the user's handle, displayName or affiliation. If multiple words are provided with space, they are treated as an OR search.",
+    example: "joanne cornell",
   })
   keyword?: string;
 

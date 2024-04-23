@@ -140,9 +140,11 @@ export default class UserRepository {
       where.OR = [
         { handle: { search: searchStr } },
         { displayName: { search: searchStr } },
+        { affiliation: { search: searchStr } },
         // add contains search to handle partial match
         ...keywords.map((w) => ({ handle: { contains: w } })),
         ...keywords.map((w) => ({ displayName: { contains: w } })),
+        ...keywords.map((w) => ({ affiliation: { contains: w } })),
       ];
     }
     return where;
