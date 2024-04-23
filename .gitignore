@@ -62,7 +62,7 @@ next-env.d.ts
 apps/**/pnpm-lock.yaml
 
 # pages under this directory
-/pages/
+/pages
 
 # nx migration files
 migrations.json

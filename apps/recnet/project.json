@@ -16,13 +16,13 @@
         "cwd": "apps/recnet"
       }
     },
-    "email:dev": {
+    "version": {
       "executor": "nx:run-commands",
       "options": {
         "commands": [
           {
-            "command": "email dev",
-            "forwardAllArgs": false
+            "command": "commit-and-tag-version",
+            "forwardAllArgs": true
           }
         ],
         "cwd": "apps/recnet"

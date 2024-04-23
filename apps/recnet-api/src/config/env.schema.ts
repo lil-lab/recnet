@@ -16,6 +16,13 @@ export const EnvSchema = z.object({
   // prisma config
   PRISMA_SCHEMA: z.string().optional().default("prisma/schema.prisma"),
   DB_MIGRATE: z.coerce.boolean().optional().default(false),
+  // nodemailer config
+  SMTP_SERVICE: z.string().optional().default("gmail"),
+  SMTP_HOST: z.string().optional().default("smtp.gmail.com"),
+  SMTP_PORT: z.coerce.number().optional().default(465),
+  SMTP_SECURE: z.string().optional().default("true"),
+  SMTP_USER: z.string(),
+  SMTP_PASS: z.string(),
 });
 
 export const parseEnv = (env: Record<string, string | undefined>) => {

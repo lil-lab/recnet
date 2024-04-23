@@ -5,7 +5,7 @@ phases:
     runtime-versions:
       nodejs: 18
     commands:
-      - npm i -g pnpm
+      - npm i -g pnpm@8
       - pnpm i --frozen-lockfile
   pre_build:
     commands:
@@ -19,7 +19,7 @@ phases:
       - rm -rf node_modules
       - cp -R apps/recnet-api/prisma/ dist/apps/recnet-api/prisma
       - cd dist/apps/recnet-api
-      - pnpm install --prod --frozen-lockfile
+      - pnpm install --prod --no-frozen-lockfile
       - pnpx prisma generate --schema=prisma/schema.prisma
 
 artifacts:

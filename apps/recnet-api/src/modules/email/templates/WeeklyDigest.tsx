@@ -16,6 +16,8 @@ import {
 } from "@react-email/components";
 import * as React from "react";
 
+import { formatDate } from "@recnet/recnet-date-fns";
+
 import { Rec } from "@recnet/recnet-api-model";
 
 interface EmailRecCardProps {
@@ -42,7 +44,7 @@ function EmailRecCard(props: EmailRecCardProps) {
       </Container>
       {recs.map((rec, idx) => {
         return (
-          <Container key={idx} className="px-4 pt-1">
+          <Container key={`${rec.user.id}-${idx}`} className="px-4 pt-1">
             <div className="flex flex-row items-center gap-x-4">
               <Img
                 src={rec.user.photoUrl}
@@ -93,9 +95,9 @@ function MockEmailRecCard() {
   );
 }
 
-const WeeklyDigest = (props: { recsDict?: Record<string, Rec[]> }) => {
-  const { recsDict = {} } = props;
-  const recsCount = Object.keys(recsDict).length;
+const WeeklyDigest = (props: { recsGroupByTitle?: Record<string, Rec[]> }) => {
+  const { recsGroupByTitle = {} } = props;
+  const recsCount = Object.keys(recsGroupByTitle).length;
   return (
     <Html>
       <Tailwind
@@ -153,10 +155,10 @@ const WeeklyDigest = (props: { recsDict?: Record<string, Rec[]> }) => {
                 )}
               </Text>
             </Section>
-            {Object.keys(recsDict).map((key, i) => {
-              const recs = recsDict[key];
+            {Object.keys(recsGroupByTitle).map((key, i) => {
+              const recs = recsGroupByTitle[key];
               return (
-                <React.Fragment key={i}>
+                <React.Fragment key={`${key}-${i}`}>
                   <Hr />
                   <EmailRecCard recs={recs} />
                 </React.Fragment>
@@ -184,6 +186,11 @@ const WeeklyDigest = (props: { recsDict?: Record<string, Rec[]> }) => {
       </Tailwind>
     </Html>
   );
+};
+
+export const WeeklyDigestSubject = (cutOffDate: Date, nodeEnv: string) => {
+  const devPrefix = nodeEnv !== "production" ? "[DEV] " : "";
+  return `${devPrefix}[Recnet] Your Weekly Digest for ${formatDate(cutOffDate)}`;
 };
 
 export default WeeklyDigest;
