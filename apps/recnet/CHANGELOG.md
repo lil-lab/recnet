@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [1.4.0](https://github.com/lil-lab/recnet/compare/recnet-web-v1.3.0...recnet-web-v1.4.0) (2024-04-24)
+
+### Features
+
+- **cutoff date picker:** able to navigate by selecting month or year ([48983be](https://github.com/lil-lab/recnet/commit/48983be85f3d035a2a4f45c93d0eb140bdee3eba))
+- **cutoff date picker:** add cutoff date picker ([4493939](https://github.com/lil-lab/recnet/commit/44939398ae01402dadf005cc7c8cd4a989aaaac2))
+
 ## [1.3.0](https://github.com/lil-lab/recnet/compare/recnet-web-v1.1.0...recnet-web-v1.3.0) (2024-04-23)
 
 ### Features
