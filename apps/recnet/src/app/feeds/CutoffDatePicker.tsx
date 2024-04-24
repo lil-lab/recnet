@@ -98,8 +98,9 @@ export function CutoffDatePicker(props: CutoffDatePickerProps) {
         open={isOpen}
         onOpenChange={(open) => {
           setIsOpen(open);
-          // reset view on open
+          // reset view on open and reset to today
           if (open) {
+            navigation.setToday();
             setView("default");
           }
         }}
