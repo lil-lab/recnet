@@ -56,8 +56,13 @@ export class EmailService {
 
     try {
       const users = await this.userRepository.findAllUsers();
-      const promises = users.map((user) => this.sendWeeklyDigest(user, cutoff));
-      const results = await Promise.all(promises);
+      const results = [];
+
+      for (const user of users) {
+        const result = await this.sendWeeklyDigest(user, cutoff);
+        results.push(result);
+        await new Promise((resolve) => setTimeout(resolve, 1000)); // Sleep for 1 second
+      }
 
       const successCount = results.filter(
         (result) => result.success && !result.skip
