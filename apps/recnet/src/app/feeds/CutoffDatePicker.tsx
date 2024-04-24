@@ -110,7 +110,7 @@ export function CutoffDatePicker(props: CutoffDatePickerProps) {
             More
           </Button>
         </Popover.Trigger>
-        <Popover.Content className="overflow-hidden">
+        <Popover.Content className="overflow-hidden" side="right">
           <Flex className="justify-center items-center w-full p-2 mb-2">
             <Button
               variant="ghost"
