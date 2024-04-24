@@ -93,7 +93,6 @@ export const AuthProvider: React.FunctionComponent<AuthProviderProps> = ({
       // Removes authenticated user cookies
       await fetch("/api/logout");
       await revalidateUser();
-      router.replace("/");
     },
     [loginMutation, revalidateUser, router]
   );

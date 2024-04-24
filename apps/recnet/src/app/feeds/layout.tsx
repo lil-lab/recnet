@@ -2,7 +2,6 @@ import { redirect } from "next/navigation";
 import React from "react";
 
 import { LeftPanel } from "@recnet/recnet-web/app/feeds/LeftPanel";
-import { AnnouncementCard } from "@recnet/recnet-web/components/AnnouncementCard";
 import { cn } from "@recnet/recnet-web/utils/cn";
 import { getUserServerSide } from "@recnet/recnet-web/utils/getUserServerSide";
 
@@ -31,16 +30,7 @@ export default async function FeedPageLayout({
       )}
     >
       <LeftPanel />
-      <div className="w-full items-center flex flex-col">
-        <AnnouncementCard
-          className="w-[80%] md:w-[65%] mt-8"
-          announcementKey="email-temp-not-working"
-        >
-          Email digests are temporarily offline while we complete our backend
-          migration. We expect to re-activate them by April 21.
-        </AnnouncementCard>
-        {children}
-      </div>
+      <div className="w-full items-center flex flex-col">{children}</div>
     </div>
   );
 }

@@ -61,7 +61,7 @@ const EditUserProfileSchema = z.object({
     .optional(),
   bio: z
     .string()
-    .max(200, "Bio must contain at most 160 character(s)")
+    .max(200, "Bio must contain at most 200 character(s)")
     .optional(),
 });
 
@@ -199,14 +199,30 @@ function EditProfileDialog(props: { handle: string }) {
               </Text>
               <TextArea
                 placeholder="Enter your bio"
-                {...register("bio")}
+                {...register("bio", {
+                  onChange: () => {
+                    if ((watch("bio")?.length ?? 0) > 200) {
+                      setError("bio", {
+                        type: "manual",
+                        message: "Bio must contain at most 200 character(s)",
+                      });
+                    }
+                  },
+                })}
                 className="h-[100px]"
               />
-              {formState.errors.bio ? (
-                <Text size="1" color="red">
-                  {formState.errors.bio.message}
+              <Flex className="justify-end p-1">
+                {formState.errors.bio ? (
+                  <Text size="1" color="red" className="mr-auto">
+                    {formState.errors.bio.message}
+                  </Text>
+                ) : (
+                  <></>
+                )}
+                <Text size="1" color="gray">
+                  {watch("bio")?.length || 0}/200
                 </Text>
-              ) : null}
+              </Flex>
             </label>
           </Flex>
 

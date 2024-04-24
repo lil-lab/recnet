@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [1.4.1](https://github.com/lil-lab/recnet/compare/recnet-web-v1.4.0...recnet-web-v1.4.1) (2024-04-24)
+
+### Bug Fixes
+
+- **auth:** fix issue: [#220](https://github.com/lil-lab/recnet/issues/220) ([10572ed](https://github.com/lil-lab/recnet/commit/10572edb4f61c031d9f7fe422e5a2f02b2ddf54c))
+- **cutoff date picker:** adjust align offset ([b07c152](https://github.com/lil-lab/recnet/commit/b07c152cd8dd076801ed5ff5e24c4c1ff5fbdda0))
+- **cutoff date picker:** change preferred side of popover ([f7ff76a](https://github.com/lil-lab/recnet/commit/f7ff76aec3920b365d4c563e09796fa4b332cbf2))
+- **cutoff date picker:** reset to today on open to improve ux ([ac3f75a](https://github.com/lil-lab/recnet/commit/ac3f75a14ae76c59962ef9b895df425e30166e46))
+- **profile edit form:** fix wording bug and bio field validate logic (change to validate onChange) ([2cf77a4](https://github.com/lil-lab/recnet/commit/2cf77a49b270cfb3f6ed1c76de8c7d1a2d77c334)), closes [#219](https://github.com/lil-lab/recnet/issues/219)
+
 ## [1.4.0](https://github.com/lil-lab/recnet/compare/recnet-web-v1.3.0...recnet-web-v1.4.0) (2024-04-24)
 
 ### Features
