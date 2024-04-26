@@ -136,6 +136,10 @@ export default function OnboardPage() {
               email: firebaseUser.email,
               photoUrl: firebaseUser.photoURL,
               bio: null,
+              url: null,
+              googleScholarLink: null,
+              semanticScholarLink: null,
+              openReviewUserName: null,
             });
             // set custom claims
             await setRecnetCustomClaims(createdUser.role, createdUser.id);

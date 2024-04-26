@@ -33,27 +33,31 @@ enum CronStatus {
 }
 
 model User {
-  id            String     @id @db.VarChar(64) @default(uuid()) // Primary key, UUID type
-  provider      Provider   // Enum type
-  providerId    String     @db.VarChar(128)
+  id                  String     @id @db.VarChar(64) @default(uuid()) // Primary key, UUID type
+  provider            Provider   // Enum type
+  providerId          String     @db.VarChar(128)
   @@unique([provider, providerId])
-  email         String     @db.VarChar(128) @unique
-  handle        String     @db.VarChar(32) @unique
-  displayName   String     @db.VarChar(32)
-  inviteCode    String?    @db.VarChar(64)
-  photoUrl      String     @db.VarChar(256)
-  affiliation   String?    @db.VarChar(64)
-  bio           String?    @db.VarChar(200)
-  lastLoginAt   DateTime
-  role          Role       @default(USER) // Enum type
-  createdAt     DateTime   @default(now())
-  updatedAt     DateTime   @default(now()) @updatedAt
+  email               String     @db.VarChar(128) @unique
+  handle              String     @db.VarChar(32) @unique
+  displayName         String     @db.VarChar(32)
+  inviteCode          String?    @db.VarChar(64)
+  photoUrl            String     @db.VarChar(256)
+  affiliation         String?    @db.VarChar(64)
+  bio                 String?    @db.VarChar(200)
+  url                 String?    @db.VarChar(512)
+  googleScholarLink   String?    @db.VarChar(512)
+  semanticScholarLink String?    @db.VarChar(512)
+  openReviewUserName  String?    @db.VarChar(64)
+  lastLoginAt         DateTime
+  role                Role       @default(USER) // Enum type
+  createdAt           DateTime   @default(now())
+  updatedAt           DateTime   @default(now()) @updatedAt
 
-  followedBy      FollowingRecord[] @relation("FollowedBy")
-  following       FollowingRecord[] @relation("Following")
-  recommendations Recommendation[]
-  inviteCodeOwner InviteCode[]  @relation("InviteCodeOwner")
-  inviteCodeUsed  InviteCode?   @relation("InviteCodeUsedBy")
+  followedBy          FollowingRecord[] @relation("FollowedBy")
+  following           FollowingRecord[] @relation("Following")
+  recommendations     Recommendation[]
+  inviteCodeOwner     InviteCode[]  @relation("InviteCodeOwner")
+  inviteCodeUsed      InviteCode?   @relation("InviteCodeUsedBy")
 }
 
 model FollowingRecord {
