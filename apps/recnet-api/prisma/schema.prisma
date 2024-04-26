@@ -43,7 +43,7 @@ model User {
   inviteCode    String?    @db.VarChar(64)
   photoUrl      String     @db.VarChar(256)
   affiliation   String?    @db.VarChar(64)
-  bio           String?
+  bio           String?    @db.VarChar(200)
   lastLoginAt   DateTime
   role          Role       @default(USER) // Enum type
   createdAt     DateTime   @default(now())
