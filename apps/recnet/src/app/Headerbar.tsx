@@ -10,6 +10,7 @@ import {
   TextField,
 } from "@radix-ui/themes";
 import { AnimatePresence, motion } from "framer-motion";
+import Image from "next/image";
 import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
 import { useState, useRef, useEffect, useCallback } from "react";
@@ -117,7 +118,7 @@ export function Headerbar() {
         `h-[64px]`,
         "justify-between",
         "px-4",
-        "md:px-16",
+        "md:px-10",
         "py-[10px]",
         "shadow-4",
         "bg-white",
@@ -131,9 +132,23 @@ export function Headerbar() {
     >
       <Flex className="items-center" gap="4">
         <Link href={user ? "/feeds" : "/"}>
-          <Text className={cn("text-blue-10", "font-bold")} size="8">
-            RecNet
-          </Text>
+          <Flex className="items-center gap-3">
+            <Image
+              src="/recnet-logo.webp"
+              width={32}
+              height={32}
+              alt="recnet_logo"
+            />
+            <Text
+              className={cn("text-blue-10", "font-bold")}
+              size={{
+                initial: "6",
+                md: "7",
+              }}
+            >
+              RecNet
+            </Text>
+          </Flex>
         </Link>
         <TextField.Root
           className="hidden sm:flex"

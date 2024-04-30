@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [1.5.0](https://github.com/lil-lab/recnet/compare/recnet-web-v1.4.1...recnet-web-v1.5.0) (2024-04-30)
+
+
+### Features
+
+* add logo as favicon ([2b49032](https://github.com/lil-lab/recnet/commit/2b4903217763aa3ea730671a18930b94a56f8086))
+* add recnet logo on headerbar ([3c6574a](https://github.com/lil-lab/recnet/commit/3c6574a0c1a590ae0fa11741308c0022cc40cc08))
+
 ## [1.4.1](https://github.com/lil-lab/recnet/compare/recnet-web-v1.4.0...recnet-web-v1.4.1) (2024-04-24)
 
 ### Bug Fixes
