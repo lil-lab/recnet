@@ -12,6 +12,7 @@ import { z } from "zod";
 
 import { useAuth } from "@recnet/recnet-web/app/AuthContext";
 import { trpc } from "@recnet/recnet-web/app/_trpc/client";
+import { RecNetLink } from "@recnet/recnet-web/components/Link";
 import { ErrorMessages } from "@recnet/recnet-web/constant";
 import { getFirebaseApp } from "@recnet/recnet-web/firebase/client";
 import { cn } from "@recnet/recnet-web/utils/cn";
@@ -238,7 +239,12 @@ export default function OnboardPage() {
           ) : null}
         </div>
         <div className="flex flex-col gap-y-1">
-          <Text>Google Scholar Link</Text>
+          <Text>
+            <RecNetLink href="https://scholar.google.com/">
+              Google Scholar
+            </RecNetLink>{" "}
+            Link
+          </Text>
           <TextField.Root
             className="w-full"
             size="3"
@@ -264,7 +270,12 @@ export default function OnboardPage() {
           ) : null}
         </div>
         <div className="flex flex-col gap-y-1">
-          <Text>Semantic Scholar Link</Text>
+          <Text>
+            <RecNetLink href="https://www.semanticscholar.org/">
+              Semantic Scholar
+            </RecNetLink>{" "}
+            Link
+          </Text>
           <TextField.Root
             className="w-full"
             size="3"
@@ -290,7 +301,10 @@ export default function OnboardPage() {
           ) : null}
         </div>
         <div className="flex flex-col gap-y-1">
-          <Text>OpenReview Username</Text>
+          <Text>
+            <RecNetLink href="https://openreview.net/">OpenReview</RecNetLink>{" "}
+            Username
+          </Text>
           <TextField.Root
             className="w-full"
             size="3"
