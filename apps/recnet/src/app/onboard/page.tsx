@@ -38,7 +38,7 @@ const OnboardFormSchema = z.object({
 
 export default function OnboardPage() {
   const { revalidateUser } = useAuth();
-  const { register, handleSubmit, formState, setError, watch } = useForm({
+  const { register, handleSubmit, formState, setError } = useForm({
     resolver: zodResolver(OnboardFormSchema),
     defaultValues: {
       inviteCode: "",
