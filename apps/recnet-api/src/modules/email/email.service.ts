@@ -15,6 +15,7 @@ import UserRepository from "@recnet-api/database/repository/user.repository";
 import { User as DbUser } from "@recnet-api/database/repository/user.repository.type";
 import WeeklyDigestCronLogRepository from "@recnet-api/database/repository/weekly-digest-cron-log.repository";
 import { Rec } from "@recnet-api/modules/rec/entities/rec.entity";
+import { sleep } from "@recnet-api/utils";
 
 import { getLatestCutOff } from "@recnet/recnet-date-fns";
 
@@ -61,7 +62,7 @@ export class EmailService {
       for (const user of users) {
         const result = await this.sendWeeklyDigest(user, cutoff);
         results.push(result);
-        await new Promise((resolve) => setTimeout(resolve, 1000)); // Sleep for 1 second
+        await sleep(1000); // Sleep for 1 second
       }
 
       const successCount = results.filter(

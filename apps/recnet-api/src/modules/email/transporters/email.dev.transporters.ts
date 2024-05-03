@@ -4,6 +4,7 @@ import { createTransport, Transporter, SendMailOptions } from "nodemailer";
 
 import { NodemailerConfig } from "@recnet-api/config/common.config";
 import { User as DbUser } from "@recnet-api/database/repository/user.repository.type";
+import { sleep } from "@recnet-api/utils";
 import { RecnetError } from "@recnet-api/utils/error/recnet.error";
 import { ErrorCode } from "@recnet-api/utils/error/recnet.error.const";
 
@@ -39,19 +40,28 @@ class EmailDevTransporter {
       return { success: true, skip: true };
     }
 
-    try {
-      await this.transporter.sendMail(mailOptions);
-    } catch (error) {
-      const errorMsg = `Failed to send weekly digest email ${user.id}: ${error}`;
-      this.logger.error(errorMsg);
+    let retryCount = 0;
+    while (retryCount < 3) {
+      try {
+        await this.transporter.sendMail(mailOptions);
+        return { success: true };
+      } catch (error) {
+        retryCount++;
+        this.logger.error(
+          `[Attempt ${retryCount}] Failed to send weekly digest email ${user.id}: ${error}`
+        );
 
-      throw new RecnetError(
-        ErrorCode.EMAIL_SEND_ERROR,
-        HttpStatus.INTERNAL_SERVER_ERROR,
-        `Failed to send weekly digest email ${mailOptions.to}: ${error}`
-      );
+        // sleep for 1 second before retry
+        await sleep(1000);
+      }
     }
-    return { success: true };
+
+    // throw error if failed after retry limit
+    throw new RecnetError(
+      ErrorCode.EMAIL_SEND_ERROR,
+      HttpStatus.INTERNAL_SERVER_ERROR,
+      `Failed to send weekly digest email ${mailOptions.to}`
+    );
   }
 }
 
