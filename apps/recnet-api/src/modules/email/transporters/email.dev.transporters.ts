@@ -48,7 +48,7 @@ class EmailDevTransporter {
       } catch (error) {
         retryCount++;
         this.logger.error(
-          `[Attempt ${retryCount}] Failed to send weekly digest email ${user.id}: ${error}`
+          `[Attempt ${retryCount}] Failed to send email ${user.id}: ${error}`
         );
 
         // sleep for 1 second before retry
@@ -60,7 +60,7 @@ class EmailDevTransporter {
     throw new RecnetError(
       ErrorCode.EMAIL_SEND_ERROR,
       HttpStatus.INTERNAL_SERVER_ERROR,
-      `Failed to send weekly digest email ${mailOptions.to}`
+      `Failed to send email ${mailOptions.to}`
     );
   }
 }
