@@ -23,6 +23,18 @@ export class User {
   @ApiPropertyOptional()
   bio: string | null;
 
+  @ApiPropertyOptional()
+  url: string | null;
+
+  @ApiPropertyOptional()
+  googleScholarLink: string | null;
+
+  @ApiPropertyOptional()
+  semanticScholarLink: string | null;
+
+  @ApiPropertyOptional()
+  openReviewUserName: string | null;
+
   @ApiProperty()
   numFollowers: number;
 
