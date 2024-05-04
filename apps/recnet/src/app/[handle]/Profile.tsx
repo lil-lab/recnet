@@ -51,7 +51,7 @@ const EditUserProfileSchema = z.object({
   affiliation: z
     .string()
     .max(64, "Affiliation must contain at most 64 character(s)")
-    .optional(),
+    .nullable(),
 });
 
 function EditProfileDialog(props: { handle: string }) {
@@ -64,9 +64,9 @@ function EditProfileDialog(props: { handle: string }) {
   const { register, handleSubmit, formState, setError, control } = useForm({
     resolver: zodResolver(EditUserProfileSchema),
     defaultValues: {
-      displayName: user?.displayName,
-      handle: user?.handle,
-      affiliation: user?.affiliation,
+      displayName: user?.displayName ?? null,
+      handle: user?.handle ?? null,
+      affiliation: user?.affiliation ?? null,
     },
     mode: "onTouched",
   });
@@ -172,7 +172,9 @@ function EditProfileDialog(props: { handle: string }) {
               </Text>
               <TextField.Root
                 placeholder="Enter your affiliation"
-                {...register("affiliation")}
+                {...register("affiliation", {
+                  setValueAs: (val) => (val === "" ? null : val),
+                })}
               />
               {formState.errors.affiliation ? (
                 <Text size="1" color="red">
