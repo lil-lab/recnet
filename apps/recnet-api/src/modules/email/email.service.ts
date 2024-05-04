@@ -61,7 +61,13 @@ export class EmailService {
       const results = [];
 
       for (const user of users) {
-        const result = await this.sendWeeklyDigest(user, cutoff);
+        const recs = await this.getRecsForUser(user, cutoff);
+        if (recs.length === 0) {
+          results.push({ success: true, skip: true });
+          continue;
+        }
+
+        const result = await this.sendWeeklyDigest(user, recs, cutoff);
         results.push(result);
 
         // avoid rate limit
@@ -99,13 +105,11 @@ export class EmailService {
   public async sendTestEmail(userId: string): Promise<{ success: boolean }> {
     const user = await this.userRepository.findUserById(userId);
     const cutoff = getLatestCutOff();
-    return this.sendWeeklyDigest(user, cutoff);
+    const recs = await this.getRecsForUser(user, cutoff);
+    return this.sendWeeklyDigest(user, recs, cutoff);
   }
 
-  private async sendWeeklyDigest(
-    user: DbUser,
-    cutoff: Date
-  ): Promise<SendMailResult> {
+  private async getRecsForUser(user: DbUser, cutoff: Date): Promise<Rec[]> {
     const followings = user.following.map(
       (following: { followingId: string }) => following.followingId
     );
@@ -114,13 +118,19 @@ export class EmailService {
       cutoff,
     };
 
-    // cap the number of recs to send in an email by MAX_REC_PER_MAIL
     const dbRecs = await this.recRepository.findRecs(
       1,
       MAX_REC_PER_MAIL,
       filter
     );
-    const recs = dbRecs.map(this.getRecFromDbRec);
+    return dbRecs.map((dbRec) => this.getRecFromDbRec(dbRec));
+  }
+
+  private async sendWeeklyDigest(
+    user: DbUser,
+    recs: Rec[],
+    cutoff: Date
+  ): Promise<SendMailResult> {
     const recsGroupByTitle = groupBy(recs, (rec) => {
       const titleLowercase = rec.article.title.toLowerCase();
       const words = titleLowercase.split(" ").filter((w) => w.length > 0);
