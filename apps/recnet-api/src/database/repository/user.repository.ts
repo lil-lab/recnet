@@ -117,7 +117,6 @@ export default class UserRepository {
     updateUserInput: UpdateUserInput
   ): Promise<User> {
     const where = { id: userId };
-    console.log(updateUserInput);
     return this.prisma.user.update({
       where,
       data: updateUserInput,
