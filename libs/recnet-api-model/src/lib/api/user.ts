@@ -54,6 +54,10 @@ export const postUserMeRequestSchema = userPreviewSchema
   })
   .extend({
     email: z.string(),
+    url: z.string().url().nullable(),
+    googleScholarLink: z.string().url().nullable(),
+    semanticScholarLink: z.string().url().nullable(),
+    openReviewUserName: z.string().nullable(),
     inviteCode: z.string(),
   });
 export type PostUserMeRequest = z.infer<typeof postUserMeRequestSchema>;
