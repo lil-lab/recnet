@@ -22,6 +22,7 @@ import { getLatestCutOff } from "@recnet/recnet-date-fns";
 import {
   MAIL_TRANSPORTER,
   MAX_REC_PER_MAIL,
+  SLEEP_DURATION_MS,
   WEEKLY_DIGEST_CRON,
 } from "./email.const";
 import { SendMailResult, Transporter } from "./email.type";
@@ -62,7 +63,9 @@ export class EmailService {
       for (const user of users) {
         const result = await this.sendWeeklyDigest(user, cutoff);
         results.push(result);
-        await sleep(1000); // Sleep for 1 second
+
+        // avoid rate limit
+        await sleep(SLEEP_DURATION_MS);
       }
 
       const successCount = results.filter(

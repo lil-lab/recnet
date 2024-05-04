@@ -8,6 +8,7 @@ import { sleep } from "@recnet-api/utils";
 import { RecnetError } from "@recnet-api/utils/error/recnet.error";
 import { ErrorCode } from "@recnet-api/utils/error/recnet.error.const";
 
+import { SLEEP_DURATION_MS } from "../email.const";
 import { SendMailResult } from "../email.type";
 
 const devHandleWhitelist = ["joannechen1223", "swh00tw"];
@@ -51,8 +52,8 @@ class EmailDevTransporter {
           `[Attempt ${retryCount}] Failed to send email ${user.id}: ${error}`
         );
 
-        // sleep for 1 second before retry
-        await sleep(1000);
+        // avoid rate limit
+        await sleep(SLEEP_DURATION_MS);
       }
     }
 
