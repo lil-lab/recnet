@@ -6,7 +6,7 @@ import { InviteCodeAssigningForm } from "./InviteCodeAssigningForm";
 
 import { AdminSectionBox, AdminSectionTitle } from "../../AdminSections";
 
-export default function InviteCodeProvision() {
+export default function InviteCodeProvisionPage() {
   return (
     <div
       className={cn(
@@ -19,7 +19,7 @@ export default function InviteCodeProvision() {
       )}
     >
       <div className="flex flex-col gap-y-2 w-full">
-        <AdminSectionTitle description="Generate invite codes for external used. You will be the owner of the invite code if you leave the owner field empty.">
+        <AdminSectionTitle description="Generate invite codes ans assign to a target user. You will be the owner of the invite code if you leave the owner field empty.">
           Generate Invite Code
         </AdminSectionTitle>
         <AdminSectionBox>
