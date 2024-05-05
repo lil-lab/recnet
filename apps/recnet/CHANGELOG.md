@@ -2,13 +2,24 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
-## [1.5.0](https://github.com/lil-lab/recnet/compare/recnet-web-v1.4.1...recnet-web-v1.5.0) (2024-04-30)
-
+## [1.6.0](https://github.com/lil-lab/recnet/compare/recnet-web-v1.5.0...recnet-web-v1.6.0) (2024-05-05)
 
 ### Features
 
-* add logo as favicon ([2b49032](https://github.com/lil-lab/recnet/commit/2b4903217763aa3ea730671a18930b94a56f8086))
-* add recnet logo on headerbar ([3c6574a](https://github.com/lil-lab/recnet/commit/3c6574a0c1a590ae0fa11741308c0022cc40cc08))
+- add link for google scholar field, semantic scholar and openreview fields ([c622113](https://github.com/lil-lab/recnet/commit/c622113d4f688f9f2732ed9c9c21da9fe7305b53))
+- **recnet:** add new field in onboarding page ([92a367a](https://github.com/lil-lab/recnet/commit/92a367a6cb20024561f072bc40ab7fc6ee809686))
+
+### Bug Fixes
+
+- replace undefined to null in useForm's default values ([d845985](https://github.com/lil-lab/recnet/commit/d8459857752f917cabc317cc86cdaf470ca4e6ef))
+- skip email if there is no recs ([3a855f4](https://github.com/lil-lab/recnet/commit/3a855f4bf2c8f16378ad8faff61cad17f7429c22))
+
+## [1.5.0](https://github.com/lil-lab/recnet/compare/recnet-web-v1.4.1...recnet-web-v1.5.0) (2024-04-30)
+
+### Features
+
+- add logo as favicon ([2b49032](https://github.com/lil-lab/recnet/commit/2b4903217763aa3ea730671a18930b94a56f8086))
+- add recnet logo on headerbar ([3c6574a](https://github.com/lil-lab/recnet/commit/3c6574a0c1a590ae0fa11741308c0022cc40cc08))
 
 ## [1.4.1](https://github.com/lil-lab/recnet/compare/recnet-web-v1.4.0...recnet-web-v1.4.1) (2024-04-24)
 
