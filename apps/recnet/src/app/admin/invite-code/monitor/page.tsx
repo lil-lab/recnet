@@ -135,10 +135,10 @@ export default function InviteCodeMonitorPage({
               </Table.Header>
 
               <Table.Body>
-                {inviteCodes.map((inviteCode) => (
+                {inviteCodes.map((inviteCode, idx) => (
                   <Table.Row
                     className="align-middle"
-                    key={inviteCode.code + used}
+                    key={`${inviteCode.code}-${idx}-${!used ? "" : used === "true" ? "used" : "not-used"}`}
                   >
                     <Table.RowHeaderCell>
                       <CopiableInviteCode inviteCode={inviteCode.code} />
