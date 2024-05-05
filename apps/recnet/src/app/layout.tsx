@@ -1,7 +1,6 @@
 import { GoogleAnalytics } from "@next/third-parties/google";
 import { Theme } from "@radix-ui/themes";
 import type { Metadata } from "next";
-import localFont from "next/font/local";
 import { ThemeProvider } from "next-themes";
 import { Toaster } from "sonner";
 
@@ -17,102 +16,6 @@ import "tailwindcss/tailwind.css";
 import { MobileNavigator } from "./MobileNavigator";
 import { ProgressbarProvider } from "./Progressbar";
 import { Provider as TrpcProvider } from "./_trpc/Provider";
-
-const sfpro = localFont({
-  src: [
-    {
-      path: "../fonts/SF-Pro-Text-Black.otf",
-      weight: "900",
-      style: "normal",
-    },
-    {
-      path: "../fonts/SF-Pro-Text-Heavy.otf",
-      weight: "800",
-      style: "normal",
-    },
-    {
-      path: "../fonts/SF-Pro-Text-Bold.otf",
-      weight: "700",
-      style: "normal",
-    },
-    {
-      path: "../fonts/SF-Pro-Text-Semibold.otf",
-      weight: "600",
-      style: "normal",
-    },
-    {
-      path: "../fonts/SF-Pro-Text-Medium.otf",
-      weight: "500",
-      style: "normal",
-    },
-    {
-      path: "../fonts/SF-Pro-Text-Regular.otf",
-      weight: "400",
-      style: "normal",
-    },
-    {
-      path: "../fonts/SF-Pro-Text-Light.otf",
-      weight: "300",
-      style: "normal",
-    },
-    {
-      path: "../fonts/SF-Pro-Text-Thin.otf",
-      weight: "200",
-      style: "normal",
-    },
-    {
-      path: "../fonts/SF-Pro-Text-Ultralight.otf",
-      weight: "100",
-      style: "normal",
-    },
-    // italic
-    {
-      path: "../fonts/SF-Pro-Text-BlackItalic.otf",
-      weight: "900",
-      style: "italic",
-    },
-    {
-      path: "../fonts/SF-Pro-Text-HeavyItalic.otf",
-      weight: "800",
-      style: "italic",
-    },
-    {
-      path: "../fonts/SF-Pro-Text-BoldItalic.otf",
-      weight: "700",
-      style: "italic",
-    },
-    {
-      path: "../fonts/SF-Pro-Text-SemiboldItalic.otf",
-      weight: "600",
-      style: "italic",
-    },
-    {
-      path: "../fonts/SF-Pro-Text-MediumItalic.otf",
-      weight: "500",
-      style: "italic",
-    },
-    {
-      path: "../fonts/SF-Pro-Text-RegularItalic.otf",
-      weight: "400",
-      style: "italic",
-    },
-    {
-      path: "../fonts/SF-Pro-Text-LightItalic.otf",
-      weight: "300",
-      style: "italic",
-    },
-    {
-      path: "../fonts/SF-Pro-Text-ThinItalic.otf",
-      weight: "200",
-      style: "italic",
-    },
-    {
-      path: "../fonts/SF-Pro-Text-UltralightItalic.otf",
-      weight: "100",
-      style: "italic",
-    },
-  ],
-});
 
 export const metadata: Metadata = {
   title: "RecNet",
@@ -132,7 +35,7 @@ export default async function RootLayout({
           gaId={clientEnv.NEXT_PUBLIC_GA_TRACKING_ID as string}
         />
       ) : null}
-      <body className={sfpro.className}>
+      <body>
         <TrpcProvider>
           <ProgressbarProvider>
             <AuthProvider serverUser={user}>
