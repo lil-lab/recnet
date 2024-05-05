@@ -58,6 +58,7 @@ model User {
   recommendations     Recommendation[]
   inviteCodeOwner     InviteCode[]  @relation("InviteCodeOwner")
   inviteCodeUsed      InviteCode?   @relation("InviteCodeUsedBy")
+  announcements       Announcement[]
 }
 
 model FollowingRecord {
@@ -108,6 +109,21 @@ model InviteCode {
 
   owner       User      @relation("InviteCodeOwner", fields: [ownerId], references: [id])
   usedBy      User?     @relation("InviteCodeUsedBy", fields: [usedById], references: [id])
+}
+
+model Announcement {
+  id          Int       @id @default(autoincrement())
+  title       String    @db.VarChar(128)
+  content     String
+  startAt     DateTime
+  endAt       DateTime
+  isActivated Boolean   @default(true)
+  allowClose  Boolean   @default(false)
+  createById  String    @db.VarChar(64)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @default(now()) @updatedAt
+
+  createdBy   User      @relation(fields: [createById], references: [id])
 }
 
 model WeeklyDigestCronLog {
