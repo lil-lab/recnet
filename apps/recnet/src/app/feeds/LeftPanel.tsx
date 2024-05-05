@@ -27,6 +27,10 @@ import { CutoffDropdown } from "./CutoffDropdown";
 
 import { trpc } from "../_trpc/client";
 
+function LeftPanelDivider() {
+  return <div className="w-full h-[1px] bg-gray-8" />;
+}
+
 function RecStatusPanel(props: {
   setIsRecFormOpen: (open: boolean) => void;
   rec: Rec | null;
@@ -207,13 +211,8 @@ export function LeftPanel() {
                 rec={rec}
                 isLoading={isPending || isFetching}
               />
-              <div className="w-full h-[1px] bg-gray-8" />
-              <div className="w-full p-2 flex flex-col gap-y-2">
-                <Text size="1" weight={"medium"} className="text-gray-11">
-                  Previous cycles
-                </Text>
-                <CutoffDatePicker currentSelectedCutoff={cutoff} />
-              </div>
+              <LeftPanelDivider />
+              <CutoffDatePicker currentSelectedCutoff={cutoff} />
             </motion.div>
           )}
         </AnimatePresence>
