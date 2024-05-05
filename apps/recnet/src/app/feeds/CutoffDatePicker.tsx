@@ -75,11 +75,11 @@ export function CutoffDatePicker(props: CutoffDatePickerProps) {
   }
 
   return (
-    <div className="w-full py-2 flex flex-col gap-y-1">
+    <div className="w-full flex flex-col gap-y-1">
       <Text
         size="1"
         weight={"medium"}
-        className="text-gray-11 cursor-pointer hover:bg-gray-3 rounded-2 p-2"
+        className="text-gray-11 cursor-pointer hover:bg-gray-3 hover:text-gray-12 transition-all ease-in-out rounded-2 p-2 select-none"
         onPointerDown={() => {
           setIsOpen(true);
         }}

@@ -24,6 +24,7 @@ import { Rec } from "@recnet/recnet-api-model";
 
 import { CutoffDatePicker } from "./CutoffDatePicker";
 import { CutoffDropdown } from "./CutoffDropdown";
+import { InviteCodePopover } from "./InviteCodePopover";
 
 import { trpc } from "../_trpc/client";
 
@@ -212,7 +213,10 @@ export function LeftPanel() {
                 isLoading={isPending || isFetching}
               />
               <LeftPanelDivider />
-              <CutoffDatePicker currentSelectedCutoff={cutoff} />
+              <div className="flex flex-col">
+                <InviteCodePopover />
+                <CutoffDatePicker currentSelectedCutoff={cutoff} />
+              </div>
             </motion.div>
           )}
         </AnimatePresence>
