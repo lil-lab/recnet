@@ -20,6 +20,9 @@ import { cn } from "../utils/cn";
 const inviteCodeTableViewEnum = z.enum(["all", "not-used", "used"]);
 export type InviteCodeTableView = z.infer<typeof inviteCodeTableViewEnum>;
 
+const Columns = ["Code", "Used", "Used By", "Referrer"] as const;
+type Column = (typeof Columns)[number];
+
 export interface InviteCodeTableProps {
   inviteCodes: InviteCode[];
   hasNextPage: boolean;
@@ -28,6 +31,9 @@ export interface InviteCodeTableProps {
   onViewChange: (view: InviteCodeTableView) => void;
   isPending: boolean;
   isFetchingNextPage: boolean;
+  tableProps?: React.ComponentProps<typeof Table.Root>;
+  tableHeaderProps?: React.ComponentProps<typeof Table.Header>;
+  excludeColumns?: Exclude<Column, "Code">[];
 }
 
 export function InviteCodeTable(props: InviteCodeTableProps) {
@@ -39,7 +45,13 @@ export function InviteCodeTable(props: InviteCodeTableProps) {
     onViewChange,
     isPending,
     isFetchingNextPage,
+    tableProps,
+    tableHeaderProps,
+    excludeColumns = [],
   } = props;
+  const { className: tableClassName, ...restTableProps } = tableProps ?? {};
+  const { className: tableHeaderClassName, ...restTableHeaderProps } =
+    tableHeaderProps ?? {};
 
   const { ref: tableBottomRef, inView: tableBottomInView } = useInView({
     threshold: 0,
@@ -56,6 +68,7 @@ export function InviteCodeTable(props: InviteCodeTableProps) {
       <div className="flex w-full justify-end items-center">
         <SegmentedControl.Root
           defaultValue={view}
+          value={view}
           onValueChange={(v) => {
             const res = inviteCodeTableViewEnum.safeParse(v);
             if (!res.success) {
@@ -83,15 +96,36 @@ export function InviteCodeTable(props: InviteCodeTableProps) {
         )}
       >
         {!isPending ? (
-          <Table.Root className="w-full max-h-[60svh] overflow-x-scroll relative table-fixed">
-            <Table.Header className="sticky top-0 bg-white dark:bg-slate-1 z-[500]">
+          <Table.Root
+            className={cn(
+              "w-full overflow-x-scroll relative table-fixed",
+              tableClassName
+            )}
+            {...restTableProps}
+          >
+            <Table.Header
+              className={cn(
+                "sticky top-0 bg-white dark:bg-slate-1 z-[500]",
+                tableHeaderClassName
+              )}
+              {...restTableHeaderProps}
+            >
               <Table.Row>
-                <Table.ColumnHeaderCell className="w-[400px]">
-                  Code
-                </Table.ColumnHeaderCell>
-                <Table.ColumnHeaderCell>Used</Table.ColumnHeaderCell>
-                <Table.ColumnHeaderCell>Used By</Table.ColumnHeaderCell>
-                <Table.ColumnHeaderCell>Referrer</Table.ColumnHeaderCell>
+                {Columns.map((column) => {
+                  if (column !== "Code" && excludeColumns.includes(column)) {
+                    return null;
+                  }
+                  return (
+                    <Table.ColumnHeaderCell
+                      key={column}
+                      className={cn({
+                        "w-[400px]": column === "Code",
+                      })}
+                    >
+                      {column}
+                    </Table.ColumnHeaderCell>
+                  );
+                })}
               </Table.Row>
             </Table.Header>
 
@@ -104,21 +138,27 @@ export function InviteCodeTable(props: InviteCodeTableProps) {
                   <Table.RowHeaderCell>
                     <CopiableInviteCode inviteCode={inviteCode.code} />
                   </Table.RowHeaderCell>
-                  <Table.Cell>
-                    {inviteCode.usedAt
-                      ? formatDate(new Date(inviteCode.usedAt))
-                      : "-"}
-                  </Table.Cell>
-                  <Table.Cell>
-                    {inviteCode.usedBy ? (
-                      <TableUserCard user={inviteCode.usedBy} />
-                    ) : (
-                      "-"
-                    )}
-                  </Table.Cell>
-                  <Table.Cell>
-                    <TableUserCard user={inviteCode.owner} />
-                  </Table.Cell>
+                  {excludeColumns.includes("Used") ? null : (
+                    <Table.Cell>
+                      {inviteCode.usedAt
+                        ? formatDate(new Date(inviteCode.usedAt))
+                        : "-"}
+                    </Table.Cell>
+                  )}
+                  {excludeColumns.includes("Used By") ? null : (
+                    <Table.Cell>
+                      {inviteCode.usedBy ? (
+                        <TableUserCard user={inviteCode.usedBy} />
+                      ) : (
+                        "-"
+                      )}
+                    </Table.Cell>
+                  )}
+                  {excludeColumns.includes("Referrer") ? null : (
+                    <Table.Cell>
+                      <TableUserCard user={inviteCode.owner} />
+                    </Table.Cell>
+                  )}
                 </Table.Row>
               ))}
               <Table.Row>

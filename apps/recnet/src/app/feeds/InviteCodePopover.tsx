@@ -1,15 +1,61 @@
 "use client";
 
 import { Popover, Flex, Text } from "@radix-ui/themes";
-import { useState } from "react";
+import { InfiniteData } from "@tanstack/react-query";
+import { useState, useMemo } from "react";
 
+import { trpc } from "@recnet/recnet-web/app/_trpc/client";
 import { InviteCodeTableView } from "@recnet/recnet-web/components/InviteCodeTable";
+import { InviteCodeTable } from "@recnet/recnet-web/components/InviteCodeTable";
 import { cn } from "@recnet/recnet-web/utils/cn";
+
+import { GetInviteCodesResponse, InviteCode } from "@recnet/recnet-api-model";
+
+const INIVITE_CODE_PAGE_SIZE = 30;
+
+// TODO: refactor after finishing query API
+const getInviteCodesFromInfiniteQuery = (
+  infiniteQueryData: InfiniteData<GetInviteCodesResponse> | undefined
+) => {
+  if (!infiniteQueryData) {
+    return [];
+  }
+  return (infiniteQueryData?.pages ?? []).reduce((acc, page) => {
+    return [...acc, ...page.inviteCodes];
+  }, [] as InviteCode[]);
+};
 
 export function InviteCodePopover() {
   const [isOpen, setIsOpen] = useState(false);
   const [inviteCodeTableView, setInviteCodeTableView] =
-    useState<InviteCodeTableView>("all");
+    useState<InviteCodeTableView>("not-used");
+
+  // TODO: refactor after finishing query API
+  const { data, isPending, hasNextPage, fetchNextPage, isFetching } =
+    trpc.getAllInviteCodes.useInfiniteQuery(
+      {
+        pageSize: INIVITE_CODE_PAGE_SIZE,
+        used:
+          inviteCodeTableView === "used"
+            ? true
+            : inviteCodeTableView === "not-used"
+              ? false
+              : undefined,
+      },
+      {
+        initialCursor: 1,
+        getNextPageParam: (lastPage, allPages) => {
+          if (!lastPage.hasNext) {
+            return null;
+          }
+          return allPages.length + 1;
+        },
+      }
+    );
+  const inviteCodes = useMemo(
+    () => getInviteCodesFromInfiniteQuery(data),
+    [data]
+  );
 
   return (
     <div className="w-full flex flex-col">
@@ -46,9 +92,28 @@ export function InviteCodePopover() {
         <Popover.Content
           className="overflow-hidden"
           side="right"
-          alignOffset={-5}
+          alignOffset={-50}
+          maxWidth={"600"}
+          maxHeight={"500"}
         >
-          content
+          <InviteCodeTable
+            inviteCodes={inviteCodes}
+            hasNextPage={hasNextPage}
+            fetchNextPage={async () => {
+              fetchNextPage();
+            }}
+            isPending={isPending}
+            isFetchingNextPage={isFetching}
+            view={inviteCodeTableView}
+            onViewChange={setInviteCodeTableView}
+            tableProps={{
+              className: "h-[60svh]",
+            }}
+            tableHeaderProps={{
+              className: "dark:bg-slate-2",
+            }}
+            excludeColumns={["Referrer"]}
+          />
         </Popover.Content>
       </Popover.Root>
     </div>

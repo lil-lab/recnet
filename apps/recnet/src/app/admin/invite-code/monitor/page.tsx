@@ -80,6 +80,9 @@ export default function InviteCodeMonitorPage({
               `/admin/invite-code/monitor?used=${view === "used"}`
             );
           }}
+          tableProps={{
+            className: "max-h-[60svh]",
+          }}
         />
       </div>
     </div>
