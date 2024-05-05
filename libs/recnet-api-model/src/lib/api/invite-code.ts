@@ -38,3 +38,12 @@ export const postInviteCodesResponseSchema = z.object({
 export type PostInviteCodesResponse = z.infer<
   typeof postInviteCodesResponseSchema
 >;
+
+// POST /invite-codes/provision
+export const postInviteCodesProvisionRequestSchema = z.object({
+  numCodes: z.number(),
+  upperBound: z.number().nullable(),
+});
+export type PostInviteCodesProvisionRequest = z.infer<
+  typeof postInviteCodesProvisionRequestSchema
+>;

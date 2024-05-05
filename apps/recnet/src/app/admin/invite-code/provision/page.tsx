@@ -1,8 +1,7 @@
-import { Text } from "@radix-ui/themes";
-
 import { cn } from "@recnet/recnet-web/utils/cn";
 
 import { InviteCodeAssigningForm } from "./InviteCodeAssigningForm";
+import { InviteCodeProvisionForm } from "./InviteCodeProvisionForm";
 
 import { AdminSectionBox, AdminSectionTitle } from "../../AdminSections";
 
@@ -29,7 +28,7 @@ export default function InviteCodeProvisionPage() {
           Provision Invite Code
         </AdminSectionTitle>
         <AdminSectionBox>
-          <Text className="text-gray-10">Work In Progress 🚧</Text>
+          <InviteCodeProvisionForm />
         </AdminSectionBox>
       </div>
     </div>
