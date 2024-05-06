@@ -49,8 +49,12 @@ export class InviteCodeController {
   public async createInviteCode(
     @Body() dto: CreateInviteCodeDto
   ): Promise<CreateInviteCodeResponse> {
-    const { numCodes, ownerId } = dto;
-    return this.inviteCodeService.createInviteCode(numCodes, ownerId);
+    const { numCodes, ownerId, upperBound } = dto;
+    return this.inviteCodeService.createInviteCode(
+      numCodes,
+      ownerId,
+      upperBound
+    );
   }
 
   @ApiOperation({

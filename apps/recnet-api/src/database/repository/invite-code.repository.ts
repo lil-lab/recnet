@@ -22,11 +22,10 @@ export default class InviteCodeRepository {
   }
 
   public async createInviteCode(
-    codes: string[],
-    ownerId: string
+    codeOwnerPairs: Array<{ code: string; ownerId: string }>
   ): Promise<void> {
     await this.prisma.inviteCode.createMany({
-      data: codes.map((code) => ({
+      data: codeOwnerPairs.map(({ code, ownerId }) => ({
         code,
         ownerId,
         issuedAt: new Date(),

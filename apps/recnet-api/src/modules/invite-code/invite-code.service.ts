@@ -6,6 +6,7 @@ import {
   InviteCode as DbInviteCode,
   InviteCodeFilterBy,
 } from "@recnet-api/database/repository/invite-code.repository.type";
+import UserRepository from "@recnet-api/database/repository/user.repository";
 import { getOffset } from "@recnet-api/utils";
 
 import { InviteCode } from "./entities/invite-code.entity";
@@ -18,15 +19,34 @@ import {
 export class InviteCodeService {
   constructor(
     @Inject(InviteCodeRepository)
-    private readonly inviteCodeRepository: InviteCodeRepository
+    private readonly inviteCodeRepository: InviteCodeRepository,
+    @Inject(UserRepository)
+    private readonly userRepository: UserRepository
   ) {}
 
   public async createInviteCode(
     numCodes: number,
-    ownerId: string
+    ownerId: string | null,
+    upperBound: number | null
   ): Promise<CreateInviteCodeResponse> {
-    const codes = Array.from({ length: numCodes }, () => this.genRandomCode());
-    await this.inviteCodeRepository.createInviteCode(codes, ownerId);
+    const targetUserIds: string[] = [];
+    if (ownerId) {
+      targetUserIds.push(ownerId);
+    } else {
+      const users = await this.userRepository.findAllUsers();
+      targetUserIds.push(...users.map((user) => user.id));
+    }
+    const codes: string[] = [];
+    const codeOwnerPairs: { code: string; ownerId: string }[] = [];
+    targetUserIds.forEach((userId) => {
+      for (let i = 0; i < numCodes; i++) {
+        const code = this.genRandomCode();
+        codes.push(code);
+        codeOwnerPairs.push({ code: code, ownerId: userId });
+      }
+    });
+
+    await this.inviteCodeRepository.createInviteCode(codeOwnerPairs);
     return {
       codes: codes,
     };
