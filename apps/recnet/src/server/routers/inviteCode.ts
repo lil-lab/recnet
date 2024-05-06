@@ -108,7 +108,6 @@ export const inviteCodeRouter = router({
     .input(postInviteCodesRequestSchema.omit({ ownerId: true }))
     .output(postInviteCodesResponseSchema)
     .mutation(async (opts) => {
-      // TODO: un-comment this when the endpoint is ready
       const { recnetApi } = opts.ctx;
       const { data } = await recnetApi.post("invite-codes", {
         ...postInviteCodesRequestSchema.parse({
