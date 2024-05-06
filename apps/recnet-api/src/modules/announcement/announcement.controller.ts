@@ -10,7 +10,12 @@ import {
   UseFilters,
   UsePipes,
 } from "@nestjs/common";
-import { ApiTags } from "@nestjs/swagger";
+import {
+  ApiBearerAuth,
+  ApiOkResponse,
+  ApiOperation,
+  ApiTags,
+} from "@nestjs/swagger";
 
 import { Auth } from "@recnet-api/utils/auth/auth.decorator";
 import { AuthUser } from "@recnet-api/utils/auth/auth.type";
@@ -37,6 +42,12 @@ import { Announcement } from "./entities/announcement.entity";
 export class AnnouncementController {
   constructor(private readonly announcementService: AnnouncementService) {}
 
+  @ApiOperation({
+    summary: "Get announcements",
+    description:
+      "Get announcements with pagination and filter. If no filter is provided, all announcements are returned.",
+  })
+  @ApiOkResponse({ type: GetAnnouncementsResponse })
   @Get()
   @UsePipes(new ZodValidationPipe(getAnnouncementsParamsSchema))
   public async getAnnouncements(
@@ -46,6 +57,12 @@ export class AnnouncementController {
     return this.announcementService.getAnnouncements(page, pageSize, filter);
   }
 
+  @ApiOperation({
+    summary: "Create announcement",
+    description: "Create announcement. Only ADMIN can create announcement.",
+  })
+  @ApiBearerAuth()
+  @ApiOkResponse({ type: Announcement })
   @Post()
   @Auth(["ADMIN"])
   @UsePipes(new ZodValidationPipe(postAnnouncementsRequestSchema))
@@ -57,6 +74,13 @@ export class AnnouncementController {
     return this.announcementService.createAnnouncement(dto, userId);
   }
 
+  @ApiOperation({
+    summary: "Update announcement",
+    description:
+      "Update announcement by id. Only ADMIN can update announcement.",
+  })
+  @ApiBearerAuth()
+  @ApiOkResponse({ type: Announcement })
   @Patch("/:id")
   @Auth(["ADMIN"])
   @UsePipes(new ZodValidationPipe(patchAnnouncementRequestSchema, "body"))

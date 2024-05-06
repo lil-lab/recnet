@@ -1,6 +1,6 @@
 import { ApiProperty } from "@nestjs/swagger";
 
-import { UserPreview } from "@recnet/recnet-api-model";
+import { UserPreview } from "@recnet-api/modules/user/entities/user.preview.entity";
 
 export class Announcement {
   @ApiProperty({
@@ -38,6 +38,8 @@ export class Announcement {
   })
   allowClose: boolean;
 
-  @ApiProperty()
+  @ApiProperty({
+    type: UserPreview,
+  })
   createdBy: UserPreview;
 }
