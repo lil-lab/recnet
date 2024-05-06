@@ -160,10 +160,13 @@ export function InviteCodeProvisionForm() {
                       return;
                     }
                     try {
-                      await provisionInviteCodeMutation.mutateAsync({
-                        ...res.data,
-                      });
-                      toast.success("Invite codes provisioned successfully");
+                      const { codes } =
+                        await provisionInviteCodeMutation.mutateAsync({
+                          ...res.data,
+                        });
+                      toast.success(
+                        `${codes.length} invite codes have been provisioned successfully`
+                      );
                     } catch (error) {
                       console.error(error);
                       // show error toast
