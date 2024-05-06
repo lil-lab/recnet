@@ -214,7 +214,37 @@ export function LeftPanel() {
               />
               <LeftPanelDivider />
               <div className="flex flex-col">
-                <InviteCodePopover />
+                <InviteCodePopover
+                  renderTrigger={(unusedCodesCount) => {
+                    return (
+                      <Flex className="w-full justify-start items-center text-gray-11 cursor-pointer hover:bg-gray-3 hover:text-gray-12 transition-all ease-in-out rounded-2 p-2 select-none">
+                        <Text size="1" weight={"medium"}>
+                          View invite codes
+                        </Text>
+                        {!unusedCodesCount ? null : (
+                          <Text
+                            size="1"
+                            className={cn(
+                              "ml-1",
+                              "p-1",
+                              "w-auto",
+                              "w-[18px]",
+                              "h-[18px]",
+                              "flex",
+                              "justify-center",
+                              "items-center",
+                              "bg-blue-6",
+                              "rounded-[999px]",
+                              "text-[11px]"
+                            )}
+                          >
+                            {unusedCodesCount}
+                          </Text>
+                        )}
+                      </Flex>
+                    );
+                  }}
+                />
                 <CutoffDatePicker currentSelectedCutoff={cutoff} />
               </div>
             </motion.div>

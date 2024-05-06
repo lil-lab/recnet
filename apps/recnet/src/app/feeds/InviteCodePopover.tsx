@@ -1,13 +1,12 @@
 "use client";
 
-import { Popover, Flex, Text } from "@radix-ui/themes";
+import { Popover } from "@radix-ui/themes";
 import { InfiniteData } from "@tanstack/react-query";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 
 import { trpc } from "@recnet/recnet-web/app/_trpc/client";
 import { InviteCodeTableView } from "@recnet/recnet-web/components/InviteCodeTable";
 import { InviteCodeTable } from "@recnet/recnet-web/components/InviteCodeTable";
-import { cn } from "@recnet/recnet-web/utils/cn";
 
 import { GetInviteCodesResponse, InviteCode } from "@recnet/recnet-api-model";
 
@@ -24,10 +23,18 @@ const getInviteCodesFromInfiniteQuery = (
   }, [] as InviteCode[]);
 };
 
-export function InviteCodePopover() {
+interface InviteCodePopoverProps {
+  renderTrigger: (unusedCodesCount: number | undefined) => JSX.Element;
+}
+
+export function InviteCodePopover(props: InviteCodePopoverProps) {
+  const { renderTrigger } = props;
   const [isOpen, setIsOpen] = useState(false);
   const [inviteCodeTableView, setInviteCodeTableView] =
     useState<InviteCodeTableView>("not-used");
+  const [unusedCodesCount, setUnusedCodesCount] = useState<number | undefined>(
+    undefined
+  );
 
   const { data, isPending, hasNextPage, fetchNextPage, isFetching } =
     trpc.getInviteCodes.useInfiniteQuery(
@@ -54,7 +61,12 @@ export function InviteCodePopover() {
     () => getInviteCodesFromInfiniteQuery(data),
     [data]
   );
-  const unusedCodesCount = data?.pages?.[0]?.unusedCodesCount ?? 0;
+
+  useEffect(() => {
+    if (data?.pages?.[0]?.unusedCodesCount) {
+      setUnusedCodesCount(data.pages[0].unusedCodesCount);
+    }
+  }, [data]);
 
   return (
     <div className="w-full flex flex-col">
@@ -64,33 +76,7 @@ export function InviteCodePopover() {
           setIsOpen(open);
         }}
       >
-        <Popover.Trigger>
-          <Flex className="w-full justify-start items-center text-gray-11 cursor-pointer hover:bg-gray-3 hover:text-gray-12 transition-all ease-in-out rounded-2 p-2 select-none">
-            <Text size="1" weight={"medium"}>
-              View invite codes
-            </Text>
-            {isPending ? null : (
-              <Text
-                size="1"
-                className={cn(
-                  "ml-1",
-                  "p-1",
-                  "w-auto",
-                  "w-[18px]",
-                  "h-[18px]",
-                  "flex",
-                  "justify-center",
-                  "items-center",
-                  "bg-blue-6",
-                  "rounded-[999px]",
-                  "text-[11px]"
-                )}
-              >
-                {unusedCodesCount}
-              </Text>
-            )}
-          </Flex>
-        </Popover.Trigger>
+        <Popover.Trigger>{renderTrigger(unusedCodesCount)}</Popover.Trigger>
         <Popover.Content
           className="overflow-hidden min-w-[450px]"
           side="right"
