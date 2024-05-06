@@ -9,12 +9,15 @@ import { AdminSectionTitle } from "@recnet/recnet-web/app/admin/AdminSections";
 import { InviteCodeTable } from "@recnet/recnet-web/components/InviteCodeTable";
 import { cn } from "@recnet/recnet-web/utils/cn";
 
-import { GetInviteCodesResponse, InviteCode } from "@recnet/recnet-api-model";
+import {
+  GetInviteCodesAllResponse,
+  InviteCode,
+} from "@recnet/recnet-api-model";
 
 const INIVITE_CODE_PAGE_SIZE = 30;
 
 const getInviteCodesFromInfiniteQuery = (
-  infiniteQueryData: InfiniteData<GetInviteCodesResponse> | undefined
+  infiniteQueryData: InfiniteData<GetInviteCodesAllResponse> | undefined
 ) => {
   if (!infiniteQueryData) {
     return [];

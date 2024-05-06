@@ -8,8 +8,8 @@ import {
   postInviteCodesRequestSchema,
   postInviteCodesResponseSchema,
   getUsersParamsSchema,
-  getInviteCodesResponseSchema,
-  getInviteCodesParamsSchema,
+  getInviteCodesAllResponseSchema,
+  getInviteCodesAllParamsSchema,
 } from "@recnet/recnet-api-model";
 
 import { checkIsAdminProcedure } from "./middleware";
@@ -25,20 +25,20 @@ export const inviteCodeRouter = router({
         used: z.boolean().optional(),
       })
     )
-    .output(getInviteCodesResponseSchema)
+    .output(getInviteCodesAllResponseSchema)
     .query(async (opts) => {
       const { cursor: page, pageSize, used } = opts.input;
       const { recnetApi } = opts.ctx;
-      const { data } = await recnetApi.get("/invite-codes", {
+      const { data } = await recnetApi.get("/invite-codes/all", {
         params: {
-          ...getInviteCodesParamsSchema.parse({
+          ...getInviteCodesAllParamsSchema.parse({
             page,
             pageSize,
             used,
           }),
         },
       });
-      return getInviteCodesResponseSchema.parse(data);
+      return getInviteCodesAllResponseSchema.parse(data);
     }),
   generateInviteCode: checkIsAdminProcedure
     .input(

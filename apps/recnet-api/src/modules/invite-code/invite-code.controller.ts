@@ -20,7 +20,7 @@ import { ZodValidationPipe } from "@recnet-api/utils/pipes/zod.validation.pipe";
 
 import {
   postInviteCodesRequestSchema,
-  getInviteCodesParamsSchema,
+  getInviteCodesAllParamsSchema,
 } from "@recnet/recnet-api-model";
 
 import { CreateInviteCodeDto } from "./dto/create.invite-code.dto";
@@ -63,9 +63,9 @@ export class InviteCodeController {
   })
   @ApiOkResponse({ type: GetInviteCodeResponse })
   @ApiBearerAuth()
-  @Get()
+  @Get("all")
   @Auth(["ADMIN"])
-  @UsePipes(new ZodValidationPipe(getInviteCodesParamsSchema))
+  @UsePipes(new ZodValidationPipe(getInviteCodesAllParamsSchema))
   public async getInviteCodes(
     @Query() dto: QueryInviteCodeDto
   ): Promise<GetInviteCodeResponse> {

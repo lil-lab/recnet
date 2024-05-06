@@ -2,8 +2,8 @@ import { z } from "zod";
 
 import { inviteCodeSchema } from "../model";
 
-// GET /invite-codes
-export const getInviteCodesParamsSchema = z.object({
+// GET /invite-codes/all
+export const getInviteCodesAllParamsSchema = z.object({
   page: z.coerce.number(),
   pageSize: z.coerce.number(),
   // ref: https://github.com/colinhacks/zod/issues/1630#issuecomment-1710498376
@@ -13,14 +13,16 @@ export const getInviteCodesParamsSchema = z.object({
     .transform((value) => value === true || value === "true")
     .optional(),
 });
-export type GetInviteCodesParams = z.infer<typeof getInviteCodesParamsSchema>;
+export type GetInviteCodesAllParams = z.infer<
+  typeof getInviteCodesAllParamsSchema
+>;
 
-export const getInviteCodesResponseSchema = z.object({
+export const getInviteCodesAllResponseSchema = z.object({
   hasNext: z.boolean(),
   inviteCodes: z.array(inviteCodeSchema),
 });
-export type GetInviteCodesResponse = z.infer<
-  typeof getInviteCodesResponseSchema
+export type GetInviteCodesAllResponse = z.infer<
+  typeof getInviteCodesAllResponseSchema
 >;
 
 // POST /invite-codes
