@@ -1,9 +1,12 @@
 import { Injectable } from "@nestjs/common";
+import { Prisma } from "@prisma/client";
 
 import PrismaConnectionProvider from "@recnet-api/database/prisma/prisma.connection.provider";
+import { getOffset } from "@recnet-api/utils";
 
 import {
   Announcement,
+  AnnouncementFilterBy,
   CreateAnnouncementInput,
   UpdateAnnouncementInput,
   announcement,
@@ -17,6 +20,30 @@ export default class AnnouncementRepository {
     return this.prisma.announcement.findUniqueOrThrow({
       where: { id },
       select: announcement.select,
+    });
+  }
+
+  public async countAnnouncements(
+    filter: AnnouncementFilterBy
+  ): Promise<number> {
+    const where: Prisma.AnnouncementWhereInput =
+      this.transformFilterToPrismaWhere(filter);
+    return this.prisma.announcement.count({ where });
+  }
+
+  public async findAnnouncements(
+    page: number,
+    pageSize: number,
+    filter: AnnouncementFilterBy
+  ): Promise<Announcement[]> {
+    const where: Prisma.AnnouncementWhereInput =
+      this.transformFilterToPrismaWhere(filter);
+    return this.prisma.announcement.findMany({
+      select: announcement.select,
+      where,
+      take: pageSize,
+      skip: getOffset(page, pageSize),
+      orderBy: { startAt: Prisma.SortOrder.desc },
     });
   }
 
@@ -46,5 +73,26 @@ export default class AnnouncementRepository {
       data: updateAnnouncementInput,
       select: announcement.select,
     });
+  }
+
+  private transformFilterToPrismaWhere(
+    filter: AnnouncementFilterBy
+  ): Prisma.AnnouncementWhereInput {
+    const where: Prisma.AnnouncementWhereInput = {};
+
+    if (filter.activatedOnly) {
+      where.isActivated = true;
+    }
+
+    if (filter.currentOnly) {
+      where.startAt = {
+        lte: new Date(),
+      };
+      where.endAt = {
+        gte: new Date(),
+      };
+    }
+
+    return where;
   }
 }

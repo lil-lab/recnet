@@ -35,3 +35,8 @@ export type UpdateAnnouncementInput = {
   isActivated?: boolean;
   allowClose?: boolean;
 };
+
+export type AnnouncementFilterBy = {
+  activatedOnly?: boolean;
+  currentOnly?: boolean;
+};

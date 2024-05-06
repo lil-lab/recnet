@@ -1,10 +1,12 @@
 import {
   Body,
   Controller,
+  Get,
   Param,
   ParseIntPipe,
   Patch,
   Post,
+  Query,
   UseFilters,
   UsePipes,
 } from "@nestjs/common";
@@ -17,12 +19,15 @@ import { RecnetExceptionFilter } from "@recnet-api/utils/filters/recnet.exceptio
 import { ZodValidationPipe } from "@recnet-api/utils/pipes/zod.validation.pipe";
 
 import {
+  getAnnouncementsParamsSchema,
   patchAnnouncementRequestSchema,
   postAnnouncementsRequestSchema,
 } from "@recnet/recnet-api-model";
 
+import { GetAnnouncementsResponse } from "./announcement.response";
 import { AnnouncementService } from "./announcement.service";
 import { CreateAnnouncementDto } from "./dto/create.announcement.dto";
+import { QueryAnnouncementsDto } from "./dto/query.announcement.dto";
 import { UpdateAnnouncementDto } from "./dto/update.announcement.dto";
 import { Announcement } from "./entities/announcement.entity";
 
@@ -31,6 +36,15 @@ import { Announcement } from "./entities/announcement.entity";
 @UseFilters(RecnetExceptionFilter)
 export class AnnouncementController {
   constructor(private readonly announcementService: AnnouncementService) {}
+
+  @Get()
+  @UsePipes(new ZodValidationPipe(getAnnouncementsParamsSchema))
+  public async getAnnouncements(
+    @Query() dto: QueryAnnouncementsDto
+  ): Promise<GetAnnouncementsResponse> {
+    const { page, pageSize, ...filter } = dto;
+    return this.announcementService.getAnnouncements(page, pageSize, filter);
+  }
 
   @Post()
   @Auth(["ADMIN"])

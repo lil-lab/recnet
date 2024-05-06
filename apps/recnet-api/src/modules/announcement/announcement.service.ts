@@ -1,10 +1,15 @@
 import { HttpStatus, Inject, Injectable } from "@nestjs/common";
 
 import AnnouncementRepository from "@recnet-api/database/repository/announcement.repository";
-import { Announcement as DbAnnouncement } from "@recnet-api/database/repository/announcement.repository.type";
+import {
+  AnnouncementFilterBy,
+  Announcement as DbAnnouncement,
+} from "@recnet-api/database/repository/announcement.repository.type";
+import { getOffset } from "@recnet-api/utils";
 import { RecnetError } from "@recnet-api/utils/error/recnet.error";
 import { ErrorCode } from "@recnet-api/utils/error/recnet.error.const";
 
+import { GetAnnouncementsResponse } from "./announcement.response";
 import { CreateAnnouncementDto } from "./dto/create.announcement.dto";
 import { UpdateAnnouncementDto } from "./dto/update.announcement.dto";
 import { Announcement } from "./entities/announcement.entity";
@@ -15,6 +20,26 @@ export class AnnouncementService {
     @Inject(AnnouncementRepository)
     private readonly announcementRepository: AnnouncementRepository
   ) {}
+
+  public async getAnnouncements(
+    page: number,
+    pageSize: number,
+    filter: AnnouncementFilterBy
+  ): Promise<GetAnnouncementsResponse> {
+    const totalCount: number =
+      await this.announcementRepository.countAnnouncements(filter);
+    const dbAnnouncements = await this.announcementRepository.findAnnouncements(
+      page,
+      pageSize,
+      filter
+    );
+
+    return {
+      hasNext: dbAnnouncements.length + getOffset(page, pageSize) < totalCount,
+      totalCount,
+      announcements: dbAnnouncements.map(this.transformAnnouncement),
+    };
+  }
 
   public async createAnnouncement(
     dto: CreateAnnouncementDto,
