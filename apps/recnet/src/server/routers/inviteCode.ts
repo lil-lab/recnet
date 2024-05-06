@@ -10,9 +10,11 @@ import {
   getUsersParamsSchema,
   getInviteCodesAllResponseSchema,
   getInviteCodesAllParamsSchema,
+  getInviteCodesResponseSchema,
+  getInviteCodesParamsSchema,
 } from "@recnet/recnet-api-model";
 
-import { checkIsAdminProcedure } from "./middleware";
+import { checkIsAdminProcedure, checkRecnetJWTProcedure } from "./middleware";
 
 import { router } from "../trpc";
 
@@ -39,6 +41,29 @@ export const inviteCodeRouter = router({
         },
       });
       return getInviteCodesAllResponseSchema.parse(data);
+    }),
+  getInviteCodes: checkRecnetJWTProcedure
+    .input(
+      z.object({
+        cursor: z.number(),
+        pageSize: z.number(),
+        used: z.boolean().optional(),
+      })
+    )
+    .output(getInviteCodesResponseSchema)
+    .query(async (opts) => {
+      const { cursor: page, pageSize, used } = opts.input;
+      const { recnetApi } = opts.ctx;
+      const { data } = await recnetApi.get("/invite-codes", {
+        params: {
+          ...getInviteCodesParamsSchema.parse({
+            page,
+            pageSize,
+            used,
+          }),
+        },
+      });
+      return getInviteCodesResponseSchema.parse(data);
     }),
   generateInviteCode: checkIsAdminProcedure
     .input(

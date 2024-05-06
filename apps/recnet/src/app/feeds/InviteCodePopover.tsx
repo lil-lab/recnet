@@ -9,16 +9,12 @@ import { InviteCodeTableView } from "@recnet/recnet-web/components/InviteCodeTab
 import { InviteCodeTable } from "@recnet/recnet-web/components/InviteCodeTable";
 import { cn } from "@recnet/recnet-web/utils/cn";
 
-import {
-  GetInviteCodesAllResponse,
-  InviteCode,
-} from "@recnet/recnet-api-model";
+import { GetInviteCodesResponse, InviteCode } from "@recnet/recnet-api-model";
 
-const INIVITE_CODE_PAGE_SIZE = 30;
+const INIVITE_CODE_PAGE_SIZE = 20;
 
-// TODO: refactor after finishing query API
 const getInviteCodesFromInfiniteQuery = (
-  infiniteQueryData: InfiniteData<GetInviteCodesAllResponse> | undefined
+  infiniteQueryData: InfiniteData<GetInviteCodesResponse> | undefined
 ) => {
   if (!infiniteQueryData) {
     return [];
@@ -33,9 +29,8 @@ export function InviteCodePopover() {
   const [inviteCodeTableView, setInviteCodeTableView] =
     useState<InviteCodeTableView>("not-used");
 
-  // TODO: refactor after finishing query API
   const { data, isPending, hasNextPage, fetchNextPage, isFetching } =
-    trpc.getAllInviteCodes.useInfiniteQuery(
+    trpc.getInviteCodes.useInfiniteQuery(
       {
         pageSize: INIVITE_CODE_PAGE_SIZE,
         used:
@@ -59,6 +54,7 @@ export function InviteCodePopover() {
     () => getInviteCodesFromInfiniteQuery(data),
     [data]
   );
+  const unusedCodesCount = data?.pages?.[0]?.unusedCodesCount ?? 0;
 
   return (
     <div className="w-full flex flex-col">
@@ -73,23 +69,26 @@ export function InviteCodePopover() {
             <Text size="1" weight={"medium"}>
               View invite codes
             </Text>
-            <Text
-              size="1"
-              className={cn(
-                "ml-1",
-                "p-1",
-                "w-auto",
-                "w-[18px]",
-                "h-[18px]",
-                "flex",
-                "justify-center",
-                "items-center",
-                "bg-blue-6",
-                "rounded-[999px]"
-              )}
-            >
-              5
-            </Text>
+            {isPending ? null : (
+              <Text
+                size="1"
+                className={cn(
+                  "ml-1",
+                  "p-1",
+                  "w-auto",
+                  "w-[18px]",
+                  "h-[18px]",
+                  "flex",
+                  "justify-center",
+                  "items-center",
+                  "bg-blue-6",
+                  "rounded-[999px]",
+                  "text-[11px]"
+                )}
+              >
+                {unusedCodesCount}
+              </Text>
+            )}
           </Flex>
         </Popover.Trigger>
         <Popover.Content
