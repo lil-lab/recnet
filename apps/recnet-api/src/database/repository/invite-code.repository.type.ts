@@ -20,4 +20,5 @@ export type InviteCode = Prisma.InviteCodeGetPayload<typeof inviteCode>;
 
 export type InviteCodeFilterBy = {
   used?: boolean;
+  ownerId?: string;
 };

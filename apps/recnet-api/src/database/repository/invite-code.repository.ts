@@ -62,6 +62,9 @@ export default class InviteCodeRepository {
     } else if (filter.used === false) {
       where.usedAt = null;
     }
+    if (filter.ownerId) {
+      where.ownerId = filter.ownerId;
+    }
     return where;
   }
 }

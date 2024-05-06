@@ -36,19 +36,30 @@ export class InviteCodeService {
       const users = await this.userRepository.findAllUsers();
       targetUserIds.push(...users.map((user) => user.id));
     }
-    const codes: string[] = [];
-    const codeOwnerPairs: { code: string; ownerId: string }[] = [];
-    targetUserIds.forEach((userId) => {
-      for (let i = 0; i < numCodes; i++) {
-        const code = this.genRandomCode();
-        codes.push(code);
-        codeOwnerPairs.push({ code: code, ownerId: userId });
-      }
-    });
 
+    const codeOwnerPairsArr = await Promise.all(
+      targetUserIds.map(async (userId) => {
+        // calculate how many codes this user already has
+        const numUserCodes = await this.inviteCodeRepository.countInviteCodes({
+          ownerId: userId,
+        });
+        const numCodesToGenerate =
+          upperBound !== null
+            ? Math.min(upperBound - numUserCodes, numCodes)
+            : numCodes;
+        const _codes = Array.from({ length: numCodesToGenerate }, () =>
+          this.genRandomCode()
+        );
+        return _codes.map((code) => ({ code, ownerId: userId }));
+      })
+    );
+
+    const codeOwnerPairs = codeOwnerPairsArr.reduce((acc, arr) => {
+      return [...acc, ...arr];
+    }, []);
     await this.inviteCodeRepository.createInviteCode(codeOwnerPairs);
     return {
-      codes: codes,
+      codes: codeOwnerPairs.map((pair) => pair.code),
     };
   }
 
