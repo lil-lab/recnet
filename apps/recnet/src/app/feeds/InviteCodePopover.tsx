@@ -92,11 +92,11 @@ export function InviteCodePopover() {
           </Flex>
         </Popover.Trigger>
         <Popover.Content
-          className="overflow-hidden"
+          className="overflow-hidden min-w-[450px]"
           side="right"
           alignOffset={-50}
-          maxWidth={"600"}
-          maxHeight={"500"}
+          width={"450"}
+          maxHeight={"400"}
         >
           <InviteCodeTable
             inviteCodes={inviteCodes}
