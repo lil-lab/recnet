@@ -1,4 +1,13 @@
-import { Body, Controller, Post, UseFilters, UsePipes } from "@nestjs/common";
+import {
+  Body,
+  Controller,
+  Param,
+  ParseIntPipe,
+  Patch,
+  Post,
+  UseFilters,
+  UsePipes,
+} from "@nestjs/common";
 import { ApiTags } from "@nestjs/swagger";
 
 import { Auth } from "@recnet-api/utils/auth/auth.decorator";
@@ -7,10 +16,14 @@ import { User } from "@recnet-api/utils/auth/auth.user.decorator";
 import { RecnetExceptionFilter } from "@recnet-api/utils/filters/recnet.exception.filter";
 import { ZodValidationPipe } from "@recnet-api/utils/pipes/zod.validation.pipe";
 
-import { postAnnouncementsRequestSchema } from "@recnet/recnet-api-model";
+import {
+  patchAnnouncementRequestSchema,
+  postAnnouncementsRequestSchema,
+} from "@recnet/recnet-api-model";
 
 import { AnnouncementService } from "./announcement.service";
 import { CreateAnnouncementDto } from "./dto/create.announcement.dto";
+import { UpdateAnnouncementDto } from "./dto/update.announcement.dto";
 import { Announcement } from "./entities/announcement.entity";
 
 @ApiTags("announcements")
@@ -28,5 +41,15 @@ export class AnnouncementController {
   ): Promise<Announcement> {
     const { userId } = authUser;
     return this.announcementService.createAnnouncement(dto, userId);
+  }
+
+  @Patch("/:id")
+  @Auth(["ADMIN"])
+  @UsePipes(new ZodValidationPipe(patchAnnouncementRequestSchema, "body"))
+  public async updateAnnouncement(
+    @Param("id", ParseIntPipe) id: number,
+    @Body() dto: UpdateAnnouncementDto
+  ): Promise<Announcement> {
+    return this.announcementService.updateAnnouncement(1, dto);
   }
 }

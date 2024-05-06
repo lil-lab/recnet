@@ -5,12 +5,20 @@ import PrismaConnectionProvider from "@recnet-api/database/prisma/prisma.connect
 import {
   Announcement,
   CreateAnnouncementInput,
+  UpdateAnnouncementInput,
   announcement,
 } from "./announcement.repository.type";
 
 @Injectable()
 export default class AnnouncementRepository {
   constructor(private readonly prisma: PrismaConnectionProvider) {}
+
+  public async findAnnouncementById(id: number): Promise<Announcement> {
+    return this.prisma.announcement.findUniqueOrThrow({
+      where: { id },
+      select: announcement.select,
+    });
+  }
 
   public async createAnnouncement(
     createAnnouncementInput: CreateAnnouncementInput
@@ -25,6 +33,17 @@ export default class AnnouncementRepository {
           },
         },
       },
+      select: announcement.select,
+    });
+  }
+
+  public async updateAnnouncement(
+    id: number,
+    updateAnnouncementInput: UpdateAnnouncementInput
+  ): Promise<Announcement> {
+    return this.prisma.announcement.update({
+      where: { id },
+      data: updateAnnouncementInput,
       select: announcement.select,
     });
   }

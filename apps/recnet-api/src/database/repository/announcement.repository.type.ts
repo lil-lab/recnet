@@ -26,3 +26,12 @@ export type CreateAnnouncementInput = {
   allowClose: boolean;
   createdById: string;
 };
+
+export type UpdateAnnouncementInput = {
+  title?: string;
+  content?: string;
+  startAt?: Date;
+  endAt?: Date;
+  isActivated?: boolean;
+  allowClose?: boolean;
+};
