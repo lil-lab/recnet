@@ -24,10 +24,10 @@ import {
 } from "@recnet/recnet-api-model";
 
 import { CreateInviteCodeDto } from "./dto/create.invite-code.dto";
-import { QueryInviteCodeDto } from "./dto/query.invite-code.dto";
+import { QueryAllInviteCodeDto } from "./dto/query.invite-code.dto";
 import {
   CreateInviteCodeResponse,
-  GetInviteCodeResponse,
+  GetAllInviteCodeResponse,
 } from "./invite-code.response";
 import { InviteCodeService } from "./invite-code.service";
 
@@ -58,17 +58,17 @@ export class InviteCodeController {
   }
 
   @ApiOperation({
-    summary: "Get Invite Codes",
-    description: "Get all invite codes with pagination.",
+    summary: "Get all Invite Codes",
+    description: "Get all invite codes with pagination. Admin only.",
   })
-  @ApiOkResponse({ type: GetInviteCodeResponse })
+  @ApiOkResponse({ type: GetAllInviteCodeResponse })
   @ApiBearerAuth()
   @Get("all")
   @Auth(["ADMIN"])
   @UsePipes(new ZodValidationPipe(getInviteCodesAllParamsSchema))
   public async getInviteCodes(
-    @Query() dto: QueryInviteCodeDto
-  ): Promise<GetInviteCodeResponse> {
+    @Query() dto: QueryAllInviteCodeDto
+  ): Promise<GetAllInviteCodeResponse> {
     const { page, pageSize, ...filter } = dto;
     return this.inviteCodeService.getInviteCodes(page, pageSize, filter);
   }

@@ -12,7 +12,7 @@ import { getOffset } from "@recnet-api/utils";
 import { InviteCode } from "./entities/invite-code.entity";
 import {
   CreateInviteCodeResponse,
-  GetInviteCodeResponse,
+  GetAllInviteCodeResponse,
 } from "./invite-code.response";
 
 @Injectable()
@@ -67,7 +67,7 @@ export class InviteCodeService {
     page: number,
     pageSize: number,
     filter: InviteCodeFilterBy
-  ): Promise<GetInviteCodeResponse> {
+  ): Promise<GetAllInviteCodeResponse> {
     const inviteCodeCount =
       await this.inviteCodeRepository.countInviteCodes(filter);
     const dbInviteCodes = await this.inviteCodeRepository.findInviteCodes(

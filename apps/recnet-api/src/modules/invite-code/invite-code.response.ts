@@ -7,7 +7,7 @@ export class CreateInviteCodeResponse {
   codes: string[];
 }
 
-export class GetInviteCodeResponse {
+export class GetAllInviteCodeResponse {
   @ApiProperty()
   hasNext: boolean;
 

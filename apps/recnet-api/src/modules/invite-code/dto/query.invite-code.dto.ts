@@ -1,6 +1,6 @@
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 
-export class QueryInviteCodeDto {
+export class QueryAllInviteCodeDto {
   @ApiProperty({
     description: "Page number",
     example: 1,
