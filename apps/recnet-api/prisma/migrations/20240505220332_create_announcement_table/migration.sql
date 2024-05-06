@@ -8,11 +8,11 @@ CREATE TABLE "Announcement" (
     "isActivated" BOOLEAN NOT NULL DEFAULT true,
     "allowClose" BOOLEAN NOT NULL DEFAULT false,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "createById" VARCHAR(64) NOT NULL,
+    "createdById" VARCHAR(64) NOT NULL,
     "updatedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "Announcement_pkey" PRIMARY KEY ("id")
 );
 
 -- AddForeignKey
-ALTER TABLE "Announcement" ADD CONSTRAINT "Announcement_createById_fkey" FOREIGN KEY ("createById") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Announcement" ADD CONSTRAINT "Announcement_createdById_fkey" FOREIGN KEY ("createdById") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

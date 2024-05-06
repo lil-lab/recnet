@@ -2,6 +2,7 @@ import { Module } from "@nestjs/common";
 
 import { PrismaModule } from "@recnet-api/database/prisma/prisma.module";
 
+import AnnouncementRepository from "./announcement.repository";
 import ArticleRepository from "./article.repository";
 import FollowingRecordRepository from "./followingRecord.repository";
 import InviteCodeRepository from "./invite-code.repository";
@@ -12,6 +13,7 @@ import WeeklyDigestCronLogRepository from "./weekly-digest-cron-log.repository";
 @Module({
   imports: [PrismaModule],
   providers: [
+    AnnouncementRepository,
     ArticleRepository,
     FollowingRecordRepository,
     InviteCodeRepository,
@@ -20,6 +22,7 @@ import WeeklyDigestCronLogRepository from "./weekly-digest-cron-log.repository";
     WeeklyDigestCronLogRepository,
   ],
   exports: [
+    AnnouncementRepository,
     ArticleRepository,
     FollowingRecordRepository,
     InviteCodeRepository,

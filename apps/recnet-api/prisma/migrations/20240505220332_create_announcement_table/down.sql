@@ -1,6 +1,5 @@
 -- DropForeignKey
-ALTER TABLE "Announcement" DROP CONSTRAINT "Announcement_createById_fkey";
+ALTER TABLE "Announcement" DROP CONSTRAINT "Announcement_createdById_fkey";
 
 -- DropTable
 DROP TABLE "Announcement";
-

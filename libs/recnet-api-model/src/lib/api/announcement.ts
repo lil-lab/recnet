@@ -23,10 +23,15 @@ export type GetAnnouncementsResponse = z.infer<
 >;
 
 // POST /announcements
-export const postAnnouncementsRequestSchema = announcementSchema.omit({
-  id: true,
-  createBy: true,
-});
+export const postAnnouncementsRequestSchema = announcementSchema
+  .omit({
+    id: true,
+    createdBy: true,
+  })
+  .refine((data) => new Date(data.startAt) < new Date(data.endAt), {
+    message: "endAt should be later than startAt",
+    path: ["endAt"],
+  });
 export type PostAnnouncementRequest = z.infer<
   typeof postAnnouncementsRequestSchema
 >;
@@ -40,7 +45,7 @@ export type PostAnnouncementResponse = z.infer<
 export const patchAnnouncementRequestSchema = announcementSchema
   .omit({
     id: true,
-    createBy: true,
+    createdBy: true,
   })
   .partial();
 export type PatchAnnouncementRequest = z.infer<

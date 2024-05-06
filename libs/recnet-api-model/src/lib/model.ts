@@ -66,6 +66,6 @@ export const announcementSchema = z.object({
   endAt: dateSchema,
   allowClose: z.boolean(),
   isActivated: z.boolean(),
-  createBy: userPreviewSchema,
+  createdBy: userPreviewSchema,
 });
 export type Announcement = z.infer<typeof announcementSchema>;
