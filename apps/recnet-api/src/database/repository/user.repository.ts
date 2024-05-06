@@ -13,6 +13,7 @@ import {
   userPreview,
   UserFilterBy,
   CreateUserInput,
+  UpdateUserInput,
 } from "./user.repository.type";
 
 @Injectable()
@@ -113,7 +114,7 @@ export default class UserRepository {
 
   public async updateUser(
     userId: string,
-    updateUserInput: Prisma.UserUpdateInput
+    updateUserInput: UpdateUserInput
   ): Promise<User> {
     const where = { id: userId };
     return this.prisma.user.update({

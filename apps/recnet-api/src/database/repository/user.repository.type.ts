@@ -24,6 +24,10 @@ export const user = Prisma.validator<Prisma.UserDefaultArgs>()({
     photoUrl: true,
     affiliation: true,
     bio: true,
+    url: true,
+    googleScholarLink: true,
+    semanticScholarLink: true,
+    openReviewUserName: true,
     followedBy: true,
     email: true,
     role: true,
@@ -47,6 +51,10 @@ export type CreateUserInput = {
   photoUrl: string;
   affiliation: string | null;
   bio: string | null;
+  url: string | null;
+  googleScholarLink: string | null;
+  semanticScholarLink: string | null;
+  openReviewUserName: string | null;
   email: string;
   inviteCode: string;
 };
@@ -57,5 +65,9 @@ export type UpdateUserInput = {
   photoUrl?: string;
   affiliation?: string | null;
   bio?: string | null;
+  url?: string | null;
+  googleScholarLink?: string | null;
+  semanticScholarLink?: string | null;
+  openReviewUserName?: string | null;
   email?: string;
 };

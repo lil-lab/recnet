@@ -2,15 +2,6 @@ import { z } from "zod";
 
 import { inviteCodeSchema } from "../model";
 
-// GET /stats
-export const getStatsResponseSchema = z.object({
-  numUsers: z.number(),
-  numRecs: z.number(),
-  numRecsOverTime: z.record(z.string(), z.number()),
-  numUpcomingRecs: z.number(),
-});
-export type GetStatsResponse = z.infer<typeof getStatsResponseSchema>;
-
 // GET /invite-codes
 export const getInviteCodesParamsSchema = z.object({
   page: z.coerce.number(),

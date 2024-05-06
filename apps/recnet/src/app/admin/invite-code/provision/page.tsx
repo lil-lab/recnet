@@ -21,7 +21,7 @@ import { AdminSectionBox, AdminSectionTitle } from "../../AdminSections";
 
 const InviteCodeGenerationSchema = z.object({
   count: z.coerce.number().min(1).max(20, "Max 20 invite codes at a time"),
-  owner: z.string().optional(),
+  owner: z.string().nullable(),
 });
 
 let timer: NodeJS.Timeout | null = null;
@@ -38,7 +38,7 @@ function InviteCodeGenerateForm() {
     resolver: zodResolver(InviteCodeGenerationSchema),
     defaultValues: {
       count: 1,
-      owner: undefined,
+      owner: null,
     },
     mode: "onBlur",
   });
@@ -120,7 +120,9 @@ function InviteCodeGenerateForm() {
             <TextField.Root
               className="w-full"
               placeholder="Optional"
-              {...register("owner")}
+              {...register("owner", {
+                setValueAs: (val) => (val === "" ? null : val),
+              })}
             >
               <TextField.Slot>
                 <AtSignIcon size="12" className="text-gray-10" />

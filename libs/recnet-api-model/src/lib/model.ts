@@ -19,6 +19,10 @@ export type UserPreview = z.infer<typeof userPreviewSchema>;
 export const userSchema = userPreviewSchema.extend({
   email: z.string().email(),
   role: userRoleSchema,
+  url: z.string().url().nullable(),
+  googleScholarLink: z.string().url().nullable(),
+  semanticScholarLink: z.string().url().nullable(),
+  openReviewUserName: z.string().nullable(),
   following: z.array(userPreviewSchema),
 });
 export type User = z.infer<typeof userSchema>;
