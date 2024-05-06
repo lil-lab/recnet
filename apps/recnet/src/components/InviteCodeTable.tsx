@@ -64,7 +64,7 @@ export function InviteCodeTable(props: InviteCodeTableProps) {
   }, [tableBottomInView, hasNextPage, fetchNextPage]);
 
   return (
-    <div className={cn("flex", "flex-col", "gap-y-4")}>
+    <div className={cn("flex", "flex-col", "gap-y-4", "max-w-[90vw]")}>
       <div className="flex w-full justify-end items-center">
         <SegmentedControl.Root
           defaultValue={view}

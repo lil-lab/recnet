@@ -25,10 +25,11 @@ const getInviteCodesFromInfiniteQuery = (
 
 interface InviteCodePopoverProps {
   renderTrigger: (unusedCodesCount: number | undefined) => JSX.Element;
+  popoverContentProps?: React.ComponentProps<typeof Popover.Content>;
 }
 
 export function InviteCodePopover(props: InviteCodePopoverProps) {
-  const { renderTrigger } = props;
+  const { renderTrigger, popoverContentProps = {} } = props;
   const [isOpen, setIsOpen] = useState(false);
   const [inviteCodeTableView, setInviteCodeTableView] =
     useState<InviteCodeTableView>("not-used");
@@ -69,41 +70,45 @@ export function InviteCodePopover(props: InviteCodePopoverProps) {
   }, [data]);
 
   return (
-    <div className="w-full flex flex-col">
-      <Popover.Root
-        open={isOpen}
-        onOpenChange={(open) => {
-          setIsOpen(open);
+    <Popover.Root
+      open={isOpen}
+      onOpenChange={(open) => {
+        setIsOpen(open);
+      }}
+    >
+      <Popover.Trigger>{renderTrigger(unusedCodesCount)}</Popover.Trigger>
+      <Popover.Content
+        className="overflow-hidden min-w-[450px]"
+        size={{
+          initial: "1",
+          md: "2",
         }}
+        maxHeight={"400"}
+        maxWidth={{
+          initial: "100vw",
+          md: "450px",
+        }}
+        {...popoverContentProps}
       >
-        <Popover.Trigger>{renderTrigger(unusedCodesCount)}</Popover.Trigger>
-        <Popover.Content
-          className="overflow-hidden min-w-[450px]"
-          side="right"
-          alignOffset={-50}
-          width={"450"}
-          maxHeight={"400"}
-        >
-          <InviteCodeTable
-            inviteCodes={inviteCodes}
-            hasNextPage={hasNextPage}
-            fetchNextPage={async () => {
-              fetchNextPage();
-            }}
-            isPending={isPending}
-            isFetchingNextPage={isFetching}
-            view={inviteCodeTableView}
-            onViewChange={setInviteCodeTableView}
-            tableProps={{
-              className: "h-[60svh]",
-            }}
-            tableHeaderProps={{
-              className: "dark:bg-slate-2",
-            }}
-            excludeColumns={["Referrer"]}
-          />
-        </Popover.Content>
-      </Popover.Root>
-    </div>
+        <InviteCodeTable
+          inviteCodes={inviteCodes}
+          hasNextPage={hasNextPage}
+          fetchNextPage={async () => {
+            fetchNextPage();
+          }}
+          isPending={isPending}
+          isFetchingNextPage={isFetching}
+          view={inviteCodeTableView}
+          onViewChange={setInviteCodeTableView}
+          tableProps={{
+            className: "h-[60svh]",
+          }}
+          tableHeaderProps={{
+            className: "dark:bg-slate-2",
+          }}
+          excludeColumns={["Referrer"]}
+        />
+      </Popover.Content>
+    </Popover.Root>
   );
 }

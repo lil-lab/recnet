@@ -244,6 +244,11 @@ export function LeftPanel() {
                       </Flex>
                     );
                   }}
+                  popoverContentProps={{
+                    side: "right",
+                    alignOffset: -50,
+                    width: "450px",
+                  }}
                 />
                 <CutoffDatePicker currentSelectedCutoff={cutoff} />
               </div>

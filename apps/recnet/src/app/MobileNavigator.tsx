@@ -3,6 +3,7 @@ import {
   AvatarIcon,
   Cross2Icon,
   HomeIcon,
+  Link2Icon,
   MagicWandIcon,
   Pencil2Icon,
 } from "@radix-ui/react-icons";
@@ -22,6 +23,7 @@ import { cn } from "@recnet/recnet-web/utils/cn";
 
 import { useAuth } from "./AuthContext";
 import { UserDropdown } from "./Headerbar";
+import { InviteCodePopover } from "./feeds/InviteCodePopover";
 
 import { RecForm } from "../components/rec/RecForm";
 
@@ -165,7 +167,7 @@ function MobileNavigator() {
         "justify-center",
         "items-center",
         "flex-row",
-        "gap-x-[20%]",
+        "gap-x-[12%]",
         "text-gray-8",
         "h-fit",
         "py-4",
@@ -190,6 +192,17 @@ function MobileNavigator() {
           router.push("/");
         }}
       />
+
+      <InviteCodePopover
+        renderTrigger={(unusedCodes) => {
+          return <Link2Icon width="24" height="24" />;
+        }}
+        popoverContentProps={{
+          side: "top",
+          width: "350px",
+        }}
+      />
+
       <Dialog.Root
         open={open}
         onOpenChange={(isOpen) => {
