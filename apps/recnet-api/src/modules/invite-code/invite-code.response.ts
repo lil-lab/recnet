@@ -14,3 +14,14 @@ export class GetAllInviteCodeResponse {
   @ApiProperty({ type: [InviteCode] })
   inviteCodes: InviteCode[];
 }
+
+export class GetInviteCodeResponse {
+  @ApiProperty()
+  inviteCodes: InviteCode[];
+
+  @ApiProperty()
+  hasNext: boolean;
+
+  @ApiProperty()
+  unusedCodesCount: number;
+}

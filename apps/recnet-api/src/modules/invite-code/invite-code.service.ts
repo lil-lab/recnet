@@ -83,6 +83,10 @@ export class InviteCodeService {
     };
   }
 
+  public async countInviteCodes(filter: InviteCodeFilterBy): Promise<number> {
+    return this.inviteCodeRepository.countInviteCodes(filter);
+  }
+
   private getInviteCodesFromDbInviteCodes(
     dbInviteCodes: DbInviteCode[]
   ): InviteCode[] {
