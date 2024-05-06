@@ -55,6 +55,7 @@ export function InviteCodeAssigningForm() {
               {
                 ownerHandle: handle,
                 numCodes: data.count,
+                upperBound: null,
               },
               {
                 onError: (error) => {

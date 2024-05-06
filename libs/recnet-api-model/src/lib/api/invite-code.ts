@@ -26,7 +26,8 @@ export type GetInviteCodesResponse = z.infer<
 // POST /invite-codes
 export const postInviteCodesRequestSchema = z.object({
   numCodes: z.number().min(1).max(20),
-  ownerId: z.string(),
+  ownerId: z.string().nullable(),
+  upperBound: z.number().nullable(),
 });
 export type PostInviteCodesRequest = z.infer<
   typeof postInviteCodesRequestSchema
@@ -37,13 +38,4 @@ export const postInviteCodesResponseSchema = z.object({
 });
 export type PostInviteCodesResponse = z.infer<
   typeof postInviteCodesResponseSchema
->;
-
-// POST /invite-codes/provision
-export const postInviteCodesProvisionRequestSchema = z.object({
-  numCodes: z.number(),
-  upperBound: z.number().nullable(),
-});
-export type PostInviteCodesProvisionRequest = z.infer<
-  typeof postInviteCodesProvisionRequestSchema
 >;

@@ -10,7 +10,6 @@ import {
   getUsersParamsSchema,
   getInviteCodesResponseSchema,
   getInviteCodesParamsSchema,
-  postInviteCodesProvisionRequestSchema,
 } from "@recnet/recnet-api-model";
 
 import { checkIsAdminProcedure } from "./middleware";
@@ -78,13 +77,14 @@ export const inviteCodeRouter = router({
       return postInviteCodesResponseSchema.parse(data);
     }),
   provisionInviteCode: checkIsAdminProcedure
-    .input(postInviteCodesProvisionRequestSchema)
+    .input(postInviteCodesRequestSchema)
+    .output(postInviteCodesResponseSchema)
     .mutation(async (opts) => {
       // TODO: un-comment this when the endpoint is ready
-      // const { recnetApi } = opts.ctx;
-      // const { data } = await recnetApi.post("invite-codes/provision", {
-      //   ...opts.input,
-      // });
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      const { recnetApi } = opts.ctx;
+      const { data } = await recnetApi.post("invite-codes", {
+        ...opts.input,
+      });
+      return postInviteCodesResponseSchema.parse(data);
     }),
 });

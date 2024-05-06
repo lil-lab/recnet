@@ -13,7 +13,7 @@ import { trpc } from "@recnet/recnet-web/app/_trpc/client";
 import { cn } from "@recnet/recnet-web/utils/cn";
 
 const InviteCodeProvisionFormSchema = z.object({
-  numCodes: z.coerce.number(),
+  numCodes: z.coerce.number().min(1).max(20),
   upperBound: z.coerce.number().nullable(),
 });
 
@@ -162,6 +162,7 @@ export function InviteCodeProvisionForm() {
                     try {
                       await provisionInviteCodeMutation.mutateAsync({
                         ...res.data,
+                        ownerId: null,
                       });
                       toast.success("Invite codes provisioned successfully");
                     } catch (error) {
