@@ -162,7 +162,6 @@ export function InviteCodeProvisionForm() {
                     try {
                       await provisionInviteCodeMutation.mutateAsync({
                         ...res.data,
-                        ownerId: null,
                       });
                       toast.success("Invite codes provisioned successfully");
                     } catch (error) {

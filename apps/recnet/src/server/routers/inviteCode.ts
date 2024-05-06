@@ -42,9 +42,11 @@ export const inviteCodeRouter = router({
     }),
   generateInviteCode: checkIsAdminProcedure
     .input(
-      postInviteCodesRequestSchema.omit({ ownerId: true }).extend({
-        ownerHandle: z.string(),
-      })
+      postInviteCodesRequestSchema
+        .omit({ ownerId: true, upperBound: true })
+        .extend({
+          ownerHandle: z.string(),
+        })
     )
     .output(postInviteCodesResponseSchema)
     .mutation(async (opts) => {
@@ -72,18 +74,22 @@ export const inviteCodeRouter = router({
         ...postInviteCodesRequestSchema.parse({
           ownerId,
           numCodes,
+          upperBound: null,
         }),
       });
       return postInviteCodesResponseSchema.parse(data);
     }),
   provisionInviteCode: checkIsAdminProcedure
-    .input(postInviteCodesRequestSchema)
+    .input(postInviteCodesRequestSchema.omit({ ownerId: true }))
     .output(postInviteCodesResponseSchema)
     .mutation(async (opts) => {
       // TODO: un-comment this when the endpoint is ready
       const { recnetApi } = opts.ctx;
       const { data } = await recnetApi.post("invite-codes", {
-        ...opts.input,
+        ...postInviteCodesRequestSchema.parse({
+          ...opts.input,
+          ownerId: null,
+        }),
       });
       return postInviteCodesResponseSchema.parse(data);
     }),
