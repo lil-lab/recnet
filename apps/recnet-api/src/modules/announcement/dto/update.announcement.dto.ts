@@ -14,12 +14,12 @@ export class UpdateAnnouncementDto {
   @ApiPropertyOptional({
     example: "2024-03-26T15:06:56Z",
   })
-  startAt?: Date;
+  startAt?: string;
 
   @ApiPropertyOptional({
     example: "2024-04-26T15:06:56Z",
   })
-  endAt?: Date;
+  endAt?: string;
 
   @ApiPropertyOptional({
     example: true,

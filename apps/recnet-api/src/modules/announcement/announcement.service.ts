@@ -46,7 +46,12 @@ export class AnnouncementService {
     userId: string
   ): Promise<Announcement> {
     const createAnnouncementInput = {
-      ...dto,
+      title: dto.title,
+      content: dto.content,
+      startAt: new Date(dto.startAt),
+      endAt: new Date(dto.endAt),
+      isActivated: dto.isActivated,
+      allowClose: dto.allowClose,
       createdById: userId,
     };
     const dbAnnouncement = await this.announcementRepository.createAnnouncement(
@@ -59,15 +64,18 @@ export class AnnouncementService {
     id: number,
     dto: UpdateAnnouncementDto
   ): Promise<Announcement> {
+    const startAt = dto.startAt ? new Date(dto.startAt) : undefined;
+    const endAt = dto.endAt ? new Date(dto.endAt) : undefined;
+
     // validate startAt and endAt
-    if (dto.startAt || dto.endAt) {
+    if (startAt || endAt) {
       const currentAnnouncement =
         await this.announcementRepository.findAnnouncementById(id);
 
       if (
-        (dto.startAt && dto.endAt && dto.startAt > dto.endAt) ||
-        (dto.startAt && dto.startAt > currentAnnouncement.endAt) ||
-        (dto.endAt && dto.endAt < currentAnnouncement.startAt)
+        (startAt && endAt && startAt > endAt) ||
+        (startAt && startAt > currentAnnouncement.endAt) ||
+        (endAt && endAt < currentAnnouncement.startAt)
       ) {
         throw new RecnetError(
           ErrorCode.START_DATE_AFTER_END_DATE,
@@ -76,8 +84,19 @@ export class AnnouncementService {
       }
     }
 
+    const updateAnnouncementInput = {
+      title: dto.title,
+      content: dto.content,
+      startAt,
+      endAt,
+      isActivated: dto.isActivated,
+      allowClose: dto.allowClose,
+    };
     const updatedDbAnnouncement =
-      await this.announcementRepository.updateAnnouncement(id, dto);
+      await this.announcementRepository.updateAnnouncement(
+        id,
+        updateAnnouncementInput
+      );
     return this.transformAnnouncement(updatedDbAnnouncement);
   }
 
