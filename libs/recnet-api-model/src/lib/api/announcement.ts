@@ -2,12 +2,16 @@ import { z } from "zod";
 
 import { announcementSchema } from "../model";
 
+const booleanSchema = z
+  .union([z.boolean(), z.literal("true"), z.literal("false")])
+  .transform((value) => value === true || value === "true");
+
 // GET /announcements
 export const getAnnouncementsParamsSchema = z.object({
   page: z.coerce.number(),
   pageSize: z.coerce.number(),
-  activatedOnly: z.coerce.boolean(),
-  currentOnly: z.coerce.boolean(),
+  activatedOnly: booleanSchema.optional().default(false),
+  currentOnly: booleanSchema.optional().default(false),
 });
 export type GetAnnouncementParams = z.infer<
   typeof getAnnouncementsParamsSchema
