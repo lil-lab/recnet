@@ -37,29 +37,32 @@ export class InviteCodeService {
       targetUserIds.push(...users.map((user) => user.id));
     }
 
-    const codeOwnerPairsArr = await Promise.all(
-      targetUserIds.map(async (userId) => {
-        // calculate how many codes this user already has
-        const numUserCodes = await this.inviteCodeRepository.countInviteCodes({
-          ownerId: userId,
-        });
+    const codesToBeCreated: {
+      code: string;
+      ownerId: string;
+    }[] = [];
+
+    const userExistingCodesCount =
+      await this.inviteCodeRepository.countInviteCodesByOwnerIds(targetUserIds);
+
+    userExistingCodesCount.forEach(
+      ({ userId: ownerId, count: existingCodeCount }) => {
         const numCodesToGenerate =
           upperBound !== null
-            ? Math.min(upperBound - numUserCodes, numCodes)
+            ? Math.min(upperBound - existingCodeCount, numCodes)
             : numCodes;
-        const _codes = Array.from({ length: numCodesToGenerate }, () =>
-          this.genRandomCode()
-        );
-        return _codes.map((code) => ({ code, ownerId: userId }));
-      })
+
+        const newCodes = Array.from({ length: numCodesToGenerate }, () => ({
+          ownerId,
+          code: this.genRandomCode(),
+        }));
+        codesToBeCreated.push(...newCodes);
+      }
     );
 
-    const codeOwnerPairs = codeOwnerPairsArr.reduce((acc, arr) => {
-      return [...acc, ...arr];
-    }, []);
-    await this.inviteCodeRepository.createInviteCode(codeOwnerPairs);
+    await this.inviteCodeRepository.createInviteCode(codesToBeCreated);
     return {
-      codes: codeOwnerPairs.map((pair) => pair.code),
+      codes: codesToBeCreated.map((pair) => pair.code),
     };
   }
 

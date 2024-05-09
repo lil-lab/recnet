@@ -53,6 +53,20 @@ export default class InviteCodeRepository {
     });
   }
 
+  public async countInviteCodesByOwnerIds(
+    ownerIds: string[]
+  ): Promise<{ userId: string; count: number }[]> {
+    const counts = await this.prisma.inviteCode.groupBy({
+      by: ["ownerId"],
+      where: { ownerId: { in: ownerIds } },
+      _count: { ownerId: true },
+    });
+    return counts.map((entry) => ({
+      userId: entry.ownerId,
+      count: entry._count.ownerId,
+    }));
+  }
+
   private transformInviteCodeFilterByToPrismaWhere(
     filter: InviteCodeFilterBy
   ): Prisma.InviteCodeWhereInput {
