@@ -7,10 +7,21 @@ export class CreateInviteCodeResponse {
   codes: string[];
 }
 
-export class GetInviteCodeResponse {
+export class GetAllInviteCodeResponse {
   @ApiProperty()
   hasNext: boolean;
 
   @ApiProperty({ type: [InviteCode] })
   inviteCodes: InviteCode[];
+}
+
+export class GetInviteCodeResponse {
+  @ApiProperty()
+  inviteCodes: InviteCode[];
+
+  @ApiProperty()
+  hasNext: boolean;
+
+  @ApiProperty()
+  unusedCodesCount: number;
 }

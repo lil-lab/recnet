@@ -24,8 +24,13 @@ import { Rec } from "@recnet/recnet-api-model";
 
 import { CutoffDatePicker } from "./CutoffDatePicker";
 import { CutoffDropdown } from "./CutoffDropdown";
+import { InviteCodePopover } from "./InviteCodePopover";
 
 import { trpc } from "../_trpc/client";
+
+function LeftPanelDivider() {
+  return <div className="w-full h-[1px] bg-gray-8" />;
+}
 
 function RecStatusPanel(props: {
   setIsRecFormOpen: (open: boolean) => void;
@@ -207,11 +212,44 @@ export function LeftPanel() {
                 rec={rec}
                 isLoading={isPending || isFetching}
               />
-              <div className="w-full h-[1px] bg-gray-8" />
-              <div className="w-full p-2 flex flex-col gap-y-2">
-                <Text size="1" weight={"medium"} className="text-gray-11">
-                  Previous cycles
-                </Text>
+              <LeftPanelDivider />
+              <div className="flex flex-col">
+                <InviteCodePopover
+                  renderTrigger={(unusedCodesCount) => {
+                    return (
+                      <Flex className="w-full justify-start items-center text-gray-11 cursor-pointer hover:bg-gray-3 hover:text-gray-12 transition-all ease-in-out rounded-2 p-2 select-none">
+                        <Text size="1" weight={"medium"}>
+                          View invite codes
+                        </Text>
+                        {!unusedCodesCount ? null : (
+                          <Text
+                            size="1"
+                            className={cn(
+                              "ml-1",
+                              "p-1",
+                              "w-auto",
+                              "w-[18px]",
+                              "h-[18px]",
+                              "flex",
+                              "justify-center",
+                              "items-center",
+                              "bg-blue-6",
+                              "rounded-[999px]",
+                              "text-[11px]"
+                            )}
+                          >
+                            {unusedCodesCount}
+                          </Text>
+                        )}
+                      </Flex>
+                    );
+                  }}
+                  popoverContentProps={{
+                    side: "right",
+                    alignOffset: -50,
+                    width: "450px",
+                  }}
+                />
                 <CutoffDatePicker currentSelectedCutoff={cutoff} />
               </div>
             </motion.div>

@@ -4,6 +4,7 @@ import { ScheduleModule } from "@nestjs/schedule";
 
 import * as CommonConfigs from "./config/common.config";
 import { parseEnv } from "./config/env.schema";
+import { AnnouncementModule } from "./modules/announcement/announcement.module";
 import { ArticleModule } from "./modules/article/article.module";
 import { EmailModule } from "./modules/email/email.module";
 import { HealthModule } from "./modules/health/health.module";
@@ -28,6 +29,7 @@ import { LoggerMiddleware } from "./utils/middlewares/logger.middleware";
     InviteCodeModule,
     StatModule,
     EmailModule,
+    AnnouncementModule,
   ],
   controllers: [],
   providers: [],

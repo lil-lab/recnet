@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [1.7.0](https://github.com/lil-lab/recnet/compare/recnet-web-v1.6.0...recnet-web-v1.7.0) (2024-05-09)
+
+### Features
+
+- add invite code popover ([2d15287](https://github.com/lil-lab/recnet/commit/2d15287957979ba3ad584139b6f43c2e1f032089))
+- finish invite code popover in mobile view ([dc99944](https://github.com/lil-lab/recnet/commit/dc99944ccc8034f374e431cb4f67d54624f23d01))
+- **provision invite codes:** add invite code provision form and trpc procedure ([d57d6d7](https://github.com/lil-lab/recnet/commit/d57d6d7f57e563e5cb86a10c13cd7dbf35fb6a7c))
+
+### Bug Fixes
+
+- make table row's key unique ([936a304](https://github.com/lil-lab/recnet/commit/936a30495120292f3c34619f0606b5dcd4bfc9f5))
+
 ## [1.6.0](https://github.com/lil-lab/recnet/compare/recnet-web-v1.5.0...recnet-web-v1.6.0) (2024-05-05)
 
 ### Features

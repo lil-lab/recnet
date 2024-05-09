@@ -57,3 +57,15 @@ export const inviteCodeSchema = z.object({
   usedAt: dateSchema.nullable(),
 });
 export type InviteCode = z.infer<typeof inviteCodeSchema>;
+
+export const announcementSchema = z.object({
+  id: z.number(),
+  title: z.string(),
+  content: z.string(),
+  startAt: dateSchema,
+  endAt: dateSchema,
+  allowClose: z.boolean(),
+  isActivated: z.boolean(),
+  createdBy: userPreviewSchema,
+});
+export type Announcement = z.infer<typeof announcementSchema>;

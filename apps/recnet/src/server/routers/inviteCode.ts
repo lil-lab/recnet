@@ -8,16 +8,41 @@ import {
   postInviteCodesRequestSchema,
   postInviteCodesResponseSchema,
   getUsersParamsSchema,
+  getInviteCodesAllResponseSchema,
+  getInviteCodesAllParamsSchema,
   getInviteCodesResponseSchema,
   getInviteCodesParamsSchema,
 } from "@recnet/recnet-api-model";
 
-import { checkIsAdminProcedure } from "./middleware";
+import { checkIsAdminProcedure, checkRecnetJWTProcedure } from "./middleware";
 
 import { router } from "../trpc";
 
 export const inviteCodeRouter = router({
   getAllInviteCodes: checkIsAdminProcedure
+    .input(
+      z.object({
+        cursor: z.number(),
+        pageSize: z.number(),
+        used: z.boolean().optional(),
+      })
+    )
+    .output(getInviteCodesAllResponseSchema)
+    .query(async (opts) => {
+      const { cursor: page, pageSize, used } = opts.input;
+      const { recnetApi } = opts.ctx;
+      const { data } = await recnetApi.get("/invite-codes/all", {
+        params: {
+          ...getInviteCodesAllParamsSchema.parse({
+            page,
+            pageSize,
+            used,
+          }),
+        },
+      });
+      return getInviteCodesAllResponseSchema.parse(data);
+    }),
+  getInviteCodes: checkRecnetJWTProcedure
     .input(
       z.object({
         cursor: z.number(),
@@ -42,9 +67,11 @@ export const inviteCodeRouter = router({
     }),
   generateInviteCode: checkIsAdminProcedure
     .input(
-      postInviteCodesRequestSchema.omit({ ownerId: true }).extend({
-        ownerHandle: z.string(),
-      })
+      postInviteCodesRequestSchema
+        .omit({ ownerId: true, upperBound: true })
+        .extend({
+          ownerHandle: z.string(),
+        })
     )
     .output(postInviteCodesResponseSchema)
     .mutation(async (opts) => {
@@ -72,6 +99,20 @@ export const inviteCodeRouter = router({
         ...postInviteCodesRequestSchema.parse({
           ownerId,
           numCodes,
+          upperBound: null,
+        }),
+      });
+      return postInviteCodesResponseSchema.parse(data);
+    }),
+  provisionInviteCode: checkIsAdminProcedure
+    .input(postInviteCodesRequestSchema.omit({ ownerId: true }))
+    .output(postInviteCodesResponseSchema)
+    .mutation(async (opts) => {
+      const { recnetApi } = opts.ctx;
+      const { data } = await recnetApi.post("invite-codes", {
+        ...postInviteCodesRequestSchema.parse({
+          ...opts.input,
+          ownerId: null,
         }),
       });
       return postInviteCodesResponseSchema.parse(data);

@@ -6,29 +6,63 @@ import {
   InviteCode as DbInviteCode,
   InviteCodeFilterBy,
 } from "@recnet-api/database/repository/invite-code.repository.type";
+import UserRepository from "@recnet-api/database/repository/user.repository";
 import { getOffset } from "@recnet-api/utils";
 
 import { InviteCode } from "./entities/invite-code.entity";
 import {
   CreateInviteCodeResponse,
-  GetInviteCodeResponse,
+  GetAllInviteCodeResponse,
 } from "./invite-code.response";
 
 @Injectable()
 export class InviteCodeService {
   constructor(
     @Inject(InviteCodeRepository)
-    private readonly inviteCodeRepository: InviteCodeRepository
+    private readonly inviteCodeRepository: InviteCodeRepository,
+    @Inject(UserRepository)
+    private readonly userRepository: UserRepository
   ) {}
 
   public async createInviteCode(
     numCodes: number,
-    ownerId: string
+    ownerId: string | null,
+    upperBound: number | null
   ): Promise<CreateInviteCodeResponse> {
-    const codes = Array.from({ length: numCodes }, () => this.genRandomCode());
-    await this.inviteCodeRepository.createInviteCode(codes, ownerId);
+    const targetUserIds: string[] = [];
+    if (ownerId) {
+      targetUserIds.push(ownerId);
+    } else {
+      const users = await this.userRepository.findAllUsers();
+      targetUserIds.push(...users.map((user) => user.id));
+    }
+
+    const codesToBeCreated: {
+      code: string;
+      ownerId: string;
+    }[] = [];
+
+    const userExistingCodesCount =
+      await this.inviteCodeRepository.countInviteCodesByOwnerIds(targetUserIds);
+
+    userExistingCodesCount.forEach(
+      ({ userId: ownerId, count: existingCodeCount }) => {
+        const numCodesToGenerate =
+          upperBound !== null
+            ? Math.min(upperBound - existingCodeCount, numCodes)
+            : numCodes;
+
+        const newCodes = Array.from({ length: numCodesToGenerate }, () => ({
+          ownerId,
+          code: this.genRandomCode(),
+        }));
+        codesToBeCreated.push(...newCodes);
+      }
+    );
+
+    await this.inviteCodeRepository.createInviteCode(codesToBeCreated);
     return {
-      codes: codes,
+      codes: codesToBeCreated.map((pair) => pair.code),
     };
   }
 
@@ -36,7 +70,7 @@ export class InviteCodeService {
     page: number,
     pageSize: number,
     filter: InviteCodeFilterBy
-  ): Promise<GetInviteCodeResponse> {
+  ): Promise<GetAllInviteCodeResponse> {
     const inviteCodeCount =
       await this.inviteCodeRepository.countInviteCodes(filter);
     const dbInviteCodes = await this.inviteCodeRepository.findInviteCodes(
@@ -50,6 +84,10 @@ export class InviteCodeService {
       hasNext: inviteCodes.length + getOffset(page, pageSize) < inviteCodeCount,
       inviteCodes: inviteCodes,
     };
+  }
+
+  public async countInviteCodes(filter: InviteCodeFilterBy): Promise<number> {
+    return this.inviteCodeRepository.countInviteCodes(filter);
   }
 
   private getInviteCodesFromDbInviteCodes(
