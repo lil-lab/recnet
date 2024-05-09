@@ -77,11 +77,7 @@ export function InviteCodeProvisionForm() {
             {...register("upperBound", {
               setValueAs: (val) => (val === "" ? null : val),
             })}
-          >
-            <TextField.Slot>
-              <AtSignIcon size="12" className="text-gray-10" />
-            </TextField.Slot>
-          </TextField.Root>
+          ></TextField.Root>
           {formState.errors.upperBound ? (
             <Text size="1" color="red">
               {formState.errors.upperBound.message}
