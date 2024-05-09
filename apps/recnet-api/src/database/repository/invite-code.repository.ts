@@ -22,11 +22,10 @@ export default class InviteCodeRepository {
   }
 
   public async createInviteCode(
-    codes: string[],
-    ownerId: string
+    codeOwnerPairs: Array<{ code: string; ownerId: string }>
   ): Promise<void> {
     await this.prisma.inviteCode.createMany({
-      data: codes.map((code) => ({
+      data: codeOwnerPairs.map(({ code, ownerId }) => ({
         code,
         ownerId,
         issuedAt: new Date(),
@@ -54,6 +53,20 @@ export default class InviteCodeRepository {
     });
   }
 
+  public async countInviteCodesByOwnerIds(
+    ownerIds: string[]
+  ): Promise<{ userId: string; count: number }[]> {
+    const counts = await this.prisma.inviteCode.groupBy({
+      by: ["ownerId"],
+      where: { ownerId: { in: ownerIds } },
+      _count: { ownerId: true },
+    });
+    return counts.map((entry) => ({
+      userId: entry.ownerId,
+      count: entry._count.ownerId,
+    }));
+  }
+
   private transformInviteCodeFilterByToPrismaWhere(
     filter: InviteCodeFilterBy
   ): Prisma.InviteCodeWhereInput {
@@ -62,6 +75,9 @@ export default class InviteCodeRepository {
       where.usedAt = { not: null };
     } else if (filter.used === false) {
       where.usedAt = null;
+    }
+    if (filter.ownerId) {
+      where.ownerId = filter.ownerId;
     }
     return where;
   }
