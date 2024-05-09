@@ -61,10 +61,16 @@ export default class InviteCodeRepository {
       where: { ownerId: { in: ownerIds } },
       _count: { ownerId: true },
     });
-    return counts.map((entry) => ({
-      userId: entry.ownerId,
-      count: entry._count.ownerId,
-    }));
+    const countsRecord: Record<string, number> = {};
+    counts.forEach((entry) => {
+      countsRecord[entry.ownerId] = entry._count.ownerId;
+    });
+    return ownerIds.map((ownerId) => {
+      return {
+        userId: ownerId,
+        count: countsRecord?.[ownerId] || 0,
+      };
+    });
   }
 
   private transformInviteCodeFilterByToPrismaWhere(
