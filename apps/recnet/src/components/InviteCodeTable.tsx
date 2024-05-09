@@ -161,15 +161,17 @@ export function InviteCodeTable(props: InviteCodeTableProps) {
                   )}
                 </Table.Row>
               ))}
-              <Table.Row>
-                <Table.Cell colSpan={4} ref={tableBottomRef}>
-                  {isFetchingNextPage ? (
-                    <LoadingBox className="h-[200px]" />
-                  ) : (
-                    <div className="w-full h-[1px]" />
-                  )}
-                </Table.Cell>
-              </Table.Row>
+              {hasNextPage ? (
+                <Table.Row>
+                  <Table.Cell colSpan={4} ref={tableBottomRef}>
+                    {isFetchingNextPage ? (
+                      <LoadingBox className="h-[200px]" />
+                    ) : (
+                      <div className="w-full h-[1px]" />
+                    )}
+                  </Table.Cell>
+                </Table.Row>
+              ) : null}
             </Table.Body>
           </Table.Root>
         ) : (
