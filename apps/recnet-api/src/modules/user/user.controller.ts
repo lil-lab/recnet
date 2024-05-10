@@ -23,7 +23,10 @@ import { Auth, AuthFirebase } from "@recnet-api/utils/auth/auth.decorator";
 import { AuthFirebaseUser, AuthUser } from "@recnet-api/utils/auth/auth.type";
 import { FirebaseUser, User } from "@recnet-api/utils/auth/auth.user.decorator";
 import { RecnetExceptionFilter } from "@recnet-api/utils/filters/recnet.exception.filter";
-import { ZodValidationPipe } from "@recnet-api/utils/pipes/zod.validation.pipe";
+import {
+  ZodValidationBodyPipe,
+  ZodValidationQueryPipe,
+} from "@recnet-api/utils/pipes/zod.validation.pipe";
 
 import {
   deleteUserFollowParamsSchema,
@@ -59,7 +62,7 @@ export class UserController {
   })
   @ApiOkResponse({ type: GetUsersResponse })
   @Get()
-  @UsePipes(new ZodValidationPipe(getUsersParamsSchema))
+  @UsePipes(new ZodValidationQueryPipe(getUsersParamsSchema))
   public async getUsers(
     @Query() dto: QueryUsersDto
   ): Promise<GetUsersResponse> {
@@ -103,7 +106,7 @@ export class UserController {
   @ApiCreatedResponse({ type: GetUserMeResponse })
   @ApiBearerAuth()
   @Post("/me")
-  @UsePipes(new ZodValidationPipe(postUserMeRequestSchema))
+  @UsePipes(new ZodValidationBodyPipe(postUserMeRequestSchema))
   @AuthFirebase()
   public async createMe(
     @FirebaseUser() firebaseUser: AuthFirebaseUser,
@@ -121,7 +124,7 @@ export class UserController {
   @ApiOkResponse({ type: GetUserMeResponse })
   @ApiBearerAuth()
   @Patch("/me")
-  @UsePipes(new ZodValidationPipe(patchUserMeRequestSchema))
+  @UsePipes(new ZodValidationBodyPipe(patchUserMeRequestSchema))
   @Auth()
   public async updateMe(
     @User() authUser: AuthUser,
@@ -140,7 +143,7 @@ export class UserController {
   @ApiBearerAuth()
   @Post("validate/handle")
   @HttpCode(HttpStatus.OK)
-  @UsePipes(new ZodValidationPipe(postUserValidateHandleRequestSchema))
+  @UsePipes(new ZodValidationBodyPipe(postUserValidateHandleRequestSchema))
   @AuthFirebase()
   public async validateHandle(
     @Body() dto: ValidateUserHandleDto
@@ -156,7 +159,7 @@ export class UserController {
   @ApiBearerAuth()
   @Post("validate/invite-code")
   @HttpCode(HttpStatus.OK)
-  @UsePipes(new ZodValidationPipe(postUserValidateInviteCodeRequestSchema))
+  @UsePipes(new ZodValidationBodyPipe(postUserValidateInviteCodeRequestSchema))
   @AuthFirebase()
   public async validateInviteCode(
     @Body() dto: ValidateUserInviteCodeDto
@@ -170,7 +173,7 @@ export class UserController {
   })
   @Post("follow")
   @ApiBearerAuth()
-  @UsePipes(new ZodValidationPipe(postUserFollowRequestSchema))
+  @UsePipes(new ZodValidationBodyPipe(postUserFollowRequestSchema))
   @Auth()
   public async followUser(
     @User() authUser: AuthUser,
@@ -186,7 +189,7 @@ export class UserController {
   })
   @Delete("follow")
   @ApiBearerAuth()
-  @UsePipes(new ZodValidationPipe(deleteUserFollowParamsSchema))
+  @UsePipes(new ZodValidationQueryPipe(deleteUserFollowParamsSchema))
   @Auth()
   public async unfollowUser(
     @User() authUser: AuthUser,
