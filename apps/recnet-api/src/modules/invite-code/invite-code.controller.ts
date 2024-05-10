@@ -18,7 +18,10 @@ import { Auth } from "@recnet-api/utils/auth/auth.decorator";
 import { AuthUser } from "@recnet-api/utils/auth/auth.type";
 import { User } from "@recnet-api/utils/auth/auth.user.decorator";
 import { RecnetExceptionFilter } from "@recnet-api/utils/filters/recnet.exception.filter";
-import { ZodValidationPipe } from "@recnet-api/utils/pipes/zod.validation.pipe";
+import {
+  ZodValidationBodyPipe,
+  ZodValidationQueryPipe,
+} from "@recnet-api/utils/pipes/zod.validation.pipe";
 
 import {
   postInviteCodesRequestSchema,
@@ -52,7 +55,7 @@ export class InviteCodeController {
   @ApiBearerAuth()
   @Post()
   @Auth(["ADMIN"])
-  @UsePipes(new ZodValidationPipe(postInviteCodesRequestSchema))
+  @UsePipes(new ZodValidationBodyPipe(postInviteCodesRequestSchema))
   public async createInviteCode(
     @Body() dto: CreateInviteCodeDto
   ): Promise<CreateInviteCodeResponse> {
@@ -72,7 +75,7 @@ export class InviteCodeController {
   @ApiBearerAuth()
   @Get("all")
   @Auth(["ADMIN"])
-  @UsePipes(new ZodValidationPipe(getInviteCodesAllParamsSchema))
+  @UsePipes(new ZodValidationQueryPipe(getInviteCodesAllParamsSchema))
   public async getInviteCodes(
     @Query() dto: QueryAllInviteCodeDto
   ): Promise<GetAllInviteCodeResponse> {
@@ -89,7 +92,7 @@ export class InviteCodeController {
   @ApiBearerAuth()
   @Get()
   @Auth()
-  @UsePipes(new ZodValidationPipe(getInviteCodesParamsSchema))
+  @UsePipes(new ZodValidationQueryPipe(getInviteCodesParamsSchema))
   public async getInviteCodesByUser(
     @Query() dto: QueryInviteCodeDto,
     @User("userId") userId: AuthUser<"userId">
