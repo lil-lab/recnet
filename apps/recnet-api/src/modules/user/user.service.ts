@@ -162,6 +162,7 @@ export class UserService {
       semanticScholarLink: user.semanticScholarLink,
       openReviewUserName: user.openReviewUserName,
       numFollowers: user.followedBy.length,
+      numRecs: user.recommendations.length,
       email: user.email,
       role: user.role,
       following: followingUsers,
@@ -176,7 +177,9 @@ export class UserService {
       photoUrl: user.photoUrl,
       affiliation: user.affiliation,
       bio: user.bio,
+      url: user.url,
       numFollowers: user.followedBy.length,
+      numRecs: user.recommendations.length,
     };
   }
 }

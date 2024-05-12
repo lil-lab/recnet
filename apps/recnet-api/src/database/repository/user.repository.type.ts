@@ -10,7 +10,9 @@ export const userPreview = Prisma.validator<Prisma.UserDefaultArgs>()({
     photoUrl: true,
     affiliation: true,
     bio: true,
+    url: true,
     followedBy: true,
+    recommendations: true,
   },
 });
 
@@ -32,6 +34,7 @@ export const user = Prisma.validator<Prisma.UserDefaultArgs>()({
     email: true,
     role: true,
     following: true,
+    recommendations: true,
   },
 });
 

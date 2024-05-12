@@ -109,7 +109,9 @@ export class AnnouncementService {
       photoUrl: createdBy.photoUrl,
       affiliation: createdBy.affiliation,
       bio: createdBy.bio,
+      url: createdBy.url,
       numFollowers: createdBy.followedBy.length,
+      numRecs: createdBy.recommendations.length,
     };
     return {
       id: dbAnnouncement.id,

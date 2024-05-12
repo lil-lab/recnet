@@ -199,7 +199,9 @@ export class RecService {
         photoUrl: dbRec.user.photoUrl,
         affiliation: dbRec.user.affiliation,
         bio: dbRec.user.bio,
+        url: dbRec.user.url,
         numFollowers: dbRec.user.followedBy.length,
+        numRecs: dbRec.user.recommendations.length,
       },
     };
   }

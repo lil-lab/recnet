@@ -109,7 +109,9 @@ export class InviteCodeService {
         photoUrl: dbInviteCode.owner.photoUrl,
         affiliation: dbInviteCode.owner.affiliation,
         bio: dbInviteCode.owner.bio,
+        url: dbInviteCode.owner.url,
         numFollowers: dbInviteCode.owner.followedBy.length,
+        numRecs: dbInviteCode.owner.recommendations.length,
       },
       issuedAt: dbInviteCode.issuedAt,
       usedAt: dbInviteCode.usedAt,
@@ -121,7 +123,9 @@ export class InviteCodeService {
             photoUrl: dbInviteCode.usedBy.photoUrl,
             affiliation: dbInviteCode.usedBy.affiliation,
             bio: dbInviteCode.usedBy.bio,
+            url: dbInviteCode.usedBy.url,
             numFollowers: dbInviteCode.usedBy.followedBy.length,
+            numRecs: dbInviteCode.usedBy.recommendations.length,
           }
         : null,
     };
