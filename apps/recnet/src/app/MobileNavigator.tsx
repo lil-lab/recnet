@@ -193,15 +193,17 @@ function MobileNavigator() {
         }}
       />
 
-      <InviteCodePopover
-        renderTrigger={(unusedCodes) => {
-          return <Link2Icon width="24" height="24" />;
-        }}
-        popoverContentProps={{
-          side: "top",
-          width: "350px",
-        }}
-      />
+      {user ? (
+        <InviteCodePopover
+          renderTrigger={(unusedCodes) => {
+            return <Link2Icon width="24" height="24" />;
+          }}
+          popoverContentProps={{
+            side: "top",
+            width: "350px",
+          }}
+        />
+      ) : null}
 
       <Dialog.Root
         open={open}

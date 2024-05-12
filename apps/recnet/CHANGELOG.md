@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [1.7.1](https://github.com/lil-lab/recnet/compare/recnet-web-v1.7.0...recnet-web-v1.7.1) (2024-05-10)
+
+
+### Bug Fixes
+
+* hide invite code popover when not logged in ([2f905d2](https://github.com/lil-lab/recnet/commit/2f905d29369a65bba25e03b0eb187ae09a5045d8))
+
 ## [1.7.0](https://github.com/lil-lab/recnet/compare/recnet-web-v1.6.0...recnet-web-v1.7.0) (2024-05-09)
 
 ### Features
