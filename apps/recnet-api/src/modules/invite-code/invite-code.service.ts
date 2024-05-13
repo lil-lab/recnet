@@ -15,6 +15,8 @@ import {
   GetAllInviteCodeResponse,
 } from "./invite-code.response";
 
+import { transformUserPreview } from "../user/user.transformer";
+
 @Injectable()
 export class InviteCodeService {
   constructor(
@@ -102,31 +104,11 @@ export class InviteCodeService {
     return {
       id: dbInviteCode.id,
       code: dbInviteCode.code,
-      owner: {
-        id: dbInviteCode.owner.id,
-        handle: dbInviteCode.owner.handle,
-        displayName: dbInviteCode.owner.displayName,
-        photoUrl: dbInviteCode.owner.photoUrl,
-        affiliation: dbInviteCode.owner.affiliation,
-        bio: dbInviteCode.owner.bio,
-        url: dbInviteCode.owner.url,
-        numFollowers: dbInviteCode.owner.followedBy.length,
-        numRecs: dbInviteCode.owner.recommendations.length,
-      },
+      owner: transformUserPreview(dbInviteCode.owner),
       issuedAt: dbInviteCode.issuedAt,
       usedAt: dbInviteCode.usedAt,
       usedBy: dbInviteCode.usedBy
-        ? {
-            id: dbInviteCode.usedBy.id,
-            handle: dbInviteCode.usedBy.handle,
-            displayName: dbInviteCode.usedBy.displayName,
-            photoUrl: dbInviteCode.usedBy.photoUrl,
-            affiliation: dbInviteCode.usedBy.affiliation,
-            bio: dbInviteCode.usedBy.bio,
-            url: dbInviteCode.usedBy.url,
-            numFollowers: dbInviteCode.usedBy.followedBy.length,
-            numRecs: dbInviteCode.usedBy.recommendations.length,
-          }
+        ? transformUserPreview(dbInviteCode.usedBy)
         : null,
     };
   }

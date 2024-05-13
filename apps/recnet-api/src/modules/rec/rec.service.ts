@@ -23,6 +23,8 @@ import {
   UpdateRecResponse,
 } from "./rec.response";
 
+import { transformUserPreview } from "../user/user.transformer";
+
 @Injectable()
 export class RecService {
   constructor(
@@ -192,17 +194,7 @@ export class RecService {
     return {
       ...dbRec,
       cutoff: dbRec.cutoff.toISOString(),
-      user: {
-        id: dbRec.user.id,
-        handle: dbRec.user.handle,
-        displayName: dbRec.user.displayName,
-        photoUrl: dbRec.user.photoUrl,
-        affiliation: dbRec.user.affiliation,
-        bio: dbRec.user.bio,
-        url: dbRec.user.url,
-        numFollowers: dbRec.user.followedBy.length,
-        numRecs: dbRec.user.recommendations.length,
-      },
+      user: transformUserPreview(dbRec.user),
     };
   }
 
