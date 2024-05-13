@@ -21,6 +21,7 @@ import { UpdateUserDto } from "./dto/update.user.dto";
 import { User } from "./entities/user.entity";
 import { UserPreview } from "./entities/user.preview.entity";
 import { GetUsersResponse } from "./user.response";
+import { transformUserPreview } from "./user.transformer";
 
 @Injectable()
 export class UserService {
@@ -44,7 +45,7 @@ export class UserService {
       pageSize,
       filter
     );
-    const userPreviews: UserPreview[] = users.map(this.transformUserPreview);
+    const userPreviews: UserPreview[] = users.map(transformUserPreview);
 
     return {
       hasNext: users.length + getOffset(page, pageSize) < usersCount,
@@ -148,7 +149,7 @@ export class UserService {
 
     const followingUsers: UserPreview[] = (
       await this.userRepository.findUserPreviewByIds(followingUserIds)
-    ).map(this.transformUserPreview);
+    ).map(transformUserPreview);
 
     return {
       id: user.id,
@@ -162,21 +163,10 @@ export class UserService {
       semanticScholarLink: user.semanticScholarLink,
       openReviewUserName: user.openReviewUserName,
       numFollowers: user.followedBy.length,
+      numRecs: user.recommendations.length,
       email: user.email,
       role: user.role,
       following: followingUsers,
-    };
-  }
-
-  private transformUserPreview(user: DbUserPreview): UserPreview {
-    return {
-      id: user.id,
-      handle: user.handle,
-      displayName: user.displayName,
-      photoUrl: user.photoUrl,
-      affiliation: user.affiliation,
-      bio: user.bio,
-      numFollowers: user.followedBy.length,
     };
   }
 }

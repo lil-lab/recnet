@@ -14,6 +14,8 @@ import { CreateAnnouncementDto } from "./dto/create.announcement.dto";
 import { UpdateAnnouncementDto } from "./dto/update.announcement.dto";
 import { Announcement } from "./entities/announcement.entity";
 
+import { transformUserPreview } from "../user/user.transformer";
+
 @Injectable()
 export class AnnouncementService {
   constructor(
@@ -102,15 +104,7 @@ export class AnnouncementService {
 
   private transformAnnouncement(dbAnnouncement: DbAnnouncement): Announcement {
     const { createdBy } = dbAnnouncement;
-    const createdByUserPreview = {
-      id: createdBy.id,
-      handle: createdBy.handle,
-      displayName: createdBy.displayName,
-      photoUrl: createdBy.photoUrl,
-      affiliation: createdBy.affiliation,
-      bio: createdBy.bio,
-      numFollowers: createdBy.followedBy.length,
-    };
+    const createdByUserPreview = transformUserPreview(createdBy);
     return {
       id: dbAnnouncement.id,
       title: dbAnnouncement.title,

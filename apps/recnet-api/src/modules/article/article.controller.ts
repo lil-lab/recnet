@@ -8,7 +8,7 @@ import {
 
 import { Auth } from "@recnet-api/utils/auth/auth.decorator";
 import { RecnetExceptionFilter } from "@recnet-api/utils/filters/recnet.exception.filter";
-import { ZodValidationPipe } from "@recnet-api/utils/pipes/zod.validation.pipe";
+import { ZodValidationQueryPipe } from "@recnet-api/utils/pipes/zod.validation.pipe";
 
 import { getArticlesParamsSchema } from "@recnet/recnet-api-model";
 
@@ -30,7 +30,7 @@ export class ArticleController {
   @ApiBearerAuth()
   @Get()
   @Auth()
-  @UsePipes(new ZodValidationPipe(getArticlesParamsSchema))
+  @UsePipes(new ZodValidationQueryPipe(getArticlesParamsSchema))
   public async getArticleByLink(
     @Query() dto: QueryArticleDto
   ): Promise<GetArticleByLinkResponse> {

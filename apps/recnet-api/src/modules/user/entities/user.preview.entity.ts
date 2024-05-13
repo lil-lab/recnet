@@ -19,6 +19,12 @@ export class UserPreview {
   @ApiPropertyOptional()
   bio: string | null;
 
+  @ApiPropertyOptional()
+  url: string | null;
+
   @ApiProperty()
   numFollowers: number;
+
+  @ApiProperty()
+  numRecs: number;
 }
