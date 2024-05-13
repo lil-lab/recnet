@@ -1,7 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { HomeIcon } from "@radix-ui/react-icons";
+import { HomeIcon, Link2Icon } from "@radix-ui/react-icons";
 import {
   Dialog,
   Button,
@@ -12,7 +12,7 @@ import {
 } from "@radix-ui/themes";
 import { TRPCClientError } from "@trpc/client";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import React, { useMemo, useState } from "react";
 import { useForm, useFormState } from "react-hook-form";
 import { toast } from "sonner";
 import * as z from "zod";
@@ -254,6 +254,10 @@ function EditProfileDialog(props: { handle: string }) {
   );
 }
 
+function StatDivider() {
+  return <div className="w-[1px] bg-gray-6 h-[18px] hidden md:flex" />;
+}
+
 export function Profile(props: { handle: string }) {
   const router = useRouter();
   const { handle } = props;
@@ -262,6 +266,51 @@ export function Profile(props: { handle: string }) {
   });
   const { user: me } = useAuth();
   const isMe = !!me && !!data?.user && me.handle === data.user.handle;
+  const userUrl = data?.user?.url ? new URL(data.user.url) : null;
+
+  const userStats = useMemo(() => {
+    const components: JSX.Element[] = [];
+    if (data?.user) {
+      const numFollowers = (
+        <Flex className="items-center gap-x-1">
+          <Text size="2">{`${data.user.numFollowers} Follower${data.user.numFollowers > 1 ? "s" : ""}`}</Text>
+        </Flex>
+      );
+      components.push(numFollowers);
+      components.push(<StatDivider />);
+    }
+    if (isMe) {
+      const followings = (
+        <Flex className="items-center gap-x-1">
+          <RecNetLink
+            href={`/user/following`}
+            radixLinkProps={{
+              underline: "always",
+            }}
+          >
+            <Text size="2">{`${me.following.length} Following${me.following.length > 1 ? "s" : ""}`}</Text>
+          </RecNetLink>
+        </Flex>
+      );
+      components.push(followings);
+      components.push(<StatDivider />);
+    }
+    if (data?.user) {
+      const numRecs = (
+        <Flex className="items-center gap-x-1">
+          <Text size="2">{`${data.user.numRecs} Rec${data.user.numRecs > 1 ? "s" : ""}`}</Text>
+        </Flex>
+      );
+      components.push(numRecs);
+    }
+    return (
+      <Flex className="sm:items-center gap-x-[10px] p-2 sm:p-1 flex-wrap flex-col sm:flex-row text-gray-11">
+        {components.map((stat, index) => (
+          <React.Fragment key={`user-stat-${index}`}>{stat}</React.Fragment>
+        ))}
+      </Flex>
+    );
+  }, [data, isMe, me]);
 
   if (isPending || isFetching) {
     return (
@@ -310,7 +359,7 @@ export function Profile(props: { handle: string }) {
         <Flex>
           <Avatar user={data.user} className={cn("w-[80px]", "h-[80px]")} />
         </Flex>
-        <Flex className="flex-grow flex-col justify-between h-full">
+        <Flex className="flex-grow flex-col justify-between h-full gap-y-1">
           <Flex className="justify-between items-center">
             <Flex className="p-2 sm:p-1 sm:items-center gap-x-4 text-gray-11 flex-col sm:flex-row">
               <Text
@@ -347,35 +396,24 @@ export function Profile(props: { handle: string }) {
               </Text>
             </Flex>
           ) : null}
-          <Flex className="sm:items-center gap-x-[10px] p-2 sm:p-1 flex-wrap flex-col sm:flex-row">
-            {data.user.affiliation ? (
-              <Flex className="items-center gap-x-1 text-gray-11">
-                <HomeIcon width="16" height="16" />
-                <Text size="2">{data.user.affiliation}</Text>
-                <Text size="2" className="sm:ml-[6px] hidden sm:inline-block">
-                  /
-                </Text>
-              </Flex>
-            ) : null}
-            <Flex className="items-center gap-x-1 text-gray-11">
-              <Text size="2">{`${data.user.numFollowers} Follower${data.user.numFollowers > 1 ? "s" : ""}`}</Text>
+          {data.user.affiliation ? (
+            <Flex className="items-center gap-x-1 text-gray-11 px-2 sm:px-1">
+              <HomeIcon width="16" height="16" />
+              <Text size="2">{data.user.affiliation}</Text>
             </Flex>
-            {isMe ? (
-              <Flex className="items-center gap-x-1 text-gray-11">
-                <Text size="2" className="sm:mr-[6px] hidden sm:inline-block">
-                  /
+          ) : null}
+          {userUrl ? (
+            <Flex className="items-center gap-x-1 text-gray-11 px-2 sm:px-1">
+              <Link2Icon width="16" height="16" />
+              <RecNetLink href={userUrl.href}>
+                <Text size="2">
+                  {userUrl.hostname}
+                  {userUrl.pathname === "/" ? null : userUrl.pathname}
                 </Text>
-                <RecNetLink
-                  href={`/user/following`}
-                  radixLinkProps={{
-                    underline: "always",
-                  }}
-                >
-                  <Text size="2">{`${me.following.length} Following${me.following.length > 1 ? "s" : ""}`}</Text>
-                </RecNetLink>
-              </Flex>
-            ) : null}
-          </Flex>
+              </RecNetLink>
+            </Flex>
+          ) : null}
+          {userStats}
         </Flex>
       </Flex>
       <Flex className="w-full md:hidden">
