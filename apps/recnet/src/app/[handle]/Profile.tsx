@@ -255,7 +255,7 @@ function EditProfileDialog(props: { handle: string }) {
 }
 
 function StatDivider() {
-  return <div className="w-[1px] bg-gray-6 h-[18px] hidden md:flex" />;
+  return <div className="w-[1px] bg-gray-6 h-[18px] flex" />;
 }
 
 export function Profile(props: { handle: string }) {
@@ -266,7 +266,11 @@ export function Profile(props: { handle: string }) {
   });
   const { user: me } = useAuth();
   const isMe = !!me && !!data?.user && me.handle === data.user.handle;
-  const userUrl = data?.user?.url ? new URL(data.user.url) : null;
+
+  const userUrl = useMemo(
+    () => (data?.user?.url ? new URL(data.user.url) : null),
+    [data]
+  );
 
   const userStats = useMemo(() => {
     const components: JSX.Element[] = [];
@@ -304,13 +308,48 @@ export function Profile(props: { handle: string }) {
       components.push(numRecs);
     }
     return (
-      <Flex className="sm:items-center gap-x-[10px] p-2 sm:p-1 flex-wrap flex-col sm:flex-row text-gray-11">
+      <Flex className="sm:items-center gap-x-[10px] p-2 sm:p-1 flex-wrap flex-row text-gray-11">
         {components.map((stat, index) => (
           <React.Fragment key={`user-stat-${index}`}>{stat}</React.Fragment>
         ))}
       </Flex>
     );
   }, [data, isMe, me]);
+
+  const userInfo = useMemo(() => {
+    if (!data?.user) {
+      return null;
+    }
+    return (
+      <div className="flex flex-col justify-between h-full gap-y-1">
+        {data.user.bio ? (
+          <Flex className="w-full p-2 sm:p-1 my-1">
+            <Text size="2" className="text-gray-11 whitespace-pre-line">
+              {data.user.bio}
+            </Text>
+          </Flex>
+        ) : null}
+        {data.user.affiliation ? (
+          <Flex className="items-center gap-x-1 text-gray-11 px-2 sm:px-1">
+            <HomeIcon width="16" height="16" />
+            <Text size="2">{data.user.affiliation}</Text>
+          </Flex>
+        ) : null}
+        {userUrl ? (
+          <Flex className="items-center gap-x-1 text-gray-11 px-2 sm:px-1">
+            <Link2Icon width="16" height="16" />
+            <RecNetLink href={userUrl.href}>
+              <Text size="2">
+                {userUrl.hostname}
+                {userUrl.pathname === "/" ? null : userUrl.pathname}
+              </Text>
+            </RecNetLink>
+          </Flex>
+        ) : null}
+        {userStats}
+      </div>
+    );
+  }, [data, userStats, userUrl]);
 
   if (isPending || isFetching) {
     return (
@@ -354,7 +393,7 @@ export function Profile(props: { handle: string }) {
   }
 
   return (
-    <div className={cn("flex-col", "gap-y-6", "flex")}>
+    <div className={cn("flex-col", "gap-y-3", "md:gap-y-6", "flex")}>
       <Flex className="items-start p-3 gap-x-6">
         <Flex>
           <Avatar user={data.user} className={cn("w-[80px]", "h-[80px]")} />
@@ -389,33 +428,10 @@ export function Profile(props: { handle: string }) {
               )}
             </Flex>
           </Flex>
-          {data.user.bio ? (
-            <Flex className="w-full p-2 sm:p-1 my-1">
-              <Text size="2" className="text-gray-11 whitespace-pre-line">
-                {data.user.bio}
-              </Text>
-            </Flex>
-          ) : null}
-          {data.user.affiliation ? (
-            <Flex className="items-center gap-x-1 text-gray-11 px-2 sm:px-1">
-              <HomeIcon width="16" height="16" />
-              <Text size="2">{data.user.affiliation}</Text>
-            </Flex>
-          ) : null}
-          {userUrl ? (
-            <Flex className="items-center gap-x-1 text-gray-11 px-2 sm:px-1">
-              <Link2Icon width="16" height="16" />
-              <RecNetLink href={userUrl.href}>
-                <Text size="2">
-                  {userUrl.hostname}
-                  {userUrl.pathname === "/" ? null : userUrl.pathname}
-                </Text>
-              </RecNetLink>
-            </Flex>
-          ) : null}
-          {userStats}
+          <div className="hidden sm:flex">{userInfo}</div>
         </Flex>
       </Flex>
+      <div className="sm:hidden">{userInfo}</div>
       <Flex className="w-full md:hidden">
         {isMe ? (
           <EditProfileDialog handle={data.user.handle} />
