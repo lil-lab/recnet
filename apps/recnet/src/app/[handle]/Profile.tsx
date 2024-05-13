@@ -25,6 +25,7 @@ import { RecNetLink } from "@recnet/recnet-web/components/Link";
 import { Skeleton, SkeletonText } from "@recnet/recnet-web/components/Skeleton";
 import { ErrorMessages } from "@recnet/recnet-web/constant";
 import { cn } from "@recnet/recnet-web/utils/cn";
+import { interleaveWithValue } from "@recnet/recnet-web/utils/interleaveWithValue";
 
 const HandleBlacklist = [
   "about",
@@ -362,7 +363,6 @@ export function Profile(props: { handle: string }) {
         </Flex>
       );
       components.push(numFollowers);
-      components.push(<StatDivider />);
     }
     if (isMe) {
       const followings = (
@@ -378,7 +378,6 @@ export function Profile(props: { handle: string }) {
         </Flex>
       );
       components.push(followings);
-      components.push(<StatDivider />);
     }
     if (data?.user) {
       const numRecs = (
@@ -388,9 +387,13 @@ export function Profile(props: { handle: string }) {
       );
       components.push(numRecs);
     }
+    const componentsWithDividers = interleaveWithValue(
+      components,
+      <StatDivider />
+    );
     return (
       <Flex className="sm:items-center gap-x-[10px] p-2 sm:p-1 flex-wrap flex-row text-gray-11">
-        {components.map((stat, index) => (
+        {componentsWithDividers.map((stat, index) => (
           <React.Fragment key={`user-stat-${index}`}>{stat}</React.Fragment>
         ))}
       </Flex>
