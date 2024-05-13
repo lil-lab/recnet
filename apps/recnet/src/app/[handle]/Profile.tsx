@@ -63,6 +63,10 @@ const EditUserProfileSchema = z.object({
     .string()
     .max(200, "Bio must contain at most 200 character(s)")
     .nullable(),
+  url: z.string().url().nullable(),
+  googleScholarLink: z.string().url().nullable(),
+  semanticScholarLink: z.string().url().nullable(),
+  openReviewUserName: z.string().nullable(),
 });
 
 function EditProfileDialog(props: { handle: string }) {
@@ -80,6 +84,10 @@ function EditProfileDialog(props: { handle: string }) {
         handle: user?.handle ?? null,
         affiliation: user?.affiliation ?? null,
         bio: user?.bio ?? null,
+        url: user?.url ?? null,
+        googleScholarLink: user?.googleScholarLink ?? null,
+        semanticScholarLink: user?.semanticScholarLink ?? null,
+        openReviewUserName: user?.openReviewUserName ?? null,
       },
       mode: "onTouched",
     });
@@ -192,6 +200,79 @@ function EditProfileDialog(props: { handle: string }) {
               {formState.errors.affiliation ? (
                 <Text size="1" color="red">
                   {formState.errors.affiliation.message}
+                </Text>
+              ) : null}
+            </label>
+            <label>
+              <Text as="div" size="2" mb="1" weight="medium">
+                Personal Website
+              </Text>
+              <TextField.Root
+                placeholder="Personal website URL(Optional)"
+                {...register("url", {
+                  setValueAs: (val) => (val === "" ? null : val),
+                })}
+              />
+              {formState.errors.url ? (
+                <Text size="1" color="red">
+                  {formState.errors.url.message}
+                </Text>
+              ) : null}
+            </label>
+            <label>
+              <Text as="div" size="2" mb="1" weight="medium">
+                <RecNetLink href="https://scholar.google.com/">
+                  Google Scholar
+                </RecNetLink>{" "}
+                Link
+              </Text>
+              <TextField.Root
+                placeholder="Google Scholar Link(Optional)"
+                {...register("googleScholarLink", {
+                  setValueAs: (val) => (val === "" ? null : val),
+                })}
+              />
+              {formState.errors.googleScholarLink ? (
+                <Text size="1" color="red">
+                  {formState.errors.googleScholarLink.message}
+                </Text>
+              ) : null}
+            </label>
+            <label>
+              <Text as="div" size="2" mb="1" weight="medium">
+                <RecNetLink href="https://www.semanticscholar.org/">
+                  Semantic Scholar
+                </RecNetLink>{" "}
+                Link
+              </Text>
+              <TextField.Root
+                placeholder="Semantic Scholar Link(Optional)"
+                {...register("semanticScholarLink", {
+                  setValueAs: (val) => (val === "" ? null : val),
+                })}
+              />
+              {formState.errors.semanticScholarLink ? (
+                <Text size="1" color="red">
+                  {formState.errors.semanticScholarLink.message}
+                </Text>
+              ) : null}
+            </label>
+            <label>
+              <Text as="div" size="2" mb="1" weight="medium">
+                <RecNetLink href="https://openreview.net/">
+                  OpenReview
+                </RecNetLink>{" "}
+                Username
+              </Text>
+              <TextField.Root
+                placeholder="OpenReview Username(Optional)"
+                {...register("openReviewUserName", {
+                  setValueAs: (val) => (val === "" ? null : val),
+                })}
+              />
+              {formState.errors.openReviewUserName ? (
+                <Text size="1" color="red">
+                  {formState.errors.openReviewUserName.message}
                 </Text>
               ) : null}
             </label>
@@ -358,30 +439,28 @@ export function Profile(props: { handle: string }) {
           <Flex>
             <Skeleton className="w-[80px] h-[80px] rounded-[999px]" />
           </Flex>
-          <Flex className="flex-grow flex-col justify-between h-full">
-            <Flex className="justify-between items-center">
-              <Flex className="p-2 items-center gap-x-4 text-gray-11">
-                <SkeletonText size="6" />
-              </Flex>
-              <Flex className="w-fit">
-                <Button
-                  className="w-full p-0 overflow-hidden cursor-pointer"
-                  radius="medium"
-                  variant="surface"
-                  disabled
-                >
-                  <SkeletonText size="3" className="h-full" />
-                </Button>
-              </Flex>
-            </Flex>
-            <Flex className="w-full p-2 sm:p-1 my-1 flex-col gap-y-1">
-              <SkeletonText size="2" className="w-[50%]" />
-              <SkeletonText size="2" className="w-[50%]" />
-            </Flex>
-            <Flex className="items-center gap-x-[10px] p-1">
-              <SkeletonText className="h-fit min-w-[300px]" size="2" />
-            </Flex>
+          <Flex className="flex-grow flex-col justify-center h-full gap-y-1">
+            <SkeletonText size="4" />
+            <SkeletonText size="2" />
           </Flex>
+        </Flex>
+        <Flex className="w-full p-2 sm:p-1 my-1 flex-col gap-y-1">
+          <SkeletonText size="2" className="w-[50%]" />
+          <SkeletonText size="2" className="w-[50%]" />
+          <SkeletonText size="2" className="w-[50%]" />
+        </Flex>
+        <Flex className="items-center p-1">
+          <SkeletonText className="h-fit min-w-[300px]" size="2" />
+        </Flex>
+        <Flex className="w-full">
+          <Button
+            className="w-full p-0 overflow-hidden cursor-pointer"
+            radius="medium"
+            variant="surface"
+            disabled
+          >
+            <SkeletonText size="3" className="h-full w-full" />
+          </Button>
         </Flex>
       </div>
     );
