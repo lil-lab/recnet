@@ -39,6 +39,9 @@ export class User {
   numFollowers: number;
 
   @ApiProperty()
+  numRecs: number;
+
+  @ApiProperty()
   email: string;
 
   @ApiProperty()

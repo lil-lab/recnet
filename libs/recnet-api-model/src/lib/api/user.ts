@@ -35,6 +35,7 @@ export const patchUserMeRequestSchema = userSchema
   .omit({
     id: true,
     numFollowers: true,
+    numRecs: true,
     following: true,
     role: true,
   })
@@ -51,10 +52,10 @@ export const postUserMeRequestSchema = userPreviewSchema
   .omit({
     id: true,
     numFollowers: true,
+    numRecs: true,
   })
   .extend({
     email: z.string(),
-    url: z.string().url().nullable(),
     googleScholarLink: z.string().url().nullable(),
     semanticScholarLink: z.string().url().nullable(),
     openReviewUserName: z.string().nullable(),
