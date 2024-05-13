@@ -8,14 +8,23 @@ import useMount from "../hooks/useMount";
 import { cn } from "../utils/cn";
 
 interface AnnouncementCardProps {
-  icon?: React.ReactNode;
   className?: string;
-  children: React.ReactNode;
-  announcementKey: string;
+  title: string;
+  content: string;
+  allowClose?: boolean;
+  id: string;
+  isPreview?: boolean;
 }
 
 export function AnnouncementCard(props: AnnouncementCardProps) {
-  const { icon = undefined, announcementKey, className = "", children } = props;
+  const {
+    className = "",
+    title,
+    content,
+    id: announcementKey,
+    allowClose = true,
+    isPreview = false,
+  } = props;
   const announcementKeyPrefix = "announcement-";
   const localStorageKey = `${announcementKeyPrefix}${announcementKey}`;
   const [show, setShow] = useState(false);
@@ -43,7 +52,7 @@ export function AnnouncementCard(props: AnnouncementCardProps) {
             "gap-y-2",
             "sm:flex-row",
             "sm:justify-between",
-            "sm:items-center",
+            "sm:items-start",
             "text-gray-11 dark:text-gray-12",
             "text-[14px]",
             className
@@ -52,29 +61,41 @@ export function AnnouncementCard(props: AnnouncementCardProps) {
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -20 }}
         >
-          <div className="flex flex-row w-full sm:max-w-[75%] gap-x-2 items-center flex-wrap">
+          <div className="flex flex-col w-full sm:max-w-[75%] gap-y-1 items-start flex-wrap">
             <Text>
-              <span className="mr-1">{icon || "📢"}</span> {children}
+              <span className="mr-1">{"📢"}</span>
+              <span className="font-bold mr-1">{title}</span>
             </Text>
+            <Text>{content}</Text>
           </div>
-          <div className="w-full flex flex-row justify-end gap-x-2 items-center sm:w-fit sm:min-w-[25%]">
-            <Button
-              variant="ghost"
-              className="text-gray-10 dark:text-gray-11 cursor-pointer text-[12px] transition-all ease-in-out"
-              onClick={() => {
-                localStorage.setItem(localStorageKey, "true");
-                setShow(false);
-              }}
-            >{`Don't show again`}</Button>
-            <div className="w-4 h-4">
-              <Cross1Icon
-                width={16}
-                height={16}
-                className="cursor-pointer ml-1 text-gray-11 hover:text-gray-12"
-                onClick={() => setShow(false)}
-              />
+          {allowClose ? (
+            <div className="w-full flex flex-row justify-end gap-x-2 items-center sm:w-fit sm:min-w-[25%]">
+              <Button
+                variant="ghost"
+                className="text-gray-10 dark:text-gray-11 cursor-pointer text-[12px] transition-all ease-in-out"
+                onClick={() => {
+                  if (isPreview) {
+                    return;
+                  }
+                  localStorage.setItem(localStorageKey, "true");
+                  setShow(false);
+                }}
+              >{`Don't show again`}</Button>
+              <div className="w-4 h-4">
+                <Cross1Icon
+                  width={16}
+                  height={16}
+                  className="cursor-pointer ml-1 text-gray-11 hover:text-gray-12"
+                  onClick={() => {
+                    if (isPreview) {
+                      return;
+                    }
+                    setShow(false);
+                  }}
+                />
+              </div>
             </div>
-          </div>
+          ) : null}
         </motion.div>
       ) : null}
     </AnimatePresence>

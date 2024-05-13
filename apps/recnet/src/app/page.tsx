@@ -50,11 +50,12 @@ export default async function Home() {
       )}
     >
       <AnnouncementCard
-        announcementKey="invite-only"
+        id="invite-only"
         className="w-[95%] sm:w-[90%] md:w-[65%] lg:w-[55%] sm:fixed sm:top-[64px] sm:mt-4"
-      >
-        RecNet is under early development. Signing up requires an invite code.
-      </AnnouncementCard>
+        title={"Invite Only"}
+        content="RecNet is under early development. Signing up requires an invite code."
+      />
+
       <Text
         className={cn(
           "text-[60px]",
