@@ -1,7 +1,7 @@
 "use client";
 
-import { HomeIcon, PersonIcon } from "@radix-ui/react-icons";
-import { Flex, Text, Grid } from "@radix-ui/themes";
+import { HomeIcon, Pencil1Icon, PersonIcon } from "@radix-ui/react-icons";
+import { Flex, Text, Grid, Tooltip } from "@radix-ui/themes";
 
 import { Avatar } from "@recnet/recnet-web/components/Avatar";
 import { FollowButton } from "@recnet/recnet-web/components/FollowButton";
@@ -49,24 +49,34 @@ export function UserCard({ user }: { user: UserPreview }) {
           {"@" + user.handle}
         </Text>
       </Flex>
-      <Flex className="items-center gap-x-1">
+      <Flex direction="column" className="items-start gap-[6px] text-gray-11">
         {user.affiliation ? (
-          <Flex className="items-center gap-x-1 text-gray-11 overflow-hidden">
-            <HomeIcon width="16" height="16" />
+          <Flex className="items-center gap-x-1 overflow-hidden">
+            <HomeIcon width="16" height="16" className="min-w-min" />
             <Text size="1" className="truncate">
               {user.affiliation}
             </Text>
-            <Text size="1" className="ml-[6px]">
-              /
-            </Text>
           </Flex>
         ) : null}
-        <Flex className="items-center gap-x-1 text-gray-11">
-          <PersonIcon width="16" height="16" />
-          <Text size="1">{user.numFollowers}</Text>
+        <Flex className="items-center gap-x-2">
+          <Tooltip content="Followers" side="top">
+            <Flex className="items-center gap-x-1">
+              <PersonIcon width="16" height="16" className="min-w-min" />
+              <Text size="1">{user.numFollowers}</Text>
+            </Flex>
+          </Tooltip>
+          <div className="w-[1px] h-[16px] bg-gray-6" />
+          <Tooltip content="Recommendations" side="top">
+            <Flex className="items-center gap-x-1 overflow-hidden">
+              <Pencil1Icon width="16" height="16" className="min-w-min" />
+              <Text size="1" className="truncate">
+                {user.numRecs}
+              </Text>
+            </Flex>
+          </Tooltip>
         </Flex>
       </Flex>
-      <FollowButton user={user} />
+      <FollowButton user={user} className="mt-auto" />
     </div>
   );
 }
