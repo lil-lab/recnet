@@ -1,15 +1,14 @@
 "use client";
 
 import { trpc } from "@recnet/recnet-web/app/_trpc/client";
+import { AnnouncementCardSkeleton } from "@recnet/recnet-web/components/AnnouncementCard";
 import { LoadingBox } from "@recnet/recnet-web/components/LoadingBox";
+import { SkeletonText } from "@recnet/recnet-web/components/Skeleton";
 import { cn } from "@recnet/recnet-web/utils/cn";
 
 import { AnnouncementForm } from "./AnnouncementForm";
 
 import { AdminSectionBox, AdminSectionTitle } from "../../AdminSections";
-import { AnnouncementCardSkeleton } from "@recnet/recnet-web/components/AnnouncementCard";
-import { Skeleton } from "@radix-ui/themes";
-import { SkeletonText } from "@recnet/recnet-web/components/Skeleton";
 
 export default function InappAnnouncement() {
   const {

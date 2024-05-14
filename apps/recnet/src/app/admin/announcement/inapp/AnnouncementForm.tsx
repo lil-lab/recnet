@@ -18,6 +18,7 @@ import { WeekTs, getVerboseDateString } from "@recnet/recnet-date-fns";
 import { Announcement } from "@recnet/recnet-api-model";
 
 import { AdminSectionBox } from "../../AdminSections";
+import { DoubleConfirmButton } from "@recnet/recnet-web/components/DoubleConfirmButton";
 
 const announcementFormSchema = z.object({
   title: z.string().min(1).max(100),
@@ -259,7 +260,38 @@ export function AnnouncementForm(props: AnnouncementFormProps) {
               ) : null}
             </div>
           </Flex>
-          <Flex className="justify-end w-full">
+          <Flex className="justify-end w-full gap-x-2">
+            {!isCreateMode ? (
+              <DoubleConfirmButton
+                title="Confirm Delete Announcement"
+                description="Are you sure you want to delete this announcement? This action cannot be undone."
+                onConfirm={async () => {
+                  const targetId = prefilledData?.id;
+                  if (!targetId) {
+                    toast.error("Failed to delete announcement.");
+                    return;
+                  }
+                  setIsSubmitting(true);
+                  try {
+                    await updateAnnouncementMutation.mutateAsync({
+                      id: targetId,
+                      isActivated: false,
+                    });
+                    utils.getLatestAnnouncement.invalidate();
+                    toast.success(`Delete announcement successfully.`);
+                  } catch (e) {
+                    console.log(e);
+                    toast.error("Failed to delete announcement.");
+                  }
+                  setIsSubmitting(false);
+                }}
+              >
+                <Button variant="outline" color="red" loading={isSubmitting}>
+                  Delete
+                </Button>
+              </DoubleConfirmButton>
+            ) : null}
+
             <Button
               type="submit"
               className={cn("bg-blue-10", "cursor-pointer")}
