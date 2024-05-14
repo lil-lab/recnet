@@ -1,18 +1,16 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import {
-  Button,
-  Flex,
-  Text,
-  TextField,
-  Dialog,
-  Checkbox,
-} from "@radix-ui/themes";
+import { Button, Flex, Text, TextField, Checkbox } from "@radix-ui/themes";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { useForm, useFormState, Controller } from "react-hook-form";
+import { toast } from "sonner";
 import { z } from "zod";
 
+import { trpc } from "@recnet/recnet-web/app/_trpc/client";
 import { AnnouncementCard } from "@recnet/recnet-web/components/AnnouncementCard";
+import { DatePicker } from "@recnet/recnet-web/components/DatePicker";
 import { cn } from "@recnet/recnet-web/utils/cn";
 
 import { WeekTs, getVerboseDateString } from "@recnet/recnet-date-fns";
@@ -29,15 +27,24 @@ const announcementFormSchema = z.object({
   endAt: z.date(),
 });
 
-interface AnnouncementFormProps {
-  mode: "create" | "update";
-  prefilledData?: Announcement;
-}
+type AnnouncementFormProps =
+  | {
+      mode: "update";
+      prefilledData: Announcement;
+    }
+  | {
+      mode: "create";
+    };
 
 export function AnnouncementForm(props: AnnouncementFormProps) {
-  const { mode, prefilledData = null } = props;
+  const { mode } = props;
   const isCreateMode = mode === "create";
+  const prefilledData = !isCreateMode ? props.prefilledData : null;
   const today = new Date();
+  const router = useRouter();
+  const utils = trpc.useUtils();
+
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const { register, handleSubmit, formState, setError, control, watch } =
     useForm({
@@ -61,9 +68,10 @@ export function AnnouncementForm(props: AnnouncementFormProps) {
       },
       mode: "onTouched",
     });
-  const { isDirty } = useFormState({ control: control });
+  const { isDirty, dirtyFields } = useFormState({ control: control });
 
-  console.log(watch());
+  const createAnnouncementMutation = trpc.createAnnouncement.useMutation();
+  const updateAnnouncementMutation = trpc.updateAnnouncement.useMutation();
 
   return (
     <div className={cn("w-full h-fit", "flex flex-col", "gap-y-2")}>
@@ -75,105 +83,193 @@ export function AnnouncementForm(props: AnnouncementFormProps) {
         isPreview
       />
       <AdminSectionBox>
-        <Flex
-          direction={{
-            initial: "column",
-            sm: "row",
-          }}
-          className="w-full h-full gap-4 flex-wrap"
-        >
-          <div className="flex flex-col gap-y-2 w-full">
-            <Text size="1" className="text-gray-10">
-              Title
-            </Text>
-            <TextField.Root {...register("title")} />
-            {formState.errors.title ? (
-              <Text size="1" color="red">
-                {formState.errors.title.message}
-              </Text>
-            ) : null}
-          </div>
-          <div className="flex flex-col gap-y-2 w-full">
-            <Text size="1" className="text-gray-10">
-              Content
-            </Text>
-            <TextField.Root {...register("content")} />
-            {formState.errors.content ? (
-              <Text size="1" color="red">
-                {formState.errors.content.message}
-              </Text>
-            ) : null}
-          </div>
-          <div className="flex flex-col gap-y-2 w-[48%]">
-            <Text size="1" className="text-gray-10">
-              Start At
-            </Text>
-            <Controller
-              name="startAt"
-              control={control}
-              render={({ field }) => (
-                <Flex gap="2" className="items-center text-gray-12 w-full">
-                  <TextField.Root
-                    value={getVerboseDateString(field.value)}
-                    className="w-full"
-                    readOnly
-                  />
-                </Flex>
-              )}
-            />
-            {formState.errors.startAt ? (
-              <Text size="1" color="red">
-                {formState.errors.startAt.message}
-              </Text>
-            ) : null}
-          </div>
-          <div className="flex flex-col gap-y-2 w-[48%]">
-            <Text size="1" className="text-gray-10">
-              End At
-            </Text>
-            <Controller
-              name="endAt"
-              control={control}
-              render={({ field }) => (
-                <Flex gap="2" className="items-center text-gray-12 w-full">
-                  <TextField.Root
-                    value={getVerboseDateString(field.value)}
-                    className="w-full"
-                    readOnly
-                  />
-                </Flex>
-              )}
-            />
-            {formState.errors.endAt ? (
-              <Text size="1" color="red">
-                {formState.errors.endAt.message}
-              </Text>
-            ) : null}
-          </div>
+        <form
+          className="flex flex-col"
+          onSubmit={handleSubmit(async (data, e) => {
+            e?.preventDefault();
+            setIsSubmitting(true);
+            // if endAt is before startAt, return an error
+            if (data.endAt < data.startAt) {
+              setError("endAt", {
+                type: "manual",
+                message: "End date must be after start date",
+              });
+              setIsSubmitting(false);
+              return;
+            }
+            const startAt = data.startAt.toISOString();
+            const endAt = data.endAt.toISOString();
+            try {
+              if (!isCreateMode && prefilledData) {
+                // only send dirty fields
+                const dirtyData = Object.fromEntries(
+                  Object.entries(dirtyFields).map(([key, value]) => [
+                    key,
+                    key === "startAt" || key === "endAt"
+                      ? (data[key as keyof typeof data] as Date).toISOString()
+                      : data[key as keyof typeof data],
+                  ])
+                );
+                await updateAnnouncementMutation.mutateAsync({
+                  id: prefilledData.id,
+                  ...dirtyData,
+                });
+              } else if (isCreateMode) {
+                await createAnnouncementMutation.mutateAsync({
+                  title: data.title,
+                  content: data.content,
+                  allowClose: data.allowClose,
+                  startAt,
+                  endAt,
+                  isActivated: true,
+                });
+              }
+              utils.getLatestAnnouncement.invalidate();
+              toast.success(
+                `${mode === "create" ? "Created" : "Updated"} announcement successfully. 🎉`
+              );
+              router.refresh();
+            } catch (e) {
+              console.log(e);
+              toast.error(`Failed to ${mode} announcement. Contact support.`);
+            }
 
-          <div className="flex flex-col gap-y-2 w-full">
-            <Controller
-              name="allowClose"
-              control={control}
-              render={({ field }) => (
-                <Flex gap="2" className="items-center text-gray-12">
-                  <Checkbox
-                    checked={field.value}
-                    onCheckedChange={(checked) => {
-                      field.onChange(checked);
-                    }}
-                  />
-                  <Text size="2">Allow Close</Text>
-                </Flex>
-              )}
-            />
-            {formState.errors.allowClose ? (
-              <Text size="1" color="red">
-                {formState.errors.allowClose.message}
+            setIsSubmitting(false);
+          })}
+        >
+          <Flex
+            direction={{
+              initial: "column",
+              sm: "row",
+            }}
+            className="w-full h-full gap-4 flex-wrap"
+          >
+            <div className="flex flex-col gap-y-2 w-full">
+              <Text size="1" className="text-gray-10">
+                Title
               </Text>
-            ) : null}
-          </div>
-        </Flex>
+              <TextField.Root {...register("title")} />
+              {formState.errors.title ? (
+                <Text size="1" color="red">
+                  {formState.errors.title.message}
+                </Text>
+              ) : null}
+            </div>
+            <div className="flex flex-col gap-y-2 w-full">
+              <Text size="1" className="text-gray-10">
+                Content
+              </Text>
+              <TextField.Root {...register("content")} />
+              {formState.errors.content ? (
+                <Text size="1" color="red">
+                  {formState.errors.content.message}
+                </Text>
+              ) : null}
+            </div>
+            <div className="flex flex-col gap-y-2 w-[48%]">
+              <Text size="1" className="text-gray-10">
+                Start At
+              </Text>
+              <Controller
+                name="startAt"
+                control={control}
+                render={({ field }) => (
+                  <Flex gap="2" className="items-center text-gray-12 w-full">
+                    <DatePicker
+                      value={field.value}
+                      onChange={(date) => {
+                        field.onChange(date);
+                      }}
+                      renderTrigger={() => {
+                        return (
+                          <TextField.Root
+                            value={getVerboseDateString(field.value, {
+                              year: "numeric",
+                            })}
+                            className="w-full cursor-pointer"
+                            readOnly
+                          />
+                        );
+                      }}
+                    />
+                  </Flex>
+                )}
+              />
+              {formState.errors.startAt ? (
+                <Text size="1" color="red">
+                  {formState.errors.startAt.message}
+                </Text>
+              ) : null}
+            </div>
+            <div className="flex flex-col gap-y-2 w-[48%]">
+              <Text size="1" className="text-gray-10">
+                End At
+              </Text>
+              <Controller
+                name="endAt"
+                control={control}
+                render={({ field }) => (
+                  <Flex gap="2" className="items-center text-gray-12 w-full">
+                    <DatePicker
+                      value={field.value}
+                      onChange={(date) => {
+                        field.onChange(date);
+                      }}
+                      renderTrigger={() => {
+                        return (
+                          <TextField.Root
+                            value={getVerboseDateString(field.value, {
+                              year: "numeric",
+                            })}
+                            className="w-full cursor-pointer"
+                            readOnly
+                          />
+                        );
+                      }}
+                    />
+                  </Flex>
+                )}
+              />
+              {formState.errors.endAt ? (
+                <Text size="1" color="red">
+                  {formState.errors.endAt.message}
+                </Text>
+              ) : null}
+            </div>
+            <div className="flex flex-col gap-y-2 w-full">
+              <Controller
+                name="allowClose"
+                control={control}
+                render={({ field }) => (
+                  <Flex gap="2" className="items-center text-gray-12">
+                    <Checkbox
+                      checked={field.value}
+                      onCheckedChange={(checked) => {
+                        field.onChange(checked);
+                      }}
+                    />
+                    <Text size="2">Allow Close</Text>
+                  </Flex>
+                )}
+              />
+              {formState.errors.allowClose ? (
+                <Text size="1" color="red">
+                  {formState.errors.allowClose.message}
+                </Text>
+              ) : null}
+            </div>
+          </Flex>
+          <Flex className="justify-end w-full">
+            <Button
+              type="submit"
+              className={cn("bg-blue-10", "cursor-pointer")}
+              loading={isSubmitting}
+              disabled={!isDirty}
+            >
+              {isCreateMode ? "Create" : "Update"}
+            </Button>
+          </Flex>
+        </form>
       </AdminSectionBox>
     </div>
   );

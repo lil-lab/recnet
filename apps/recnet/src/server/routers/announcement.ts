@@ -9,11 +9,7 @@ import {
   patchAnnouncementRequestSchema,
 } from "@recnet/recnet-api-model";
 
-import {
-  checkRecnetJWTProcedure,
-  checkIsAdminProcedure,
-  publicApiProcedure,
-} from "./middleware";
+import { checkIsAdminProcedure, publicApiProcedure } from "./middleware";
 
 import { router } from "../trpc";
 
@@ -47,7 +43,7 @@ export const announcementRouter = router({
       return postAnnouncementResponseSchema.parse(data);
     }),
   updateAnnouncement: checkIsAdminProcedure
-    .input(z.object({ id: z.string() }).merge(patchAnnouncementRequestSchema))
+    .input(z.object({ id: z.number() }).merge(patchAnnouncementRequestSchema))
     .mutation(async (opts) => {
       const { recnetApi } = opts.ctx;
       const { id, ...data } = opts.input;

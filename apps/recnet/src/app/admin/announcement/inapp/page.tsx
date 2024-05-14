@@ -1,13 +1,20 @@
-import { serverClient } from "@recnet/recnet-web/app/_trpc/serverClient";
+"use client";
+
+import { trpc } from "@recnet/recnet-web/app/_trpc/client";
+import { LoadingBox } from "@recnet/recnet-web/components/LoadingBox";
 import { cn } from "@recnet/recnet-web/utils/cn";
 
-import { formatDate, getVerboseDateString } from "@recnet/recnet-date-fns";
-
-import { AdminSectionBox, AdminSectionTitle } from "../../AdminSections";
 import { AnnouncementForm } from "./AnnouncementForm";
 
-export default async function InappAnnouncement() {
-  const latestAnnouncement = await serverClient.getLatestAnnouncement();
+import { AdminSectionBox, AdminSectionTitle } from "../../AdminSections";
+
+export default function InappAnnouncement() {
+  const {
+    data: latestAnnouncement,
+    isPending,
+    isFetching,
+  } = trpc.getLatestAnnouncement.useQuery();
+
   return (
     <div
       className={cn(
@@ -20,7 +27,11 @@ export default async function InappAnnouncement() {
       )}
     >
       <div className="flex flex-col gap-y-2 w-full">
-        {latestAnnouncement ? (
+        {isPending || isFetching ? (
+          <AdminSectionBox>
+            <LoadingBox />
+          </AdminSectionBox>
+        ) : latestAnnouncement ? (
           <>
             <AdminSectionTitle description="Edit and preview the current announcement.">
               Current Announcement

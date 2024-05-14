@@ -88,6 +88,6 @@ export class AnnouncementController {
     @Param("id", ParseIntPipe) id: number,
     @Body() dto: UpdateAnnouncementDto
   ): Promise<Announcement> {
-    return this.announcementService.updateAnnouncement(1, dto);
+    return this.announcementService.updateAnnouncement(id, dto);
   }
 }

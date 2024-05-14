@@ -35,28 +35,17 @@ function TimeSelector(props: {
 }) {
   const { selectedDate, onSubmit, onCancel } = props;
 
-  const { register, handleSubmit, formState, setError, control, watch } =
-    useForm({
-      resolver: zodResolver(timeSelectFormSchema),
-      defaultValues: {
-        hour: 12,
-        minute: 0,
-      },
-      mode: "onTouched",
-    });
+  const { register, handleSubmit, formState } = useForm({
+    resolver: zodResolver(timeSelectFormSchema),
+    defaultValues: {
+      hour: 12,
+      minute: 0,
+    },
+    mode: "onTouched",
+  });
 
   return (
-    <form
-      className="flex flex-col gap-y-2"
-      onSubmit={handleSubmit((data, e) => {
-        const { hour, minute } = data;
-        const newDate = new Date(selectedDate);
-        newDate.setHours(hour);
-        newDate.setMinutes(minute);
-        newDate.setSeconds(0);
-        onSubmit(newDate);
-      })}
-    >
+    <div className="flex flex-col gap-y-2">
       <Button variant="ghost" onClick={onCancel} className="w-fit">
         <ChevronLeftIcon />
         Cancel
@@ -108,14 +97,22 @@ function TimeSelector(props: {
       </div>
       <Flex className="justify-end w-full">
         <Button
-          type="submit"
           disabled={formState.isSubmitting}
           className={cn("bg-blue-10", "cursor-pointer", "w-full", "mt-2")}
+          onClick={() => {
+            handleSubmit((data) => {
+              const newDate = new Date(selectedDate);
+              newDate.setHours(data.hour);
+              newDate.setMinutes(data.minute);
+              newDate.setSeconds(0);
+              onSubmit(newDate);
+            })();
+          }}
         >
           Select
         </Button>
       </Flex>
-    </form>
+    </div>
   );
 }
 
