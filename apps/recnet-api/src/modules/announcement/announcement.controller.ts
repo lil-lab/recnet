@@ -21,7 +21,10 @@ import { Auth } from "@recnet-api/utils/auth/auth.decorator";
 import { AuthUser } from "@recnet-api/utils/auth/auth.type";
 import { User } from "@recnet-api/utils/auth/auth.user.decorator";
 import { RecnetExceptionFilter } from "@recnet-api/utils/filters/recnet.exception.filter";
-import { ZodValidationPipe } from "@recnet-api/utils/pipes/zod.validation.pipe";
+import {
+  ZodValidationBodyPipe,
+  ZodValidationQueryPipe,
+} from "@recnet-api/utils/pipes/zod.validation.pipe";
 
 import {
   getAnnouncementsParamsSchema,
@@ -49,7 +52,7 @@ export class AnnouncementController {
   })
   @ApiOkResponse({ type: GetAnnouncementsResponse })
   @Get()
-  @UsePipes(new ZodValidationPipe(getAnnouncementsParamsSchema))
+  @UsePipes(new ZodValidationQueryPipe(getAnnouncementsParamsSchema))
   public async getAnnouncements(
     @Query() dto: QueryAnnouncementsDto
   ): Promise<GetAnnouncementsResponse> {
@@ -65,7 +68,7 @@ export class AnnouncementController {
   @ApiOkResponse({ type: Announcement })
   @Post()
   @Auth(["ADMIN"])
-  @UsePipes(new ZodValidationPipe(postAnnouncementsRequestSchema))
+  @UsePipes(new ZodValidationBodyPipe(postAnnouncementsRequestSchema))
   public async createAnnouncement(
     @Body() dto: CreateAnnouncementDto,
     @User() authUser: AuthUser
@@ -83,7 +86,7 @@ export class AnnouncementController {
   @ApiOkResponse({ type: Announcement })
   @Patch("/:id")
   @Auth(["ADMIN"])
-  @UsePipes(new ZodValidationPipe(patchAnnouncementRequestSchema, "body"))
+  @UsePipes(new ZodValidationBodyPipe(patchAnnouncementRequestSchema))
   public async updateAnnouncement(
     @Param("id", ParseIntPipe) id: number,
     @Body() dto: UpdateAnnouncementDto

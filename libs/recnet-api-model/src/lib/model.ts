@@ -12,14 +12,15 @@ export const userPreviewSchema = z.object({
   photoUrl: z.string().url(),
   affiliation: z.string().nullable(),
   bio: z.string().nullable(),
+  url: z.string().url().nullable(),
   numFollowers: z.number(),
+  numRecs: z.number(),
 });
 export type UserPreview = z.infer<typeof userPreviewSchema>;
 
 export const userSchema = userPreviewSchema.extend({
   email: z.string().email(),
   role: userRoleSchema,
-  url: z.string().url().nullable(),
   googleScholarLink: z.string().url().nullable(),
   semanticScholarLink: z.string().url().nullable(),
   openReviewUserName: z.string().nullable(),

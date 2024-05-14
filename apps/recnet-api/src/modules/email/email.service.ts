@@ -28,6 +28,8 @@ import {
 import { SendMailResult, Transporter } from "./email.type";
 import WeeklyDigest, { WeeklyDigestSubject } from "./templates/WeeklyDigest";
 
+import { transformUserPreview } from "../user/user.transformer";
+
 @Injectable()
 export class EmailService {
   constructor(
@@ -159,15 +161,7 @@ export class EmailService {
     return {
       ...dbRec,
       cutoff: dbRec.cutoff.toISOString(),
-      user: {
-        id: dbRec.user.id,
-        handle: dbRec.user.handle,
-        displayName: dbRec.user.displayName,
-        photoUrl: dbRec.user.photoUrl,
-        affiliation: dbRec.user.affiliation,
-        bio: dbRec.user.bio,
-        numFollowers: dbRec.user.followedBy.length,
-      },
+      user: transformUserPreview(dbRec.user),
     };
   }
 }

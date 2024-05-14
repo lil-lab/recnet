@@ -20,14 +20,16 @@ import { Auth } from "@recnet-api/utils/auth/auth.decorator";
 import { AuthUser } from "@recnet-api/utils/auth/auth.type";
 import { User } from "@recnet-api/utils/auth/auth.user.decorator";
 import { RecnetExceptionFilter } from "@recnet-api/utils/filters/recnet.exception.filter";
-import { ZodValidationPipe } from "@recnet-api/utils/pipes/zod.validation.pipe";
+import {
+  ZodValidationBodyPipe,
+  ZodValidationQueryPipe,
+} from "@recnet-api/utils/pipes/zod.validation.pipe";
 
 import { getLatestCutOff } from "@recnet/recnet-date-fns";
 
 import {
   getRecsFeedsParamsSchema,
   getRecsParamsSchema,
-  getRecsUpcomingResponseSchema,
   patchRecsUpcomingRequestSchema,
   postRecsUpcomingRequestSchema,
 } from "@recnet/recnet-api-model";
@@ -58,7 +60,7 @@ export class RecController {
   @ApiOkResponse({ type: GetRecsResponse })
   @ApiBearerAuth()
   @Get()
-  @UsePipes(new ZodValidationPipe(getRecsParamsSchema))
+  @UsePipes(new ZodValidationQueryPipe(getRecsParamsSchema))
   public async getRecs(@Query() dto: QueryRecsDto): Promise<GetRecsResponse> {
     const { page, pageSize, userId } = dto;
     return this.recService.getRecs(page, pageSize, userId);
@@ -72,7 +74,7 @@ export class RecController {
   @ApiBearerAuth()
   @Get("feeds")
   @Auth()
-  @UsePipes(new ZodValidationPipe(getRecsFeedsParamsSchema))
+  @UsePipes(new ZodValidationQueryPipe(getRecsFeedsParamsSchema))
   public async getFeeds(
     @Query() dto: QueryFeedsDto,
     @User() authUser: AuthUser
@@ -91,7 +93,6 @@ export class RecController {
   @ApiBearerAuth()
   @Get("upcoming")
   @Auth()
-  @UsePipes(new ZodValidationPipe(getRecsUpcomingResponseSchema))
   public async getUpcomingRec(
     @User() authUser: AuthUser
   ): Promise<GetUpcomingRecResponse> {
@@ -107,7 +108,7 @@ export class RecController {
   @ApiBearerAuth()
   @Post("upcoming")
   @Auth()
-  @UsePipes(new ZodValidationPipe(postRecsUpcomingRequestSchema))
+  @UsePipes(new ZodValidationBodyPipe(postRecsUpcomingRequestSchema))
   public async createUpcomingRec(
     @Body() body: CreateRecDto,
     @User() authUser: AuthUser
@@ -129,7 +130,7 @@ export class RecController {
   @ApiBearerAuth()
   @Patch("upcoming")
   @Auth()
-  @UsePipes(new ZodValidationPipe(patchRecsUpcomingRequestSchema))
+  @UsePipes(new ZodValidationBodyPipe(patchRecsUpcomingRequestSchema))
   public async updateUpcomingRec(
     @Body() body: UpdateRecDto,
     @User() authUser: AuthUser

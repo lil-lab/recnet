@@ -44,12 +44,8 @@ export default class AnnouncementRepository {
       take: pageSize,
       skip: getOffset(page, pageSize),
       orderBy: [
-        {
-          startAt: Prisma.SortOrder.desc,
-        },
-        {
-          createdAt: Prisma.SortOrder.desc,
-        },
+        { startAt: Prisma.SortOrder.desc },
+        { createdAt: Prisma.SortOrder.desc },
       ],
     });
   }
