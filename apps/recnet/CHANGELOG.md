@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [1.8.0](https://github.com/lil-lab/recnet/compare/recnet-web-v1.7.1...recnet-web-v1.8.0) (2024-05-14)
+
+
+### Features
+
+* add url and numRecs to user and user preview ([d4c5038](https://github.com/lil-lab/recnet/commit/d4c5038d5d5afa38f9087020d6c1dcca36a09585))
+* modify api model ([df76030](https://github.com/lil-lab/recnet/commit/df7603087b681eb8ee190b3fbab08b32784322a4))
+* **profile:** add numRecs and url ([4708cc7](https://github.com/lil-lab/recnet/commit/4708cc78554ea1153d64d1903e79017f16cb815d))
+* **profile:** add url/googleScholarLink/semanticScholarLink/openReviewUsername to profileEditForm ([c4feef9](https://github.com/lil-lab/recnet/commit/c4feef9edba4b8c8848e0e9c4f51d6398f7d6749))
+* **user card:** display num of recs ([a0391f7](https://github.com/lil-lab/recnet/commit/a0391f7373c39fdbcde5eabb3e7f2578a1665458))
+
 ## [1.7.1](https://github.com/lil-lab/recnet/compare/recnet-web-v1.7.0...recnet-web-v1.7.1) (2024-05-10)
 
 

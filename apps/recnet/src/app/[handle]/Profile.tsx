@@ -1,7 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { HomeIcon } from "@radix-ui/react-icons";
+import { HomeIcon, Link2Icon } from "@radix-ui/react-icons";
 import {
   Dialog,
   Button,
@@ -12,7 +12,7 @@ import {
 } from "@radix-ui/themes";
 import { TRPCClientError } from "@trpc/client";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import React, { useMemo, useState } from "react";
 import { useForm, useFormState } from "react-hook-form";
 import { toast } from "sonner";
 import * as z from "zod";
@@ -25,6 +25,7 @@ import { RecNetLink } from "@recnet/recnet-web/components/Link";
 import { Skeleton, SkeletonText } from "@recnet/recnet-web/components/Skeleton";
 import { ErrorMessages } from "@recnet/recnet-web/constant";
 import { cn } from "@recnet/recnet-web/utils/cn";
+import { interleaveWithValue } from "@recnet/recnet-web/utils/interleaveWithValue";
 
 const HandleBlacklist = [
   "about",
@@ -63,6 +64,10 @@ const EditUserProfileSchema = z.object({
     .string()
     .max(200, "Bio must contain at most 200 character(s)")
     .nullable(),
+  url: z.string().url().nullable(),
+  googleScholarLink: z.string().url().nullable(),
+  semanticScholarLink: z.string().url().nullable(),
+  openReviewUserName: z.string().nullable(),
 });
 
 function EditProfileDialog(props: { handle: string }) {
@@ -80,6 +85,10 @@ function EditProfileDialog(props: { handle: string }) {
         handle: user?.handle ?? null,
         affiliation: user?.affiliation ?? null,
         bio: user?.bio ?? null,
+        url: user?.url ?? null,
+        googleScholarLink: user?.googleScholarLink ?? null,
+        semanticScholarLink: user?.semanticScholarLink ?? null,
+        openReviewUserName: user?.openReviewUserName ?? null,
       },
       mode: "onTouched",
     });
@@ -197,6 +206,79 @@ function EditProfileDialog(props: { handle: string }) {
             </label>
             <label>
               <Text as="div" size="2" mb="1" weight="medium">
+                Personal Website
+              </Text>
+              <TextField.Root
+                placeholder="Personal website URL(Optional)"
+                {...register("url", {
+                  setValueAs: (val) => (val === "" ? null : val),
+                })}
+              />
+              {formState.errors.url ? (
+                <Text size="1" color="red">
+                  {formState.errors.url.message}
+                </Text>
+              ) : null}
+            </label>
+            <label>
+              <Text as="div" size="2" mb="1" weight="medium">
+                <RecNetLink href="https://scholar.google.com/">
+                  Google Scholar
+                </RecNetLink>{" "}
+                Link
+              </Text>
+              <TextField.Root
+                placeholder="Google Scholar Link(Optional)"
+                {...register("googleScholarLink", {
+                  setValueAs: (val) => (val === "" ? null : val),
+                })}
+              />
+              {formState.errors.googleScholarLink ? (
+                <Text size="1" color="red">
+                  {formState.errors.googleScholarLink.message}
+                </Text>
+              ) : null}
+            </label>
+            <label>
+              <Text as="div" size="2" mb="1" weight="medium">
+                <RecNetLink href="https://www.semanticscholar.org/">
+                  Semantic Scholar
+                </RecNetLink>{" "}
+                Link
+              </Text>
+              <TextField.Root
+                placeholder="Semantic Scholar Link(Optional)"
+                {...register("semanticScholarLink", {
+                  setValueAs: (val) => (val === "" ? null : val),
+                })}
+              />
+              {formState.errors.semanticScholarLink ? (
+                <Text size="1" color="red">
+                  {formState.errors.semanticScholarLink.message}
+                </Text>
+              ) : null}
+            </label>
+            <label>
+              <Text as="div" size="2" mb="1" weight="medium">
+                <RecNetLink href="https://openreview.net/">
+                  OpenReview
+                </RecNetLink>{" "}
+                Username
+              </Text>
+              <TextField.Root
+                placeholder="OpenReview Username(Optional)"
+                {...register("openReviewUserName", {
+                  setValueAs: (val) => (val === "" ? null : val),
+                })}
+              />
+              {formState.errors.openReviewUserName ? (
+                <Text size="1" color="red">
+                  {formState.errors.openReviewUserName.message}
+                </Text>
+              ) : null}
+            </label>
+            <label>
+              <Text as="div" size="2" mb="1" weight="medium">
                 Bio
               </Text>
               <TextArea
@@ -254,6 +336,10 @@ function EditProfileDialog(props: { handle: string }) {
   );
 }
 
+function StatDivider() {
+  return <div className="w-[1px] bg-gray-6 h-[18px] flex" />;
+}
+
 export function Profile(props: { handle: string }) {
   const router = useRouter();
   const { handle } = props;
@@ -263,6 +349,92 @@ export function Profile(props: { handle: string }) {
   const { user: me } = useAuth();
   const isMe = !!me && !!data?.user && me.handle === data.user.handle;
 
+  const userUrl = useMemo(
+    () => (data?.user?.url ? new URL(data.user.url) : null),
+    [data]
+  );
+
+  const userStats = useMemo(() => {
+    const components: JSX.Element[] = [];
+    if (data?.user) {
+      const numFollowers = (
+        <Flex className="items-center gap-x-1">
+          <Text size="2">{`${data.user.numFollowers} Follower${data.user.numFollowers > 1 ? "s" : ""}`}</Text>
+        </Flex>
+      );
+      components.push(numFollowers);
+    }
+    if (isMe) {
+      const followings = (
+        <Flex className="items-center gap-x-1">
+          <RecNetLink
+            href={`/user/following`}
+            radixLinkProps={{
+              underline: "always",
+            }}
+          >
+            <Text size="2">{`${me.following.length} Following${me.following.length > 1 ? "s" : ""}`}</Text>
+          </RecNetLink>
+        </Flex>
+      );
+      components.push(followings);
+    }
+    if (data?.user) {
+      const numRecs = (
+        <Flex className="items-center gap-x-1">
+          <Text size="2">{`${data.user.numRecs} Rec${data.user.numRecs > 1 ? "s" : ""}`}</Text>
+        </Flex>
+      );
+      components.push(numRecs);
+    }
+    const componentsWithDividers = interleaveWithValue(
+      components,
+      <StatDivider />
+    );
+    return (
+      <Flex className="sm:items-center gap-x-[10px] p-2 sm:p-1 flex-wrap flex-row text-gray-11">
+        {componentsWithDividers.map((stat, index) => (
+          <React.Fragment key={`user-stat-${index}`}>{stat}</React.Fragment>
+        ))}
+      </Flex>
+    );
+  }, [data, isMe, me]);
+
+  const userInfo = useMemo(() => {
+    if (!data?.user) {
+      return null;
+    }
+    return (
+      <div className="flex flex-col justify-between h-full gap-y-1">
+        {data.user.bio ? (
+          <Flex className="w-full p-2 sm:p-1 my-1">
+            <Text size="2" className="text-gray-11 whitespace-pre-line">
+              {data.user.bio}
+            </Text>
+          </Flex>
+        ) : null}
+        {data.user.affiliation ? (
+          <Flex className="items-center gap-x-1 text-gray-11 px-2 sm:px-1">
+            <HomeIcon width="16" height="16" />
+            <Text size="2">{data.user.affiliation}</Text>
+          </Flex>
+        ) : null}
+        {userUrl ? (
+          <Flex className="items-center gap-x-1 text-gray-11 px-2 sm:px-1">
+            <Link2Icon width="16" height="16" />
+            <RecNetLink href={userUrl.href}>
+              <Text size="2">
+                {userUrl.hostname}
+                {userUrl.pathname === "/" ? null : userUrl.pathname}
+              </Text>
+            </RecNetLink>
+          </Flex>
+        ) : null}
+        {userStats}
+      </div>
+    );
+  }, [data, userStats, userUrl]);
+
   if (isPending || isFetching) {
     return (
       <div className={cn("flex-col", "gap-y-6", "flex")}>
@@ -270,30 +442,28 @@ export function Profile(props: { handle: string }) {
           <Flex>
             <Skeleton className="w-[80px] h-[80px] rounded-[999px]" />
           </Flex>
-          <Flex className="flex-grow flex-col justify-between h-full">
-            <Flex className="justify-between items-center">
-              <Flex className="p-2 items-center gap-x-4 text-gray-11">
-                <SkeletonText size="6" />
-              </Flex>
-              <Flex className="w-fit">
-                <Button
-                  className="w-full p-0 overflow-hidden cursor-pointer"
-                  radius="medium"
-                  variant="surface"
-                  disabled
-                >
-                  <SkeletonText size="3" className="h-full" />
-                </Button>
-              </Flex>
-            </Flex>
-            <Flex className="w-full p-2 sm:p-1 my-1 flex-col gap-y-1">
-              <SkeletonText size="2" className="w-[50%]" />
-              <SkeletonText size="2" className="w-[50%]" />
-            </Flex>
-            <Flex className="items-center gap-x-[10px] p-1">
-              <SkeletonText className="h-fit min-w-[300px]" size="2" />
-            </Flex>
+          <Flex className="flex-grow flex-col justify-center h-full gap-y-1">
+            <SkeletonText size="4" />
+            <SkeletonText size="2" />
           </Flex>
+        </Flex>
+        <Flex className="w-full p-2 sm:p-1 my-1 flex-col gap-y-1">
+          <SkeletonText size="2" className="w-[50%]" />
+          <SkeletonText size="2" className="w-[50%]" />
+          <SkeletonText size="2" className="w-[50%]" />
+        </Flex>
+        <Flex className="items-center p-1">
+          <SkeletonText className="h-fit min-w-[300px]" size="2" />
+        </Flex>
+        <Flex className="w-full">
+          <Button
+            className="w-full p-0 overflow-hidden cursor-pointer"
+            radius="medium"
+            variant="surface"
+            disabled
+          >
+            <SkeletonText size="3" className="h-full w-full" />
+          </Button>
         </Flex>
       </div>
     );
@@ -305,12 +475,12 @@ export function Profile(props: { handle: string }) {
   }
 
   return (
-    <div className={cn("flex-col", "gap-y-6", "flex")}>
+    <div className={cn("flex-col", "gap-y-3", "md:gap-y-6", "flex")}>
       <Flex className="items-start p-3 gap-x-6">
         <Flex>
           <Avatar user={data.user} className={cn("w-[80px]", "h-[80px]")} />
         </Flex>
-        <Flex className="flex-grow flex-col justify-between h-full">
+        <Flex className="flex-grow flex-col justify-between h-full gap-y-1">
           <Flex className="justify-between items-center">
             <Flex className="p-2 sm:p-1 sm:items-center gap-x-4 text-gray-11 flex-col sm:flex-row">
               <Text
@@ -340,44 +510,10 @@ export function Profile(props: { handle: string }) {
               )}
             </Flex>
           </Flex>
-          {data.user.bio ? (
-            <Flex className="w-full p-2 sm:p-1 my-1">
-              <Text size="2" className="text-gray-11 whitespace-pre-line">
-                {data.user.bio}
-              </Text>
-            </Flex>
-          ) : null}
-          <Flex className="sm:items-center gap-x-[10px] p-2 sm:p-1 flex-wrap flex-col sm:flex-row">
-            {data.user.affiliation ? (
-              <Flex className="items-center gap-x-1 text-gray-11">
-                <HomeIcon width="16" height="16" />
-                <Text size="2">{data.user.affiliation}</Text>
-                <Text size="2" className="sm:ml-[6px] hidden sm:inline-block">
-                  /
-                </Text>
-              </Flex>
-            ) : null}
-            <Flex className="items-center gap-x-1 text-gray-11">
-              <Text size="2">{`${data.user.numFollowers} Follower${data.user.numFollowers > 1 ? "s" : ""}`}</Text>
-            </Flex>
-            {isMe ? (
-              <Flex className="items-center gap-x-1 text-gray-11">
-                <Text size="2" className="sm:mr-[6px] hidden sm:inline-block">
-                  /
-                </Text>
-                <RecNetLink
-                  href={`/user/following`}
-                  radixLinkProps={{
-                    underline: "always",
-                  }}
-                >
-                  <Text size="2">{`${me.following.length} Following${me.following.length > 1 ? "s" : ""}`}</Text>
-                </RecNetLink>
-              </Flex>
-            ) : null}
-          </Flex>
+          <div className="hidden sm:flex">{userInfo}</div>
         </Flex>
       </Flex>
+      <div className="sm:hidden">{userInfo}</div>
       <Flex className="w-full md:hidden">
         {isMe ? (
           <EditProfileDialog handle={data.user.handle} />
