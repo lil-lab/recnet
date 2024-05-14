@@ -4,8 +4,47 @@ import { Button, Text } from "@radix-ui/themes";
 import { AnimatePresence, motion } from "framer-motion";
 import React, { useState } from "react";
 
+import { SkeletonText, Skeleton } from "./Skeleton";
+
 import useMount from "../hooks/useMount";
 import { cn } from "../utils/cn";
+
+export function AnnouncementCardSkeleton() {
+  return (
+    <div
+      className={cn(
+        "w-full",
+        "p-4",
+        "rounded-4",
+        "border-[1px] border-blue-8",
+        "bg-blueA-5",
+        "flex",
+        "flex-col",
+        "gap-y-2",
+        "sm:flex-row",
+        "sm:justify-between",
+        "sm:items-start",
+        "text-[14px]"
+      )}
+    >
+      <div className="flex flex-col w-full sm:max-w-[75%] gap-y-1 items-start flex-wrap">
+        <SkeletonText>Announcement title</SkeletonText>
+        <SkeletonText />
+      </div>
+      <div className="w-full flex flex-row justify-end gap-x-2 items-center sm:w-fit sm:min-w-[25%]">
+        <Skeleton>
+          <Button
+            variant="ghost"
+            className="text-gray-10 dark:text-gray-11 cursor-pointer text-[12px] transition-all ease-in-out"
+          >{`Don't show again`}</Button>
+        </Skeleton>
+        <Skeleton className="ml-2">
+          <div className="w-4 h-4" />
+        </Skeleton>
+      </div>
+    </div>
+  );
+}
 
 interface AnnouncementCardProps {
   className?: string;
