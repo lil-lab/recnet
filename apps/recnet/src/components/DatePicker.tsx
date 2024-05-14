@@ -57,7 +57,7 @@ function TimeSelector(props: {
           withTime: false,
         })}
       </Text>
-      <Flex className="items-center gap-x-2">
+      <Flex className="items-end gap-x-2">
         <div className="flex flex-col gap-y-2 w-fit">
           <Text size="1" className="text-gray-10">
             Hour
@@ -70,6 +70,9 @@ function TimeSelector(props: {
             className="w-[40px]"
           />
         </div>
+        <Text size="2" className="text-gray-10 mb-2">
+          :
+        </Text>
         <div className="flex flex-col gap-y-2 w-fit">
           <Text size="1" className="text-gray-10">
             Minute

@@ -1,20 +1,13 @@
 "use client";
 
-import {
-  AnnouncementCard,
-  AnnouncementCardSkeleton,
-} from "@recnet/recnet-web/components/AnnouncementCard";
+import { AnnouncementCard } from "@recnet/recnet-web/components/AnnouncementCard";
 
 import { trpc } from "../_trpc/client";
 
 export function LatestAnnouncement() {
   const { data, isPending } = trpc.getLatestAnnouncement.useQuery();
 
-  if (isPending) {
-    return <AnnouncementCardSkeleton />;
-  }
-
-  if (!data) {
+  if (!data || isPending) {
     return null;
   }
 
