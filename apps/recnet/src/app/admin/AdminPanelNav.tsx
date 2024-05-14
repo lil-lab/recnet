@@ -115,12 +115,9 @@ export function AdminPanelNavbar() {
       <AdminPanelNav.Section label="Stats">
         <AdminPanelNav.Item route="stats/user-rec" label="User & Rec" />
       </AdminPanelNav.Section>
-      <AdminPanelNav.Section label="Email">
-        <AdminPanelNav.Item
-          route="email/announcement"
-          label="Announcement"
-          wip
-        />
+      <AdminPanelNav.Section label="Announcement">
+        <AdminPanelNav.Item route="announcement/email" label="Email" wip />
+        <AdminPanelNav.Item route="announcement/inapp" label="In-app" />
       </AdminPanelNav.Section>
       <AdminPanelNav.Section label="Invite Code">
         <AdminPanelNav.Item route="invite-code/monitor" label="Monitor" />
