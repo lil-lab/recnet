@@ -1,15 +1,15 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Button, Flex, Text, TextField, Dialog } from "@radix-ui/themes";
-import { AtSignIcon, HashIcon } from "lucide-react";
-import { useState } from "react";
+import { Button, Flex, Text, TextField } from "@radix-ui/themes";
+import { HashIcon } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
 
 import { useAuth } from "@recnet/recnet-web/app/AuthContext";
 import { trpc } from "@recnet/recnet-web/app/_trpc/client";
+import { DoubleConfirmButton } from "@recnet/recnet-web/components/DoubleConfirmButton";
 import { cn } from "@recnet/recnet-web/utils/cn";
 
 const InviteCodeProvisionFormSchema = z.object({
@@ -19,7 +19,6 @@ const InviteCodeProvisionFormSchema = z.object({
 
 export function InviteCodeProvisionForm() {
   const { user } = useAuth();
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const provisionInviteCodeMutation = trpc.provisionInviteCode.useMutation();
 
   const { register, handleSubmit, formState, setValue, getValues } = useForm({
@@ -92,94 +91,61 @@ export function InviteCodeProvisionForm() {
           <Text size="1" className="text-gray-10 invisible hidden sm:block">
             {`generate`}
           </Text>
-          <Dialog.Root
-            open={isModalOpen}
-            onOpenChange={(open) => {
-              setIsModalOpen(open);
+          <DoubleConfirmButton
+            onConfirm={handleSubmit(async (data, e) => {
+              e?.preventDefault();
+              if (!user) {
+                return;
+              }
+              // validate data
+              const res = InviteCodeProvisionFormSchema.safeParse(data);
+              if (!res.success) {
+                toast.error("Invalid input");
+                return;
+              }
+              try {
+                const { codes } = await provisionInviteCodeMutation.mutateAsync(
+                  {
+                    ...res.data,
+                  }
+                );
+                toast.success(
+                  `${codes.length} invite codes have been provisioned successfully`
+                );
+              } catch (error) {
+                console.error(error);
+                // show error toast
+                toast.error("Failed to provision invite codes");
+              }
+            })}
+            title="Confirm to provision invite codes"
+            description={`Are you sure you want to generate ${getValues("numCodes")} invite code${getValues("numCodes") === 1 ? "" : "s"} for all users${" "}
+            ${`${
+              getValues("upperBound") === null
+                ? ""
+                : `unless they have more than ${getValues("upperBound")} invite code${
+                    getValues("upperBound") === "1" ? "" : "s"
+                  }`
+            }?`}`}
+            cancelButtonProps={{
+              disabled: formState.isSubmitting,
+            }}
+            confirmButtonProps={{
+              loading: formState.isSubmitting,
             }}
           >
-            <Dialog.Trigger>
-              <Button
-                variant="solid"
-                color="blue"
-                className={cn("cursor-pointer text-white", {
-                  "bg-blue-10": formState.isValid,
-                  "bg-gray-3 cursor-not-allowed": !formState.isValid,
-                })}
-                loading={formState.isSubmitting}
-              >
-                Generate
-              </Button>
-            </Dialog.Trigger>
-            <Dialog.Content
-              style={{ maxWidth: 450 }}
-              onPointerDownOutside={(e) => {
-                // disable closing dialog on outside click
-                e.preventDefault();
-              }}
+            <Button
+              variant="solid"
+              color="blue"
+              className={cn("cursor-pointer text-white", {
+                "bg-blue-10": formState.isValid,
+                "bg-gray-3 cursor-not-allowed": !formState.isValid,
+              })}
+              loading={formState.isSubmitting}
             >
-              <Dialog.Title>Confirm to provision invite codes</Dialog.Title>
-              <Dialog.Description size="2" mb="4">
-                Are you sure you want to generate {getValues("numCodes")} invite
-                code{getValues("numCodes") === 1 ? "" : "s"} for all users{" "}
-                {`${
-                  getValues("upperBound") === null
-                    ? ""
-                    : `unless they have more than ${getValues("upperBound")} invite code${
-                        getValues("upperBound") === "1" ? "" : "s"
-                      }`
-                }?`}
-              </Dialog.Description>
-
-              <Flex gap="3" mt="4" justify="end">
-                <Button
-                  variant="outline"
-                  className={cn("cursor-pointer")}
-                  onClick={() => {
-                    // close dialog
-                    setIsModalOpen(false);
-                  }}
-                  disabled={formState.isSubmitting}
-                >
-                  No
-                </Button>
-                <Button
-                  variant="solid"
-                  color="blue"
-                  className={cn("cursor-pointer text-white bg-blue-10")}
-                  loading={formState.isSubmitting}
-                  onClick={handleSubmit(async (data, e) => {
-                    e?.preventDefault();
-                    if (!user) {
-                      return;
-                    }
-                    // validate data
-                    const res = InviteCodeProvisionFormSchema.safeParse(data);
-                    if (!res.success) {
-                      toast.error("Invalid input");
-                      return;
-                    }
-                    try {
-                      const { codes } =
-                        await provisionInviteCodeMutation.mutateAsync({
-                          ...res.data,
-                        });
-                      toast.success(
-                        `${codes.length} invite codes have been provisioned successfully`
-                      );
-                    } catch (error) {
-                      console.error(error);
-                      // show error toast
-                      toast.error("Failed to provision invite codes");
-                    }
-                    setIsModalOpen(false);
-                  })}
-                >
-                  Yes
-                </Button>
-              </Flex>
-            </Dialog.Content>
-          </Dialog.Root>
+              Generate
+            </Button>
+          </DoubleConfirmButton>
         </div>
       </Flex>
     </>
