@@ -38,9 +38,10 @@ export default class UserRepository {
     return users.map(this.excludeNonActivatedFollowingRecord);
   }
 
-  public async findAllUsers(): Promise<User[]> {
+  public async findAllUsers(activatedOnly = true): Promise<User[]> {
     const users = await this.prisma.user.findMany({
       select: user.select,
+      where: activatedOnly ? { isActivated: true } : {},
     });
     return users.map(this.excludeNonActivatedFollowingRecord);
   }
