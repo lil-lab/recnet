@@ -11,7 +11,11 @@ export const userPreview = Prisma.validator<Prisma.UserDefaultArgs>()({
     affiliation: true,
     bio: true,
     url: true,
-    followedBy: true,
+    followedBy: {
+      select: {
+        followedBy: true,
+      },
+    },
     recommendations: true,
   },
 });
@@ -30,11 +34,20 @@ export const user = Prisma.validator<Prisma.UserDefaultArgs>()({
     googleScholarLink: true,
     semanticScholarLink: true,
     openReviewUserName: true,
-    followedBy: true,
+    followedBy: {
+      select: {
+        followedBy: true,
+      },
+    },
     email: true,
     role: true,
     isActivated: true,
-    following: true,
+    following: {
+      select: {
+        followingId: true,
+        following: true,
+      },
+    },
     recommendations: true,
   },
 });
@@ -42,6 +55,7 @@ export const user = Prisma.validator<Prisma.UserDefaultArgs>()({
 export type User = Prisma.UserGetPayload<typeof user>;
 
 export type UserFilterBy = {
+  isActivated?: boolean;
   handle?: string;
   keyword?: string;
   id?: string;

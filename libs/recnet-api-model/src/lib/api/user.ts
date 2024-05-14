@@ -9,6 +9,7 @@ export const getUsersParamsSchema = z.object({
   handle: z.string().optional(),
   keyword: z.string().optional(),
   id: z.string().optional(),
+  activatedOnly: z.boolean().optional().default(true),
 });
 export type GetUsersParams = z.infer<typeof getUsersParamsSchema>;
 

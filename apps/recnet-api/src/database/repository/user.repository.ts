@@ -27,19 +27,22 @@ export default class UserRepository {
   ): Promise<UserPreview[]> {
     const where: Prisma.UserWhereInput =
       this.transformUserFilterByToPrismaWhere(filter);
-    return this.prisma.user.findMany({
+    const users = await this.prisma.user.findMany({
       select: userPreview.select,
       where,
       take: pageSize,
       skip: getOffset(page, pageSize),
       orderBy: { id: Prisma.SortOrder.asc },
     });
+
+    return users.map(this.excludeNonActivatedFollowingRecord);
   }
 
   public async findAllUsers(): Promise<User[]> {
-    return this.prisma.user.findMany({
+    const users = await this.prisma.user.findMany({
       select: user.select,
     });
+    return users.map(this.excludeNonActivatedFollowingRecord);
   }
 
   public async countUsers(filter: UserFilterBy = {}): Promise<number> {
@@ -51,24 +54,31 @@ export default class UserRepository {
 
   public async findUserById(userId: string): Promise<User> {
     const where = { id: userId };
-    return this.prisma.user.findUniqueOrThrow({
+    const userFound = await this.prisma.user.findUniqueOrThrow({
       where,
       select: user.select,
     });
+    return this.excludeNonActivatedFollowingRecord(userFound);
   }
 
   public async findUserByHandle(handle: string): Promise<User | null> {
-    return this.prisma.user.findFirst({
+    const userFound = await this.prisma.user.findFirst({
       where: { handle },
       select: user.select,
     });
+    return userFound
+      ? this.excludeNonActivatedFollowingRecord(userFound)
+      : null;
   }
 
   public async findUserPreviewByIds(userIds: string[]): Promise<UserPreview[]> {
-    return this.prisma.user.findMany({
+    const users = await this.prisma.user.findMany({
       select: userPreview.select,
-      where: { id: { in: userIds } },
+      where: {
+        id: { in: userIds },
+      },
     });
+    return users.map(this.excludeNonActivatedFollowingRecord);
   }
 
   public async login(
@@ -80,11 +90,12 @@ export default class UserRepository {
       provider_providerId: { provider: prismaProvider, providerId },
     };
 
-    return this.prisma.user.update({
+    const userUpdated = await this.prisma.user.update({
       where,
       data: { lastLoginAt: new Date() },
       select: user.select,
     });
+    return this.excludeNonActivatedFollowingRecord(userUpdated);
   }
 
   public async createUser(createUserInput: CreateUserInput): Promise<User> {
@@ -94,7 +105,7 @@ export default class UserRepository {
       lastLoginAt: new Date(),
     };
 
-    return await this.prisma.$transaction(async (prisma) => {
+    return this.prisma.$transaction(async (prisma) => {
       const userInTransaction = await prisma.user.create({
         data: prismaCreateUserInput,
         select: user.select,
@@ -108,7 +119,7 @@ export default class UserRepository {
         },
       });
 
-      return userInTransaction;
+      return this.excludeNonActivatedFollowingRecord(userInTransaction);
     });
   }
 
@@ -117,11 +128,12 @@ export default class UserRepository {
     updateUserInput: UpdateUserInput
   ): Promise<User> {
     const where = { id: userId };
-    return this.prisma.user.update({
+    const updatedUser = await this.prisma.user.update({
       where,
       data: updateUserInput,
       select: user.select,
     });
+    return this.excludeNonActivatedFollowingRecord(updatedUser);
   }
 
   public async isActivated(userId: string): Promise<boolean> {
@@ -145,6 +157,9 @@ export default class UserRepository {
     if (filter.id) {
       where.id = filter.id;
     }
+    if (filter.isActivated !== undefined) {
+      where.isActivated = filter.isActivated;
+    }
 
     if (filter.keyword) {
       const keywords = filter.keyword.split(" ");
@@ -160,6 +175,19 @@ export default class UserRepository {
       ];
     }
     return where;
+  }
+
+  private excludeNonActivatedFollowingRecord<U extends User | UserPreview>(
+    user: U
+  ): U {
+    user.followedBy = user.followedBy.filter((fr) => fr.followedBy.isActivated);
+
+    // if user is User, filter following
+    if ("following" in user) {
+      user.following = user.following.filter((f) => f.following.isActivated);
+    }
+
+    return user;
   }
 
   private transformToPrismaProvider(provider: AuthProvider): Provider {

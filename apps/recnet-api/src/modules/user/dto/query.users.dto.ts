@@ -34,4 +34,12 @@ export class QueryUsersDto {
     example: "2bc2e909-4400-4e7e-8873-c20bfb65a0f9",
   })
   id?: string;
+
+  @ApiPropertyOptional({
+    description:
+      "If it is set to true , the response list will only includes activated users. If it is set to false, it will return all users. Default to true. ",
+    example: true,
+    default: true,
+  })
+  activatedOnly?: boolean;
 }

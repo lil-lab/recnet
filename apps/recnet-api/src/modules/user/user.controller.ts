@@ -19,6 +19,7 @@ import {
   ApiTags,
 } from "@nestjs/swagger";
 
+import { UserFilterBy } from "@recnet-api/database/repository/user.repository.type";
 import { Auth, AuthFirebase } from "@recnet-api/utils/auth/auth.decorator";
 import { AuthFirebaseUser, AuthUser } from "@recnet-api/utils/auth/auth.type";
 import { FirebaseUser, User } from "@recnet-api/utils/auth/auth.user.decorator";
@@ -66,7 +67,11 @@ export class UserController {
   public async getUsers(
     @Query() dto: QueryUsersDto
   ): Promise<GetUsersResponse> {
-    const { page, pageSize, ...filter } = dto;
+    const { page, pageSize, activatedOnly, ...rest } = dto;
+    const filter: UserFilterBy = { ...rest };
+    if (activatedOnly) {
+      filter.isActivated = true;
+    }
     return this.userService.getUsers(page, pageSize, filter);
   }
 
