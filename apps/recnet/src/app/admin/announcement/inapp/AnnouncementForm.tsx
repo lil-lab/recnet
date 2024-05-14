@@ -11,6 +11,7 @@ import { z } from "zod";
 import { trpc } from "@recnet/recnet-web/app/_trpc/client";
 import { AnnouncementCard } from "@recnet/recnet-web/components/AnnouncementCard";
 import { DatePicker } from "@recnet/recnet-web/components/DatePicker";
+import { DoubleConfirmButton } from "@recnet/recnet-web/components/DoubleConfirmButton";
 import { cn } from "@recnet/recnet-web/utils/cn";
 
 import { WeekTs, getVerboseDateString } from "@recnet/recnet-date-fns";
@@ -18,7 +19,6 @@ import { WeekTs, getVerboseDateString } from "@recnet/recnet-date-fns";
 import { Announcement } from "@recnet/recnet-api-model";
 
 import { AdminSectionBox } from "../../AdminSections";
-import { DoubleConfirmButton } from "@recnet/recnet-web/components/DoubleConfirmButton";
 
 const announcementFormSchema = z.object({
   title: z.string().min(1).max(100),
