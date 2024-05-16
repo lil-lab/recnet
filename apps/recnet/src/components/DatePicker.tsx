@@ -176,7 +176,11 @@ export function DatePicker(props: DatePickerProps) {
       <Popover.Trigger className="cursor-pointer">
         {renderTrigger(value)}
       </Popover.Trigger>
-      <Popover.Content className="overflow-hidden" side="bottom">
+      <Popover.Content
+        className="overflow-hidden"
+        maxWidth={"376px"}
+        side="bottom"
+      >
         {selectedDate ? (
           <div className="flex flex-col p-2">
             <TimeSelector
@@ -191,7 +195,7 @@ export function DatePicker(props: DatePickerProps) {
             />
           </div>
         ) : (
-          <>
+          <div className="flex flex-col w-full">
             <Flex className="justify-center items-center w-full p-2 mb-2">
               <Button
                 variant="ghost"
@@ -258,7 +262,7 @@ export function DatePicker(props: DatePickerProps) {
                   key={view + "-content"}
                 >
                   {view === "default" ? (
-                    <table className="table-fixed border-separate border-spacing-2">
+                    <table className="table-fixed border-separate border-spacing-2 w-full">
                       <thead>
                         <tr>
                           {headers.weekDays.map(({ key, value }) => {
@@ -358,7 +362,7 @@ export function DatePicker(props: DatePickerProps) {
                 </motion.div>
               </motion.div>
             </AnimatePresence>
-          </>
+          </div>
         )}
       </Popover.Content>
     </Popover.Root>
