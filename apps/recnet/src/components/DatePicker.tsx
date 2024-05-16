@@ -300,8 +300,9 @@ export function DatePicker(props: DatePickerProps) {
                                       : cn(
                                           highlightBasePseudoClass,
                                           isToday
-                                            ? "after:bg-blue-4"
-                                            : "after:bg-red-6"
+                                            ? "after:border-[1px] after:border-blue-10"
+                                            : null,
+                                          isSelected ? "after:bg-blue-4" : null
                                         );
 
                                   return (
@@ -336,12 +337,12 @@ export function DatePicker(props: DatePickerProps) {
                       </table>
                       <Flex className="justify-end gap-x-4 mt-2 px-2">
                         <Flex className="text-gray-10 gap-x-1 items-center">
-                          <div className="w-[8px] h-[8px] bg-red-6 rounded-[999px]" />
-                          <Text size="1">Selected</Text>
+                          <div className="w-[8px] h-[8px] border-[1px] border-blue-10 rounded-[999px]" />
+                          <Text size="1">Today</Text>
                         </Flex>
                         <Flex className="text-gray-10 gap-x-1 items-center">
-                          <div className="w-[8px] h-[8px] bg-blue-5 rounded-[999px]" />
-                          <Text size="1">Today</Text>
+                          <div className="w-[8px] h-[8px] bg-blue-4 rounded-[999px]" />
+                          <Text size="1">Selected</Text>
                         </Flex>
                       </Flex>
                     </div>
