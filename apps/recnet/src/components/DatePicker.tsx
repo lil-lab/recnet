@@ -165,9 +165,10 @@ export function DatePicker(props: DatePickerProps) {
       open={isOpen}
       onOpenChange={(open) => {
         setIsOpen(open);
-        // reset view & selectedDate on open and reset to today
+        // reset view & selectedDate on open
+        // and navigate to the current selected date
         if (open) {
-          navigation.setToday();
+          navigation.setDate(new Date(value));
           setSelectedDate(null);
           setView("default");
         }
@@ -262,49 +263,88 @@ export function DatePicker(props: DatePickerProps) {
                   key={view + "-content"}
                 >
                   {view === "default" ? (
-                    <table className="table-fixed border-separate border-spacing-2 w-full">
-                      <thead>
-                        <tr>
-                          {headers.weekDays.map(({ key, value }) => {
+                    <div className="w-fit">
+                      <table className="table-fixed border-separate border-spacing-2 w-full">
+                        <thead>
+                          <tr>
+                            {headers.weekDays.map(({ key, value }) => {
+                              return (
+                                <th
+                                  key={key}
+                                  className="font-[12px] text-gray-10 w-[40px] text-start"
+                                >
+                                  <div className="flex flex-row justify-center">
+                                    {getWeekDay(value)}
+                                  </div>
+                                </th>
+                              );
+                            })}
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {body.value.map(({ key, value: days }) => {
                             return (
-                              <th
-                                key={key}
-                                className="font-[12px] text-gray-10 w-[40px] text-start"
-                              >
-                                {getWeekDay(value)}
-                              </th>
+                              <tr key={key}>
+                                {days.map(({ key: dayKey, value: v }) => {
+                                  const isToday =
+                                    v.toDateString() === now.toDateString();
+                                  const isSelected =
+                                    value.toDateString() === v.toDateString();
+                                  const highlightBasePseudoClass = cn(
+                                    "after:content-[''] after:w-[28px] after:h-[28px] after:absolute after:z-[-1] after:rounded-[999px]",
+                                    "after:top-1/2 after:left-1/2 after:transform after:-translate-x-1/2 after:-translate-y-1/2"
+                                  );
+                                  const highlightPseudoClass =
+                                    !isSelected && !isToday
+                                      ? ""
+                                      : cn(
+                                          highlightBasePseudoClass,
+                                          isToday
+                                            ? "after:bg-blue-4"
+                                            : "after:bg-red-6"
+                                        );
+
+                                  return (
+                                    <td
+                                      key={dayKey}
+                                      className={cn(
+                                        tableCellBaseClass,
+                                        "cursor-pointer",
+                                        "text-gray-11",
+                                        "hover:text-blue-10",
+                                        "transition-all ease-in-out"
+                                      )}
+                                      onClick={() => {
+                                        setSelectedDate(v);
+                                      }}
+                                    >
+                                      <div
+                                        className={cn(
+                                          "flex flex-row justify-center relative z-[2]",
+                                          highlightPseudoClass
+                                        )}
+                                      >
+                                        {v.getDate()}
+                                      </div>
+                                    </td>
+                                  );
+                                })}
+                              </tr>
                             );
                           })}
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {body.value.map(({ key, value: days }) => {
-                          return (
-                            <tr key={key}>
-                              {days.map(({ key: dayKey, value }) => {
-                                return (
-                                  <td
-                                    key={dayKey}
-                                    className={cn(
-                                      tableCellBaseClass,
-                                      "cursor-pointer",
-                                      "text-gray-11",
-                                      "hover:text-blue-10",
-                                      "transition-all ease-in-out"
-                                    )}
-                                    onClick={() => {
-                                      setSelectedDate(value);
-                                    }}
-                                  >
-                                    {value.getDate()}
-                                  </td>
-                                );
-                              })}
-                            </tr>
-                          );
-                        })}
-                      </tbody>
-                    </table>
+                        </tbody>
+                      </table>
+                      <Flex className="justify-end gap-x-4 mt-2 px-2">
+                        <Flex className="text-gray-10 gap-x-1 items-center">
+                          <div className="w-[8px] h-[8px] bg-red-6 rounded-[999px]" />
+                          <Text size="1">Selected</Text>
+                        </Flex>
+                        <Flex className="text-gray-10 gap-x-1 items-center">
+                          <div className="w-[8px] h-[8px] bg-blue-5 rounded-[999px]" />
+                          <Text size="1">Today</Text>
+                        </Flex>
+                      </Flex>
+                    </div>
                   ) : view === "month" ? (
                     <Grid columns={"4"} gap={"2"} className="w-[344px]">
                       {Object.entries(monthValMap).map(([key, value]) => {
