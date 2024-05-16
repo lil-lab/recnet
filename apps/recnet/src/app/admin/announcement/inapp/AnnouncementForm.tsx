@@ -85,7 +85,7 @@ export function AnnouncementForm(props: AnnouncementFormProps) {
       />
       <AdminSectionBox>
         <form
-          className="flex flex-col"
+          className="flex flex-col w-full"
           onSubmit={handleSubmit(async (data, e) => {
             e?.preventDefault();
             setIsSubmitting(true);
@@ -167,7 +167,7 @@ export function AnnouncementForm(props: AnnouncementFormProps) {
                 </Text>
               ) : null}
             </div>
-            <div className="flex flex-col gap-y-2 w-[48%]">
+            <div className="flex flex-col gap-y-2 w-full md:w-[48%]">
               <Text size="1" className="text-gray-10">
                 Start At
               </Text>
@@ -202,7 +202,7 @@ export function AnnouncementForm(props: AnnouncementFormProps) {
                 </Text>
               ) : null}
             </div>
-            <div className="flex flex-col gap-y-2 w-[48%]">
+            <div className="flex flex-col gap-y-2 w-full md:w-[48%]">
               <Text size="1" className="text-gray-10">
                 End At
               </Text>
@@ -237,7 +237,7 @@ export function AnnouncementForm(props: AnnouncementFormProps) {
                 </Text>
               ) : null}
             </div>
-            <div className="flex flex-col gap-y-2 w-full">
+            <div className="flex flex-col gap-y-2 w-full py-2">
               <Controller
                 name="allowClose"
                 control={control}
