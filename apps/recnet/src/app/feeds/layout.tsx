@@ -5,6 +5,8 @@ import { LeftPanel } from "@recnet/recnet-web/app/feeds/LeftPanel";
 import { cn } from "@recnet/recnet-web/utils/cn";
 import { getUserServerSide } from "@recnet/recnet-web/utils/getUserServerSide";
 
+import { LatestAnnouncement } from "./LatestAnnouncement";
+
 export default async function FeedPageLayout({
   children,
 }: Readonly<{
@@ -30,7 +32,12 @@ export default async function FeedPageLayout({
       )}
     >
       <LeftPanel />
-      <div className="w-full items-center flex flex-col">{children}</div>
+      <div className="w-full items-center flex flex-col">
+        <div className={cn("w-[80%]", "md:w-[65%]", "flex", "mx-auto", "pt-6")}>
+          <LatestAnnouncement />
+        </div>
+        {children}
+      </div>
     </div>
   );
 }

@@ -1,5 +1,6 @@
 "use client";
 
+// TODO: refactor this component to use the new DatePicker component
 import { useCalendar } from "@h6s/calendar";
 import { Button, Popover, Flex, Grid, Text } from "@radix-ui/themes";
 import { AnimatePresence, motion } from "framer-motion";

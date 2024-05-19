@@ -78,7 +78,13 @@ export const getLatestCutOff = (): Date => {
   return nextCutOff;
 };
 
-export const getVerboseDateString = (date: Date): string => {
+export const getVerboseDateString = (
+  date: Date,
+  options?: Intl.DateTimeFormatOptions & {
+    withTime?: boolean;
+  }
+): string => {
+  const { withTime = true, ...restOptions } = options || {};
   const localTime = date.toLocaleTimeString();
   return (
     Intl.DateTimeFormat("default", {
@@ -90,9 +96,10 @@ export const getVerboseDateString = (date: Date): string => {
       // second: "2-digit",
       // timeZoneName: "short",
       // hourCycle: "h11",
+      ...restOptions,
     })
       .format(date)
-      .replaceAll(",", " ") + ` ${localTime}`
+      .replaceAll(",", " ") + (withTime ? ` ${localTime}` : "")
   );
 };
 

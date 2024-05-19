@@ -2,23 +2,29 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
-## [1.8.0](https://github.com/lil-lab/recnet/compare/recnet-web-v1.7.1...recnet-web-v1.8.0) (2024-05-14)
-
+## [1.9.0](https://github.com/lil-lab/recnet/compare/recnet-web-v1.8.0...recnet-web-v1.9.0) (2024-05-19)
 
 ### Features
 
-* add url and numRecs to user and user preview ([d4c5038](https://github.com/lil-lab/recnet/commit/d4c5038d5d5afa38f9087020d6c1dcca36a09585))
-* modify api model ([df76030](https://github.com/lil-lab/recnet/commit/df7603087b681eb8ee190b3fbab08b32784322a4))
-* **profile:** add numRecs and url ([4708cc7](https://github.com/lil-lab/recnet/commit/4708cc78554ea1153d64d1903e79017f16cb815d))
-* **profile:** add url/googleScholarLink/semanticScholarLink/openReviewUsername to profileEditForm ([c4feef9](https://github.com/lil-lab/recnet/commit/c4feef9edba4b8c8848e0e9c4f51d6398f7d6749))
-* **user card:** display num of recs ([a0391f7](https://github.com/lil-lab/recnet/commit/a0391f7373c39fdbcde5eabb3e7f2578a1665458))
+- add announcement create form ([8cf4a1e](https://github.com/lil-lab/recnet/commit/8cf4a1e3befc5f9d44e8b02ccc1e725c3ab5a241))
+- add new component: DatePicker ([26de382](https://github.com/lil-lab/recnet/commit/26de382c4d701f205399672d85492e3252fad5c2))
+- display announcement at feeds page ([fcca9ae](https://github.com/lil-lab/recnet/commit/fcca9ae1d666d0dc1c63919d7a70ad7295503a92))
+
+## [1.8.0](https://github.com/lil-lab/recnet/compare/recnet-web-v1.7.1...recnet-web-v1.8.0) (2024-05-14)
+
+### Features
+
+- add url and numRecs to user and user preview ([d4c5038](https://github.com/lil-lab/recnet/commit/d4c5038d5d5afa38f9087020d6c1dcca36a09585))
+- modify api model ([df76030](https://github.com/lil-lab/recnet/commit/df7603087b681eb8ee190b3fbab08b32784322a4))
+- **profile:** add numRecs and url ([4708cc7](https://github.com/lil-lab/recnet/commit/4708cc78554ea1153d64d1903e79017f16cb815d))
+- **profile:** add url/googleScholarLink/semanticScholarLink/openReviewUsername to profileEditForm ([c4feef9](https://github.com/lil-lab/recnet/commit/c4feef9edba4b8c8848e0e9c4f51d6398f7d6749))
+- **user card:** display num of recs ([a0391f7](https://github.com/lil-lab/recnet/commit/a0391f7373c39fdbcde5eabb3e7f2578a1665458))
 
 ## [1.7.1](https://github.com/lil-lab/recnet/compare/recnet-web-v1.7.0...recnet-web-v1.7.1) (2024-05-10)
 
-
 ### Bug Fixes
 
-* hide invite code popover when not logged in ([2f905d2](https://github.com/lil-lab/recnet/commit/2f905d29369a65bba25e03b0eb187ae09a5045d8))
+- hide invite code popover when not logged in ([2f905d2](https://github.com/lil-lab/recnet/commit/2f905d29369a65bba25e03b0eb187ae09a5045d8))
 
 ## [1.7.0](https://github.com/lil-lab/recnet/compare/recnet-web-v1.6.0...recnet-web-v1.7.0) (2024-05-09)
 
