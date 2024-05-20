@@ -88,6 +88,17 @@ export class UserService {
     return this.transformUser(user);
   }
 
+  public async updateUserActivate(
+    userId: string,
+    isActivated: boolean
+  ): Promise<User> {
+    const user: DbUser = await this.userRepository.updateUserActivate(
+      userId,
+      isActivated
+    );
+    return this.transformUser(user);
+  }
+
   public async validateHandle(handle: string): Promise<void> {
     const user = await this.userRepository.findUserByHandle(handle);
     if (user) {

@@ -25,7 +25,7 @@ export class StatController {
   @ApiOkResponse({ type: QueryStatResponse })
   @ApiBearerAuth()
   @Get()
-  @Auth(["ADMIN"])
+  @Auth({ allowedRoles: ["ADMIN"] })
   public async getStats(): Promise<QueryStatResponse> {
     return this.statService.getStats();
   }

@@ -67,7 +67,7 @@ export class AnnouncementController {
   @ApiBearerAuth()
   @ApiOkResponse({ type: Announcement })
   @Post()
-  @Auth(["ADMIN"])
+  @Auth({ allowedRoles: ["ADMIN"] })
   @UsePipes(new ZodValidationBodyPipe(postAnnouncementsRequestSchema))
   public async createAnnouncement(
     @Body() dto: CreateAnnouncementDto,
@@ -85,7 +85,7 @@ export class AnnouncementController {
   @ApiBearerAuth()
   @ApiOkResponse({ type: Announcement })
   @Patch("/:id")
-  @Auth(["ADMIN"])
+  @Auth({ allowedRoles: ["ADMIN"] })
   @UsePipes(new ZodValidationBodyPipe(patchAnnouncementRequestSchema))
   public async updateAnnouncement(
     @Param("id", ParseIntPipe) id: number,

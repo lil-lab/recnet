@@ -9,10 +9,16 @@ import { AuthGuard } from "./auth.guard";
 import { RoleGuard } from "./role.guard";
 
 // RoleGuard and ActivatedGuard must be placed after AuthGuard since it need to access the user info in the request
-export const Auth = (allowedRoles?: UserRole[]) => {
+export const Auth = (
+  options: {
+    allowedRoles?: UserRole[];
+    allowNonActivated?: boolean;
+  } = {}
+) => {
+  const { allowedRoles, allowNonActivated } = options;
   return applyDecorators(
     UseGuards(new AuthGuard(verifyRecnetJwt)),
-    UseGuards(ActivatedGuard),
+    UseGuards(ActivatedGuard(allowNonActivated)),
     UseGuards(RoleGuard(allowedRoles))
   );
 };

@@ -35,6 +35,7 @@ export type GetUserMeResponse = z.infer<typeof getUserMeResponseSchema>;
 export const patchUserMeRequestSchema = userSchema
   .omit({
     id: true,
+    isActivated: true,
     numFollowers: true,
     numRecs: true,
     following: true,
@@ -47,6 +48,18 @@ export const patchUserMeResponseSchema = z.object({
   user: userSchema,
 });
 export type PatchUserMeResponse = z.infer<typeof patchUserMeResponseSchema>;
+
+// PATCH /users/me/activate
+export const patchUserMeActivateRequestSchema = z.object({
+  isActivated: z.boolean(),
+});
+export type PatchUserMeActivateRequest = z.infer<
+  typeof patchUserMeActivateRequestSchema
+>;
+
+export const patchUserMeActivateResponseSchema = z.object({
+  user: userSchema,
+});
 
 // POST /users/me
 export const postUserMeRequestSchema = userPreviewSchema

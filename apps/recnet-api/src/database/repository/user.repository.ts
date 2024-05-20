@@ -137,6 +137,19 @@ export default class UserRepository {
     return this.excludeNonActivatedFollowingRecord(updatedUser);
   }
 
+  public async updateUserActivate(
+    userId: string,
+    isActivated: boolean
+  ): Promise<User> {
+    const where = { id: userId };
+    const updatedUser = await this.prisma.user.update({
+      where,
+      data: { isActivated },
+      select: user.select,
+    });
+    return this.excludeNonActivatedFollowingRecord(updatedUser);
+  }
+
   public async isActivated(userId: string): Promise<boolean> {
     const user = await this.findUserById(userId);
     return user.isActivated;
