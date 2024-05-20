@@ -41,9 +41,16 @@ export class RecService {
     pageSize: number,
     userId: string
   ): Promise<GetRecsResponse> {
-    const filter: RecFilterBy = {
-      userId: userId,
-    };
+    // validate if the user exists and is activated
+    const user = await this.userRepository.findUserById(userId);
+    if (!user.isActivated) {
+      throw new RecnetError(
+        ErrorCode.ACCOUNT_NOT_ACTIVATED,
+        HttpStatus.BAD_REQUEST
+      );
+    }
+
+    const filter: RecFilterBy = { userId };
     const recCount = await this.recRepository.countRecs(filter);
     const dbRecs = await this.recRepository.findRecs(page, pageSize, filter);
     const recs = this.getRecsFromDbRecs(dbRecs);

@@ -129,9 +129,15 @@ export class UserService {
     userId: string,
     followingUserId: string
   ): Promise<void> {
-    // validate if the user exists
-    await this.userRepository.findUserById(userId);
-    await this.userRepository.findUserById(followingUserId);
+    // validate if the user exists and is activated
+    const followingUser =
+      await this.userRepository.findUserById(followingUserId);
+    if (!followingUser.isActivated) {
+      throw new RecnetError(
+        ErrorCode.ACCOUNT_NOT_ACTIVATED,
+        HttpStatus.BAD_REQUEST
+      );
+    }
 
     await this.followingRecordRepository.createFollowingRecord(
       userId,
@@ -143,9 +149,15 @@ export class UserService {
     userId: string,
     followingUserId: string
   ): Promise<void> {
-    // validate if the user exists
-    await this.userRepository.findUserById(userId);
-    await this.userRepository.findUserById(followingUserId);
+    // validate if the user exists and is activated
+    const followingUser =
+      await this.userRepository.findUserById(followingUserId);
+    if (!followingUser.isActivated) {
+      throw new RecnetError(
+        ErrorCode.ACCOUNT_NOT_ACTIVATED,
+        HttpStatus.BAD_REQUEST
+      );
+    }
 
     await this.followingRecordRepository.deleteFollowingRecord(
       userId,
