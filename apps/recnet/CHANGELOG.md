@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [1.9.1](https://github.com/lil-lab/recnet/compare/recnet-web-v1.9.0...recnet-web-v1.9.1) (2024-05-21)
+
+
+### Bug Fixes
+
+* add inapp announcement page to mobile admin menu ([351d026](https://github.com/lil-lab/recnet/commit/351d0260cd0a4c002f44e573153985491c9c8c99))
+
 ## [1.9.0](https://github.com/lil-lab/recnet/compare/recnet-web-v1.8.0...recnet-web-v1.9.0) (2024-05-19)
 
 ### Features
