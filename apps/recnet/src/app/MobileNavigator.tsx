@@ -130,9 +130,12 @@ function AdminDropdown(props: { children: React.ReactNode }) {
           <Link href={`/admin/stats/user-rec`}>User & Rec</Link>
         </DropdownMenu.Item>
         <DropdownMenu.Separator />
-        <div className={cn(dropdownSectionStyle)}>Email</div>
+        <div className={cn(dropdownSectionStyle)}>Announcement</div>
         <DropdownMenu.Item>
-          <Link href={`/admin`}>🚧 Announcement</Link>
+          <Link href={`/admin/announcement/email`}>🚧 Email</Link>
+        </DropdownMenu.Item>
+        <DropdownMenu.Item>
+          <Link href={`/admin/announcement/inapp`}>In-app</Link>
         </DropdownMenu.Item>
         <DropdownMenu.Separator />
         <div className={cn(dropdownSectionStyle)}>Invite Codes</div>
