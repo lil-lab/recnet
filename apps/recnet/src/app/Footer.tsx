@@ -46,7 +46,7 @@ function Footer() {
         "mb-4 sm:mb-0"
       )}
     >
-      <Flex gap="4" className="mr-auto">
+      <Flex gap="4" className="sm:mr-auto">
         <Tooltip content="Click to view changelogs">
           <Link href="https://github.com/lil-lab/recnet/blob/master/apps/recnet/CHANGELOG.md">
             <Flex gap="1" className="items-center">
@@ -73,7 +73,7 @@ function Footer() {
         </Flex>
       </Flex>
       <Text size="1">© 2024 RecNet. All rights reserved.</Text>
-      <Flex gap="2" className="items-center ml-auto">
+      <Flex gap="2" className="items-center sm:ml-auto">
         {theme && mounted ? (
           <DropdownMenu.Root>
             <DropdownMenu.Trigger className="cursor-pointer">
