@@ -41,6 +41,7 @@ export function Accordion(props: AccordionProps) {
         onClick={() => {
           setIsOpen(!isOpen);
         }}
+        data-testid="accordion-header"
       >
         <TriangleRightIcon
           className={cn(
@@ -68,6 +69,7 @@ export function Accordion(props: AccordionProps) {
             animate={{ height: "auto" }}
             exit={{ height: 0 }}
             className={cn("overflow-hidden pl-5", contentClassName)}
+            data-testid="accordion-content"
           >
             {children}
           </motion.div>
