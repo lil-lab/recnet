@@ -76,6 +76,12 @@ nx prisma:studio recnet-api
 nx serve recnet-api
 ```
 
+### Run the unit tests
+
+```bash
+nx test recnet-api
+```
+
 ## DB Migration
 
 ### How to generate migration files?
