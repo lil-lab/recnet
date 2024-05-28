@@ -13,7 +13,12 @@ export const userPreview = Prisma.validator<Prisma.UserDefaultArgs>()({
     url: true,
     followedBy: {
       select: {
-        followedBy: true,
+        followedBy: {
+          select: {
+            id: true,
+            isActivated: true,
+          },
+        },
       },
     },
     recommendations: true,
@@ -36,7 +41,12 @@ export const user = Prisma.validator<Prisma.UserDefaultArgs>()({
     openReviewUserName: true,
     followedBy: {
       select: {
-        followedBy: true,
+        followedBy: {
+          select: {
+            id: true,
+            isActivated: true,
+          },
+        },
       },
     },
     email: true,
@@ -45,7 +55,12 @@ export const user = Prisma.validator<Prisma.UserDefaultArgs>()({
     following: {
       select: {
         followingId: true,
-        following: true,
+        following: {
+          select: {
+            id: true,
+            isActivated: true,
+          },
+        },
       },
     },
     recommendations: true,
