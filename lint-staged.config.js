@@ -19,4 +19,9 @@ module.exports = {
       return `nx format:check --files=${files.join(",")}`;
     },
   ],
+  "apps/recnet-api/**/*.{js,ts,jsx,tsx,json}": [
+    (files) => {
+      return `nx test recnet-api --no-watch --no-code-coverage --files=${files.join(",")}`;
+    },
+  ],
 };
