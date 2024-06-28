@@ -10,6 +10,7 @@
   "db": "Database",
   "dto": "Data Transfer Object",
   "ci": "Continuous Integration",
+  "monorepo": "Nx Monorepo",
   "recnet-web-concepts": "Recnet-specific",
   "recnet-api-concepts": "Recnet-api-specific",
   "shared-libs": "Shared Libraries",
