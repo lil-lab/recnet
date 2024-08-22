@@ -21,5 +21,8 @@ export type Rec = Prisma.RecommendationGetPayload<typeof rec>;
 export type RecFilterBy = {
   userId?: string;
   userIds?: string[];
+
+  // Both cutoff and excludeCutoff cannot be used together.
   cutoff?: Date;
+  excludeCutoff?: Date;
 };
