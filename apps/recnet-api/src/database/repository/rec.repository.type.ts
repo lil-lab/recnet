@@ -18,8 +18,14 @@ export const rec = Prisma.validator<Prisma.RecommendationDefaultArgs>()({
 });
 export type Rec = Prisma.RecommendationGetPayload<typeof rec>;
 
+export type DateRange = {
+  from?: Date;
+  to?: Date;
+};
+
 export type RecFilterBy = {
   userId?: string;
   userIds?: string[];
-  cutoff?: Date;
+
+  cutoff?: DateRange | Date;
 };

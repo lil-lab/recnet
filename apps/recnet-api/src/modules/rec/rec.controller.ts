@@ -63,7 +63,10 @@ export class RecController {
   @UsePipes(new ZodValidationQueryPipe(getRecsParamsSchema))
   public async getRecs(@Query() dto: QueryRecsDto): Promise<GetRecsResponse> {
     const { page, pageSize, userId } = dto;
-    return this.recService.getRecs(page, pageSize, userId);
+
+    // Get the Recs to current date to avoid upcoming rec from showing in a user's profile page
+    const to = new Date();
+    return this.recService.getRecs(page, pageSize, userId, to);
   }
 
   @ApiOperation({
