@@ -44,10 +44,7 @@ export class RecService {
   ): Promise<GetRecsResponse> {
     const filter: RecFilterBy = {
       userId: userId,
-      cutoff: {
-        from: null,
-        to,
-      },
+      cutoff: { to },
     };
     const recCount = await this.recRepository.countRecs(filter);
     const dbRecs = await this.recRepository.findRecs(page, pageSize, filter);

@@ -133,8 +133,8 @@ export default class RecRepository {
       where.cutoff = filter.cutoff;
     } else if (filter.cutoff) {
       where.cutoff = {
-        gte: filter.cutoff.from || undefined,
-        lte: filter.cutoff.to || undefined,
+        gte: filter.cutoff.from,
+        lte: filter.cutoff.to,
       };
     }
 
