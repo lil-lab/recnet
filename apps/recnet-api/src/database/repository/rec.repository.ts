@@ -128,9 +128,16 @@ export default class RecRepository {
     if (filter.userIds) {
       where.userId = { in: filter.userIds };
     }
-    if (filter.cutoff) {
+
+    if (filter.cutoff instanceof Date) {
       where.cutoff = filter.cutoff;
+    } else if (filter.cutoff) {
+      where.cutoff = {
+        gte: filter.cutoff.from,
+        lte: filter.cutoff.to,
+      };
     }
+
     return where;
   }
 }
