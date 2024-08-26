@@ -18,11 +18,14 @@ export const rec = Prisma.validator<Prisma.RecommendationDefaultArgs>()({
 });
 export type Rec = Prisma.RecommendationGetPayload<typeof rec>;
 
+export type DateRange = {
+  from: Date | null;
+  to: Date | null;
+};
+
 export type RecFilterBy = {
   userId?: string;
   userIds?: string[];
 
-  // Both cutoff and excludeCutoff cannot be used together.
-  cutoff?: Date;
-  excludeCutoff?: Date;
+  cutoff?: DateRange | Date;
 };

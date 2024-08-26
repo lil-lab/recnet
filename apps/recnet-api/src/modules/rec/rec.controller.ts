@@ -25,7 +25,7 @@ import {
   ZodValidationQueryPipe,
 } from "@recnet-api/utils/pipes/zod.validation.pipe";
 
-import { getLatestCutOff, getNextCutOff } from "@recnet/recnet-date-fns";
+import { getLatestCutOff } from "@recnet/recnet-date-fns";
 
 import {
   getRecsFeedsParamsSchema,
@@ -64,9 +64,9 @@ export class RecController {
   public async getRecs(@Query() dto: QueryRecsDto): Promise<GetRecsResponse> {
     const { page, pageSize, userId } = dto;
 
-    // Exclude upcoming rec from showing in user's profile page
-    const excludeCutoff = getNextCutOff();
-    return this.recService.getRecs(page, pageSize, userId, excludeCutoff);
+    // Get the Recs to current date to avoid upcoming rec from showing in a user's profile page
+    const to = new Date();
+    return this.recService.getRecs(page, pageSize, userId, to);
   }
 
   @ApiOperation({

@@ -1,12 +1,10 @@
-import { HttpStatus, Injectable } from "@nestjs/common";
+import { Injectable } from "@nestjs/common";
 import { Prisma } from "@prisma/client";
 
 import PrismaConnectionProvider from "@recnet-api/database/prisma/prisma.connection.provider";
 import { rec, Rec } from "@recnet-api/database/repository/rec.repository.type";
 import { RecFilterBy } from "@recnet-api/database/repository/rec.repository.type";
 import { getOffset } from "@recnet-api/utils";
-import { RecnetError } from "@recnet-api/utils/error/recnet.error";
-import { ErrorCode } from "@recnet-api/utils/error/recnet.error.const";
 
 import { getNextCutOff } from "@recnet/recnet-date-fns";
 
@@ -131,16 +129,13 @@ export default class RecRepository {
       where.userId = { in: filter.userIds };
     }
 
-    if (filter.cutoff && filter.excludeCutoff) {
-      throw new RecnetError(
-        ErrorCode.INTERNAL_SERVER_ERROR,
-        HttpStatus.INTERNAL_SERVER_ERROR,
-        "Both cutoff and excludeCutoff cannot be used together."
-      );
-    } else if (filter.cutoff) {
+    if (filter.cutoff instanceof Date) {
       where.cutoff = filter.cutoff;
-    } else if (filter.excludeCutoff) {
-      where.cutoff = { not: filter.excludeCutoff };
+    } else if (filter.cutoff) {
+      where.cutoff = {
+        gte: filter.cutoff.from || undefined,
+        lte: filter.cutoff.to || undefined,
+      };
     }
 
     return where;
