@@ -68,7 +68,7 @@ export default function AboutPage() {
       </Text>
       <div className="w-full flex justify-start">
         <iframe
-          src="https://www.youtube.com/embed/qpEvFhNqrn8?si=mi23tRg6Z9N8M2q9"
+          src="https://www.youtube.com/embed/Sl7CKRwcX1s?si=IBLh-ibnEFN1lALz"
           title="YouTube video player"
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
           allowFullScreen
