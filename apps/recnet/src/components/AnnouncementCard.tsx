@@ -49,7 +49,7 @@ export function AnnouncementCardSkeleton() {
 interface AnnouncementCardProps {
   className?: string;
   title: string;
-  content: string;
+  content: string | React.ReactNode;
   allowClose?: boolean;
   id: string;
   isPreview?: boolean;
@@ -105,7 +105,7 @@ export function AnnouncementCard(props: AnnouncementCardProps) {
               <span className="mr-1">{"📢"}</span>
               <span className="font-bold mr-1">{title}</span>
             </Text>
-            <Text>{content}</Text>
+            {typeof content === "string" ? <Text>{content}</Text> : content}
           </div>
           {allowClose ? (
             <div className="w-full flex flex-row justify-end gap-x-2 items-center sm:w-fit sm:min-w-[25%]">

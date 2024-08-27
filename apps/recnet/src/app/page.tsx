@@ -8,6 +8,7 @@ import { getUserServerSide } from "@recnet/recnet-web/utils/getUserServerSide";
 import { LoginButton } from "./LoginButton";
 
 import { AnnouncementCard } from "../components/AnnouncementCard";
+import { RecNetLink } from "../components/Link";
 
 const cards = [
   {
@@ -53,7 +54,16 @@ export default async function Home() {
         id="invite-only"
         className="w-[95%] sm:w-[90%] md:w-[65%] lg:w-[55%] sm:fixed sm:top-[64px] sm:mt-4"
         title={"Invite Only"}
-        content="RecNet is under early development. Signing up requires an invite code."
+        content={
+          <Text>
+            RecNet is under early development. Signing up requires an invite
+            code. You can request one by filling this{" "}
+            <RecNetLink href="https://forms.gle/pBzfxvLifZkrVz1J7">
+              form
+            </RecNetLink>
+            .
+          </Text>
+        }
       />
 
       <Text
