@@ -52,8 +52,9 @@ export default async function Home() {
     >
       <AnnouncementCard
         id="invite-only"
-        className="w-[95%] sm:w-[90%] md:w-[65%] lg:w-[55%] sm:fixed sm:top-[64px] sm:mt-4"
+        className="w-[95%] sm:w-[75%] md:w-full sm:mt-4 mb-8"
         title={"Invite Only"}
+        allowClose={false}
         content={
           <Text>
             RecNet is under early development. Signing up requires an invite
@@ -81,8 +82,7 @@ export default async function Home() {
           "to-[99%]",
           "text-transparent",
           "bg-clip-text",
-          "text-center",
-          "mt-[128px]"
+          "text-center"
         )}
       >
         Welcome to RecNet
@@ -96,7 +96,7 @@ export default async function Home() {
       >
         Receive weekly paper recs from researchers you follow.
       </Text>
-      <div className="w-full md:w-[65%] flex justify-start mt-6">
+      <div className="w-[90%] sm:w-[55%] flex justify-start mt-6">
         <iframe
           src="https://www.youtube.com/embed/Sl7CKRwcX1s?si=IBLh-ibnEFN1lALz"
           title="YouTube video player"
