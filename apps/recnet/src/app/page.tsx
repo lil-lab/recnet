@@ -82,7 +82,7 @@ export default async function Home() {
           "text-transparent",
           "bg-clip-text",
           "text-center",
-          "mt-[64px]"
+          "mt-[128px]"
         )}
       >
         Welcome to RecNet
@@ -96,6 +96,15 @@ export default async function Home() {
       >
         Receive weekly paper recs from researchers you follow.
       </Text>
+      <div className="w-full md:w-[65%] flex justify-start mt-6">
+        <iframe
+          src="https://www.youtube.com/embed/Sl7CKRwcX1s?si=IBLh-ibnEFN1lALz"
+          title="YouTube video player"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+          allowFullScreen
+          className="w-full aspect-[560/315]"
+        ></iframe>
+      </div>
       <div className="flex flex-row gap-x-3 px-3">
         <LoginButton />
         <Button size="4" variant="outline" asChild className="cursor-pointer">
