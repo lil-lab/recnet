@@ -57,29 +57,24 @@ export default function AboutPage() {
         information bottlenecks that increase communication cost. This is
         intended to limit the amount of time the system consumes from its users,
         while increasing the quality of information passed. The RecNet mechanism
-        was initially outlined by Yoav Artzi in a{" "}
+        was initially outlined{" "}
         <RadixLink
           href="https://yoavartzi.substack.com/p/a-quick-sketch-of-a-human-based-paper"
           target="_blank"
         >
-          Substack post
+          here
         </RadixLink>
         . RecNet is currently in initial development stages.
       </Text>
-      <div className="w-full flex justify-start">
-        <iframe
-          src="https://www.youtube.com/embed/Sl7CKRwcX1s?si=IBLh-ibnEFN1lALz"
-          title="YouTube video player"
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-          allowFullScreen
-          className="w-full md:w-[95%] aspect-[560/315]"
-        ></iframe>
-      </div>
-      <div className="h-[2px] bg-gray-8 w-full" />
-      <Text size="8" className="text-gray-12" weight="bold">
+      <Text className="text-gray-11" size="5">
+        The <RecNetLink href="/help">Help page</RecNetLink> includes
+        instructions on how to get started, including a short introduction
+        video.
+      </Text>
+      <Text size="7" className="text-gray-12" weight="bold">
         Team
       </Text>
-      <div className="flex flex-col gap-y-3 p-1">
+      <div className="flex flex-col gap-y-3">
         {teamMembers.map((member) => (
           <Flex key={member.name} className="gap-x-2 p-1">
             <Text size="3" className="text-gray-12" weight="medium">
