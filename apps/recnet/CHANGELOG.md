@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [1.10.0](https://github.com/lil-lab/recnet/compare/recnet-web-v1.9.3...recnet-web-v1.10.0) (2024-08-29)
+
+
+### Features
+
+* change design of about page ([ff389f1](https://github.com/lil-lab/recnet/commit/ff389f1b8645a3d417ac10cdd40758611f57007c))
+
 ## [1.9.3](https://github.com/lil-lab/recnet/compare/recnet-web-v1.9.2...recnet-web-v1.9.3) (2024-08-28)
 
 
