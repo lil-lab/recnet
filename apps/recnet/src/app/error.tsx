@@ -3,9 +3,11 @@
 import { Flex, Text } from "@radix-ui/themes";
 
 import { RecNetLink } from "@recnet/recnet-web/components/Link";
+import {
+  ErrorBlock,
+  ReportEmailAccount,
+} from "@recnet/recnet-web/components/error";
 import { cn } from "@recnet/recnet-web/utils/cn";
-
-import { ReportEmailAccount } from "./not-found";
 
 export default function NotFoundPage() {
   return (
@@ -22,18 +24,9 @@ export default function NotFoundPage() {
         "items-center"
       )}
     >
-      <Flex className="items-center gap-x-8">
-        <Text className="text-gray-10 text-[72px]" weight="medium">
-          500
-        </Text>
-        <div className="w-[2px] bg-gray-10 h-[75%]" />
-        <div className="flex flex-col gap-y-1">
-          <Text className="text-gray-11 text-[24px]" weight="medium">
-            Application error
-          </Text>
-          <Text className="text-gray-10 text-[16px]">
-            Unexpected error occurred. Please help us by reporting this issue.
-          </Text>
+      <ErrorBlock
+        code={500}
+        actionSection={
           <Flex className="items-center text-gray-10 text-[16px] flex-wrap">
             <RecNetLink href={`mailto:${ReportEmailAccount}`}>
               <Text className="text-blue-9 text-[16px]">
@@ -49,8 +42,8 @@ export default function NotFoundPage() {
             </RecNetLink>
             <Text>.</Text>
           </Flex>
-        </div>
-      </Flex>
+        }
+      />
     </div>
   );
 }

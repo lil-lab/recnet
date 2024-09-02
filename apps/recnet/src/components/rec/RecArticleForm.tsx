@@ -21,7 +21,7 @@ import { toast } from "sonner";
 import * as z from "zod";
 
 import { trpc } from "@recnet/recnet-web/app/_trpc/client";
-import { ReportEmailAccount } from "@recnet/recnet-web/app/not-found";
+import { ReportEmailAccount } from "@recnet/recnet-web/components/error";
 import { cn } from "@recnet/recnet-web/utils/cn";
 
 import {

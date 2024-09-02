@@ -1,10 +1,11 @@
 import { Flex, Text } from "@radix-ui/themes";
 
 import { RecNetLink } from "@recnet/recnet-web/components/Link";
-import { ErrorBlock } from "@recnet/recnet-web/components/error";
+import {
+  ErrorBlock,
+  ReportEmailAccount,
+} from "@recnet/recnet-web/components/error";
 import { cn } from "@recnet/recnet-web/utils/cn";
-
-export const ReportEmailAccount = "lil.recnet@gmail.com";
 
 export default function NotFoundPage() {
   return (
