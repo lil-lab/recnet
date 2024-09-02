@@ -96,7 +96,13 @@ export default async function Home() {
       >
         Receive weekly paper recs from researchers you follow.
       </Text>
-      <div className="w-[90%] sm:w-[55%] flex justify-start mt-6">
+      <div className="flex flex-row gap-x-3 px-3">
+        <LoginButton />
+        <Button size="4" variant="outline" asChild className="cursor-pointer">
+          <Link href="/about">Learn more</Link>
+        </Button>
+      </div>
+      <div className="w-[90%] sm:w-[75%] flex justify-start mt-6">
         <iframe
           src="https://www.youtube.com/embed/Sl7CKRwcX1s?si=IBLh-ibnEFN1lALz"
           title="YouTube video player"
@@ -104,12 +110,6 @@ export default async function Home() {
           allowFullScreen
           className="w-full aspect-[560/315]"
         ></iframe>
-      </div>
-      <div className="flex flex-row gap-x-3 px-3">
-        <LoginButton />
-        <Button size="4" variant="outline" asChild className="cursor-pointer">
-          <Link href="/about">Learn more</Link>
-        </Button>
       </div>
 
       <div
