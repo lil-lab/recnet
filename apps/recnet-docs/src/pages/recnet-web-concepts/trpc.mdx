@@ -1,9 +1,82 @@
-import { Callout } from 'nextra/components'
+## What is TRPC
 
-<Callout type="warning" emoji="🚧">
-  The document is under construction now. Some information may be missing.
-</Callout>
+TL;DR.
+[Trpc](https://trpc.io/) is a tool which provides type-safe API fetching between client & server (In our case, it sits between client-side aka browser and server-side aka Next.js's backend serverless functions). It makes data-fetching work like a function call. That's why it's called tRPC, which stands for "typed RPC(Remote Procedure Call)"
 
-To be continued...
 
-Will talk about the use of trpc.
+*Note*: TRPC only work when client and server are both in TypeScript and inside the same repo. So, it can work in Next.js project since it's a fullstack framework. It can also work in any Typescript-based monorepo.
+
+Highly recommended to read this section in the official documentation to get familiar with trpc: [Becoming productive in an existing tRPC project](https://trpc.io/docs/getting-started#becoming-productive-in-an-existing-trpc-project)
+
+## Why using it
+
+- Type-safety API fetching. Without trpc, even if defining types at server-side, we still need to define types at client-side by casting types using `as`, or the data after fetching will be `any` type. With trpc, we define types at server-side, and the types are automatically inferred at client-side
+- Extracting a data fetching layer. All data-fetching logics are put under `/server/routers` folder. (Without trpc, the Next.js's route handlers are put under `app/api/` and need to add a route.ts for each endpoint, which is troublesome.)
+- Integrate with [Tanstack-query(react-query)](https://tanstack.com/query/v5/docs/framework/react/overview), the most popular client-side data-fetching library in React ecosystem, which offers rich functionalities such as caching, refetching, loading states, invalidation, and pagination queries. Read trpc docs for [React Query Integration](https://trpc.io/docs/client/react)
+- Also support server-side data-fetching (fetching data server-side) which can be used inside React Server Component and any server environment. Read [Server Side Call](https://trpc.io/docs/server/server-side-calls)
+
+## Learn more
+
+- [Concepts and Terminology](https://trpc.io/docs/concepts)
+- [Trpc with Next app router Tutorial](https://www.youtube.com/watch?v=qCLV0Iaq9zU) (The setup guide)
+
+## How to use it
+
+### Add new procedure in a router
+
+A router is a collection of procedures (api endpoints). We can group procedures by their functionalities to different routers.
+We put routers under `server/routers` folder and merge them into a single router in `server/index.ts`.
+
+On the server side, you defined trpc procedures (api endpoints) and trpc will turn them into API endpoints. It will be looked like this.
+
+```ts
+// in /server/routers/...
+import { router, publicProcedure } from "../trpc";
+
+const router = router({
+  getMe: publicProcedure
+      .input(z.object({...})) // write the zod schema of what input should be passed to this endpoint
+      .output(z.object({ user: userSchema.nullable() })) // write the zod schema of what this endpoint will output
+      .query(async (opts) => {
+        // server-side logic here, this will be executed at server-side
+        // write some downstream data fetchs or db operations here
+        const { tokens } = opts.ctx; // We can store tokens in the context object
+        if (!tokens) {
+          return {
+            user: null,
+          };
+        }
+        const user = await getUserByTokens(tokens);
+        return {
+          user,
+        };
+      }),
+   // other procedures...
+})
+```
+
+It can be integrated will zod to do input/output validation, which is useful for catching wrong data shape.
+
+We also extract similar logic to middleware procedures, which can be reused by multiple procedures. See `server/routers/middleware.ts`
+
+### Client-side data-fetching
+
+On the client side, trpc provides a useful query client which inherits the popular data-fetching library tanstack-query (formerly called react-query). We can use `useQuery` hook to fetch data from the server, use `useMutation` hook to send data to the server, use `useInfiniteQuery` hook to fetch paginated data, etc. [Learn more](https://trpc.io/docs/client/react)
+
+```ts
+import { trpc } from "@recnet/recnet-web/app/_trpc/client";
+
+const { data, isPending, isError, isFetching } = trpc.getMe.useQuery();
+// ^^ the type of "data" here is { user: User | null } just like we defined in our router
+```
+
+### Server-side data-fetching
+
+You can also use trpc to fetch data server-side. This is useful when you want to fetch data in a server environment (e.g. a serverless function, react server component, or server action). [Learn more](https://trpc.io/docs/server/server-side-calls)
+
+```ts
+import { serverClient } from "@recnet/recnet-web/app/_trpc/serverClient";
+
+const { user } = await serverClient.getMe();
+// ^^ the type of "user" here is User | null just like we defined in our router
+```

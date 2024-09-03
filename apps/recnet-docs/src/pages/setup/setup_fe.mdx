@@ -1,9 +1,39 @@
-import { Callout } from 'nextra/components'
-
-<Callout type="warning" emoji="🚧">
-  The document is under construction now. Some information may be missing.
-</Callout>
-
 # RecNet
 
 RecNet(or RecNet-web) is the web application for [Recnet](https://www.recnet.io/). Powered by [Next.js](https://nextjs.org).
+
+## Requirements
+
+- node >= 18
+
+## Documentation
+
+- [Notion](https://www.notion.so/RecNet-f8440e23b4e54af4a9636e84ed101815)
+
+## Local Development
+
+### Installation
+
+```bash
+pnpm install
+```
+
+### Prepare environment variable
+
+1. Copy `.env.local.example` to `.env.local`
+
+```
+cp .env.local.example .env.local
+```
+
+2. Fill in the environment variables in `.env.local`
+
+Note that for `RECNET_API_ENDPOINT`, the port should match the port of the local backend server.
+
+3. Proceed to [Backend setup guide](/setup/setup_be) to setup backend server locally.
+
+4. Start the development server using nx command
+
+```bash
+nx dev recnet
+```
