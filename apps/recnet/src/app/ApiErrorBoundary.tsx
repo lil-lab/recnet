@@ -7,6 +7,12 @@ import { cn } from "@recnet/recnet-web/utils/cn";
 
 import { trpc } from "./_trpc/client";
 
+const WhitelistedPaths = ["/", "/about", "/help"];
+
+/**
+ * Display Error UI when API is down.
+ * Note: Some routes are whitelisted to avoid showing the error UI
+ */
 export function ApiErrorBoundary({ children }: { children: React.ReactNode }) {
   const { data } = trpc.apiHealthCheck.useQuery();
   const pathname = usePathname();
@@ -16,7 +22,7 @@ export function ApiErrorBoundary({ children }: { children: React.ReactNode }) {
     utils.apiHealthCheck.invalidate();
   }, [pathname, utils.apiHealthCheck]);
 
-  if (data && !data.ok) {
+  if (data && !data.ok && !WhitelistedPaths.includes(pathname)) {
     return (
       <div
         className={cn(
