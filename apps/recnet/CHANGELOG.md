@@ -2,6 +2,8 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [1.10.1](https://github.com/lil-lab/recnet/compare/recnet-web-v1.10.0...recnet-web-v1.10.1) (2024-09-03)
+
 ## [1.10.0](https://github.com/lil-lab/recnet/compare/recnet-web-v1.9.3...recnet-web-v1.10.0) (2024-08-29)
 
 
