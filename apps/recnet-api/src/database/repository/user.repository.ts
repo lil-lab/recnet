@@ -124,6 +124,11 @@ export default class UserRepository {
     });
   }
 
+  public async isActivated(userId: string): Promise<boolean> {
+    const user = await this.findUserById(userId);
+    return user.isActivated;
+  }
+
   private transformUserFilterByToPrismaWhere(
     filter: UserFilterBy
   ): Prisma.UserWhereInput {
