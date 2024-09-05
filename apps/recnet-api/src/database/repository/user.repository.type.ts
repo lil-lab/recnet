@@ -33,6 +33,7 @@ export const user = Prisma.validator<Prisma.UserDefaultArgs>()({
     followedBy: true,
     email: true,
     role: true,
+    isActivated: true,
     following: true,
     recommendations: true,
   },

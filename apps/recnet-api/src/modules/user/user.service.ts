@@ -166,6 +166,7 @@ export class UserService {
       numRecs: user.recommendations.length,
       email: user.email,
       role: user.role,
+      isActivated: user.isActivated,
       following: followingUsers,
     };
   }

@@ -48,5 +48,8 @@ export class User {
   role: UserRole;
 
   @ApiProperty()
+  isActivated: boolean;
+
+  @ApiProperty()
   following: UserPreview[];
 }
