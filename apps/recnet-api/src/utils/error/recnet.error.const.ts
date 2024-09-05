@@ -28,7 +28,7 @@ export const errorMessages = {
   [ErrorCode.INVALID_INVITE_CODE]: "Invalid invite code",
   [ErrorCode.HANDLE_EXISTS]: "Handle already exists",
   [ErrorCode.START_DATE_AFTER_END_DATE]: "Start date is after end date",
-  [ErrorCode.ACCOUNT_NOT_ACTIVATED]: "Your account is not activated",
+  [ErrorCode.ACCOUNT_NOT_ACTIVATED]: "The user account is not activated",
   [ErrorCode.DB_UNKNOWN_ERROR]: "Database error",
   [ErrorCode.DB_USER_NOT_FOUND]: "User not found",
   [ErrorCode.DB_UNIQUE_CONSTRAINT]: "Unique constraint violation",
