@@ -86,4 +86,5 @@ export type UpdateUserInput = {
   semanticScholarLink?: string | null;
   openReviewUserName?: string | null;
   email?: string;
+  isActivated?: boolean;
 };

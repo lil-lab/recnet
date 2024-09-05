@@ -12,20 +12,16 @@ import { RoleGuard } from "./role.guard";
 export const Auth = (
   opts: {
     allowedRoles?: UserRole[];
-    activatedOnly?: boolean;
+    allowNonActivated?: boolean;
   } = {}
 ) => {
-  const { activatedOnly = true, allowedRoles = ["USER", "ADMIN"] } = opts;
+  const { allowNonActivated = false, allowedRoles = ["USER", "ADMIN"] } = opts;
 
-  const guards = [UseGuards(new AuthGuard(verifyRecnetJwt))];
-
-  if (activatedOnly) {
-    guards.push(UseGuards(ActivatedGuard));
-  }
-
-  guards.push(UseGuards(RoleGuard(allowedRoles)));
-
-  return applyDecorators(...guards);
+  return applyDecorators(
+    UseGuards(new AuthGuard(verifyRecnetJwt)),
+    UseGuards(ActivatedGuard(allowNonActivated)),
+    UseGuards(RoleGuard(allowedRoles))
+  );
 };
 
 export const AuthFirebase = () => UseGuards(new AuthGuard(verifyFirebaseJwt));

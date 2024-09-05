@@ -31,6 +31,7 @@ import {
 import {
   deleteUserFollowParamsSchema,
   getUsersParamsSchema,
+  patchUserMeActivateRequestSchema,
   patchUserMeRequestSchema,
   postUserFollowRequestSchema,
   postUserMeRequestSchema,
@@ -41,7 +42,7 @@ import {
 import { CreateUserDto } from "./dto/create.user.dto";
 import { FollowUserDto, UnfollowUserDto } from "./dto/follow.user.dto";
 import { QueryUsersDto } from "./dto/query.users.dto";
-import { UpdateUserDto } from "./dto/update.user.dto";
+import { UpdateUserActivateDto, UpdateUserDto } from "./dto/update.user.dto";
 import {
   ValidateUserHandleDto,
   ValidateUserInviteCodeDto,
@@ -132,6 +133,27 @@ export class UserController {
   ): Promise<GetUserMeResponse> {
     const { userId } = authUser;
     const user = await this.userService.updateUser(userId, dto);
+    return { user };
+  }
+
+  @ApiOperation({
+    summary: "Update my activation status",
+    description: "Update the current user's activation status.",
+  })
+  @ApiOkResponse({ type: GetUserMeResponse })
+  @ApiBearerAuth()
+  @Patch("/me/activate")
+  @UsePipes(new ZodValidationBodyPipe(patchUserMeActivateRequestSchema))
+  @Auth({ allowNonActivated: true })
+  public async updateMyActivationStatus(
+    @User() authUser: AuthUser,
+    @Body() dto: UpdateUserActivateDto
+  ): Promise<GetUserMeResponse> {
+    const { userId } = authUser;
+    const user = await this.userService.updateUserActivate(
+      userId,
+      dto.isActivated
+    );
     return { user };
   }
 
