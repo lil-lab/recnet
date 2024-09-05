@@ -39,6 +39,7 @@ export default class UserRepository {
   public async findAllUsers(): Promise<User[]> {
     return this.prisma.user.findMany({
       select: user.select,
+      where: { isActivated: true },
     });
   }
 
@@ -139,6 +140,8 @@ export default class UserRepository {
         mode: Prisma.QueryMode.insensitive,
       },
     });
+    where.isActivated = true;
+
     if (filter.handle) {
       where.handle = filter.handle;
     }
