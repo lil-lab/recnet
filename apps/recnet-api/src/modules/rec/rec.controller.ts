@@ -121,6 +121,7 @@ export class RecController {
       body.articleId,
       body.article,
       body.description,
+      body.isSelfRec,
       userId
     );
   }
@@ -143,6 +144,7 @@ export class RecController {
       body.articleId,
       body.article,
       body.description,
+      body.isSelfRec,
       userId
     );
   }
