@@ -16,7 +16,7 @@ import { trpc } from "@recnet/recnet-web/app/_trpc/client";
 import { ReportEmailAccount } from "@recnet/recnet-web/app/not-found";
 import { Accordion } from "@recnet/recnet-web/components/Accordion";
 import { RecNetLink } from "@recnet/recnet-web/components/Link";
-import { RecArticleForm } from "@recnet/recnet-web/components/rec/RecArticleForm";
+import { NewArticleForm } from "@recnet/recnet-web/components/rec/NewArticleForm";
 import { cn } from "@recnet/recnet-web/utils/cn";
 
 import {
@@ -68,7 +68,7 @@ export function RecEditForm(props: { onFinish?: () => void; currentRec: Rec }) {
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
         >
-          <RecArticleForm currentRec={currentRec} onFinish={onFinish} />
+          <NewArticleForm currentRec={currentRec} onFinish={onFinish} />
         </motion.div>
       ) : (
         <motion.div

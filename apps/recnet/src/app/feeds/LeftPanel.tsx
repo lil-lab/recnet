@@ -9,7 +9,7 @@ import { useState } from "react";
 
 import { useAuth } from "@recnet/recnet-web/app/AuthContext";
 import { Skeleton, SkeletonText } from "@recnet/recnet-web/components/Skeleton";
-import { RecArticleForm } from "@recnet/recnet-web/components/rec/RecArticleForm";
+import { NewArticleForm } from "@recnet/recnet-web/components/rec/NewArticleForm";
 import { RecEditForm } from "@recnet/recnet-web/components/rec/RecEditForm";
 import { cn } from "@recnet/recnet-web/utils/cn";
 
@@ -182,7 +182,7 @@ export function LeftPanel() {
                   }}
                 />
               ) : (
-                <RecArticleForm
+                <NewArticleForm
                   currentRec={rec}
                   onFinish={() => {
                     setIsRecFormOpen(false);

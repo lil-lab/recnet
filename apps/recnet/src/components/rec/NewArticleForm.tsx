@@ -139,7 +139,16 @@ const RecArticleFormSchema = z.object({
   month: z.number().optional(),
 });
 
-export function RecArticleForm(props: {
+/**
+ * Two-step form to recommend a new article.
+ * Two use cases:
+ * 1. User doesn't have an upcoming rec in this cycle
+ * 2. User has an upcoming rec in this cycle, but want to recommend another article
+ *
+ * @param {Function} props.onFinish - Callback function to be called when the form is finished.
+ * @param {Rec | null} props.currentRec - The current recommendation, if any. This is used to differentiate between the two use cases and which API endpoint to call.
+ */
+export function NewArticleForm(props: {
   onFinish?: () => void;
   currentRec: Rec | null;
 }) {
