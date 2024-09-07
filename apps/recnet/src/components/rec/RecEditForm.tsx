@@ -34,7 +34,14 @@ const RecFormSchema = z.object({
     .min(1, "Description cannot be blank"),
 });
 
-export function RecForm(props: { onFinish?: () => void; currentRec: Rec }) {
+/**
+ * Used to edit the description of an upcoming rec.
+ *
+ * Only showed when user has submitted an upcoming rec.
+ *
+ * Redirected to `NewArticleForm` if user wants to change the article.
+ */
+export function RecEditForm(props: { onFinish?: () => void; currentRec: Rec }) {
   const { onFinish = () => {}, currentRec } = props;
   const [recNewArticle, setRecNewArticle] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);

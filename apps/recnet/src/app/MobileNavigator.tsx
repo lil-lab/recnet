@@ -25,7 +25,7 @@ import { useAuth } from "./AuthContext";
 import { UserDropdown } from "./Headerbar";
 import { InviteCodePopover } from "./feeds/InviteCodePopover";
 
-import { RecForm } from "../components/rec/RecForm";
+import { RecEditForm } from "../components/rec/RecEditForm";
 
 function RecFormContent(props: { setOpen: (open: boolean) => void }) {
   const { setOpen } = props;
@@ -96,7 +96,7 @@ function RecFormContent(props: { setOpen: (open: boolean) => void }) {
       </Text>
       <Flex className="w-full">
         {rec ? (
-          <RecForm
+          <RecEditForm
             currentRec={rec}
             onFinish={() => {
               setOpen(false);
