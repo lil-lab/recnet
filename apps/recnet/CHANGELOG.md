@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [1.10.2](https://github.com/lil-lab/recnet/compare/recnet-web-v1.10.0...recnet-web-v1.10.2) (2024-09-08)
+
+
+### Bug Fixes
+
+* add error ui when api is down ([6d4a924](https://github.com/lil-lab/recnet/commit/6d4a924bf8d1aa54314a10144fecd87743a6bb1b))
+
+## [1.10.1](https://github.com/lil-lab/recnet/compare/recnet-web-v1.10.0...recnet-web-v1.10.1) (2024-09-08)
+
+
+### Bug Fixes
+
+* add error ui when api is down ([6d4a924](https://github.com/lil-lab/recnet/commit/6d4a924bf8d1aa54314a10144fecd87743a6bb1b))
+
 ## [1.10.0](https://github.com/lil-lab/recnet/compare/recnet-web-v1.9.3...recnet-web-v1.10.0) (2024-08-29)
 
 
