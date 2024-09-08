@@ -16,7 +16,7 @@ import { toast } from "sonner";
 
 import { trpc } from "@recnet/recnet-web/app/_trpc/client";
 import { SkeletonText, Skeleton } from "@recnet/recnet-web/components/Skeleton";
-import { RecArticleForm } from "@recnet/recnet-web/components/rec/RecArticleForm";
+import { NewArticleForm } from "@recnet/recnet-web/components/rec/NewArticleForm";
 import { UserRole } from "@recnet/recnet-web/constant";
 import { useGoogleLogin } from "@recnet/recnet-web/firebase/auth";
 import { cn } from "@recnet/recnet-web/utils/cn";
@@ -25,7 +25,7 @@ import { useAuth } from "./AuthContext";
 import { UserDropdown } from "./Headerbar";
 import { InviteCodePopover } from "./feeds/InviteCodePopover";
 
-import { RecForm } from "../components/rec/RecForm";
+import { RecEditForm } from "../components/rec/RecEditForm";
 
 function RecFormContent(props: { setOpen: (open: boolean) => void }) {
   const { setOpen } = props;
@@ -96,14 +96,14 @@ function RecFormContent(props: { setOpen: (open: boolean) => void }) {
       </Text>
       <Flex className="w-full">
         {rec ? (
-          <RecForm
+          <RecEditForm
             currentRec={rec}
             onFinish={() => {
               setOpen(false);
             }}
           />
         ) : (
-          <RecArticleForm
+          <NewArticleForm
             currentRec={rec}
             onFinish={() => {
               setOpen(false);

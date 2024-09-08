@@ -9,8 +9,8 @@ import { useState } from "react";
 
 import { useAuth } from "@recnet/recnet-web/app/AuthContext";
 import { Skeleton, SkeletonText } from "@recnet/recnet-web/components/Skeleton";
-import { RecArticleForm } from "@recnet/recnet-web/components/rec/RecArticleForm";
-import { RecForm } from "@recnet/recnet-web/components/rec/RecForm";
+import { NewArticleForm } from "@recnet/recnet-web/components/rec/NewArticleForm";
+import { RecEditForm } from "@recnet/recnet-web/components/rec/RecEditForm";
 import { cn } from "@recnet/recnet-web/utils/cn";
 
 import {
@@ -175,14 +175,14 @@ export function LeftPanel() {
                 Back
               </div>
               {rec ? (
-                <RecForm
+                <RecEditForm
                   currentRec={rec}
                   onFinish={() => {
                     setIsRecFormOpen(false);
                   }}
                 />
               ) : (
-                <RecArticleForm
+                <NewArticleForm
                   currentRec={rec}
                   onFinish={() => {
                     setIsRecFormOpen(false);
