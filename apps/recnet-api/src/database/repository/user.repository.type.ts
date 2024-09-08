@@ -11,7 +11,11 @@ export const userPreview = Prisma.validator<Prisma.UserDefaultArgs>()({
     affiliation: true,
     bio: true,
     url: true,
-    followedBy: true,
+    followedBy: {
+      where: {
+        followedBy: { isActivated: true },
+      },
+    },
     recommendations: true,
   },
 });
@@ -30,10 +34,19 @@ export const user = Prisma.validator<Prisma.UserDefaultArgs>()({
     googleScholarLink: true,
     semanticScholarLink: true,
     openReviewUserName: true,
-    followedBy: true,
+    followedBy: {
+      where: {
+        followedBy: { isActivated: true },
+      },
+    },
     email: true,
     role: true,
-    following: true,
+    isActivated: true,
+    following: {
+      where: {
+        following: { isActivated: true },
+      },
+    },
     recommendations: true,
   },
 });
@@ -73,4 +86,5 @@ export type UpdateUserInput = {
   semanticScholarLink?: string | null;
   openReviewUserName?: string | null;
   email?: string;
+  isActivated?: boolean;
 };

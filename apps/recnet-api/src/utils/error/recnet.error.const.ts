@@ -7,6 +7,7 @@ export const ErrorCode = {
   INVALID_INVITE_CODE: 1005,
   HANDLE_EXISTS: 1006,
   START_DATE_AFTER_END_DATE: 1007,
+  ACCOUNT_NOT_ACTIVATED: 1008,
 
   // DB error codes
   DB_UNKNOWN_ERROR: 2000,
@@ -27,7 +28,9 @@ export const errorMessages = {
   [ErrorCode.INVALID_INVITE_CODE]: "Invalid invite code",
   [ErrorCode.HANDLE_EXISTS]: "Handle already exists",
   [ErrorCode.START_DATE_AFTER_END_DATE]: "Start date is after end date",
+  [ErrorCode.ACCOUNT_NOT_ACTIVATED]: "The user account is not activated",
   [ErrorCode.DB_UNKNOWN_ERROR]: "Database error",
   [ErrorCode.DB_USER_NOT_FOUND]: "User not found",
   [ErrorCode.DB_UNIQUE_CONSTRAINT]: "Unique constraint violation",
+  [ErrorCode.EMAIL_SEND_ERROR]: "Email send error",
 };

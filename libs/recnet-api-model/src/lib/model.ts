@@ -19,6 +19,7 @@ export const userPreviewSchema = z.object({
 export type UserPreview = z.infer<typeof userPreviewSchema>;
 
 export const userSchema = userPreviewSchema.extend({
+  isActivated: z.boolean(),
   email: z.string().email(),
   role: userRoleSchema,
   googleScholarLink: z.string().url().nullable(),

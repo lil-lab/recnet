@@ -37,3 +37,8 @@ export class UpdateUserDto {
   @ApiPropertyOptional({ example: "example@cornell.edu" })
   email?: string;
 }
+
+export class UpdateUserActivateDto {
+  @ApiPropertyOptional({ example: true })
+  isActivated: boolean;
+}
