@@ -9,6 +9,7 @@ import { Headerbar } from "@recnet/recnet-web/app/Headerbar";
 import { clientEnv } from "@recnet/recnet-web/clientEnv";
 import { getUserServerSide } from "@recnet/recnet-web/utils/getUserServerSide";
 
+import { ApiErrorBoundary } from "./ApiErrorBoundary";
 import { AuthProvider } from "./AuthProvider";
 import { HistoryProvider } from "./HistoryProvider";
 import "@radix-ui/themes/styles.css";
@@ -44,9 +45,11 @@ export default async function RootLayout({
                   <Theme accentColor="blue">
                     <Headerbar />
                     <Toaster position="top-right" richColors offset={80} />
-                    <div className="min-h-[90svh] flex justify-center">
-                      {children}
-                    </div>
+                    <ApiErrorBoundary>
+                      <div className="min-h-[90svh] flex justify-center">
+                        {children}
+                      </div>
+                    </ApiErrorBoundary>
                     <Footer />
                     <MobileNavigator />
                   </Theme>
