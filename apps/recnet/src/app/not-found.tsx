@@ -1,9 +1,11 @@
 import { Flex, Text } from "@radix-ui/themes";
 
 import { RecNetLink } from "@recnet/recnet-web/components/Link";
+import {
+  ErrorBlock,
+  ReportEmailAccount,
+} from "@recnet/recnet-web/components/error";
 import { cn } from "@recnet/recnet-web/utils/cn";
-
-export const ReportEmailAccount = "lil.recnet@gmail.com";
 
 export default function NotFoundPage() {
   return (
@@ -20,18 +22,9 @@ export default function NotFoundPage() {
         "items-center"
       )}
     >
-      <Flex className="items-center gap-x-8">
-        <Text className="text-gray-10 text-[72px]" weight="medium">
-          404
-        </Text>
-        <div className="w-[2px] bg-gray-10 h-[75%]" />
-        <div className="flex flex-col gap-y-1">
-          <Text className="text-gray-11 text-[24px]" weight="medium">
-            Page not found
-          </Text>
-          <Text className="text-gray-10 text-[16px]">
-            The page you are looking for does not exist.
-          </Text>
+      <ErrorBlock
+        code={404}
+        actionSection={
           <Flex className="items-center gap-x-2 text-gray-10 text-[16px] flex-wrap">
             <Text>Go back to </Text>
             <RecNetLink href="/">
@@ -43,8 +36,8 @@ export default function NotFoundPage() {
             </RecNetLink>
             <Text> to us</Text>
           </Flex>
-        </div>
-      </Flex>
+        }
+      />
     </div>
   );
 }
