@@ -1,0 +1,40 @@
+import { Callout } from 'nextra/components'
+
+<Callout type="warning" emoji="🚧">
+  The document is under construction now. Some information may be missing.
+</Callout>
+
+This is guide on how to add a new API to the RecNet-web project.
+
+Let's say we decided to implement a new API endpoint at `recnet-api` and we want to use it in the `recnet` project.
+
+The API route look like this `GET /api/examples?keyword=foo`.
+
+The request parameters are:
+```ts
+{
+  keyword: string | undefined;
+}
+```
+
+The response type is:
+```ts
+{
+  results: string[];
+}
+```
+
+
+
+## Define API schema at `recnet-api-model`
+
+Add API request parameters/request body type and response type at `recnet-api-model` using `zod`. This will be used at both `recnet-api` and `recnet` for validation and type inference.
+
+## Define API implementation at `recnet-api`
+
+- Add new `controller`, `module`, ...
+
+## Add API procedure at `recnet`
+
+- Add new procedure at `recnet` using `trpc`. Go to `server/routers` and add a new router (or add at an existing router).
+- Use client-side or server-side API call to call the new API.

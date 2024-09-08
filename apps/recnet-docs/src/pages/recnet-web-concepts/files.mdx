@@ -1,9 +1,52 @@
-import { Callout } from 'nextra/components'
+```
+/src
+  |-- /app
+  |-- /components
+  |-- /firebase
+  |-- /hooks
+  |-- /server
+  |-- /utils
+  |-- /clientEnv.ts
+  |-- /serverEnv.ts
+  |-- /constants.ts
+  |-- /middleware.ts
+```
 
-<Callout type="warning" emoji="🚧">
-  The document is under construction now. Some information may be missing.
-</Callout>
+## `/src`
 
-To be continued...
+### `/app`
 
-Will talk about the file structure of RecNet.
+Next.js application. We used **Nextjs App Router** for routing. Therefore, the structure is nested here. Proceed to [Nextjs App Router](https://nextjs.org/docs/app/building-your-application/routing) for more information.
+
+Note that we encourage [*colocation*](https://nextjs.org/docs/app/building-your-application/routing/colocation) of components and pages. Therefore, if the component is only used in a single page, it should be placed in the same directory as the page.
+
+Basic knowledge:
+- `layout.tsx` is the layout for this route. It's shared between this route and all the children routes.
+- `page.tsx` is the page content for this route.
+- `loading.tsx` is the loading page for this route.
+
+Learn more:
+- [Pages and Layouts](https://nextjs.org/docs/app/building-your-application/routing/pages-and-layouts#layouts)
+- [Defining Routes](https://nextjs.org/docs/app/building-your-application/routing/defining-routes)
+
+### `/components`
+
+Reusable custom components across the application and their unit tests.
+
+### `/hooks`
+
+Reusable custom hooks and their unit tests.
+
+### `/firebase`
+
+We use Firebase as our authentication provider. And use [next-firebase-auth-edge](https://next-firebase-auth-edge-docs.vercel.app/) as our auth library. It provides features for us to access authentication information(e.g. token) in the server-side and also set custom claims server-side. Learn more at [Authentication page](/auth).
+
+This directory contains the Firebase configuration and login/logout functions.
+
+### `/server`
+
+Contains trpc routers. We use [trpc](https://trpc.io/) for type-safe API calls. It provides a type-safe way to define API calls and make it looks like PRC(Remote Procedure Call) from client side. Learn more at [TRPC page](/recnet-web-concepts/trpc).
+
+### `clientEnv.ts`, `serverEnv.ts`
+
+Store environment variables and the schemas for Next.js client and server sides. These files will load the environment variables from `.env.local` and use `zod` to parse them. It will throw an error if the environment variables are not defined or have the wrong format.
