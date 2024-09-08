@@ -27,6 +27,18 @@
         ],
         "cwd": "apps/recnet"
       }
+    },
+    "test": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          {
+            "command": "vitest --watch=false",
+            "forwardAllArgs": false
+          }
+        ],
+        "cwd": "apps/recnet"
+      }
     }
   },
   "tags": ["type:app"]
