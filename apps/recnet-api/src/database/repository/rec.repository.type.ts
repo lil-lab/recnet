@@ -7,6 +7,7 @@ export const rec = Prisma.validator<Prisma.RecommendationDefaultArgs>()({
   select: {
     id: true,
     description: true,
+    isSelfRec: true,
     cutoff: true,
     user: {
       select: userPreview.select,
