@@ -2,38 +2,37 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
-
 ## [1.10.2](https://github.com/lil-lab/recnet/compare/recnet-web-v1.10.0...recnet-web-v1.10.2) (2024-09-08)
-
 
 ### Bug Fixes
 
-* add error ui when api is down ([6d4a924](https://github.com/lil-lab/recnet/commit/6d4a924bf8d1aa54314a10144fecd87743a6bb1b))
+- add error ui when api is down ([6d4a924](https://github.com/lil-lab/recnet/commit/6d4a924bf8d1aa54314a10144fecd87743a6bb1b))
 
-## [1.10.1](https://github.com/lil-lab/recnet/compare/recnet-web-v1.10.0...recnet-web-v1.10.1) (2024-09-03)
+## [1.10.1](https://github.com/lil-lab/recnet/compare/recnet-web-v1.10.0...recnet-web-v1.10.1) (2024-09-08)
+
+### Bug Fixes
+
+- add error ui when api is down ([6d4a924](https://github.com/lil-lab/recnet/commit/6d4a924bf8d1aa54314a10144fecd87743a6bb1b))
 
 ## [1.10.0](https://github.com/lil-lab/recnet/compare/recnet-web-v1.9.3...recnet-web-v1.10.0) (2024-08-29)
 
-
 ### Features
 
-* change design of about page ([ff389f1](https://github.com/lil-lab/recnet/commit/ff389f1b8645a3d417ac10cdd40758611f57007c))
+- change design of about page ([ff389f1](https://github.com/lil-lab/recnet/commit/ff389f1b8645a3d417ac10cdd40758611f57007c))
 
 ## [1.9.3](https://github.com/lil-lab/recnet/compare/recnet-web-v1.9.2...recnet-web-v1.9.3) (2024-08-28)
 
-
 ### Bug Fixes
 
-* upcoming rec appear in profile ([766f365](https://github.com/lil-lab/recnet/commit/766f365202f9e741c3304cbd5af78f5e35bacd10))
+- upcoming rec appear in profile ([766f365](https://github.com/lil-lab/recnet/commit/766f365202f9e741c3304cbd5af78f5e35bacd10))
 
 ## [1.9.2](https://github.com/lil-lab/recnet/compare/recnet-web-v1.9.1...recnet-web-v1.9.2) (2024-08-26)
 
 ## [1.9.1](https://github.com/lil-lab/recnet/compare/recnet-web-v1.9.0...recnet-web-v1.9.1) (2024-05-21)
 
-
 ### Bug Fixes
 
-* add inapp announcement page to mobile admin menu ([351d026](https://github.com/lil-lab/recnet/commit/351d0260cd0a4c002f44e573153985491c9c8c99))
+- add inapp announcement page to mobile admin menu ([351d026](https://github.com/lil-lab/recnet/commit/351d0260cd0a4c002f44e573153985491c9c8c99))
 
 ## [1.9.0](https://github.com/lil-lab/recnet/compare/recnet-web-v1.8.0...recnet-web-v1.9.0) (2024-05-19)
 

@@ -42,6 +42,15 @@ export class RecService {
     userId: string,
     to: Date
   ): Promise<GetRecsResponse> {
+    // validate if the user exists and is activated
+    const user = await this.userRepository.findUserById(userId);
+    if (!user.isActivated) {
+      throw new RecnetError(
+        ErrorCode.ACCOUNT_NOT_ACTIVATED,
+        HttpStatus.BAD_REQUEST
+      );
+    }
+
     const filter: RecFilterBy = {
       userId: userId,
       cutoff: { to },
@@ -97,6 +106,7 @@ export class RecService {
     articleId: string | null,
     article: CreateArticleInput | null,
     description: string,
+    isSelfRec: boolean,
     userId: string
   ): Promise<CreateRecResponse> {
     const dbRec = await this.recRepository.findUpcomingRec(userId);
@@ -125,6 +135,7 @@ export class RecService {
     const newRec = await this.recRepository.createRec(
       userId,
       description,
+      isSelfRec,
       articleIdToConnect
     );
     return {
@@ -136,6 +147,7 @@ export class RecService {
     articleId: string | null,
     article: CreateArticleInput | null,
     description: string,
+    isSelfRec: boolean,
     userId: string
   ): Promise<UpdateRecResponse> {
     const dbRec = await this.recRepository.findUpcomingRec(userId);
@@ -163,11 +175,16 @@ export class RecService {
     }
     let updatedRec: DbRec;
     if (articleIdToConnect === dbRec.article.id) {
-      updatedRec = await this.recRepository.updateRec(dbRec.id, description);
+      updatedRec = await this.recRepository.updateRec(
+        dbRec.id,
+        description,
+        isSelfRec
+      );
     } else {
       updatedRec = await this.recRepository.updateRec(
         dbRec.id,
         description,
+        isSelfRec,
         articleIdToConnect
       );
     }

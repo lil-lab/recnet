@@ -237,6 +237,7 @@ export function NewArticleForm(props: {
                   articleId: res.data.articleId,
                   article: null,
                   description: res.data.description,
+                  isSelfRec: false, // TODO: add self rec feature
                 }
               : {
                   articleId: null,
@@ -249,6 +250,7 @@ export function NewArticleForm(props: {
                     month: res.data.month ?? null,
                   },
                   description: res.data.description,
+                  isSelfRec: false, // TODO: add self rec feature
                 };
             if (currentRec) {
               await editRecMutation.mutateAsync(formSubmissionData);

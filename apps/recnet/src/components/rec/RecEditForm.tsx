@@ -121,6 +121,7 @@ export function RecEditForm(props: { onFinish?: () => void; currentRec: Rec }) {
                   articleId: currentRec.article.id,
                   article: null,
                   description: res.data.description,
+                  isSelfRec: false, // TODO: implement self rec
                 });
                 toast.success("Rec updated successfully.");
                 await utils.getUpcomingRec.invalidate();

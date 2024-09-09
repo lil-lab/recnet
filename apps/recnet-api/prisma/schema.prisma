@@ -5,13 +5,13 @@
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
   previewFeatures = ["fullTextSearch"]
 }
 
 datasource db {
-  provider          = "postgresql"
-  url               = env("PRISMA_DATABASE_URL")
+  provider = "postgresql"
+  url      = env("PRISMA_DATABASE_URL")
 }
 
 // Define enum types
@@ -33,106 +33,109 @@ enum CronStatus {
 }
 
 model User {
-  id                  String     @id @db.VarChar(64) @default(uuid()) // Primary key, UUID type
-  provider            Provider   // Enum type
-  providerId          String     @db.VarChar(128)
-  @@unique([provider, providerId])
-  email               String     @db.VarChar(128) @unique
-  handle              String     @db.VarChar(32) @unique
-  displayName         String     @db.VarChar(32)
-  inviteCode          String?    @db.VarChar(64)
-  photoUrl            String     @db.VarChar(256)
-  affiliation         String?    @db.VarChar(64)
-  bio                 String?    @db.VarChar(200)
-  url                 String?    @db.VarChar(512)
-  googleScholarLink   String?    @db.VarChar(512)
-  semanticScholarLink String?    @db.VarChar(512)
-  openReviewUserName  String?    @db.VarChar(64)
+  id                  String   @id @default(uuid()) @db.VarChar(64) // Primary key, UUID type
+  provider            Provider // Enum type
+  providerId          String   @db.VarChar(128)
+  email               String   @unique @db.VarChar(128)
+  handle              String   @unique @db.VarChar(32)
+  displayName         String   @db.VarChar(32)
+  inviteCode          String?  @db.VarChar(64)
+  photoUrl            String   @db.VarChar(256)
+  affiliation         String?  @db.VarChar(64)
+  bio                 String?  @db.VarChar(200)
+  url                 String?  @db.VarChar(512)
+  googleScholarLink   String?  @db.VarChar(512)
+  semanticScholarLink String?  @db.VarChar(512)
+  openReviewUserName  String?  @db.VarChar(64)
   lastLoginAt         DateTime
   role                Role       @default(USER) // Enum type
+  isActivated         Boolean    @default(true)
   createdAt           DateTime   @default(now())
   updatedAt           DateTime   @default(now()) @updatedAt
 
-  followedBy          FollowingRecord[] @relation("FollowedBy")
-  following           FollowingRecord[] @relation("Following")
-  recommendations     Recommendation[]
-  inviteCodeOwner     InviteCode[]  @relation("InviteCodeOwner")
-  inviteCodeUsed      InviteCode?   @relation("InviteCodeUsedBy")
-  announcements       Announcement[]
+  followedBy      FollowingRecord[] @relation("FollowedBy")
+  following       FollowingRecord[] @relation("Following")
+  recommendations Recommendation[]
+  inviteCodeOwner InviteCode[]      @relation("InviteCodeOwner")
+  inviteCodeUsed  InviteCode?       @relation("InviteCodeUsedBy")
+  announcements   Announcement[]
+
+  @@unique([provider, providerId])
 }
 
 model FollowingRecord {
-  followingId     String    @db.VarChar(64)
-  followedById    String    @db.VarChar(64)
-  createdAt       DateTime  @default(now())
+  followingId  String   @db.VarChar(64)
+  followedById String   @db.VarChar(64)
+  createdAt    DateTime @default(now())
+  following    User     @relation("FollowedBy", fields: [followingId], references: [id])
+  followedBy   User     @relation("Following", fields: [followedById], references: [id])
 
   @@id([followingId, followedById])
-  following       User @relation("FollowedBy", fields: [followingId], references: [id])
-  followedBy      User @relation("Following", fields: [followedById], references: [id])
 }
 
 model Recommendation {
-  id          String    @id @db.VarChar(64) @default(uuid())
-  userId      String    @db.VarChar(64)
-  articleId   String    @db.VarChar(64)
+  id          String   @id @default(uuid()) @db.VarChar(64)
+  userId      String   @db.VarChar(64)
+  articleId   String   @db.VarChar(64)
   description String
+  isSelfRec   Boolean  @default(false)
   cutoff      DateTime
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @default(now()) @updatedAt
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @default(now()) @updatedAt
 
-  user        User      @relation(fields: [userId], references: [id]) // User who made the recommendation
-  article     Article   @relation(fields: [articleId], references: [id]) // Article being recommended
+  user    User    @relation(fields: [userId], references: [id]) // User who made the recommendation
+  article Article @relation(fields: [articleId], references: [id]) // Article being recommended
 }
 
 model Article {
-  id          String    @id @db.VarChar(64) @default(uuid())
-  doi         String?   @db.VarChar(32)
-  title       String    @db.VarChar(256)
-  author      String
-  link        String    @db.VarChar(256)
-  year        Int       @db.SmallInt
-  month       Int?      @db.SmallInt
-  isVerified  Boolean   @default(false)
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @default(now()) @updatedAt
+  id         String   @id @default(uuid()) @db.VarChar(64)
+  doi        String?  @db.VarChar(32)
+  title      String   @db.VarChar(256)
+  author     String
+  link       String   @db.VarChar(256)
+  year       Int      @db.SmallInt
+  month      Int?     @db.SmallInt
+  isVerified Boolean  @default(false)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @default(now()) @updatedAt
 
   recommendations Recommendation[]
 }
 
 model InviteCode {
-  id          Int       @id @default(autoincrement())
-  code        String    @db.VarChar(64) @unique
-  ownerId     String    @db.VarChar(64)
-  issuedAt    DateTime  @default(now())
-  usedById    String?   @db.VarChar(64) @unique
-  usedAt      DateTime?
+  id       Int       @id @default(autoincrement())
+  code     String    @unique @db.VarChar(64)
+  ownerId  String    @db.VarChar(64)
+  issuedAt DateTime  @default(now())
+  usedById String?   @unique @db.VarChar(64)
+  usedAt   DateTime?
 
-  owner       User      @relation("InviteCodeOwner", fields: [ownerId], references: [id])
-  usedBy      User?     @relation("InviteCodeUsedBy", fields: [usedById], references: [id])
+  owner  User  @relation("InviteCodeOwner", fields: [ownerId], references: [id])
+  usedBy User? @relation("InviteCodeUsedBy", fields: [usedById], references: [id])
 }
 
 model Announcement {
-  id          Int       @id @default(autoincrement())
-  title       String    @db.VarChar(128)
+  id          Int      @id @default(autoincrement())
+  title       String   @db.VarChar(128)
   content     String
   startAt     DateTime
   endAt       DateTime
-  isActivated Boolean   @default(true)
-  allowClose  Boolean   @default(false)
-  createdById  String    @db.VarChar(64)
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @default(now()) @updatedAt
+  isActivated Boolean  @default(true)
+  allowClose  Boolean  @default(false)
+  createdById String   @db.VarChar(64)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @default(now()) @updatedAt
 
-  createdBy   User      @relation(fields: [createdById], references: [id])
+  createdBy User @relation(fields: [createdById], references: [id])
 }
 
 model WeeklyDigestCronLog {
-  id          Int       @id @default(autoincrement())
-  cutoff      DateTime
-  startTime   DateTime  @default(now())
-  endTime     DateTime?
-  status      CronStatus
-  result      Json?
-  errorMsg    String?
-  createdAt   DateTime  @default(now())
+  id        Int        @id @default(autoincrement())
+  cutoff    DateTime
+  startTime DateTime   @default(now())
+  endTime   DateTime?
+  status    CronStatus
+  result    Json?
+  errorMsg  String?
+  createdAt DateTime   @default(now())
 }

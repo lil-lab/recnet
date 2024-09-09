@@ -9,6 +9,7 @@ phases:
       - pnpm i --frozen-lockfile
   pre_build:
     commands:
+      - export NX_NO_CLOUD=true
       - pnpm nx clean recnet-api
       - pnpm nx prisma:generate recnet-api
   build:

@@ -14,6 +14,11 @@ export class CreateRecDto {
   description: string;
 
   @ApiProperty({
+    description: "Whether the recommendation is self-recommendation or not",
+  })
+  isSelfRec: boolean;
+
+  @ApiProperty({
     description: "Article id",
     nullable: true,
   })
