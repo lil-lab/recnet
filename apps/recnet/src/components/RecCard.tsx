@@ -1,5 +1,5 @@
 import { CalendarIcon } from "@radix-ui/react-icons";
-import { Flex, Text } from "@radix-ui/themes";
+import { Badge, Flex, Text, Tooltip } from "@radix-ui/themes";
 import { ChevronRight } from "lucide-react";
 
 import { Avatar } from "@recnet/recnet-web/components/Avatar";
@@ -116,23 +116,32 @@ export function RecCard(props: { recs: Rec[]; showDate?: boolean }) {
           <Flex className="items-start gap-x-3 px-4 py-2" key={user.id}>
             <Avatar user={user} className="w-[40px] aspect-square" />
             <Flex className="flex flex-col gap-y-1">
-              <Text className="items-end">
-                <RecNetLink
-                  href={`/${user.handle}`}
-                  radixLinkProps={{
-                    size: "2",
-                  }}
-                >
-                  <Text size="2">{user.displayName}</Text>
-                </RecNetLink>
-                {showDate ? (
-                  <Text
-                    size="2"
-                    className="text-gray-10"
-                    weight="medium"
-                  >{` recommended on on ${cutoff}`}</Text>
-                ) : null}
-              </Text>
+              <Flex className="gap-x-2">
+                <Text className="items-end">
+                  <RecNetLink
+                    href={`/${user.handle}`}
+                    radixLinkProps={{
+                      size: "2",
+                    }}
+                  >
+                    <Text size="2">{user.displayName}</Text>
+                  </RecNetLink>
+                  {showDate ? (
+                    <Text
+                      size="2"
+                      className="text-gray-10"
+                      weight="medium"
+                    >{` recommended on on ${cutoff}`}</Text>
+                  ) : null}
+                  {rec.isSelfRec ? (
+                    <Tooltip content="This recommendation was made by the same person who wrote the article.">
+                      <Badge color="orange" className="ml-2 cursor-pointer">
+                        Self Rec
+                      </Badge>
+                    </Tooltip>
+                  ) : null}
+                </Text>
+              </Flex>
               <Flex>
                 <Text size="3" className="text-gray-11">
                   {rec.description}
