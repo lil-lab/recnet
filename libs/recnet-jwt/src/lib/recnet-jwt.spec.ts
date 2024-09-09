@@ -40,7 +40,7 @@ function generateRecnetJWT(sk: string) {
   });
 }
 
-describe("Verify", async () => {
+describe("verifyJwt", async () => {
   const env = envSchema.parse(process.env);
   const publicKey = env.VITE_PUBLIC_KEY;
   const fakePublicKey = publicKey.replace("A", "B");

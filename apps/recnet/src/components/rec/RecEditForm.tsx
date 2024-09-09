@@ -16,7 +16,7 @@ import { trpc } from "@recnet/recnet-web/app/_trpc/client";
 import { Accordion } from "@recnet/recnet-web/components/Accordion";
 import { RecNetLink } from "@recnet/recnet-web/components/Link";
 import { ReportEmailAccount } from "@recnet/recnet-web/components/error";
-import { RecArticleForm } from "@recnet/recnet-web/components/rec/RecArticleForm";
+import { NewArticleForm } from "@recnet/recnet-web/components/rec/NewArticleForm";
 import { cn } from "@recnet/recnet-web/utils/cn";
 
 import {
@@ -34,7 +34,14 @@ const RecFormSchema = z.object({
     .min(1, "Description cannot be blank"),
 });
 
-export function RecForm(props: { onFinish?: () => void; currentRec: Rec }) {
+/**
+ * Used to edit the description of an upcoming rec.
+ *
+ * Only showed when user has submitted an upcoming rec.
+ *
+ * Redirected to `NewArticleForm` if user wants to change the article.
+ */
+export function RecEditForm(props: { onFinish?: () => void; currentRec: Rec }) {
   const { onFinish = () => {}, currentRec } = props;
   const [recNewArticle, setRecNewArticle] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -61,7 +68,7 @@ export function RecForm(props: { onFinish?: () => void; currentRec: Rec }) {
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
         >
-          <RecArticleForm currentRec={currentRec} onFinish={onFinish} />
+          <NewArticleForm currentRec={currentRec} onFinish={onFinish} />
         </motion.div>
       ) : (
         <motion.div
