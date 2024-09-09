@@ -52,10 +52,12 @@ export default class RecRepository {
   public async createRec(
     userId: string,
     description: string,
+    isSelfRec: boolean,
     articleId: string
   ): Promise<Rec> {
     return this.prisma.recommendation.create({
       data: {
+        isSelfRec: isSelfRec,
         description: description,
         cutoff: getNextCutOff(),
         user: {
@@ -76,10 +78,12 @@ export default class RecRepository {
   public async updateRec(
     id: string,
     description: string,
+    isSelfRec: boolean,
     articleId?: string
   ): Promise<Rec> {
     const data: Prisma.RecommendationUpdateInput = {
       description: description,
+      isSelfRec: isSelfRec,
     };
     if (articleId) {
       data.article = {

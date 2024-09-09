@@ -15,6 +15,7 @@ export const recFormSubmissionSchema = z.intersection(
   ]),
   z.object({
     description: z.string(),
+    isSelfRec: z.boolean(),
   })
 );
 export type RecFormSubmission = z.infer<typeof recFormSubmissionSchema>;

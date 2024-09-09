@@ -69,22 +69,24 @@ export const recRouter = router({
     .input(postRecsUpcomingRequestSchema)
     .mutation(async (opts) => {
       const { recnetApi } = opts.ctx;
-      const { articleId, article, description } = opts.input;
+      const { articleId, article, description, isSelfRec } = opts.input;
       await recnetApi.post("/recs/upcoming", {
         articleId,
         article,
         description,
+        isSelfRec,
       });
     }),
   editUpcomingRec: checkRecnetJWTProcedure
     .input(patchRecsUpcomingRequestSchema)
     .mutation(async (opts) => {
       const { recnetApi } = opts.ctx;
-      const { articleId, article, description } = opts.input;
+      const { articleId, article, description, isSelfRec } = opts.input;
       await recnetApi.patch(`/recs/upcoming`, {
         articleId,
         article,
         description,
+        isSelfRec,
       });
     }),
   deleteUpcomingRec: checkRecnetJWTProcedure.mutation(async (opts) => {
