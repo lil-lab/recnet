@@ -44,6 +44,7 @@ export type Article = z.infer<typeof articleSchema>;
 export const recSchema = z.object({
   id: z.string(),
   description: z.string(),
+  isSelfRec: z.boolean(),
   cutoff: dateSchema,
   user: userPreviewSchema,
   article: articleSchema,
