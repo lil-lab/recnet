@@ -12,6 +12,9 @@ export class Rec {
   description: string;
 
   @ApiProperty()
+  isSelfRec: boolean;
+
+  @ApiProperty()
   cutoff: string;
 
   @ApiProperty()
