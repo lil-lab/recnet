@@ -2,6 +2,31 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [1.11.0](https://github.com/lil-lab/recnet/compare/recnet-web-v1.10.2...recnet-web-v1.11.0) (2024-09-10)
+
+
+### Features
+
+* add ActivatedGuard ([f5ddd31](https://github.com/lil-lab/recnet/commit/f5ddd31df11cff3f99f1d0dc1f39648bc0ff4c52))
+* add isActivated in user response ([21d3a07](https://github.com/lil-lab/recnet/commit/21d3a0747820884861fd12f4fbd61f89ed6e236e))
+* add isActivated to db user table ([2e33ac9](https://github.com/lil-lab/recnet/commit/2e33ac9b940a1edebf632d597dd1f4614f7d604c))
+* add isSelfRec option in RecEditForm ([a22b861](https://github.com/lil-lab/recnet/commit/a22b861f37e1dbf4cba0f6434735cfc75c07f750))
+* add new field to rec table: isSelfRec ([1a08aea](https://github.com/lil-lab/recnet/commit/1a08aeaa9d87a2fb31a59f4276c0f7541425fed7))
+* add self rec badge in email ([dfbf0e9](https://github.com/lil-lab/recnet/commit/dfbf0e9c2e3beb56e99b682b049f56d560811c37))
+* add self-rec checkbox in NewArticleForm ([a096434](https://github.com/lil-lab/recnet/commit/a096434043c8ecef10337bf4af9dd82e9ca33afc))
+* add validation to follow/unfollow and get recs api ([d685ee1](https://github.com/lil-lab/recnet/commit/d685ee12f801e405cc0fc0106254027932fa5306))
+* create PATCH /update/me/activate API ([d9682af](https://github.com/lil-lab/recnet/commit/d9682af3748879d4091cf0101b28bb2e077fb9b6))
+* exclude non-activated following records ([68e46c0](https://github.com/lil-lab/recnet/commit/68e46c02560cc1bf69feced833f9ae95563ad582))
+* exclude non-activated users when querying users ([a1b8f57](https://github.com/lil-lab/recnet/commit/a1b8f57531f216d71e7d7d0effd39c0d3885f8f5))
+* include selfRec property in rec model ([16d3f55](https://github.com/lil-lab/recnet/commit/16d3f554c424c7e9ae998369db80f2221e9138df))
+* mark self rec in rec card ([25dcc3d](https://github.com/lil-lab/recnet/commit/25dcc3df1310330dbd148112569a542776f1b804))
+* update create/edit upcoming rec APIs to enable self-rec feature ([15d1915](https://github.com/lil-lab/recnet/commit/15d1915996fdf8f5be6fe660097b51fdcfa8f64d))
+
+
+### Bug Fixes
+
+* add error ui when api is down ([cf199d6](https://github.com/lil-lab/recnet/commit/cf199d6d1dd1ad15086851d81e4cfda257304082))
+* disable nx cloud in CI pipeline ([74fd55c](https://github.com/lil-lab/recnet/commit/74fd55caad5b0b81d45a903294a18f18a81abc77))
 ## [1.10.2](https://github.com/lil-lab/recnet/compare/recnet-web-v1.10.0...recnet-web-v1.10.2) (2024-09-08)
 
 ### Bug Fixes
