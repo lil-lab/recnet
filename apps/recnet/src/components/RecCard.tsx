@@ -1,5 +1,5 @@
 import { CalendarIcon } from "@radix-ui/react-icons";
-import { Flex, Text } from "@radix-ui/themes";
+import { Badge, Flex, Text, Tooltip } from "@radix-ui/themes";
 import { ChevronRight } from "lucide-react";
 
 import { Avatar } from "@recnet/recnet-web/components/Avatar";
@@ -131,6 +131,13 @@ export function RecCard(props: { recs: Rec[]; showDate?: boolean }) {
                     className="text-gray-10"
                     weight="medium"
                   >{` recommended on on ${cutoff}`}</Text>
+                ) : null}
+                {rec.isSelfRec ? (
+                  <Tooltip content="This recommendation was made by the same person who wrote the article.">
+                    <Badge color="orange" className="ml-2 cursor-pointer">
+                      Self Rec
+                    </Badge>
+                  </Tooltip>
                 ) : null}
               </Text>
               <Flex>

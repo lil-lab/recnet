@@ -6,14 +6,21 @@ import {
   Link2Icon,
   PersonIcon,
   SewingPinIcon,
-} from "@radix-ui/react-icons";
-import {
   CheckIcon,
   ChevronDownIcon,
   ChevronUpIcon,
+  QuestionMarkCircledIcon,
 } from "@radix-ui/react-icons";
 import * as Select from "@radix-ui/react-select";
-import { Text, Flex, Button, TextField, TextArea } from "@radix-ui/themes";
+import {
+  Text,
+  Flex,
+  Button,
+  TextField,
+  TextArea,
+  Checkbox,
+  Tooltip,
+} from "@radix-ui/themes";
 import { AnimatePresence, motion } from "framer-motion";
 import { forwardRef, useState } from "react";
 import { useForm, Controller, useFormState } from "react-hook-form";
@@ -128,6 +135,7 @@ const RecArticleFormSchema = z.object({
     .string()
     .max(280, "Description should be less than 280 chars")
     .min(1, "Description cannot be blank"),
+  isSelfRec: z.boolean().default(false),
   year: z.coerce
     .number()
     .refine((val) => {
@@ -237,7 +245,7 @@ export function NewArticleForm(props: {
                   articleId: res.data.articleId,
                   article: null,
                   description: res.data.description,
-                  isSelfRec: false, // TODO: add self rec feature
+                  isSelfRec: res.data.isSelfRec,
                 }
               : {
                   articleId: null,
@@ -250,7 +258,7 @@ export function NewArticleForm(props: {
                     month: res.data.month ?? null,
                   },
                   description: res.data.description,
-                  isSelfRec: false, // TODO: add self rec feature
+                  isSelfRec: res.data.isSelfRec,
                 };
             if (currentRec) {
               await editRecMutation.mutateAsync(formSubmissionData);
@@ -487,6 +495,33 @@ export function NewArticleForm(props: {
                     {`${watch("description")?.length ?? 0}/280`}
                   </Text>
                 </div>
+              </div>
+              <div>
+                <Controller
+                  control={control}
+                  name="isSelfRec"
+                  defaultValue={false}
+                  render={({ field }) => (
+                    <Flex gap="2">
+                      <Checkbox
+                        checked={field.value}
+                        onCheckedChange={(isChecked) => {
+                          field.onChange(isChecked);
+                        }}
+                      />
+                      <Text size="1" className="text-gray-11">
+                        Self recommendation
+                      </Text>
+                      <Tooltip content="Please mark recommendation of papers that you are an author of. Self recommendation are completely OK, but we want to mark them in the feeds.">
+                        <QuestionMarkCircledIcon
+                          width="18"
+                          height="18"
+                          className="text-gray-11 cursor-pointer"
+                        />
+                      </Tooltip>
+                    </Flex>
+                  )}
+                />
               </div>
               <Text size="1" weight="medium" className="text-gray-9 p-1">
                 {`You can edit at anytime before this week's cutoff: ${getVerboseDateString(getNextCutOff())}.`}

@@ -24,6 +24,14 @@ interface EmailRecCardProps {
   recs: Rec[];
 }
 
+function Badge(props: { children: React.ReactNode }) {
+  return (
+    <div className="bg-[#FFEFDD] text-[#D14E00] rounded-md px-2 py-1 text-[12px] w-fit max-w-fit">
+      {props.children}
+    </div>
+  );
+}
+
 function EmailRecCard(props: EmailRecCardProps) {
   const { recs } = props;
   if (recs.length === 0) {
@@ -52,6 +60,7 @@ function EmailRecCard(props: EmailRecCardProps) {
                 className="w-[40px] aspect-square rounded-[999px] object-cover"
               />
               <Text>{rec.user.displayName}</Text>
+              {rec.isSelfRec ? <Badge>{"Self Rec"}</Badge> : null}
             </div>
             <Text>{rec.description}</Text>
           </Container>
@@ -84,6 +93,7 @@ function MockEmailRecCard() {
             className="w-[40px] aspect-square rounded-[999px] object-cover"
           />
           <Text>{"Mock user"}</Text>
+          <Badge>{"Self Rec"}</Badge>
         </div>
         <Text>
           {
