@@ -2,14 +2,14 @@ import React from "react";
 
 import { AdminPanelNavbar } from "@recnet/recnet-web/app/admin/AdminPanelNav";
 import {
-  WithServerSideAuthProps,
-  withServerSideAuth,
-} from "@recnet/recnet-web/components/hoc/withServerSideAuth";
+  WithAuthRequiredProps,
+  withAuthRequired,
+} from "@recnet/recnet-web/components/hoc/withAuthRequired";
 import { UserRole } from "@recnet/recnet-web/constant";
 import { cn } from "@recnet/recnet-web/utils/cn";
 
 async function AdminLayout(
-  props: WithServerSideAuthProps<{
+  props: WithAuthRequiredProps<{
     children: React.ReactNode;
   }>
 ) {
@@ -37,7 +37,7 @@ export default async function Layout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const LayoutComponent = await withServerSideAuth(AdminLayout, {
+  const LayoutComponent = await withAuthRequired(AdminLayout, {
     prohibitedRoles: [UserRole.USER],
   });
   return <LayoutComponent>{children}</LayoutComponent>;

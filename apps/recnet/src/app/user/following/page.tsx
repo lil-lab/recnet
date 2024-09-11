@@ -4,12 +4,12 @@ import { NotFoundBlock } from "@recnet/recnet-web/app/search/NotFound";
 import { GoBackButton } from "@recnet/recnet-web/components/GoBackButton";
 import { UserCard } from "@recnet/recnet-web/components/UserCard";
 import {
-  withServerSideAuth,
-  WithServerSideAuthProps,
-} from "@recnet/recnet-web/components/hoc/withServerSideAuth";
+  withAuthRequired,
+  WithAuthRequiredProps,
+} from "@recnet/recnet-web/components/hoc/withAuthRequired";
 import { cn } from "@recnet/recnet-web/utils/cn";
 
-async function FollowingPage(props: WithServerSideAuthProps) {
+async function FollowingPage(props: WithAuthRequiredProps) {
   const { user } = props;
 
   return (
@@ -46,6 +46,6 @@ async function FollowingPage(props: WithServerSideAuthProps) {
 }
 
 export default async function Page() {
-  const PageComponent = await withServerSideAuth(FollowingPage);
+  const PageComponent = await withAuthRequired(FollowingPage);
   return <PageComponent />;
 }

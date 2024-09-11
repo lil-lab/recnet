@@ -2,15 +2,15 @@ import React from "react";
 
 import { LeftPanel } from "@recnet/recnet-web/app/feeds/LeftPanel";
 import {
-  WithServerSideAuthProps,
-  withServerSideAuth,
-} from "@recnet/recnet-web/components/hoc/withServerSideAuth";
+  WithAuthRequiredProps,
+  withAuthRequired,
+} from "@recnet/recnet-web/components/hoc/withAuthRequired";
 import { cn } from "@recnet/recnet-web/utils/cn";
 
 import { LatestAnnouncement } from "./LatestAnnouncement";
 
 async function FeedPageLayout(
-  props: WithServerSideAuthProps<{
+  props: WithAuthRequiredProps<{
     children: React.ReactNode;
   }>
 ) {
@@ -42,6 +42,6 @@ export default async function Layout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const LayoutComponent = await withServerSideAuth(FeedPageLayout);
+  const LayoutComponent = await withAuthRequired(FeedPageLayout);
   return <LayoutComponent>{children}</LayoutComponent>;
 }

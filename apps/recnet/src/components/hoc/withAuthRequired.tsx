@@ -10,7 +10,7 @@ interface ProhibitedRoleConfig {
   redirectRoute: string;
 }
 
-export interface WithServerSideAuthOptions {
+export interface WithAuthRequiredOptions {
   prohibitedRoles?:
     | UserRole[]
     | Partial<Record<UserRole, ProhibitedRoleConfig>>;
@@ -38,9 +38,9 @@ export interface WithServerSideAuthOptions {
     }
     ```
 */
-export async function withServerSideAuth<T extends object>(
+export async function withAuthRequired<T extends object>(
   Component: React.ComponentType<T & UserProps>,
-  options?: WithServerSideAuthOptions
+  options?: WithAuthRequiredOptions
 ) {
   /**
     Handle unregistered or unauthenticated users.
@@ -85,6 +85,6 @@ interface UserProps {
   user: User;
 }
 
-export type WithServerSideAuthProps<T = undefined> = T extends undefined
+export type WithAuthRequiredProps<T = undefined> = T extends undefined
   ? UserProps
   : T & UserProps;
