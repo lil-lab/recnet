@@ -1,25 +1,20 @@
-import { redirect } from "next/navigation";
 import React from "react";
 
 import { LeftPanel } from "@recnet/recnet-web/app/feeds/LeftPanel";
 import { cn } from "@recnet/recnet-web/utils/cn";
-import { getUserServerSide } from "@recnet/recnet-web/utils/getUserServerSide";
+import {
+  WithServerSideAuthProps,
+  withServerSideAuth,
+} from "@recnet/recnet-web/utils/withServerSideAuth";
 
 import { LatestAnnouncement } from "./LatestAnnouncement";
 
-export default async function FeedPageLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
-  const user = await getUserServerSide({
-    notRegisteredCallback: () => {
-      redirect("/onboard");
-    },
-  });
-  if (!user) {
-    redirect("/");
-  }
+async function FeedPageLayout(
+  props: WithServerSideAuthProps<{
+    children: React.ReactNode;
+  }>
+) {
+  const { children } = props;
   return (
     <div
       className={cn(
@@ -40,4 +35,13 @@ export default async function FeedPageLayout({
       </div>
     </div>
   );
+}
+
+export default async function Layout({
+  children,
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
+  const LayoutComponent = await withServerSideAuth(FeedPageLayout);
+  return <LayoutComponent>{children}</LayoutComponent>;
 }
