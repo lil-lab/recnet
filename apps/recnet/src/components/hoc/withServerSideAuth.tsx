@@ -10,7 +10,7 @@ interface ProhibitedRoleConfig {
   redirectRoute: string;
 }
 
-interface WithServerSideAuthOptions {
+export interface WithServerSideAuthOptions {
   prohibitedRoles?:
     | UserRole[]
     | Partial<Record<UserRole, ProhibitedRoleConfig>>;
