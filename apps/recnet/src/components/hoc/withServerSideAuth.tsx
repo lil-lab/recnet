@@ -1,9 +1,9 @@
 import "server-only";
 import { notFound, redirect } from "next/navigation";
 
-import type { User, UserRole } from "@recnet/recnet-api-model";
+import { getUserServerSide } from "@recnet/recnet-web/utils/getUserServerSide";
 
-import { getUserServerSide } from "./getUserServerSide";
+import type { User, UserRole } from "@recnet/recnet-api-model";
 
 interface ProhibitedRoleConfig {
   callback?: () => void;
