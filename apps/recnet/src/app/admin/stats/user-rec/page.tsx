@@ -5,7 +5,7 @@ import {
   StatBox,
   StatBoxSkeleton,
 } from "@recnet/recnet-web/app/admin/stats/StatBox";
-import { withSuspense } from "@recnet/recnet-web/utils/withSuspense";
+import { withSuspense } from "@recnet/recnet-web/components/hoc/withSuspense";
 
 import { RecsCycleBarChart } from "./RecsCycleBarChart";
 
