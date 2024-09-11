@@ -67,10 +67,10 @@ export async function withServerSideAuth<T extends object>(
       }
     } else {
       // if the provided type is an object with roles and callbacks
-      const role = prohibitedRoles?.[user.role];
-      if (role) {
-        role.callback?.();
-        redirect(role.redirectRoute);
+      const roleConfig = prohibitedRoles?.[user.role];
+      if (roleConfig) {
+        roleConfig.callback?.();
+        redirect(roleConfig.redirectRoute);
       }
     }
   }
