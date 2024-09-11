@@ -1,11 +1,11 @@
 import React from "react";
 
 import { LeftPanel } from "@recnet/recnet-web/app/feeds/LeftPanel";
-import { cn } from "@recnet/recnet-web/utils/cn";
 import {
   WithServerSideAuthProps,
   withServerSideAuth,
-} from "@recnet/recnet-web/utils/withServerSideAuth";
+} from "@recnet/recnet-web/components/hoc/withServerSideAuth";
+import { cn } from "@recnet/recnet-web/utils/cn";
 
 import { LatestAnnouncement } from "./LatestAnnouncement";
 

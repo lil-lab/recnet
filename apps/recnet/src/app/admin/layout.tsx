@@ -1,12 +1,12 @@
 import React from "react";
 
 import { AdminPanelNavbar } from "@recnet/recnet-web/app/admin/AdminPanelNav";
-import { UserRole } from "@recnet/recnet-web/constant";
-import { cn } from "@recnet/recnet-web/utils/cn";
 import {
   WithServerSideAuthProps,
   withServerSideAuth,
-} from "@recnet/recnet-web/utils/withServerSideAuth";
+} from "@recnet/recnet-web/components/hoc/withServerSideAuth";
+import { UserRole } from "@recnet/recnet-web/constant";
+import { cn } from "@recnet/recnet-web/utils/cn";
 
 async function AdminLayout(
   props: WithServerSideAuthProps<{

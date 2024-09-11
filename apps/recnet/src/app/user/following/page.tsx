@@ -3,11 +3,11 @@ import { Grid } from "@radix-ui/themes";
 import { NotFoundBlock } from "@recnet/recnet-web/app/search/NotFound";
 import { GoBackButton } from "@recnet/recnet-web/components/GoBackButton";
 import { UserCard } from "@recnet/recnet-web/components/UserCard";
-import { cn } from "@recnet/recnet-web/utils/cn";
 import {
   withServerSideAuth,
   WithServerSideAuthProps,
-} from "@recnet/recnet-web/utils/withServerSideAuth";
+} from "@recnet/recnet-web/components/hoc/withServerSideAuth";
+import { cn } from "@recnet/recnet-web/utils/cn";
 
 async function FollowingPage(props: WithServerSideAuthProps) {
   const { user } = props;
