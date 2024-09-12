@@ -1,22 +1,16 @@
 import { Grid } from "@radix-ui/themes";
-import { redirect } from "next/navigation";
 
 import { NotFoundBlock } from "@recnet/recnet-web/app/search/NotFound";
 import { GoBackButton } from "@recnet/recnet-web/components/GoBackButton";
 import { UserCard } from "@recnet/recnet-web/components/UserCard";
+import {
+  withAuthRequired,
+  WithAuthRequiredProps,
+} from "@recnet/recnet-web/components/hoc/withAuthRequired";
 import { cn } from "@recnet/recnet-web/utils/cn";
-import { getUserServerSide } from "@recnet/recnet-web/utils/getUserServerSide";
 
-export default async function FollowingPage() {
-  const user = await getUserServerSide({
-    notRegisteredCallback: () => {
-      redirect("/onboard");
-    },
-  });
-  if (!user) {
-    // if not logged in, redirect to home
-    redirect("/");
-  }
+async function FollowingPage(props: WithAuthRequiredProps) {
+  const { user } = props;
 
   return (
     <div
@@ -49,4 +43,9 @@ export default async function FollowingPage() {
       )}
     </div>
   );
+}
+
+export default async function Page() {
+  const PageComponent = await withAuthRequired(FollowingPage);
+  return <PageComponent />;
 }

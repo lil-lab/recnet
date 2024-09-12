@@ -1,24 +1,19 @@
-import { notFound, redirect } from "next/navigation";
 import React from "react";
 
 import { AdminPanelNavbar } from "@recnet/recnet-web/app/admin/AdminPanelNav";
+import {
+  WithAuthRequiredProps,
+  withAuthRequired,
+} from "@recnet/recnet-web/components/hoc/withAuthRequired";
 import { UserRole } from "@recnet/recnet-web/constant";
 import { cn } from "@recnet/recnet-web/utils/cn";
-import { getUserServerSide } from "@recnet/recnet-web/utils/getUserServerSide";
 
-export default async function Layout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
-  const user = await getUserServerSide();
-  if (!user) {
-    redirect("/");
-  }
-
-  if (user?.role !== UserRole.ADMIN) {
-    notFound();
-  }
+async function AdminLayout(
+  props: WithAuthRequiredProps<{
+    children: React.ReactNode;
+  }>
+) {
+  const { children } = props;
 
   return (
     <div
@@ -35,4 +30,15 @@ export default async function Layout({
       <div className="p-8 w-full flex justify-center">{children}</div>
     </div>
   );
+}
+
+export default async function Layout({
+  children,
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
+  const LayoutComponent = await withAuthRequired(AdminLayout, {
+    prohibitedRoles: [UserRole.USER],
+  });
+  return <LayoutComponent>{children}</LayoutComponent>;
 }

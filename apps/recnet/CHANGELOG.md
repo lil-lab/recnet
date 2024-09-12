@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [1.11.1](https://github.com/lil-lab/recnet/compare/recnet-web-v1.11.0...recnet-web-v1.11.1) (2024-09-12)
+
+
+### Features
+
+* create withServerSideAuth and reduce code duplication at pages which required auth ([9c42636](https://github.com/lil-lab/recnet/commit/9c426360bb6dd1c572e2074d63f142ee09a1191a))
+
 ## [1.11.0](https://github.com/lil-lab/recnet/compare/recnet-web-v1.10.2...recnet-web-v1.11.0) (2024-09-10)
 
 
