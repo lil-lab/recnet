@@ -19,7 +19,7 @@ export function ReactivateButton() {
     await revalidateUser();
     setTimeout(() => {
       toast.success("Welcome back! Redirecting...");
-      router.push("/feeds");
+      router.refresh();
       setIsLoading(false);
     }, 1000);
   };
