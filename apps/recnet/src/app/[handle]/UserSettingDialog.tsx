@@ -417,7 +417,7 @@ export function UserSettingDialog(props: { handle: string }) {
     <Dialog.Root open={open} onOpenChange={setOpen}>
       <Dialog.Trigger>
         <Button className="w-full cursor-pointer" variant="surface">
-          Edit profile
+          Settings
         </Button>
       </Dialog.Trigger>
       <Dialog.Content
