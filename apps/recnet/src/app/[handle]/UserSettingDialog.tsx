@@ -1,6 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
+import { PersonIcon, Cross1Icon } from "@radix-ui/react-icons";
 import {
   Dialog,
   Button,
@@ -10,6 +11,7 @@ import {
   TextArea,
 } from "@radix-ui/themes";
 import { TRPCClientError } from "@trpc/client";
+import { Settings } from "lucide-react";
 import { useRouter } from "next/navigation";
 import React, { useMemo, useState } from "react";
 import { useForm, useFormState } from "react-hook-form";
@@ -331,13 +333,15 @@ function AccountSetting(props: TabProps) {
 }
 
 const tabs = {
-  ACCOUNT: {
-    label: "Account",
-    component: AccountSetting,
-  },
   PROFILE: {
     label: "Profile",
+    icon: <PersonIcon />,
     component: EditProfileForm,
+  },
+  ACCOUNT: {
+    label: "Account",
+    icon: <Settings className="w-[15px] h-[15px]" />,
+    component: AccountSetting,
   },
 } as const;
 type TabKey = keyof typeof tabs;
@@ -388,25 +392,39 @@ export function UserSettingDialog(props: { handle: string }) {
           initial: "480px",
           md: "640px",
         }}
+        className="relative"
       >
-        <div className="flex flex-row gap-x-8 p-4">
+        <Dialog.Close className="absolute top-6 right-4 hidden md:block">
+          <Button variant="soft" color="gray" className="cursor-pointer">
+            <Cross1Icon />
+          </Button>
+        </Dialog.Close>
+        <div className="flex flex-row gap-x-8 md:p-4">
           <div className="w-fit md:w-[25%] flex flex-col gap-y-2">
             {Object.entries(tabs).map(([key, { label }]) => (
               <div
                 key={key}
                 className={cn(
-                  "py-1 px-4 rounded-2 flex items-center cursor-pointer hover:bg-gray-4",
+                  "py-1 px-4 rounded-2 flex gap-x-2 items-center cursor-pointer hover:bg-gray-4",
                   {
                     "bg-gray-5": key === activeTab,
                   }
                 )}
                 onClick={() => setActiveTab(key as TabKey)}
               >
-                <Text size="2">{label}</Text>
+                {tabs[key as TabKey].icon}
+                <Text
+                  size={{
+                    initial: "1",
+                    md: "2",
+                  }}
+                >
+                  {label}
+                </Text>
               </div>
             ))}
           </div>
-          <div className="w-full h-[600px] md:h-[700px] overflow-y-auto">
+          <div className="w-full h-[600px] md:h-[750px] overflow-y-auto">
             <TabComponent {...tabsProps[activeTab]} />
           </div>
         </div>
