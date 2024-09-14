@@ -11,7 +11,7 @@ import {
 } from "@radix-ui/themes";
 import { TRPCClientError } from "@trpc/client";
 import { useRouter } from "next/navigation";
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import { useForm, useFormState } from "react-hook-form";
 import { toast } from "sonner";
 import * as z from "zod";
@@ -23,6 +23,11 @@ import { ErrorMessages } from "@recnet/recnet-web/constant";
 import { cn } from "@recnet/recnet-web/utils/cn";
 
 import { User } from "@recnet/recnet-api-model";
+
+interface TabProps {
+  onSuccess?: (user: User) => void;
+  setOpen: (open: boolean) => void;
+}
 
 const HandleBlacklist = [
   "about",
@@ -67,10 +72,7 @@ const EditUserProfileSchema = z.object({
   openReviewUserName: z.string().nullable(),
 });
 
-function EditProfileForm(props: {
-  onSuccess?: (user: User) => void;
-  setOpen: (open: boolean) => void;
-}) {
+function EditProfileForm(props: TabProps) {
   const { onSuccess = () => {}, setOpen } = props;
   const { user, revalidateUser } = useAuth();
 
@@ -95,6 +97,7 @@ function EditProfileForm(props: {
 
   return (
     <form
+      className="w-full"
       onSubmit={handleSubmit(async (data, e) => {
         e?.preventDefault();
         const res = EditUserProfileSchema.safeParse(data);
@@ -316,6 +319,29 @@ function EditProfileForm(props: {
   );
 }
 
+function AccountSetting(props: TabProps) {
+  return (
+    <div>
+      <Dialog.Title>Account Setting</Dialog.Title>
+      <Dialog.Description size="2" mb="4">
+        Make changes to account.
+      </Dialog.Description>
+    </div>
+  );
+}
+
+const tabs = {
+  ACCOUNT: {
+    label: "Account",
+    component: AccountSetting,
+  },
+  PROFILE: {
+    label: "Profile",
+    component: EditProfileForm,
+  },
+} as const;
+type TabKey = keyof typeof tabs;
+
 export function UserSettingDialog(props: { handle: string }) {
   const { handle } = props;
   const utils = trpc.useUtils();
@@ -324,6 +350,32 @@ export function UserSettingDialog(props: { handle: string }) {
   const { user } = useAuth();
   const oldHandle = user?.handle;
 
+  const tabsProps = useMemo(() => {
+    return {
+      ACCOUNT: {
+        onSuccess: (updatedUser: User) => {
+          console.log(updatedUser);
+        },
+        setOpen: setOpen,
+      },
+      PROFILE: {
+        onSuccess: (updatedUser: User) => {
+          if (updatedUser.handle !== oldHandle) {
+            // if user change user handle, redirect to new user profile
+            router.replace(`/${updatedUser.handle}`);
+          } else {
+            utils.getUserByHandle.invalidate({ handle: handle });
+            setOpen(false);
+          }
+        },
+        setOpen: setOpen,
+      },
+    };
+  }, [handle, oldHandle, router, utils]);
+  const [activeTab, setActiveTab] = useState<TabKey>("PROFILE");
+
+  const TabComponent = useMemo(() => tabs[activeTab].component, [activeTab]);
+
   return (
     <Dialog.Root open={open} onOpenChange={setOpen}>
       <Dialog.Trigger>
@@ -331,19 +383,33 @@ export function UserSettingDialog(props: { handle: string }) {
           Edit profile
         </Button>
       </Dialog.Trigger>
-      <Dialog.Content style={{ maxWidth: 450 }}>
-        <EditProfileForm
-          onSuccess={(updatedUser) => {
-            if (updatedUser.handle !== oldHandle) {
-              // if user change user handle, redirect to new user profile
-              router.replace(`/${updatedUser.handle}`);
-            } else {
-              utils.getUserByHandle.invalidate({ handle: handle });
-              setOpen(false);
-            }
-          }}
-          setOpen={setOpen}
-        />
+      <Dialog.Content
+        maxWidth={{
+          initial: "480px",
+          md: "640px",
+        }}
+      >
+        <div className="flex flex-row gap-x-8 p-4">
+          <div className="w-fit md:w-[25%] flex flex-col gap-y-2">
+            {Object.entries(tabs).map(([key, { label }]) => (
+              <div
+                key={key}
+                className={cn(
+                  "py-1 px-4 rounded-2 flex items-center cursor-pointer hover:bg-gray-4",
+                  {
+                    "bg-gray-5": key === activeTab,
+                  }
+                )}
+                onClick={() => setActiveTab(key as TabKey)}
+              >
+                <Text size="2">{label}</Text>
+              </div>
+            ))}
+          </div>
+          <div className="w-full h-[600px] md:h-[700px] overflow-y-auto">
+            <TabComponent {...tabsProps[activeTab]} />
+          </div>
+        </div>
       </Dialog.Content>
     </Dialog.Root>
   );
