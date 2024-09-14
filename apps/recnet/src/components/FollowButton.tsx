@@ -32,6 +32,10 @@ export function FollowButton(props: FollowButtonProps) {
           toast.error("You must be logged in to follow someone.");
           return;
         }
+        if (me.isActivated === false) {
+          toast.error("Your account is currently deactivated.");
+          return;
+        }
         setIsLoading(true);
         if (isFollowing) {
           try {
