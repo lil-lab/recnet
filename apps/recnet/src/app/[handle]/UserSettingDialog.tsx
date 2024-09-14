@@ -20,6 +20,7 @@ import * as z from "zod";
 
 import { useAuth } from "@recnet/recnet-web/app/AuthContext";
 import { trpc } from "@recnet/recnet-web/app/_trpc/client";
+import { DoubleConfirmButton } from "@recnet/recnet-web/components/DoubleConfirmButton";
 import { RecNetLink } from "@recnet/recnet-web/components/Link";
 import { ErrorMessages } from "@recnet/recnet-web/constant";
 import { cn } from "@recnet/recnet-web/utils/cn";
@@ -326,8 +327,33 @@ function AccountSetting(props: TabProps) {
     <div>
       <Dialog.Title>Account Setting</Dialog.Title>
       <Dialog.Description size="2" mb="4">
-        Make changes to account.
+        Make changes to account settings.
       </Dialog.Description>
+
+      <Text size="4" color="red" className="block">
+        Deactivate Account
+      </Text>
+      <Text size="1" className="text-gray-11 block">
+        {
+          "Your account will be deactivated and you will be logged out. You can reactivate your account by logging in again."
+        }
+        {
+          " While your account is deactivated, your profile will be hidden from other users. You will not receive any weekly digest emails."
+        }
+      </Text>
+      <div className="flex flex-row w-full mt-4">
+        <DoubleConfirmButton
+          onConfirm={async () => {
+            // TODO: deactivate account
+          }}
+          title="Deactivate Account"
+          description="Are you sure you want to deactivate your account?"
+        >
+          <Button color="red" className="bg-red-10 cursor-pointer">
+            Deactivate Account
+          </Button>
+        </DoubleConfirmButton>
+      </div>
     </div>
   );
 }
