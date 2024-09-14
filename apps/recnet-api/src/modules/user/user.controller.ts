@@ -93,7 +93,7 @@ export class UserController {
   @ApiOkResponse({ type: GetUsersResponse })
   @ApiBearerAuth()
   @Get("me")
-  @Auth()
+  @Auth({ allowNonActivated: true })
   public async getMe(@User() authUser: AuthUser): Promise<GetUserMeResponse> {
     const { userId } = authUser;
     const user = await this.userService.getUser(userId);
