@@ -56,6 +56,13 @@ export async function withAuthRequired<T extends object>(
   }
 
   /**
+    Handle deactivated users.
+  */
+  if (user.isActivated === false) {
+    redirect("/reactivate");
+  }
+
+  /**
     Handle prohibited roles.
   */
   if (options?.prohibitedRoles) {

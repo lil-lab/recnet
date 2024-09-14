@@ -23,6 +23,7 @@ import { trpc } from "@recnet/recnet-web/app/_trpc/client";
 import { DoubleConfirmButton } from "@recnet/recnet-web/components/DoubleConfirmButton";
 import { RecNetLink } from "@recnet/recnet-web/components/Link";
 import { ErrorMessages } from "@recnet/recnet-web/constant";
+import { logout } from "@recnet/recnet-web/firebase/auth";
 import { cn } from "@recnet/recnet-web/utils/cn";
 
 import { User } from "@recnet/recnet-api-model";
@@ -323,6 +324,9 @@ function EditProfileForm(props: TabProps) {
 }
 
 function AccountSetting(props: TabProps) {
+  const deactivateMutation = trpc.deactivate.useMutation();
+  const { onSuccess = () => {} } = props;
+
   return (
     <div>
       <Dialog.Title>Account Setting</Dialog.Title>
@@ -344,7 +348,9 @@ function AccountSetting(props: TabProps) {
       <div className="flex flex-row w-full mt-4">
         <DoubleConfirmButton
           onConfirm={async () => {
-            // TODO: deactivate account
+            const { user } = await deactivateMutation.mutateAsync();
+            await logout();
+            onSuccess(user);
           }}
           title="Deactivate Account"
           description="Are you sure you want to deactivate your account?"
@@ -384,7 +390,8 @@ export function UserSettingDialog(props: { handle: string }) {
     return {
       ACCOUNT: {
         onSuccess: (updatedUser: User) => {
-          console.log(updatedUser);
+          // redirect to home page after deactivating account
+          router.replace("/");
         },
         setOpen: setOpen,
       },

@@ -17,6 +17,8 @@ import {
   postUserMeRequestSchema,
   postUserMeResponseSchema,
   getStatsResponseSchema,
+  patchUserMeActivateRequestSchema,
+  patchUserMeActivateResponseSchema,
 } from "@recnet/recnet-api-model";
 
 import {
@@ -178,6 +180,28 @@ export const userRouter = router({
           userId,
         },
       });
+    }),
+  deactivate: checkRecnetJWTProcedure
+    .output(patchUserMeActivateResponseSchema)
+    .mutation(async (opts) => {
+      const { recnetApi } = opts.ctx;
+      const { data } = await recnetApi.patch("/users/me/activate", {
+        ...patchUserMeActivateRequestSchema.parse({
+          isActivated: false,
+        }),
+      });
+      return patchUserMeActivateResponseSchema.parse(data);
+    }),
+  activate: checkRecnetJWTProcedure
+    .output(patchUserMeActivateResponseSchema)
+    .mutation(async (opts) => {
+      const { recnetApi } = opts.ctx;
+      const { data } = await recnetApi.patch("/users/me/activate", {
+        ...patchUserMeActivateRequestSchema.parse({
+          isActivated: true,
+        }),
+      });
+      return patchUserMeActivateResponseSchema.parse(data);
     }),
   getNumOfUsers: checkIsAdminProcedure
     .output(z.object({ num: z.number() }))
