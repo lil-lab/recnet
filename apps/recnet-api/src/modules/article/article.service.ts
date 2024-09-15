@@ -4,17 +4,25 @@ import ArticleRepository from "@recnet-api/database/repository/article.repositor
 
 import { GetArticleByLinkResponse } from "./article.response";
 
+import { DigitalLibraryService } from "../digital-library/digital-library.service";
+import { DIGITAL_LIBRARY } from "../digital-library/digital-libray.const";
+
 @Injectable()
 export class ArticleService {
   constructor(
     @Inject(ArticleRepository)
-    private readonly articleRepository: ArticleRepository
+    private readonly articleRepository: ArticleRepository,
+    @Inject(DIGITAL_LIBRARY)
+    private readonly digitalLibraryService: DigitalLibraryService
   ) {}
 
   public async getArticleByLink(
     link: string
   ): Promise<GetArticleByLinkResponse> {
     const article = await this.articleRepository.findArticleByLink(link);
+
+    this.digitalLibraryService.getMetadata(link);
+
     if (!article) {
       return {
         article: null,
