@@ -15,4 +15,11 @@ export default class DigitalLibraryRepository {
       select: digitalLibrary.select,
     });
   }
+
+  public async findById(id: number) {
+    return this.prisma.digitalLibrary.findUnique({
+      where: { id },
+      select: digitalLibrary.select,
+    });
+  }
 }

@@ -21,7 +21,8 @@ export class ArticleService {
   ): Promise<GetArticleByLinkResponse> {
     const article = await this.articleRepository.findArticleByLink(link);
 
-    this.digitalLibraryService.getMetadata(link);
+    const metadata = await this.digitalLibraryService.getMetadata(link);
+    console.log(metadata);
 
     if (!article) {
       return {
