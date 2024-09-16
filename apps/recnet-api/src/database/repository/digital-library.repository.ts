@@ -17,7 +17,7 @@ export default class DigitalLibraryRepository {
   }
 
   public async findById(id: number) {
-    return this.prisma.digitalLibrary.findUnique({
+    return this.prisma.digitalLibrary.findUniqueOrThrow({
       where: { id },
       select: digitalLibrary.select,
     });

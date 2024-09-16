@@ -21,7 +21,11 @@ export class ArXivService implements DigitalLibraryService {
   ) {}
 
   public async getMetadata(url: string): Promise<Metadata> {
-    const arXivId: string | null = await this.getArXivId(url);
+    const arXivDL = await this.digitalLibraryRepository.findById(
+      this.digitalLibraryId
+    );
+    const arXivId: string | null = await this.getArXivId(url, arXivDL.regex);
+
     if (!arXivId) {
       throw new RecnetError(
         ErrorCode.FETCH_DIGITAL_LIBRARY_ERROR,
@@ -33,7 +37,10 @@ export class ArXivService implements DigitalLibraryService {
     try {
       const { data } = await axios.get(`${API_ENDPOINT}?id_list=${arXivId}`);
 
-      return this.parseXMLResponse(data);
+      const metadata = this.parseXMLResponse(data);
+      metadata.isVerified = arXivDL.isVerified;
+
+      return metadata;
     } catch (error) {
       if (error instanceof RecnetError) {
         throw error;
@@ -48,13 +55,10 @@ export class ArXivService implements DigitalLibraryService {
     }
   }
 
-  private async getArXivId(url: string) {
-    const arXivDL = await this.digitalLibraryRepository.findById(
-      this.digitalLibraryId
-    );
+  private async getArXivId(url: string, regex: Array<string>) {
     let arXivId: string | null = null;
-    for (const regex of arXivDL?.regex || []) {
-      const match = url.match(regex);
+    for (const rg of regex || []) {
+      const match = url.match(rg);
       if (match && match.groups) {
         arXivId = match.groups.id;
         break;

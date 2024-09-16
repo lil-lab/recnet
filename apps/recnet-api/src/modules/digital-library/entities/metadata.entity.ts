@@ -4,4 +4,5 @@ export class Metadata {
   link?: string;
   year?: number;
   month?: number;
+  isVerified?: boolean;
 }
