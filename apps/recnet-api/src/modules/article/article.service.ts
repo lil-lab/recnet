@@ -2,12 +2,11 @@ import { Inject, Injectable } from "@nestjs/common";
 
 import ArticleRepository from "@recnet-api/database/repository/article.repository";
 import { CreateArticleInput } from "@recnet-api/database/repository/article.repository.type";
+import { DIGITAL_LIBRARY } from "@recnet-api/modules/digital-library/digital-library.const";
+import { DigitalLibraryService } from "@recnet-api/modules/digital-library/digital-library.service";
+import { Metadata } from "@recnet-api/modules/digital-library/entities/metadata.entity";
 
 import { GetArticleByLinkResponse } from "./article.response";
-
-import { DigitalLibraryService } from "../digital-library/digital-library.service";
-import { DIGITAL_LIBRARY } from "../digital-library/digital-libray.const";
-import { Metadata } from "../digital-library/entities/metadata.entity";
 
 @Injectable()
 export class ArticleService {

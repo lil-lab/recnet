@@ -3,7 +3,7 @@ import { Request } from "express";
 import DigitalLibraryRepository from "@recnet-api/database/repository/digital-library.repository";
 
 import { ArXivService } from "./arxiv.service";
-import { DIGITAL_LIBRARY_ID } from "./digital-libray.const";
+import { DIGITAL_LIBRARY_ID } from "./digital-library.const";
 import { Metadata } from "./entities/metadata.entity";
 
 export interface DigitalLibraryService {
