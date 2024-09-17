@@ -165,7 +165,7 @@ export default function OnboardPage() {
           await revalidateUser();
           setMessage("You are all set! Redirecting...");
           // direct to /feeds
-          router.replace("/feeds");
+          router.replace("/feeds?onboarding=true");
           setIsLoading(false);
         })}
       >
