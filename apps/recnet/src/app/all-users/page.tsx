@@ -9,10 +9,11 @@ import { GoBackButton } from "@recnet/recnet-web/components/GoBackButton";
 import { LoadingBox } from "@recnet/recnet-web/components/LoadingBox";
 import { UserList } from "@recnet/recnet-web/components/UserCard";
 import { cn } from "@recnet/recnet-web/utils/cn";
+import { getDataFromInfiniteQuery } from "@recnet/recnet-web/utils/getDataFromInfiniteQuery";
+import { shuffleArray } from "@recnet/recnet-web/utils/shuffle";
 
 import { useAuth } from "../AuthContext";
 import { trpc } from "../_trpc/client";
-import { getShuffledUsersFromInfiniteQuery } from "../search/page";
 
 export default function SearchResultPage() {
   const { user } = useAuth();
@@ -33,10 +34,14 @@ export default function SearchResultPage() {
       }
     );
 
-  const users = useMemo(
-    () => getShuffledUsersFromInfiniteQuery(data, user?.id),
-    [data, user]
-  );
+  const users = useMemo(() => {
+    if (!data) {
+      return [];
+    }
+    return getDataFromInfiniteQuery(data, (page) => {
+      return shuffleArray(page.users, user?.id || "");
+    });
+  }, [data, user]);
 
   if (isPending) {
     return <LoadingBox className="h-[95svh]" />;
