@@ -11,6 +11,7 @@ import { DigitalLibraryService } from "./digital-library.service";
 import { Metadata } from "./entities/metadata.entity";
 
 const API_ENDPOINT = "https://export.arxiv.org/api/query";
+const ARXIV_UNIFIED_LINK = "https://arxiv.org/abs/";
 
 @Injectable()
 export class ArXivService implements DigitalLibraryService {
@@ -20,19 +21,11 @@ export class ArXivService implements DigitalLibraryService {
     private readonly digitalLibraryId: number
   ) {}
 
-  public async getMetadata(url: string): Promise<Metadata> {
+  public async getMetadata(link: string): Promise<Metadata> {
     const arXivDL = await this.digitalLibraryRepository.findById(
       this.digitalLibraryId
     );
-    const arXivId: string | null = await this.getArXivId(url, arXivDL.regex);
-
-    if (!arXivId) {
-      throw new RecnetError(
-        ErrorCode.FETCH_DIGITAL_LIBRARY_ERROR,
-        HttpStatus.INTERNAL_SERVER_ERROR,
-        `Failed to find arXiv ID: ${url}`
-      );
-    }
+    const arXivId: string = this.getArXivId(link, arXivDL.regex);
 
     try {
       const { data } = await axios.get(`${API_ENDPOINT}?id_list=${arXivId}`);
@@ -55,15 +48,32 @@ export class ArXivService implements DigitalLibraryService {
     }
   }
 
-  private async getArXivId(url: string, regex: Array<string>) {
+  public async getUnifiedLink(link: string): Promise<string> {
+    const arXivDL = await this.digitalLibraryRepository.findById(
+      this.digitalLibraryId
+    );
+    const arXivId: string = this.getArXivId(link, arXivDL.regex);
+    return `${ARXIV_UNIFIED_LINK}${arXivId}`;
+  }
+
+  private getArXivId(link: string, regexPatterns: Array<string>): string {
     let arXivId: string | null = null;
-    for (const rg of regex || []) {
-      const match = url.match(rg);
+    for (const pattern of regexPatterns) {
+      const match = link.match(pattern);
       if (match && match.groups) {
         arXivId = match.groups.id;
         break;
       }
     }
+
+    if (!arXivId) {
+      throw new RecnetError(
+        ErrorCode.FETCH_DIGITAL_LIBRARY_ERROR,
+        HttpStatus.INTERNAL_SERVER_ERROR,
+        `Failed to find arXiv ID: ${link}`
+      );
+    }
+
     return arXivId;
   }
 
@@ -94,8 +104,6 @@ export class ArXivService implements DigitalLibraryService {
     } else if (authors !== null) {
       metadata.author = (authors as { name: string }).name;
     }
-
-    metadata.link = get(parsed, "feed.entry.id");
 
     const publishDate = get(parsed, "feed.entry.published", null);
     if (publishDate) {

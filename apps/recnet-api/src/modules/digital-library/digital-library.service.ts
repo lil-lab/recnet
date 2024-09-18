@@ -7,7 +7,8 @@ import { DIGITAL_LIBRARY_ID } from "./digital-library.const";
 import { Metadata } from "./entities/metadata.entity";
 
 export interface DigitalLibraryService {
-  getMetadata(url: string): Promise<Metadata>;
+  getMetadata(link: string): Promise<Metadata>;
+  getUnifiedLink(link: string): Promise<string>;
 }
 
 const shouldProvideService = (req: Request) => {

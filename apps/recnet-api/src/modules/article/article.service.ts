@@ -20,13 +20,11 @@ export class ArticleService {
   public async getArticleByLink(
     link: string
   ): Promise<GetArticleByLinkResponse> {
-    let unifiedLink: string = link;
-    let metadata: Metadata | null = null;
+    let unifiedLink = link;
 
-    // If digitalLibraryService is available, fetch metadata and update unifiedLink
+    // If digital library service is available, try to get the unified link
     if (this.digitalLibraryService) {
-      metadata = await this.digitalLibraryService.getMetadata(link);
-      unifiedLink = metadata.link || link;
+      unifiedLink = await this.digitalLibraryService.getUnifiedLink(link);
     }
 
     // Try to find the article in the database using the unified link
@@ -35,9 +33,10 @@ export class ArticleService {
       return { article };
     }
 
-    // If metadata is available, create a new article using the metadata from the digital library
-    if (metadata !== null) {
-      const articleInput = this.transformMetadata(metadata, link);
+    // If no article found, try to get metadata using the digital library service
+    if (this.digitalLibraryService) {
+      const metadata = await this.digitalLibraryService.getMetadata(link);
+      const articleInput = this.transformMetadata(metadata, unifiedLink);
 
       article = await this.articleRepository.createArticle(articleInput);
       return { article };
@@ -54,7 +53,7 @@ export class ArticleService {
     link: string
   ): CreateArticleInput {
     return {
-      link: metadata.link || link,
+      link,
       doi: null,
       title: metadata.title || "",
       author: metadata.author || "",
