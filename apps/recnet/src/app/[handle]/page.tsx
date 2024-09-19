@@ -1,4 +1,4 @@
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 
 import { serverClient } from "@recnet/recnet-web/app/_trpc/serverClient";
 import { cn } from "@recnet/recnet-web/utils/cn";
@@ -12,6 +12,14 @@ export default async function UserProfilePage({
   params: { handle: string };
 }) {
   const { handle } = params;
+  /*
+    Check if deactivated user access their profile
+  */
+  const { user: me } = await serverClient.getMe();
+  if (me?.handle === handle && me?.isActivated === false) {
+    redirect("/reactivate");
+  }
+
   const { user } = await serverClient.getUserByHandle({
     handle,
   });

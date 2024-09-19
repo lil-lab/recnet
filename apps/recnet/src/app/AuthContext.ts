@@ -4,7 +4,7 @@ import { User } from "@recnet/recnet-api-model";
 
 export interface AuthContextValue {
   user: User | null;
-  revalidateUser: () => void;
+  revalidateUser: () => Promise<void>;
   isPending: boolean;
   isFetching: boolean;
   isError: boolean;
