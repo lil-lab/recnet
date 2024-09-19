@@ -1,4 +1,5 @@
 /* eslint-disable */
+
 export default {
   displayName: "recnet-api",
   preset: "../../jest.preset.js",
@@ -8,4 +9,5 @@ export default {
   },
   moduleFileExtensions: ["ts", "js", "html"],
   coverageDirectory: "../../coverage/apps/recnet-api",
+  setupFiles: ["<rootDir>/jest.setup.ts"],
 };
