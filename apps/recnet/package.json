@@ -1,6 +1,6 @@
 {
   "name": "recnet",
-  "version": "1.11.1",
+  "version": "1.12.0",
   "commit-and-tag-version": {
     "skip": {
       "commit": true

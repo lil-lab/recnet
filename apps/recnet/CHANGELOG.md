@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [1.12.0](https://github.com/lil-lab/recnet/compare/recnet-web-v1.11.1...recnet-web-v1.12.0) (2024-09-19)
+
+
+### Features
+
+* add account setting tab ([24636a5](https://github.com/lil-lab/recnet/commit/24636a51a73fda553afd221079ec3e5c7a31fe4d))
+* finish reactivate page and deactivate dialog ([6ba4d0d](https://github.com/lil-lab/recnet/commit/6ba4d0de8c5c44bf267f7e248f3c4e9150821d21))
+
+
+### Bug Fixes
+
+* allow deactivated user get user info ([fa93f9b](https://github.com/lil-lab/recnet/commit/fa93f9bcaba4c081a241b42d859c408eacd6edb2))
+* restrict deactivated user's action ([48c4f25](https://github.com/lil-lab/recnet/commit/48c4f25674b8d8dfb56bbd6b38ac316af5dbea71))
+
 ## [1.11.1](https://github.com/lil-lab/recnet/compare/recnet-web-v1.11.0...recnet-web-v1.11.1) (2024-09-12)
 
 
