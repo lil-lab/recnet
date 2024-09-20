@@ -13,6 +13,7 @@ export const ErrorCode = {
   DB_UNKNOWN_ERROR: 2000,
   DB_USER_NOT_FOUND: 2001,
   DB_UNIQUE_CONSTRAINT: 2002,
+  DB_REC_NOT_FOUND: 2003,
 
   // Third party error codes
   EMAIL_SEND_ERROR: 3000,
@@ -32,5 +33,6 @@ export const errorMessages = {
   [ErrorCode.DB_UNKNOWN_ERROR]: "Database error",
   [ErrorCode.DB_USER_NOT_FOUND]: "User not found",
   [ErrorCode.DB_UNIQUE_CONSTRAINT]: "Unique constraint violation",
+  [ErrorCode.DB_REC_NOT_FOUND]: "Rec not found",
   [ErrorCode.EMAIL_SEND_ERROR]: "Email send error",
 };

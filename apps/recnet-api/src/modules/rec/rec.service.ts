@@ -18,6 +18,7 @@ import { Rec } from "./entities/rec.entity";
 import {
   CreateRecResponse,
   GetFeedsResponse,
+  GetRecResponse,
   GetRecsResponse,
   GetUpcomingRecResponse,
   UpdateRecResponse,
@@ -35,6 +36,14 @@ export class RecService {
     @Inject(ArticleRepository)
     private readonly articleRepository: ArticleRepository
   ) {}
+
+  public async getRec(recId: string): Promise<GetRecResponse> {
+    const dbRec = await this.recRepository.findRecById(recId);
+    if (!dbRec) {
+      throw new RecnetError(ErrorCode.DB_REC_NOT_FOUND, HttpStatus.NOT_FOUND);
+    }
+    return { rec: this.getRecFromDbRec(dbRec) };
+  }
 
   public async getRecs(
     page: number,
