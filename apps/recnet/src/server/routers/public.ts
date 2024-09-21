@@ -9,6 +9,22 @@ import { publicApiProcedure } from "./middleware";
 
 import { router } from "../trpc";
 
+const linkPreviewMetadataSchema = z
+  .object({
+    // api response schema: https://microlink.io/docs/api/getting-started/data-fields
+    title: z.string().nullish(),
+    description: z.string().nullish(),
+    image: z.object({
+      url: z.string().nullish(),
+    }),
+    logo: z.object({
+      url: z.string().nullish(),
+    }),
+    url: z.string().nullish(),
+  })
+  .passthrough()
+  .nullable();
+
 export const publicRouter = router({
   search: publicApiProcedure
     .input(
@@ -39,6 +55,27 @@ export const publicRouter = router({
         return { ok: true };
       } catch {
         return { ok: false };
+      }
+    }),
+  getLinkPreviewMetadata: publicApiProcedure
+    .input(
+      z.object({
+        url: z.string(),
+      })
+    )
+    .output(linkPreviewMetadataSchema)
+    .query(async (opts) => {
+      try {
+        const res = await fetch(
+          `https://api.microlink.io/?url=${opts.input.url}`,
+          {
+            cache: "force-cache",
+          }
+        ).then((res) => res.json());
+        return linkPreviewMetadataSchema.parse(res.data);
+      } catch (e) {
+        console.error(e);
+        return null;
       }
     }),
 });
