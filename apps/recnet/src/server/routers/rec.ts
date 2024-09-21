@@ -30,7 +30,7 @@ export const recRouter = router({
     .output(getRecIdResponseSchema)
     .query(async (opts) => {
       const { recnetApi } = opts.ctx;
-      const { data } = await recnetApi.get(`/recs/${opts.input.id}`);
+      const { data } = await recnetApi.get(`/recs/rec/${opts.input.id}`);
       return getRecIdResponseSchema.parse(data);
     }),
   getHistoricalRecs: publicApiProcedure
