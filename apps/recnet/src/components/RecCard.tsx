@@ -1,5 +1,5 @@
 import { CalendarIcon } from "@radix-ui/react-icons";
-import { Badge, Flex, Text, Tooltip } from "@radix-ui/themes";
+import { Flex, Text } from "@radix-ui/themes";
 import { ChevronRight } from "lucide-react";
 
 import { Avatar } from "@recnet/recnet-web/components/Avatar";
@@ -11,6 +11,8 @@ import { numToMonth } from "@recnet/recnet-date-fns";
 import { formatDate } from "@recnet/recnet-date-fns";
 
 import { Rec } from "@recnet/recnet-api-model";
+
+import { SelfRecBadge } from "./SelfRecBadge";
 
 export function RecCardSkeleton() {
   return (
@@ -132,13 +134,7 @@ export function RecCard(props: { recs: Rec[]; showDate?: boolean }) {
                     weight="medium"
                   >{` recommended on on ${cutoff}`}</Text>
                 ) : null}
-                {rec.isSelfRec ? (
-                  <Tooltip content="This recommendation was made by the same person who wrote the article.">
-                    <Badge color="orange" className="ml-2 cursor-pointer">
-                      Self Rec
-                    </Badge>
-                  </Tooltip>
-                ) : null}
+                {rec.isSelfRec ? <SelfRecBadge /> : null}
               </Text>
               <Flex>
                 <Text size="3" className="text-gray-11">

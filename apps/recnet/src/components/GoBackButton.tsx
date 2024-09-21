@@ -11,7 +11,7 @@ export function GoBackButton() {
 
   return (
     <Flex
-      className="items-center gap-x-1 p-1 group text-accent-11"
+      className="items-center gap-x-1 p-1 group text-gray-10 cursor-pointer"
       onClick={() => {
         if (isWithinPage) {
           router.back();
