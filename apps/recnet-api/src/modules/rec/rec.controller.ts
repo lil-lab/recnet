@@ -60,7 +60,7 @@ export class RecController {
     description: "Get a single rec by id.",
   })
   @ApiOkResponse({ type: GetRecResponse })
-  @Get(":id")
+  @Get("rec/:id")
   public async getRec(@Param("id") id: string): Promise<GetRecResponse> {
     return this.recService.getRec(id);
   }

@@ -20,7 +20,7 @@ export const recFormSubmissionSchema = z.intersection(
 );
 export type RecFormSubmission = z.infer<typeof recFormSubmissionSchema>;
 
-// GET /recs/:id
+// GET /recs/rec/:id
 export const getRecIdResponseSchema = z.object({
   rec: recSchema,
 });
