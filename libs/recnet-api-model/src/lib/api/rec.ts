@@ -20,6 +20,12 @@ export const recFormSubmissionSchema = z.intersection(
 );
 export type RecFormSubmission = z.infer<typeof recFormSubmissionSchema>;
 
+// GET /recs/rec/:id
+export const getRecIdResponseSchema = z.object({
+  rec: recSchema,
+});
+export type GetRecIdResponse = z.infer<typeof getRecIdResponseSchema>;
+
 // GET /recs
 export const getRecsParamsSchema = z.object({
   page: z.coerce.number(),
