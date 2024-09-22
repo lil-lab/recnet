@@ -12,8 +12,8 @@ import { getNextCutOff } from "@recnet/recnet-date-fns";
 export default class RecRepository {
   constructor(private readonly prisma: PrismaConnectionProvider) {}
 
-  public async findRecById(recId: string): Promise<Rec | null> {
-    return this.prisma.recommendation.findUnique({
+  public async findRecById(recId: string): Promise<Rec> {
+    return this.prisma.recommendation.findUniqueOrThrow({
       where: {
         id: recId,
       },
