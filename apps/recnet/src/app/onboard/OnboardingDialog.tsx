@@ -91,7 +91,7 @@ export function OnboardingDialog() {
           <LoadingBox className="h-[200px]" />
         ) : (
           <div className="p-4 h-[50vh] overflow-y-auto overflow-x-hidden">
-            <UserList users={users} />
+            <UserList users={users} hideMe />
             {isFetching ? <LoadingBox className="h-[200px]" /> : null}
             <div ref={bottomRef} className="w-full h-1px bg-red-4" />
           </div>

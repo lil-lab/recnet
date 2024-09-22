@@ -3,6 +3,7 @@
 import { HomeIcon, Pencil1Icon, PersonIcon } from "@radix-ui/react-icons";
 import { Flex, Text, Grid, Tooltip } from "@radix-ui/themes";
 
+import { useAuth } from "@recnet/recnet-web/app/AuthContext";
 import { Avatar } from "@recnet/recnet-web/components/Avatar";
 import { FollowButton } from "@recnet/recnet-web/components/FollowButton";
 import { RecNetLink } from "@recnet/recnet-web/components/Link";
@@ -10,7 +11,15 @@ import { cn } from "@recnet/recnet-web/utils/cn";
 
 import { UserPreview } from "@recnet/recnet-api-model";
 
-export function UserList({ users }: { users: UserPreview[] }) {
+export function UserList({
+  users,
+  hideMe = false,
+}: {
+  users: UserPreview[];
+  hideMe?: boolean;
+}) {
+  const { user: me } = useAuth();
+
   return (
     <Grid
       columns={{
@@ -20,9 +29,12 @@ export function UserList({ users }: { users: UserPreview[] }) {
       }}
       gap="4"
     >
-      {users.map((user, idx) => (
-        <UserCard key={`${user.handle}-${idx}`} user={user} />
-      ))}
+      {users.map((user, idx) => {
+        if (hideMe && !!me && me.id === user.id) {
+          return null;
+        }
+        return <UserCard key={`${user.handle}-${idx}`} user={user} />;
+      })}
     </Grid>
   );
 }
