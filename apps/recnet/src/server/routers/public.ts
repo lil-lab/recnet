@@ -14,12 +14,16 @@ const linkPreviewMetadataSchema = z
     // api response schema: https://microlink.io/docs/api/getting-started/data-fields
     title: z.string().nullish(),
     description: z.string().nullish(),
-    image: z.object({
-      url: z.string().nullish(),
-    }),
-    logo: z.object({
-      url: z.string().nullish(),
-    }),
+    image: z
+      .object({
+        url: z.string().nullish(),
+      })
+      .nullish(),
+    logo: z
+      .object({
+        url: z.string().nullish(),
+      })
+      .nullish(),
     url: z.string().nullish(),
   })
   .passthrough()
