@@ -1,6 +1,7 @@
 import { CalendarIcon } from "@radix-ui/react-icons";
 import { Flex, Text } from "@radix-ui/themes";
 import { ChevronRight } from "lucide-react";
+import Link from "next/link";
 
 import { Avatar } from "@recnet/recnet-web/components/Avatar";
 import { RecNetLink } from "@recnet/recnet-web/components/Link";
@@ -12,7 +13,10 @@ import { formatDate } from "@recnet/recnet-date-fns";
 
 import { Rec } from "@recnet/recnet-api-model";
 
+import { LinkCopyButton } from "./LinkCopyButton";
 import { SelfRecBadge } from "./SelfRecBadge";
+
+import { getSharableLink } from "../utils/getSharableRecLink";
 
 export function RecCardSkeleton() {
   return (
@@ -118,7 +122,7 @@ export function RecCard(props: { recs: Rec[]; showDate?: boolean }) {
           <Flex className="items-start gap-x-3 px-4 py-2" key={user.id}>
             <Avatar user={user} className="w-[40px] aspect-square" />
             <Flex className="flex flex-col gap-y-1">
-              <Text className="items-end">
+              <Flex className="items-center gap-x-2">
                 <RecNetLink
                   href={`/${user.handle}`}
                   radixLinkProps={{
@@ -135,12 +139,19 @@ export function RecCard(props: { recs: Rec[]; showDate?: boolean }) {
                   >{` recommended on on ${cutoff}`}</Text>
                 ) : null}
                 {rec.isSelfRec ? <SelfRecBadge /> : null}
-              </Text>
-              <Flex>
-                <Text size="3" className="text-gray-11">
-                  {rec.description}
-                </Text>
+                <LinkCopyButton link={getSharableLink(rec)} />
               </Flex>
+              <Link
+                href={getSharableLink(rec)}
+                key={user.id}
+                className="hover:bg-gray-2 rounded-4 transition-all ease-in-out"
+              >
+                <Flex>
+                  <Text size="3" className="text-gray-11">
+                    {rec.description}
+                  </Text>
+                </Flex>
+              </Link>
             </Flex>
           </Flex>
         );

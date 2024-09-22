@@ -39,9 +39,16 @@ async function FeedPageLayout(
 
 export default async function Layout({
   children,
+  recModal,
 }: Readonly<{
   children: React.ReactNode;
+  recModal: React.ReactNode;
 }>) {
   const LayoutComponent = await withAuthRequired(FeedPageLayout);
-  return <LayoutComponent>{children}</LayoutComponent>;
+  return (
+    <LayoutComponent>
+      {recModal}
+      {children}
+    </LayoutComponent>
+  );
 }
