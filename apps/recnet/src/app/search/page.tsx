@@ -1,7 +1,6 @@
 "use client";
 
 import { Text } from "@radix-ui/themes";
-import { InfiniteData } from "@tanstack/react-query";
 import { useMemo } from "react";
 import InfiniteScroll from "react-infinite-scroll-component";
 
@@ -10,28 +9,14 @@ import { GoBackButton } from "@recnet/recnet-web/components/GoBackButton";
 import { LoadingBox } from "@recnet/recnet-web/components/LoadingBox";
 import { UserList } from "@recnet/recnet-web/components/UserCard";
 import { cn } from "@recnet/recnet-web/utils/cn";
+import { getDataFromInfiniteQuery } from "@recnet/recnet-web/utils/getDataFromInfiniteQuery";
 import { shuffleArray } from "@recnet/recnet-web/utils/shuffle";
-
-import { GetUsersResponse, UserPreview } from "@recnet/recnet-api-model";
 
 import { NotFoundBlock } from "./NotFound";
 
 import { trpc } from "../_trpc/client";
 
 const PAGE_SIZE = 20;
-
-export const getShuffledUsersFromInfiniteQuery = (
-  infiniteQueryData: InfiniteData<GetUsersResponse> | undefined,
-  shuffleKey: string | undefined
-) => {
-  if (!infiniteQueryData) {
-    return [];
-  }
-  return (infiniteQueryData?.pages ?? []).reduce((acc, page) => {
-    const newBatch = shuffleArray(page.users, shuffleKey || "");
-    return [...acc, ...newBatch];
-  }, [] as UserPreview[]);
-};
 
 export default function SearchResultPage({
   searchParams,
@@ -59,10 +44,13 @@ export default function SearchResultPage({
       }
     );
 
-  const users = useMemo(
-    () => getShuffledUsersFromInfiniteQuery(data, user?.id),
-    [data, user]
-  );
+  const users = useMemo(() => {
+    if (!data) return [];
+    return getDataFromInfiniteQuery(data, (page) => {
+      const nextBatch = shuffleArray(page.users, user?.id || "");
+      return nextBatch;
+    });
+  }, [data, user]);
 
   if (isPending) {
     return <LoadingBox className="h-[95svh]" />;
