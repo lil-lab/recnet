@@ -132,6 +132,83 @@ describe("ArXivService", () => {
         )
       );
     });
+
+    it("should throw an error if arXiv response does not contain title", async () => {
+      (axios.get as jest.Mock).mockResolvedValue({
+        data: "<xml><feed><entry><published>2023-09-18T00:00:00Z</published></entry></feed></xml>",
+      });
+
+      (XMLParser.prototype.parse as jest.Mock).mockReturnValue({
+        feed: {
+          entry: {
+            published: "2023-09-18T00:00:00Z",
+          },
+        },
+      });
+
+      const mockArXivId = "2409.11377v1";
+      const link = `https://arxiv.org/abs/${mockArXivId}`;
+
+      await expect(service.getMetadata(link)).rejects.toThrow(
+        new RecnetError(
+          ErrorCode.FETCH_DIGITAL_LIBRARY_ERROR,
+          HttpStatus.INTERNAL_SERVER_ERROR,
+          "Failed to find title in arXiv response"
+        )
+      );
+    });
+
+    it("should throw an error if arXiv response does not contain author", async () => {
+      (axios.get as jest.Mock).mockResolvedValue({
+        data: "<xml><feed><entry><title>Sample Title</title><published>2023-09-18T00:00:00Z</published></entry></feed></xml>",
+      });
+
+      (XMLParser.prototype.parse as jest.Mock).mockReturnValue({
+        feed: {
+          entry: {
+            title: "Sample Title",
+            published: "2023-09-18T00:00:00Z",
+          },
+        },
+      });
+
+      const mockArXivId = "2409.11377v1";
+      const link = `https://arxiv.org/abs/${mockArXivId}`;
+
+      await expect(service.getMetadata(link)).rejects.toThrow(
+        new RecnetError(
+          ErrorCode.FETCH_DIGITAL_LIBRARY_ERROR,
+          HttpStatus.INTERNAL_SERVER_ERROR,
+          "Failed to find author in arXiv response"
+        )
+      );
+    });
+
+    it("should throw an error if arXiv response does not contain publish date", async () => {
+      (axios.get as jest.Mock).mockResolvedValue({
+        data: "<xml><feed><entry><title>Sample Title</title><author><name>Author 1</name></author></entry></feed></xml>",
+      });
+
+      (XMLParser.prototype.parse as jest.Mock).mockReturnValue({
+        feed: {
+          entry: {
+            title: "Sample Title",
+            author: { name: "Author 1" },
+          },
+        },
+      });
+
+      const mockArXivId = "2409.11377v1";
+      const link = `https://arxiv.org/abs/${mockArXivId}`;
+
+      await expect(service.getMetadata(link)).rejects.toThrow(
+        new RecnetError(
+          ErrorCode.FETCH_DIGITAL_LIBRARY_ERROR,
+          HttpStatus.INTERNAL_SERVER_ERROR,
+          "Failed to find publish date in arXiv response"
+        )
+      );
+    });
   });
 
   describe("getUnifiedLink", () => {

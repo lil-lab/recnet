@@ -1,6 +1,6 @@
 import ArticleRepository from "@recnet-api/database/repository/article.repository";
 import { DigitalLibraryService } from "@recnet-api/modules/digital-library/digital-library.service";
-import { Metadata } from "@recnet-api/modules/digital-library/entities/metadata.entity";
+import { Metadata } from "@recnet-api/modules/digital-library/digital-library.type";
 
 import { GetArticleByLinkResponse } from "../article.response";
 import { ArticleService } from "../article.service";

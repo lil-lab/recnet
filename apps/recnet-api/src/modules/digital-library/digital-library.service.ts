@@ -4,7 +4,7 @@ import DigitalLibraryRepository from "@recnet-api/database/repository/digital-li
 
 import { ArXivService } from "./arxiv.service";
 import { DIGITAL_LIBRARY_ID } from "./digital-library.const";
-import { Metadata } from "./entities/metadata.entity";
+import { Metadata } from "./digital-library.type";
 
 export interface DigitalLibraryService {
   getMetadata(link: string): Promise<Metadata>;

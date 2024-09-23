@@ -4,7 +4,7 @@ import ArticleRepository from "@recnet-api/database/repository/article.repositor
 import { CreateArticleInput } from "@recnet-api/database/repository/article.repository.type";
 import { DIGITAL_LIBRARY } from "@recnet-api/modules/digital-library/digital-library.const";
 import { DigitalLibraryService } from "@recnet-api/modules/digital-library/digital-library.service";
-import { Metadata } from "@recnet-api/modules/digital-library/entities/metadata.entity";
+import { Metadata } from "@recnet-api/modules/digital-library/digital-library.type";
 
 import { GetArticleByLinkResponse } from "./article.response";
 
@@ -59,13 +59,9 @@ export class ArticleService {
     link: string
   ): CreateArticleInput {
     return {
+      ...metadata,
       link,
       doi: null,
-      title: metadata.title || "",
-      author: metadata.author || "",
-      year: metadata.year || 0,
-      month: metadata.month || null,
-      isVerified: metadata.isVerified || false,
     };
   }
 }

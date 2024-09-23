@@ -9,7 +9,7 @@ import { ErrorCode } from "@recnet-api/utils/error/recnet.error.const";
 
 import { DIGITAL_LIBRARY_ID } from "./digital-library.const";
 import { DigitalLibraryService } from "./digital-library.service";
-import { Metadata } from "./entities/metadata.entity";
+import { ArXivMetadata, Metadata } from "./digital-library.type";
 
 const API_ENDPOINT = "https://export.arxiv.org/api/query";
 const ARXIV_UNIFIED_LINK = "https://arxiv.org/abs/";
@@ -30,10 +30,12 @@ export class ArXivService implements DigitalLibraryService {
     try {
       const { data } = await axios.get(`${API_ENDPOINT}?id_list=${arXivId}`);
 
-      const metadata = this.parseXMLResponse(data);
-      metadata.isVerified = arXivDL.isVerified;
+      const arXivMetadata = this.parseXMLResponse(data);
 
-      return metadata;
+      return {
+        ...arXivMetadata,
+        isVerified: arXivDL.isVerified,
+      };
     } catch (error) {
       if (error instanceof RecnetError) {
         throw error;
@@ -77,40 +79,60 @@ export class ArXivService implements DigitalLibraryService {
     return arXivId;
   }
 
-  private parseXMLResponse(xmlData: string): Metadata {
+  private parseXMLResponse(xmlData: string): ArXivMetadata {
     const parser = new XMLParser();
     const parsed: unknown = parser.parse(xmlData);
 
-    const title: string = get(parsed, "feed.entry.title", "");
-    if (title === "Error" || title.length === 0) {
+    const title: string | null = get(parsed, "feed.entry.title", null);
+    if (title === "Error") {
       const errMsg = get(parsed, "feed.entry.summary", "");
       throw new RecnetError(
         ErrorCode.FETCH_DIGITAL_LIBRARY_ERROR,
         HttpStatus.INTERNAL_SERVER_ERROR,
         `Parsed arXiv response Error: ${errMsg}`
       );
+    } else if (title === null) {
+      throw new RecnetError(
+        ErrorCode.FETCH_DIGITAL_LIBRARY_ERROR,
+        HttpStatus.INTERNAL_SERVER_ERROR,
+        `Failed to find title in arXiv response`
+      );
     }
-    const metadata: Metadata = { title };
 
     const authors: Array<{ name: string }> | { name: string } | null = get(
       parsed,
       "feed.entry.author",
       null
     );
-    if (Array.isArray(authors)) {
-      metadata.author = (authors as Array<{ name: string }>)
-        .map((obj: { name: string }) => obj.name)
-        .join(", ");
-    } else if (authors !== null) {
-      metadata.author = (authors as { name: string }).name;
+    if (authors === null) {
+      throw new RecnetError(
+        ErrorCode.FETCH_DIGITAL_LIBRARY_ERROR,
+        HttpStatus.INTERNAL_SERVER_ERROR,
+        `Failed to find author in arXiv response`
+      );
     }
 
     const publishDate = get(parsed, "feed.entry.published", null);
-    if (publishDate) {
-      const date = new Date(publishDate);
-      metadata.year = date.getFullYear();
-      metadata.month = date.getMonth();
+    if (publishDate === null) {
+      throw new RecnetError(
+        ErrorCode.FETCH_DIGITAL_LIBRARY_ERROR,
+        HttpStatus.INTERNAL_SERVER_ERROR,
+        `Failed to find publish date in arXiv response`
+      );
     }
+
+    const date = new Date(publishDate);
+
+    const metadata: ArXivMetadata = {
+      title,
+      author: Array.isArray(authors)
+        ? (authors as Array<{ name: string }>)
+            .map((obj: { name: string }) => obj.name)
+            .join(", ")
+        : (authors as { name: string }).name,
+      year: date.getFullYear(),
+      month: date.getMonth(),
+    };
 
     return metadata;
   }
