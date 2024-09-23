@@ -9,5 +9,4 @@ export default {
   },
   moduleFileExtensions: ["ts", "js", "html"],
   coverageDirectory: "../../coverage/apps/recnet-api",
-  setupFiles: ["<rootDir>/jest.setup.ts"],
 };
