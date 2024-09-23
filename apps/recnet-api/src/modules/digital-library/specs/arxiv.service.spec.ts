@@ -27,10 +27,7 @@ describe("ArXivService", () => {
       findAll: jest.fn(),
     } as unknown as DigitalLibraryRepository;
 
-    service = new ArXivService(
-      digitalLibraryRepository,
-      DIGITAL_LIBRARY_ID.arXiv
-    );
+    service = new ArXivService(digitalLibraryRepository);
   });
 
   describe("getMetadata", () => {

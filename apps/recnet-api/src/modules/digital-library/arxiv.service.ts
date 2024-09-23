@@ -7,6 +7,7 @@ import DigitalLibraryRepository from "@recnet-api/database/repository/digital-li
 import { RecnetError } from "@recnet-api/utils/error/recnet.error";
 import { ErrorCode } from "@recnet-api/utils/error/recnet.error.const";
 
+import { DIGITAL_LIBRARY_ID } from "./digital-library.const";
 import { DigitalLibraryService } from "./digital-library.service";
 import { Metadata } from "./entities/metadata.entity";
 
@@ -17,13 +18,12 @@ const ARXIV_UNIFIED_LINK = "https://arxiv.org/abs/";
 export class ArXivService implements DigitalLibraryService {
   constructor(
     @Inject(DigitalLibraryRepository)
-    private readonly digitalLibraryRepository: DigitalLibraryRepository,
-    private readonly digitalLibraryId: number
+    private readonly digitalLibraryRepository: DigitalLibraryRepository
   ) {}
 
   public async getMetadata(link: string): Promise<Metadata> {
     const arXivDL = await this.digitalLibraryRepository.findById(
-      this.digitalLibraryId
+      DIGITAL_LIBRARY_ID.arXiv
     );
     const arXivId: string = this.getArXivId(link, arXivDL.regex);
 
@@ -50,7 +50,7 @@ export class ArXivService implements DigitalLibraryService {
 
   public async getUnifiedLink(link: string): Promise<string> {
     const arXivDL = await this.digitalLibraryRepository.findById(
-      this.digitalLibraryId
+      DIGITAL_LIBRARY_ID.arXiv
     );
     const arXivId: string = this.getArXivId(link, arXivDL.regex);
     return `${ARXIV_UNIFIED_LINK}${arXivId}`;

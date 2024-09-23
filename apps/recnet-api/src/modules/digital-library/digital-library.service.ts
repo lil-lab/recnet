@@ -40,7 +40,7 @@ export const DigitalLibraryServiceFactory = async (
 
   const matchId = matchingLibrary.id;
   if (matchId === DIGITAL_LIBRARY_ID.arXiv) {
-    return new ArXivService(digitalLibraryRepository, 1);
+    return new ArXivService(digitalLibraryRepository);
   }
 
   return null;
