@@ -4,6 +4,7 @@ import { PrismaModule } from "@recnet-api/database/prisma/prisma.module";
 
 import AnnouncementRepository from "./announcement.repository";
 import ArticleRepository from "./article.repository";
+import DigitalLibraryRepository from "./digital-library.repository";
 import FollowingRecordRepository from "./followingRecord.repository";
 import InviteCodeRepository from "./invite-code.repository";
 import RecRepository from "./rec.repository";
@@ -15,6 +16,7 @@ import WeeklyDigestCronLogRepository from "./weekly-digest-cron-log.repository";
   providers: [
     AnnouncementRepository,
     ArticleRepository,
+    DigitalLibraryRepository,
     FollowingRecordRepository,
     InviteCodeRepository,
     RecRepository,
@@ -24,6 +26,7 @@ import WeeklyDigestCronLogRepository from "./weekly-digest-cron-log.repository";
   exports: [
     AnnouncementRepository,
     ArticleRepository,
+    DigitalLibraryRepository,
     FollowingRecordRepository,
     InviteCodeRepository,
     RecRepository,
