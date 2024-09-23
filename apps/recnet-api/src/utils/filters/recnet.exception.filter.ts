@@ -65,6 +65,7 @@ export class RecnetExceptionFilter implements ExceptionFilter {
     let errorCode = ErrorCode.DB_UNKNOWN_ERROR;
     const extra = { meta: exception.meta };
 
+    // https://www.prisma.io/docs/orm/reference/error-reference#error-codes
     switch (exception.code) {
       case "P2002": {
         errorCode = ErrorCode.DB_UNIQUE_CONSTRAINT;
@@ -72,7 +73,12 @@ export class RecnetExceptionFilter implements ExceptionFilter {
         break;
       }
       case "P2025": {
-        errorCode = ErrorCode.DB_USER_NOT_FOUND;
+        // Use Regex to match prisma error object to our error codes
+        if (/Recommendation/.test(exception.message)) {
+          errorCode = ErrorCode.DB_REC_NOT_FOUND;
+        } else if (/User/.test(exception.message)) {
+          errorCode = ErrorCode.DB_USER_NOT_FOUND;
+        }
         status = HttpStatus.NOT_FOUND;
         break;
       }

@@ -30,6 +30,9 @@ const cards = [
 
 export default async function Home() {
   await getUserServerSide({
+    notRegisteredCallback: () => {
+      redirect("/onboard");
+    },
     isLoggedInCallback: () => {
       redirect("/feeds");
     },

@@ -1,6 +1,5 @@
 "use client";
 import { Text } from "@radix-ui/themes";
-import { InfiniteData } from "@tanstack/react-query";
 import { useMemo } from "react";
 import InfiniteScroll from "react-infinite-scroll-component";
 
@@ -8,24 +7,11 @@ import {
   RecCard,
   RecCardSkeleton,
 } from "@recnet/recnet-web/components/RecCard";
-
-import { GetRecsResponse } from "@recnet/recnet-api-model";
-import { Rec } from "@recnet/recnet-api-model";
+import { getDataFromInfiniteQuery } from "@recnet/recnet-web/utils/getDataFromInfiniteQuery";
 
 import { trpc } from "../_trpc/client";
 
 const PAGE_SIZE = 5;
-
-const getHistoricalRecsFromInfiniteQuery = (
-  infiniteQueryData: InfiniteData<GetRecsResponse> | undefined
-) => {
-  if (!infiniteQueryData) {
-    return [];
-  }
-  return (infiniteQueryData?.pages ?? []).reduce((acc, page) => {
-    return [...acc, ...page.recs];
-  }, [] as Rec[]);
-};
 
 export function HistoricalRecs(props: { userId: string }) {
   const { userId } = props;
@@ -47,7 +33,14 @@ export function HistoricalRecs(props: { userId: string }) {
       }
     );
 
-  const recs = useMemo(() => getHistoricalRecsFromInfiniteQuery(data), [data]);
+  const recs = useMemo(() => {
+    if (!data) {
+      return [];
+    }
+    return getDataFromInfiniteQuery(data, (page) => {
+      return page.recs;
+    });
+  }, [data]);
 
   if (isPending) {
     return (

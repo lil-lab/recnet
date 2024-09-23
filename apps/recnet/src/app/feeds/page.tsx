@@ -23,6 +23,7 @@ import { GetRecsFeedsResponse, Rec } from "@recnet/recnet-api-model";
 
 import { useAuth } from "../AuthContext";
 import { trpc } from "../_trpc/client";
+import { OnboardingDialog } from "../onboard/OnboardingDialog";
 
 const PAGE_SIZE = 5;
 
@@ -136,6 +137,7 @@ export default function FeedPage({
         "md:py-12"
       )}
     >
+      <OnboardingDialog />
       {Object.keys(recsGroupByTitle).length > 0 ? (
         <InfiniteScroll
           dataLength={Object.keys(recsGroupByTitle).length}

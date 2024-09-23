@@ -8,6 +8,7 @@ import {
   Query,
   UseFilters,
   UsePipes,
+  Param,
 } from "@nestjs/common";
 import {
   ApiBearerAuth,
@@ -41,6 +42,7 @@ import { UpdateRecDto } from "./dto/update.rec.dto";
 import {
   CreateRecResponse,
   GetFeedsResponse,
+  GetRecResponse,
   GetRecsResponse,
   GetUpcomingRecResponse,
   UpdateRecResponse,
@@ -52,6 +54,16 @@ import { RecService } from "./rec.service";
 @UseFilters(RecnetExceptionFilter)
 export class RecController {
   constructor(private readonly recService: RecService) {}
+
+  @ApiOperation({
+    summary: "Get a single rec",
+    description: "Get a single rec by id.",
+  })
+  @ApiOkResponse({ type: GetRecResponse })
+  @Get("rec/:id")
+  public async getRec(@Param("id") id: string): Promise<GetRecResponse> {
+    return this.recService.getRec(id);
+  }
 
   @ApiOperation({
     summary: "Get recs",
