@@ -16,6 +16,15 @@
         "cwd": "apps/recnet-api"
       }
     },
+    "test": {
+      "executor": "@nrwl/jest:jest",
+      "dependsOn": ["prisma:generate"],
+      "defaultConfiguration": "development",
+      "options": {
+        "jestConfig": "apps/recnet-api/jest.config.ts",
+        "passWithNoTests": true
+      }
+    },
     "serve": {
       "executor": "@nx/js:node",
       "dependsOn": ["prisma:generate"],
