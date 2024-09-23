@@ -1,4 +1,4 @@
-import { Inject, Injectable } from "@nestjs/common";
+import { Inject, Injectable, Logger } from "@nestjs/common";
 
 import ArticleRepository from "@recnet-api/database/repository/article.repository";
 import { CreateArticleInput } from "@recnet-api/database/repository/article.repository.type";
@@ -10,6 +10,8 @@ import { GetArticleByLinkResponse } from "./article.response";
 
 @Injectable()
 export class ArticleService {
+  private logger = new Logger(ArticleService.name);
+
   constructor(
     @Inject(ArticleRepository)
     private readonly articleRepository: ArticleRepository,
@@ -35,11 +37,15 @@ export class ArticleService {
 
     // If no article found, try to get metadata using the digital library service
     if (this.digitalLibraryService) {
-      const metadata = await this.digitalLibraryService.getMetadata(link);
-      const articleInput = this.transformMetadata(metadata, unifiedLink);
+      try {
+        const metadata = await this.digitalLibraryService.getMetadata(link);
+        const articleInput = this.transformMetadata(metadata, unifiedLink);
 
-      article = await this.articleRepository.createArticle(articleInput);
-      return { article };
+        article = await this.articleRepository.createArticle(articleInput);
+        return { article };
+      } catch (error) {
+        this.logger.error(error);
+      }
     }
 
     // If no article found and no metadata available, return null
