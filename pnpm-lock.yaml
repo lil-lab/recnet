@@ -101,6 +101,9 @@ dependencies:
   express:
     specifier: ^4.19.1
     version: 4.19.1
+  fast-xml-parser:
+    specifier: ^4.5.0
+    version: 4.5.0
   firebase:
     specifier: ^10.7.2
     version: 10.7.2
@@ -340,9 +343,6 @@ devDependencies:
   eslint-plugin-unused-imports:
     specifier: ^3.0.0
     version: 3.0.0(@typescript-eslint/eslint-plugin@7.2.0)(eslint@8.57.0)
-  fast-xml-parser:
-    specifier: ^4.5.0
-    version: 4.5.0
   husky:
     specifier: ^9.0.2
     version: 9.0.2
@@ -11960,7 +11960,7 @@ packages:
     hasBin: true
     dependencies:
       strnum: 1.0.5
-    dev: true
+    dev: false
 
   /fastest-levenshtein@1.0.16:
     resolution: {integrity: sha512-eRnCtTTtGZFpQCwhJiUOuxPQWRXVKYDn0b2PeHfXL6/Zi53SLAzAHfVhVWK2AryC/WH05kGfxhFIPvTF0SXQzg==}
@@ -18790,7 +18790,7 @@ packages:
 
   /strnum@1.0.5:
     resolution: {integrity: sha512-J8bbNyKKXl5qYcR36TIO8W3mVGVHrmmxsd5PAItGkmyzwJvybiw2IVq5nqd0i4LSNSkB/sx9VHllbfFdr9k1JA==}
-    dev: true
+    dev: false
 
   /strong-log-transformer@2.1.0:
     resolution: {integrity: sha512-B3Hgul+z0L9a236FAUC9iZsL+nVHgoCJnqCbN588DjYxvGXaXaaFbfmQ/JhvKjZwsOukuR72XbHv71Qkug0HxA==}
