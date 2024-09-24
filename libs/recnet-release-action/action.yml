@@ -19,6 +19,9 @@ runs:
       with:
         node-version: 20
         cache: "pnpm"
+    # Disable nx cloud
+    - run: export NX_NO_CLOUD=true
+      shell: bash
     - run: pnpm install --frozen-lockfile
       shell: bash
     - uses: nrwl/nx-set-shas@v4
