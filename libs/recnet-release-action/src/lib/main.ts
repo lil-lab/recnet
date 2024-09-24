@@ -9,5 +9,6 @@ import { inputs } from "./env";
 export async function run(): Promise<void> {
   core.info("Hello, world!");
 
+  console.log(`Inputs: ${JSON.stringify(inputs)}`);
   core.debug(`Inputs: ${JSON.stringify(inputs)}`);
 }
