@@ -8,6 +8,14 @@ inputs:
     description: "Your repo github token"
     required: true
 
+  base-branch:
+    description: "The base branch to create the PR"
+    required: true
+
+  target-branch:
+    description: "The target branch to create the PR"
+    required: true
+
 runs:
   using: node20
   main: out/index.js
