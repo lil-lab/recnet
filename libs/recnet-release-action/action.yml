@@ -9,23 +9,5 @@ inputs:
     required: true
 
 runs:
-  using: composite
-  steps:
-    - uses: pnpm/action-setup@v2
-      with:
-        version: 8.15.5
-    # Cache node_modules
-    - uses: actions/setup-node@v3
-      with:
-        node-version: 20
-        cache: "pnpm"
-    # Disable nx cloud
-    - run: export NX_NO_CLOUD=true
-      shell: bash
-    - run: pnpm install --frozen-lockfile
-      shell: bash
-    - uses: nrwl/nx-set-shas@v4
-    - run: pnpm nx build recnet-release-action
-      shell: bash
-    - run: node libs/recnet-release-action/dist/index.js
-      shell: bash
+  using: node20
+  main: out/index.js

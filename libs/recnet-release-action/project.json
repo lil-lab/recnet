@@ -9,7 +9,7 @@
       "options": {
         "commands": [
           {
-            "command": "ncc build src/index.ts -o dist",
+            "command": "ncc build src/index.ts -o out",
             "forwardAllArgs": false
           }
         ],
