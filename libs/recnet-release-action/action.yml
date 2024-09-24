@@ -1,0 +1,18 @@
+name: "recnet-release-action"
+description: "Automatically PR creation and release for RecNet"
+author: "swh00tw"
+
+# Define your inputs here.
+inputs:
+  milliseconds:
+    description: "Your input description here"
+    required: true
+    default: "1000"
+
+runs:
+  using: composite
+  steps:
+    - run: npx ncc build src/index.ts -o dist
+      shell: bash
+    - run: node dist/index.js
+      shell: bash
