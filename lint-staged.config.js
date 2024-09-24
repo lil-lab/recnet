@@ -11,7 +11,7 @@ module.exports = {
       return `nx format:check --files=${files.join(",")}`;
     },
   ],
-  "{libs,tools}/**/*.{ts,tsx,json}": [
+  "{libs,tools}/**/*.{ts,tsx}": [
     (files) => {
       return `nx affected:lint --fix --files=${files.join(",")}`;
     },
