@@ -1,4 +1,5 @@
 /* eslint-disable */
+
 export default {
   displayName: "recnet-api",
   preset: "../../jest.preset.js",
