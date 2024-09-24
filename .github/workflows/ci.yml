@@ -40,5 +40,4 @@ jobs:
       - run: pnpm nx run-many -t typecheck
       - run: pnpm nx run-many -t format:check
       - run: pnpm nx run-many -t lint
-
       - run: pnpm nx run-many -t test
