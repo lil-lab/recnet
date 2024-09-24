@@ -1,0 +1,40 @@
+{
+  "name": "recnet-release-action",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/recnet-release-action/src",
+  "projectType": "library",
+  "targets": {
+    "build": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          {
+            "command": "ncc build src/index.ts -o dist",
+            "forwardAllArgs": false
+          }
+        ],
+        "cwd": "libs/recnet-release-action"
+      }
+    },
+    "typecheck": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          {
+            "command": "tsc -p tsconfig.json --noEmit",
+            "forwardAllArgs": false
+          }
+        ],
+        "cwd": "libs/recnet-release-action"
+      }
+    },
+    "test": {
+      "executor": "@nx/vite:test",
+      "outputs": ["{options.reportsDirectory}"],
+      "options": {
+        "reportsDirectory": "../../coverage/libs/recnet-release-action"
+      }
+    }
+  },
+  "tags": ["type:utils"]
+}
