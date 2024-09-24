@@ -13,7 +13,7 @@ module.exports = {
   ],
   "{libs,tools}/**/*.{ts,tsx.json}": [
     (files) => {
-      return `nx affected:lint --fix --files=${files.join(",")}`;
+      return `eslint --cache --fix ${files.join(" ")}`;
     },
     (files) => {
       return `nx format:check --files=${files.join(",")}`;

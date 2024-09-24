@@ -15,3 +15,5 @@ jobs:
         uses: ./libs/recnet-release-action
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
+          base-branch: dev
+          target-branch: main
