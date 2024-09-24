@@ -11,7 +11,18 @@ inputs:
 runs:
   using: composite
   steps:
-    - run: npx ncc build src/index.ts -o dist
+    - uses: pnpm/action-setup@v2
+      with:
+        version: 8.15.5
+    # Cache node_modules
+    - uses: actions/setup-node@v3
+      with:
+        node-version: 20
+        cache: "pnpm"
+    - run: pnpm install --frozen-lockfile
       shell: bash
-    - run: node dist/index.js
+    - uses: nrwl/nx-set-shas@v4
+    - run: nx build recnet-release-action
+      shell: bash
+    - run: node libs/recnet-release-action/dist/index.js
       shell: bash
