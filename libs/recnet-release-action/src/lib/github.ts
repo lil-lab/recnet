@@ -16,6 +16,9 @@ export type REF =
 export type Commit =
   Endpoints["GET /repos/{owner}/{repo}/commits/{ref}"]["response"]["data"];
 
+type UpdatePRParams =
+  Endpoints["PATCH /repos/{owner}/{repo}/pulls/{pull_number}"]["parameters"];
+
 export class GitHubAPI {
   private octokit: Octokit;
   private owner: string;
