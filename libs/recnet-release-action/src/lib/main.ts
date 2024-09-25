@@ -27,7 +27,7 @@ export async function run(): Promise<void> {
 
     const commits = await github.getLatestCommits(inputs.headBranch);
     core.info(`Found ${commits.length} new commits`);
-    core.debug(`Commits: ${JSON.stringify(commits)}`);
+    core.info(`Commits: ${JSON.stringify(commits)}`);
 
     if (commits.length === 0) {
       core.info("No new commits found. Exiting...");
