@@ -119,6 +119,7 @@ export class GitHubAPI {
         repo: this.repo,
         sha: headBranch,
         since: commitDateTs,
+        per_page: 100,
       }
     );
 
