@@ -8,16 +8,20 @@ inputs:
     description: "Your repo github token"
     required: true
 
-  base-branch:
+  head-branch:
     description: "The base branch to create the PR"
     required: true
 
-  target-branch:
+  base-branch:
     description: "The target branch to create the PR"
     required: true
 
   repo:
     description: "The repo owner and name"
+    required: true
+
+  ref:
+    description: "The ref pointing to the previous staging release"
     required: true
 
 runs:
