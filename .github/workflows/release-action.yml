@@ -21,7 +21,7 @@ jobs:
           head-branch: test-release-action
           base-branch: master
           repo: ${{ github.repository }}
-          ref: f4d0d9874091417844fff836a87be666d7df99f5
+          ref: 4573543f2f5a3abf9e7f81140cdb33a8175271e2
 
   # update-tag:
   #   runs-on: ubuntu-latest
