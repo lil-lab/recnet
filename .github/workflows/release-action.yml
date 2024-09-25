@@ -1,12 +1,15 @@
-name: RecNet Release Action
+name: RecNet Prod-Release Pipeline
 
 on:
   workflow_dispatch: {}
   push:
+    branches:
+      - dev
 
 jobs:
   release:
     runs-on: ubuntu-latest
+    continue-on-error: true
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -18,4 +21,18 @@ jobs:
           head-branch: dev
           base-branch: master
           repo: ${{ github.repository }}
-          ref: 891b1ef46dc0fa140b5d8f1b54dfe1ba5ff7660b
+          ref: tags/staging
+
+  update-tag:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Create tag
+        uses: actions/github-script@v5
+        with:
+          script: |
+            github.rest.git.updateRef({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              ref: 'refs/tags/staging',
+              sha: context.sha
+            })
