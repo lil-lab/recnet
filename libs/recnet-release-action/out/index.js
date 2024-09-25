@@ -28370,15 +28370,18 @@ exports.inputs = void 0;
 const core = __nccwpck_require__(3847);
 const zod_1 = __nccwpck_require__(4966);
 const actionInputSchema = zod_1.z.object({
-    "github-token": zod_1.z.string(),
-    "base-branch": zod_1.z.string(),
-    "target-branch": zod_1.z.string(),
+    githubToken: zod_1.z.string(),
+    baseBranch: zod_1.z.string(),
+    targetBranch: zod_1.z.string(),
+    repo: zod_1.z.string(),
 });
 // parse and export
 exports.inputs = actionInputSchema.parse({
-    "github-token": core.getInput("github-token"),
-    "base-branch": core.getInput("base-branch"),
-    "target-branch": core.getInput("target-branch"),
+    githubToken: core.getInput("github-token"),
+    baseBranch: core.getInput("base-branch"),
+    targetBranch: core.getInput("target-branch"),
+    owner: core.getInput("repo").split("/")[0],
+    repo: core.getInput("repo").split("/")[1],
 });
 
 
@@ -28402,6 +28405,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.run = void 0;
 const core = __nccwpck_require__(3847);
 const env_1 = __nccwpck_require__(930);
+// import { GitHubAPI } from "./github";
 /**
  * The main function for the action.
  * @returns {Promise<void>} Resolves when the action is complete.
@@ -28409,7 +28413,62 @@ const env_1 = __nccwpck_require__(930);
 function run() {
     return __awaiter(this, void 0, void 0, function* () {
         core.info("Hello, world!");
+        console.log(`Inputs: ${JSON.stringify(env_1.inputs)}`);
         core.debug(`Inputs: ${JSON.stringify(env_1.inputs)}`);
+        // TODO
+        // 1. initalize a GitHub API client
+        // 2. get the diff between the base and target branches
+        // 3. if not diff, skip
+        // 4. find if there's already an opened PR from the base to target branch
+        // 5. if not, create a new PR
+        // 6. get the list of issues linked to the commits
+        // 7. update the PR content (put the list of issues to PR description)
+        // 8. find the committers of the commits
+        // 9. assign the PR to the committers and tag them as reviewers
+        // try {
+        //   core.info("Starting the RecNet release action");
+        //   const github = new GitHubAPI(inputs.githubToken, "", "inputs.repo");
+        //   // Get the diff between the base and target branches
+        //   const comparison = await github.getDiff(
+        //     inputs.baseBranch,
+        //     inputs.targetBranch
+        //   );
+        //   // If no diff, skip
+        //   if ((comparison.files ?? []).length === 0) {
+        //     core.info("No differences found between branches. Skipping PR creation.");
+        //     return;
+        //   }
+        //   // Find if there's already an opened PR from the base to target branch
+        //   let pr = await github.findPR(inputs.baseBranch, inputs.targetBranch);
+        //   if (!pr) {
+        //     // If not, create a new PR
+        //     pr = await github.createPR(
+        //       `Release ${inputs.targetBranch} to ${inputs.baseBranch}`,
+        //       inputs.baseBranch,
+        //       inputs.targetBranch,
+        //       "Auto-generated release PR"
+        //     );
+        //     core.info(`New PR created: #${pr.number}`);
+        //   } else {
+        //     core.info(`Existing PR found: #${pr.number}`);
+        //   }
+        //   // Get the list of issues linked to the commits
+        //   const issues = github.getIssuesFromCommits(comparison.commits);
+        //   // Update the PR content (put the list of issues to PR description)
+        //   const issuesList = Array.from(issues).join(", ");
+        //   const updatedBody = `Auto-generated release PR\n\nRelated issues: ${issuesList}`;
+        //   await github.updatePR(pr.number, updatedBody);
+        //   // Find the committers of the commits
+        //   const committers = github.getCommittersFromCommits(comparison.commits);
+        //   // Assign the PR to the committers and tag them as reviewers
+        //   await github.requestReviewers(pr.number, Array.from(committers));
+        //   await github.addAssignees(pr.number, Array.from(committers));
+        //   core.info("RecNet release action completed successfully");
+        // } catch (error) {
+        //   core.setFailed(
+        //     `Action failed with error: ${error instanceof Error ? error.message : String(error)}`
+        //   );
+        // }
     });
 }
 exports.run = run;

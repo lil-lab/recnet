@@ -16,6 +16,10 @@ inputs:
     description: "The target branch to create the PR"
     required: true
 
+  repo:
+    description: "The repo owner and name"
+    required: true
+
 runs:
   using: node20
   main: out/index.js
