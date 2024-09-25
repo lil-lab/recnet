@@ -18,4 +18,4 @@ jobs:
           head-branch: dev
           base-branch: master
           repo: ${{ github.repository }}
-          ref: f4d0d9874091417844fff836a87be666d7df99f5
+          ref: 891b1ef46dc0fa140b5d8f1b54dfe1ba5ff7660b
