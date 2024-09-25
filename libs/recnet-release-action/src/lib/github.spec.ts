@@ -278,7 +278,7 @@ describe("GitHubAPI", () => {
 
       expect(result).toContain("## RecNet auto-release action");
       expect(result).toContain(
-        "This is a auto-generated PR by recnet-release-action 🤖"
+        "This is an auto-generated PR by recnet-release-action 🤖"
       );
       expect(result).toContain("## Related Issues");
       expect(result).toContain(
@@ -304,7 +304,7 @@ describe("GitHubAPI", () => {
 
       expect(result).toContain("## RecNet auto-release action");
       expect(result).toContain(
-        "This is a auto-generated PR by recnet-release-action 🤖"
+        "This is an auto-generated PR by recnet-release-action 🤖"
       );
       expect(result).toContain("## Related Issues");
       expect(result).toContain("## Related PRs");

@@ -28416,7 +28416,11 @@ const ReleasePRTemplate = [
     },
     {
         type: "text",
-        innerText: "This is a auto-generated PR by recnet-release-action 🤖",
+        innerText: "This is an auto-generated PR by recnet-release-action 🤖",
+    },
+    {
+        type: "text",
+        innerText: "Please make sure to test your changes in staging before merging. ",
     },
     {
         type: "h2",
