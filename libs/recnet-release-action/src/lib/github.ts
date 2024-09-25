@@ -153,7 +153,10 @@ export class GitHubAPI {
 
   async appendIssuesToPR(originalPR: PR, issues: Set<string>) {
     const issuesList = Array.from(issues)
-      .map((issue) => `- ${issue}`)
+      .map(
+        (issueId) =>
+          `- [#${issueId}](https://github.com/${this.owner}/${this.repo}/issues/${issueId})`
+      )
       .join("\n");
     const updatedBody = `${originalPR.body}\n${issuesList}`;
 
@@ -195,9 +198,14 @@ export class GitHubAPI {
   getIssuesFromCommits(commits: Commit[]): Set<string> {
     const issues = new Set<string>();
     for (const commit of commits) {
-      const issueMatch = commit.commit.message.match(/#(\d+)/g);
-      if (issueMatch) {
-        issueMatch.forEach((issue: string) => issues.add(issue));
+      const issueMatches = commit.commit.message.match(
+        /https:\/\/github\.com\/lil-lab\/recnet\/issues\/(\d+)/g
+      );
+      if (issueMatches) {
+        issueMatches.forEach((match: string) => {
+          const id = match.split("/").pop();
+          if (id) issues.add(`${id}`);
+        });
       }
     }
     core.debug(
