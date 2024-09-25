@@ -143,6 +143,7 @@ describe("GitHubAPI", () => {
           repo: env.inputs.repo,
           sha: env.inputs.headBranch,
           since: "2023-01-01T00:00:00Z",
+          per_page: 100,
         }
       );
     });
