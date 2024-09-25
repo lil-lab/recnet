@@ -28415,6 +28415,37 @@ class GitHubAPI {
         this.owner = owner;
         this.repo = repo;
     }
+    hasNewCommits(headBranch) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const { data: tagRef } = yield this.octokit.request("GET /repos/{owner}/{repo}/git/ref/{ref}", {
+                    owner: this.owner,
+                    repo: this.repo,
+                    ref: `tags/${env_1.inputs.ref}`,
+                });
+                const { data: headRef } = yield this.octokit.request("GET /repos/{owner}/{repo}/git/ref/{ref}", {
+                    owner: this.owner,
+                    repo: this.repo,
+                    ref: `heads/${headBranch}`,
+                });
+                if (tagRef.object.sha === headRef.object.sha) {
+                    return false;
+                }
+                const { data: comparison } = yield this.octokit.request("GET /repos/{owner}/{repo}/compare/{base}...{head}", {
+                    owner: this.owner,
+                    repo: this.repo,
+                    base: tagRef.object.sha,
+                    head: headRef.object.sha,
+                });
+                return comparison.ahead_by > 0;
+            }
+            catch (error) {
+                core.error("Error checking for new commits:");
+                core.error(error instanceof Error ? error.message : String(error));
+                throw error;
+            }
+        });
+    }
     findPRCreatedByBot(baseBranch, headBranch) {
         return __awaiter(this, void 0, void 0, function* () {
             const { data } = yield this.octokit.request("GET /repos/{owner}/{repo}/pulls", {
@@ -28471,7 +28502,9 @@ class GitHubAPI {
                 sha: headBranch,
                 since: commitDateTs,
             });
-            return commits;
+            // filter out commit where the ref is pointing to
+            const filteredCommits = commits.filter((commit) => commit.sha !== tag.sha);
+            return filteredCommits;
         });
     }
     appendIssuesToPR(originalPR, issues) {
@@ -28572,6 +28605,15 @@ function run() {
             core.debug(`Load required inputs...`);
             core.debug(`Inputs: ${JSON.stringify(env_1.inputs)}`);
             const github = new github_1.GitHubAPI(env_1.inputs.githubToken, env_1.inputs.owner, env_1.inputs.repo);
+            // Get the latest commits from the head branch
+            const commits = yield github.getLatestCommits(env_1.inputs.headBranch);
+            core.info(`Found ${commits.length} new commits`);
+            core.debug(`Commits: ${JSON.stringify(commits)}`);
+            // skip if there are no new commits
+            if (commits.length === 0) {
+                core.info("No new commits found. Exiting...");
+                return;
+            }
             // Find if there's already an opened PR from the head to base branch created by this action
             let pr = null;
             pr = yield github.findPRCreatedByBot(env_1.inputs.baseBranch, env_1.inputs.headBranch);
@@ -28585,10 +28627,6 @@ function run() {
             else {
                 core.info(`Existing PR found: #${pr.number}`);
             }
-            // Get the latest commits from the head branch
-            const commits = yield github.getLatestCommits(env_1.inputs.headBranch);
-            core.info(`Found ${commits.length} new commits`);
-            core.debug(`Commits: ${JSON.stringify(commits)}`);
             // Get the list of issues linked to the commits
             const issues = github.getIssuesFromCommits(commits);
             core.info(`Found ${issues.size} linked issues`);

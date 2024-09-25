@@ -23,6 +23,17 @@ export async function run(): Promise<void> {
 
     const github = new GitHubAPI(inputs.githubToken, inputs.owner, inputs.repo);
 
+    // Get the latest commits from the head branch
+    const commits = await github.getLatestCommits(inputs.headBranch);
+    core.info(`Found ${commits.length} new commits`);
+    core.debug(`Commits: ${JSON.stringify(commits)}`);
+
+    // skip if there are no new commits
+    if (commits.length === 0) {
+      core.info("No new commits found. Exiting...");
+      return;
+    }
+
     // Find if there's already an opened PR from the head to base branch created by this action
     let pr: PR | null = null;
     pr = await github.findPRCreatedByBot(inputs.baseBranch, inputs.headBranch);
@@ -39,11 +50,6 @@ export async function run(): Promise<void> {
     } else {
       core.info(`Existing PR found: #${pr.number}`);
     }
-
-    // Get the latest commits from the head branch
-    const commits = await github.getLatestCommits(inputs.headBranch);
-    core.info(`Found ${commits.length} new commits`);
-    core.debug(`Commits: ${JSON.stringify(commits)}`);
 
     // Get the list of issues linked to the commits
     const issues = github.getIssuesFromCommits(commits);
