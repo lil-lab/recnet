@@ -18,7 +18,7 @@ jobs:
         uses: ./libs/recnet-release-action
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          head-branch: feat/auto-release-bot
+          head-branch: test-release-action
           base-branch: master
           repo: ${{ github.repository }}
           ref: f4d0d9874091417844fff836a87be666d7df99f5
