@@ -15,7 +15,7 @@ jobs:
         uses: ./libs/recnet-release-action
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          base-branch: dev
-          target-branch: main
+          head-branch: dev
+          base-branch: main
           repo: ${{ github.repository }}
           ref: tags/staging
