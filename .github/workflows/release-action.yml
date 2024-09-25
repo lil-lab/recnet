@@ -26,7 +26,7 @@ jobs:
   update-tag:
     runs-on: ubuntu-latest
     steps:
-      - name: Create tag
+      - name: Update staging tag
         uses: actions/github-script@v5
         with:
           script: |
