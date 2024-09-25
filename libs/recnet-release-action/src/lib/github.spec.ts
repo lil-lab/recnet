@@ -172,14 +172,15 @@ describe("GitHubAPI", () => {
   });
 
   describe("updatePRBody", () => {
-    it("should update PR body with new issues", async () => {
+    it("should update PR body with issues and PRs", async () => {
       const mockPR: PR = {
         number: 1,
         body: "Original PR body",
       } as PR;
       const issues = new Set(["123", "456"]);
+      const prs = new Set(["789", "101"]);
 
-      await github.updatePRBody(mockPR, issues);
+      await github.updatePRBody(mockPR, issues, prs);
 
       expect(mockOctokit.request).toHaveBeenCalledWith(
         "PATCH /repos/{owner}/{repo}/pulls/{pull_number}",
@@ -192,21 +193,66 @@ describe("GitHubAPI", () => {
           ),
         }
       );
+      expect(mockOctokit.request).toHaveBeenCalledWith(
+        "PATCH /repos/{owner}/{repo}/pulls/{pull_number}",
+        {
+          owner: env.inputs.owner,
+          repo: env.inputs.repo,
+          pull_number: 1,
+          body: expect.stringContaining(
+            "## Related PRs\n- [#789](https://github.com/owner/repo/pull/789)\n- [#101](https://github.com/owner/repo/pull/101)"
+          ),
+        }
+      );
     });
 
-    it("Should update PR body with combined set of issues", async () => {
+    it("should update PR body with empty issues and PRs", async () => {
       const mockPR: PR = {
         number: 1,
-        body: "## Related Issues\n- [#123](https://github.com/owner/repo/issues/123)",
+        body: "Original PR body",
+      } as PR;
+      const issues = new Set<string>();
+      const prs = new Set<string>();
+
+      await github.updatePRBody(mockPR, issues, prs);
+
+      expect(mockOctokit.request).toHaveBeenCalledWith(
+        "PATCH /repos/{owner}/{repo}/pulls/{pull_number}",
+        {
+          owner: env.inputs.owner,
+          repo: env.inputs.repo,
+          pull_number: 1,
+          body: expect.not.stringContaining("- [#"),
+        }
+      );
+    });
+
+    it("should append new content to existing PR body", async () => {
+      const existingBody = `
+    ## Existing Content
+    This is some existing content in the PR body.
+
+    ## Related Issues
+    - [#100](https://github.com/owner/repo/issues/100)
+
+    ## Related PRs
+    - [#200](https://github.com/owner/repo/pull/200)
+        `.trim();
+
+      const mockPR: PR = {
+        number: 1,
+        body: existingBody,
       } as PR;
 
-      // Simulate getting existing issues from PR body
-      const existingIssues = github.getIssuesFromPRBody(mockPR);
-      const newIssues = new Set(["456", "789"]);
-      const combinedIssues = new Set([...existingIssues, ...newIssues]);
+      const newIssues = new Set(["123", "456"]);
+      const issues = new Set([
+        ...github.getIssuesFromPRBody(mockPR),
+        ...newIssues,
+      ]);
+      const newPRs = new Set(["789", "101"]);
+      const prs = new Set([...github.getPRFromPRBody(mockPR), ...newPRs]);
 
-      // Call updatePRBody with the combined set of issues
-      await github.updatePRBody(mockPR, combinedIssues);
+      await github.updatePRBody(mockPR, issues, prs);
 
       expect(mockOctokit.request).toHaveBeenCalledWith(
         "PATCH /repos/{owner}/{repo}/pulls/{pull_number}",
@@ -215,10 +261,7 @@ describe("GitHubAPI", () => {
           repo: env.inputs.repo,
           pull_number: 1,
           body: expect.stringContaining(
-            "## Related Issues\n" +
-              "- [#123](https://github.com/owner/repo/issues/123)\n" +
-              "- [#456](https://github.com/owner/repo/issues/456)\n" +
-              "- [#789](https://github.com/owner/repo/issues/789)"
+            "## Related PRs\n- [#200](https://github.com/owner/repo/pull/200)\n- [#789](https://github.com/owner/repo/pull/789)\n- [#101](https://github.com/owner/repo/pull/101)\n"
           ),
         }
       );
@@ -226,10 +269,11 @@ describe("GitHubAPI", () => {
   });
 
   describe("generatePRBody", () => {
-    it("should generate PR body with issues", () => {
+    it("should generate PR body with issues and PRs", () => {
       const issues = new Set(["123", "456"]);
+      const prs = new Set(["789", "101"]);
 
-      const result = github.generatePRBody(issues);
+      const result = github.generatePRBody(issues, prs);
 
       expect(result).toContain("## RecNet auto-release action");
       expect(result).toContain(
@@ -242,6 +286,28 @@ describe("GitHubAPI", () => {
       expect(result).toContain(
         "- [#456](https://github.com/owner/repo/issues/456)"
       );
+      expect(result).toContain("## Related PRs");
+      expect(result).toContain(
+        "- [#789](https://github.com/owner/repo/pull/789)"
+      );
+      expect(result).toContain(
+        "- [#101](https://github.com/owner/repo/pull/101)"
+      );
+    });
+
+    it("should generate PR body with empty issues and PRs", () => {
+      const issues = new Set<string>();
+      const prs = new Set<string>();
+
+      const result = github.generatePRBody(issues, prs);
+
+      expect(result).toContain("## RecNet auto-release action");
+      expect(result).toContain(
+        "This is a auto-generated PR by recnet-release-action 🤖"
+      );
+      expect(result).toContain("## Related Issues");
+      expect(result).toContain("## Related PRs");
+      expect(result).not.toContain("- [#");
     });
   });
 
