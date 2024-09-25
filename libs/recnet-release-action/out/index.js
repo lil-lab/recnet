@@ -28488,6 +28488,7 @@ class GitHubAPI {
                 repo: this.repo,
                 sha: headBranch,
                 since: commitDateTs,
+                per_page: 100,
             });
             // filter out commit where the ref is pointing to
             const filteredCommits = commits.filter((commit) => commit.sha !== tag.sha);
