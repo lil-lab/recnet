@@ -19,9 +19,9 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           head-branch: test-release-action
-          base-branch: master
+          base-branch: dev
           repo: ${{ github.repository }}
-          ref: 4573543f2f5a3abf9e7f81140cdb33a8175271e2
+          ref: f4d0d9874091417844fff836a87be666d7df99f5
 
   # update-tag:
   #   runs-on: ubuntu-latest
