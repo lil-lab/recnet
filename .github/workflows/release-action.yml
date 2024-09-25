@@ -17,3 +17,4 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           base-branch: dev
           target-branch: main
+          repo: ${{ github.repository }}

@@ -2,14 +2,17 @@ import * as core from "@actions/core";
 import { z } from "zod";
 
 const actionInputSchema = z.object({
-  "github-token": z.string(),
-  "base-branch": z.string(),
-  "target-branch": z.string(),
+  githubToken: z.string(),
+  baseBranch: z.string(),
+  targetBranch: z.string(),
+  repo: z.string(),
 });
 
 // parse and export
 export const inputs = actionInputSchema.parse({
-  "github-token": core.getInput("github-token"),
-  "base-branch": core.getInput("base-branch"),
-  "target-branch": core.getInput("target-branch"),
+  githubToken: core.getInput("github-token"),
+  baseBranch: core.getInput("base-branch"),
+  targetBranch: core.getInput("target-branch"),
+  owner: core.getInput("repo").split("/")[0],
+  repo: core.getInput("repo").split("/")[1],
 });
