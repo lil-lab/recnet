@@ -28592,42 +28592,39 @@ const github_1 = __nccwpck_require__(3482);
  */
 function run() {
     return __awaiter(this, void 0, void 0, function* () {
-        // TODO
-        // 1. initalize a GitHub API client
-        // 2. find if there's already an opened PR from the base to target branch
-        // 3. if not, create a new PR
-        // 4. get the list of issues linked to the commits
-        // 5. update the PR content (put the list of issues to PR description)
-        // 6. find the committers of the commits
-        // 7. assign the PR to the committers and tag them as reviewers
+        /*
+          1. initalize a GitHub API client
+          2. if no diff between prev staging ref, skip
+          3. find if there's already an opened PR from the base to target branch
+          4. if not, create a new PR
+          5. get the list of issues linked to the commits
+          6. update the PR content (append the list of issues to PR description)
+          7. find the committers of the commits
+          8. assign the PR to the committers and tag them as reviewers
+        */
         try {
             core.info("Starting the RecNet release action");
             core.debug(`Load required inputs...`);
             core.debug(`Inputs: ${JSON.stringify(env_1.inputs)}`);
             const github = new github_1.GitHubAPI(env_1.inputs.githubToken, env_1.inputs.owner, env_1.inputs.repo);
-            // Get the latest commits from the head branch
             const commits = yield github.getLatestCommits(env_1.inputs.headBranch);
             core.info(`Found ${commits.length} new commits`);
             core.debug(`Commits: ${JSON.stringify(commits)}`);
-            // skip if there are no new commits
             if (commits.length === 0) {
                 core.info("No new commits found. Exiting...");
                 return;
             }
-            // Find if there's already an opened PR from the head to base branch created by this action
             let pr = null;
             pr = yield github.findPRCreatedByBot(env_1.inputs.baseBranch, env_1.inputs.headBranch);
             if (!pr) {
-                // If not, create a new PR
                 pr = yield github.createPR(`Release ${env_1.inputs.headBranch} to ${env_1.inputs.baseBranch}`, // PR title
-                env_1.inputs.baseBranch, env_1.inputs.headBranch, "Auto-generated release PR" // Initial PR body
+                env_1.inputs.baseBranch, env_1.inputs.headBranch, "## RecNet auto-release action\nThis is a auto-generated PR by recnet-release-action 🤖\n##Related Issues\n" // Initial PR body
                 );
                 core.info(`New PR created: #${pr.number}`);
             }
             else {
                 core.info(`Existing PR found: #${pr.number}`);
             }
-            // Get the list of issues linked to the commits
             const issues = github.getIssuesFromCommits(commits);
             core.info(`Found ${issues.size} linked issues`);
             core.debug(`Issues: ${JSON.stringify(Array.from(issues))}`);

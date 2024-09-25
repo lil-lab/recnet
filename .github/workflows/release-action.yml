@@ -16,6 +16,6 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           head-branch: dev
-          base-branch: main
+          base-branch: master
           repo: ${{ github.repository }}
           ref: f4d0d9874091417844fff836a87be666d7df99f5

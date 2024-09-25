@@ -8,14 +8,16 @@ import { GitHubAPI, PR } from "./github";
  * @returns {Promise<void>} Resolves when the action is complete.
  */
 export async function run(): Promise<void> {
-  // TODO
-  // 1. initalize a GitHub API client
-  // 2. find if there's already an opened PR from the base to target branch
-  // 3. if not, create a new PR
-  // 4. get the list of issues linked to the commits
-  // 5. update the PR content (put the list of issues to PR description)
-  // 6. find the committers of the commits
-  // 7. assign the PR to the committers and tag them as reviewers
+  /*
+    1. initalize a GitHub API client
+    2. if no diff between prev staging ref, skip
+    3. find if there's already an opened PR from the base to target branch
+    4. if not, create a new PR
+    5. get the list of issues linked to the commits
+    6. update the PR content (append the list of issues to PR description)
+    7. find the committers of the commits
+    8. assign the PR to the committers and tag them as reviewers
+  */
   try {
     core.info("Starting the RecNet release action");
     core.debug(`Load required inputs...`);
@@ -23,35 +25,30 @@ export async function run(): Promise<void> {
 
     const github = new GitHubAPI(inputs.githubToken, inputs.owner, inputs.repo);
 
-    // Get the latest commits from the head branch
     const commits = await github.getLatestCommits(inputs.headBranch);
     core.info(`Found ${commits.length} new commits`);
     core.debug(`Commits: ${JSON.stringify(commits)}`);
 
-    // skip if there are no new commits
     if (commits.length === 0) {
       core.info("No new commits found. Exiting...");
       return;
     }
 
-    // Find if there's already an opened PR from the head to base branch created by this action
     let pr: PR | null = null;
     pr = await github.findPRCreatedByBot(inputs.baseBranch, inputs.headBranch);
 
     if (!pr) {
-      // If not, create a new PR
       pr = await github.createPR(
         `Release ${inputs.headBranch} to ${inputs.baseBranch}`, // PR title
         inputs.baseBranch,
         inputs.headBranch,
-        "Auto-generated release PR" // Initial PR body
+        "## RecNet auto-release action\nThis is a auto-generated PR by recnet-release-action 🤖\n##Related Issues\n" // Initial PR body
       );
       core.info(`New PR created: #${pr.number}`);
     } else {
       core.info(`Existing PR found: #${pr.number}`);
     }
 
-    // Get the list of issues linked to the commits
     const issues = github.getIssuesFromCommits(commits);
     core.info(`Found ${issues.size} linked issues`);
     core.debug(`Issues: ${JSON.stringify(Array.from(issues))}`);
