@@ -171,15 +171,15 @@ describe("GitHubAPI", () => {
     });
   });
 
-  describe("appendIssuesToPR", () => {
-    it("should append issues to PR body", async () => {
+  describe("updatePRBody", () => {
+    it("should update PR body with new issues", async () => {
       const mockPR: PR = {
         number: 1,
         body: "Original PR body",
       } as PR;
       const issues = new Set(["123", "456"]);
 
-      await github.appendIssuesToPR(mockPR, issues);
+      await github.updatePRBody(mockPR, issues);
 
       expect(mockOctokit.request).toHaveBeenCalledWith(
         "PATCH /repos/{owner}/{repo}/pulls/{pull_number}",
@@ -187,8 +187,60 @@ describe("GitHubAPI", () => {
           owner: env.inputs.owner,
           repo: env.inputs.repo,
           pull_number: 1,
-          body: "Original PR body\n- [#123](https://github.com/owner/repo/issues/123)\n- [#456](https://github.com/owner/repo/issues/456)",
+          body: expect.stringContaining(
+            "## Related Issues\n- [#123](https://github.com/owner/repo/issues/123)\n- [#456](https://github.com/owner/repo/issues/456)"
+          ),
         }
+      );
+    });
+
+    it("Should update PR body with combined set of issues", async () => {
+      const mockPR: PR = {
+        number: 1,
+        body: "## Related Issues\n- [#123](https://github.com/owner/repo/issues/123)",
+      } as PR;
+
+      // Simulate getting existing issues from PR body
+      const existingIssues = github.getIssuesFromPRBody(mockPR);
+      const newIssues = new Set(["456", "789"]);
+      const combinedIssues = new Set([...existingIssues, ...newIssues]);
+
+      // Call updatePRBody with the combined set of issues
+      await github.updatePRBody(mockPR, combinedIssues);
+
+      expect(mockOctokit.request).toHaveBeenCalledWith(
+        "PATCH /repos/{owner}/{repo}/pulls/{pull_number}",
+        {
+          owner: env.inputs.owner,
+          repo: env.inputs.repo,
+          pull_number: 1,
+          body: expect.stringContaining(
+            "## Related Issues\n" +
+              "- [#123](https://github.com/owner/repo/issues/123)\n" +
+              "- [#456](https://github.com/owner/repo/issues/456)\n" +
+              "- [#789](https://github.com/owner/repo/issues/789)"
+          ),
+        }
+      );
+    });
+  });
+
+  describe("generatePRBody", () => {
+    it("should generate PR body with issues", () => {
+      const issues = new Set(["123", "456"]);
+
+      const result = github.generatePRBody(issues);
+
+      expect(result).toContain("## RecNet auto-release action");
+      expect(result).toContain(
+        "This is a auto-generated PR by recnet-release-action 🤖"
+      );
+      expect(result).toContain("## Related Issues");
+      expect(result).toContain(
+        "- [#123](https://github.com/owner/repo/issues/123)"
+      );
+      expect(result).toContain(
+        "- [#456](https://github.com/owner/repo/issues/456)"
       );
     });
   });
@@ -236,12 +288,12 @@ describe("GitHubAPI", () => {
       const commits: Commit[] = [
         {
           commit: {
-            message: "Fix bug https://github.com/lil-lab/recnet/issues/123",
+            message: "Fix bug https://github.com/owner/repo/issues/123",
           },
         },
         {
           commit: {
-            message: "Update docs https://github.com/lil-lab/recnet/issues/456",
+            message: "Update docs https://github.com/owner/repo/issues/456",
           },
         },
         { commit: { message: "Refactor code" } },
@@ -250,6 +302,28 @@ describe("GitHubAPI", () => {
       const result = github.getIssuesFromCommits(commits);
 
       expect(result).toEqual(new Set(["123", "456"]));
+    });
+  });
+
+  describe("getIssuesFromPRBody", () => {
+    it("should extract issue numbers from PR body", () => {
+      const mockPR: PR = {
+        body: "PR description\nhttps://github.com/owner/repo/issues/123\nhttps://github.com/owner/repo/issues/456",
+      } as PR;
+
+      const result = github.getIssuesFromPRBody(mockPR);
+
+      expect(result).toEqual(new Set(["123", "456"]));
+    });
+
+    it("should return empty set if PR body is null", () => {
+      const mockPR: PR = {
+        body: null,
+      } as PR;
+
+      const result = github.getIssuesFromPRBody(mockPR);
+
+      expect(result).toEqual(new Set());
     });
   });
 

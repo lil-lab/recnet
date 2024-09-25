@@ -4,6 +4,25 @@ import { Endpoints } from "@octokit/types";
 
 import { inputs } from "./env";
 
+const ReleasePRTemplate = [
+  {
+    type: "h2",
+    innerText: "RecNet auto-release action",
+  },
+  {
+    type: "text",
+    innerText: "This is a auto-generated PR by recnet-release-action 🤖",
+  },
+  {
+    type: "h2",
+    innerText: "Related Issues",
+  },
+  {
+    type: "h2",
+    innerText: "Related PRs",
+  },
+] as const;
+
 type FoundPR =
   Endpoints["GET /repos/{owner}/{repo}/pulls"]["response"]["data"][number];
 type CreatedPR =
@@ -15,9 +34,6 @@ export type REF =
 
 export type Commit =
   Endpoints["GET /repos/{owner}/{repo}/commits/{ref}"]["response"]["data"];
-
-type UpdatePRParams =
-  Endpoints["PATCH /repos/{owner}/{repo}/pulls/{pull_number}"]["parameters"];
 
 export class GitHubAPI {
   private octokit: Octokit;
@@ -112,14 +128,8 @@ export class GitHubAPI {
     return filteredCommits;
   }
 
-  async appendIssuesToPR(originalPR: PR, issues: Set<string>) {
-    const issuesList = Array.from(issues)
-      .map(
-        (issueId) =>
-          `- [#${issueId}](https://github.com/${this.owner}/${this.repo}/issues/${issueId})`
-      )
-      .join("\n");
-    const updatedBody = `${originalPR.body}\n${issuesList}`;
+  async updatePRBody(originalPR: PR, issues: Set<string>) {
+    const newBody = this.generatePRBody(issues);
 
     await this.octokit.request(
       "PATCH /repos/{owner}/{repo}/pulls/{pull_number}",
@@ -127,7 +137,7 @@ export class GitHubAPI {
         owner: this.owner,
         repo: this.repo,
         pull_number: originalPR.number,
-        body: updatedBody,
+        body: newBody,
       }
     );
   }
@@ -160,7 +170,10 @@ export class GitHubAPI {
     const issues = new Set<string>();
     for (const commit of commits) {
       const issueMatches = commit.commit.message.match(
-        /https:\/\/github\.com\/lil-lab\/recnet\/issues\/(\d+)/g
+        new RegExp(
+          `https://github.com/${this.owner}/${this.repo}/issues/(\\d+)`,
+          "g"
+        )
       );
       if (issueMatches) {
         issueMatches.forEach((match: string) => {
@@ -170,6 +183,49 @@ export class GitHubAPI {
       }
     }
     return issues;
+  }
+
+  getIssuesFromPRBody(pr: PR): Set<string> {
+    const body = pr.body;
+    const issues = new Set<string>();
+    if (!body) {
+      return issues;
+    }
+    const issueMatches = body.match(
+      new RegExp(
+        `https://github.com/${this.owner}/${this.repo}/issues/(\\d+)`,
+        "g"
+      )
+    );
+    if (issueMatches) {
+      issueMatches.forEach((match: string) => {
+        const id = match.split("/").pop();
+        if (id) issues.add(`${id}`);
+      });
+    }
+    return issues;
+  }
+
+  generatePRBody(issues: Set<string>): string {
+    const issuesList = Array.from(issues)
+      .map(
+        (issueId) =>
+          `- [#${issueId}](https://github.com/${this.owner}/${this.repo}/issues/${issueId})`
+      )
+      .join("\n");
+
+    let body = "";
+    for (const item of ReleasePRTemplate) {
+      if (item.type === "h2") {
+        body += `## ${item.innerText}\n`;
+        if (item.innerText === "Related Issues") {
+          body += `${issuesList}\n`;
+        }
+      } else if (item.type === "text") {
+        body += `${item.innerText}\n`;
+      }
+    }
+    return body;
   }
 
   getCommittersFromCommits(commits: Commit[]): Set<string> {
