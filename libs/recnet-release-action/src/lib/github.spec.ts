@@ -327,6 +327,71 @@ describe("GitHubAPI", () => {
     });
   });
 
+  describe("getPRFromCommits", () => {
+    it("should extract PR numbers from commit messages", () => {
+      const commits: Commit[] = [
+        {
+          commit: {
+            message: "Fix bug https://github.com/owner/repo/pull/123",
+          },
+        },
+        {
+          commit: {
+            message:
+              "Update docs\n\nRelated to https://github.com/owner/repo/pull/456",
+          },
+        },
+        { commit: { message: "Refactor code" } },
+      ] as Commit[];
+
+      const result = github.getPRFromCommits(commits);
+
+      expect(result).toEqual(new Set(["123", "456"]));
+    });
+
+    it("should return an empty set if no PRs are found in commits", () => {
+      const commits: Commit[] = [
+        { commit: { message: "Update without PR reference" } },
+      ] as Commit[];
+
+      const result = github.getPRFromCommits(commits);
+
+      expect(result).toEqual(new Set());
+    });
+  });
+
+  describe("getPRFromPRBody", () => {
+    it("should extract PR numbers from PR body", () => {
+      const mockPR: PR = {
+        body: "PR description\nhttps://github.com/owner/repo/pull/123\nhttps://github.com/owner/repo/pull/456",
+      } as PR;
+
+      const result = github.getPRFromPRBody(mockPR);
+
+      expect(result).toEqual(new Set(["123", "456"]));
+    });
+
+    it("should return an empty set if PR body is null", () => {
+      const mockPR: PR = {
+        body: null,
+      } as PR;
+
+      const result = github.getPRFromPRBody(mockPR);
+
+      expect(result).toEqual(new Set());
+    });
+
+    it("should return an empty set if no PRs are found in PR body", () => {
+      const mockPR: PR = {
+        body: "PR description without any PR references",
+      } as PR;
+
+      const result = github.getPRFromPRBody(mockPR);
+
+      expect(result).toEqual(new Set());
+    });
+  });
+
   describe("getCommittersFromCommits", () => {
     it("should extract unique committers from commits", () => {
       const commits: Commit[] = [

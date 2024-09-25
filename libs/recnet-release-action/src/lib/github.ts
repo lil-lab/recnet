@@ -206,6 +206,46 @@ export class GitHubAPI {
     return issues;
   }
 
+  getPRFromCommits(commits: Commit[]): Set<string> {
+    const prs = new Set<string>();
+    for (const commit of commits) {
+      const prMatches = commit.commit.message.match(
+        new RegExp(
+          `https://github.com/${this.owner}/${this.repo}/pull/(\\d+)`,
+          "g"
+        )
+      );
+      if (prMatches) {
+        prMatches.forEach((match: string) => {
+          const id = match.split("/").pop();
+          if (id) prs.add(`${id}`);
+        });
+      }
+    }
+    return prs;
+  }
+
+  getPRFromPRBody(pr: PR): Set<string> {
+    const body = pr.body;
+    const prs = new Set<string>();
+    if (!body) {
+      return prs;
+    }
+    const prMatches = body.match(
+      new RegExp(
+        `https://github.com/${this.owner}/${this.repo}/pull/(\\d+)`,
+        "g"
+      )
+    );
+    if (prMatches) {
+      prMatches.forEach((match: string) => {
+        const id = match.split("/").pop();
+        if (id) prs.add(`${id}`);
+      });
+    }
+    return prs;
+  }
+
   generatePRBody(issues: Set<string>): string {
     const issuesList = Array.from(issues)
       .map(
@@ -220,6 +260,8 @@ export class GitHubAPI {
         body += `## ${item.innerText}\n`;
         if (item.innerText === "Related Issues") {
           body += `${issuesList}\n`;
+        } else if (item.innerText === "Related PRs") {
+          // TODO
         }
       } else if (item.type === "text") {
         body += `${item.innerText}\n`;
