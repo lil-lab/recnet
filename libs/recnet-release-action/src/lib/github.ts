@@ -27,48 +27,6 @@ export class GitHubAPI {
     this.repo = repo;
   }
 
-  async hasNewCommits(headBranch: string): Promise<boolean> {
-    try {
-      const { data: tagRef } = await this.octokit.request(
-        "GET /repos/{owner}/{repo}/git/ref/{ref}",
-        {
-          owner: this.owner,
-          repo: this.repo,
-          ref: `tags/${inputs.ref}`,
-        }
-      );
-
-      const { data: headRef } = await this.octokit.request(
-        "GET /repos/{owner}/{repo}/git/ref/{ref}",
-        {
-          owner: this.owner,
-          repo: this.repo,
-          ref: `heads/${headBranch}`,
-        }
-      );
-
-      if (tagRef.object.sha === headRef.object.sha) {
-        return false;
-      }
-
-      const { data: comparison } = await this.octokit.request(
-        "GET /repos/{owner}/{repo}/compare/{base}...{head}",
-        {
-          owner: this.owner,
-          repo: this.repo,
-          base: tagRef.object.sha,
-          head: headRef.object.sha,
-        }
-      );
-
-      return comparison.ahead_by > 0;
-    } catch (error) {
-      core.error("Error checking for new commits:");
-      core.error(error instanceof Error ? error.message : String(error));
-      throw error;
-    }
-  }
-
   async findPRCreatedByBot(
     baseBranch: string,
     headBranch: string
@@ -183,13 +141,13 @@ export class GitHubAPI {
     );
   }
 
-  async addAssignees(issueNumber: number, assignees: string[]) {
+  async addAssignees(prNumber: number, assignees: string[]) {
     await this.octokit.request(
       "POST /repos/{owner}/{repo}/issues/{issue_number}/assignees",
       {
         owner: this.owner,
         repo: this.repo,
-        issue_number: issueNumber,
+        issue_number: prNumber,
         assignees,
       }
     );
@@ -208,13 +166,10 @@ export class GitHubAPI {
         });
       }
     }
-    core.debug(
-      `Issues found in commits: ${JSON.stringify(Array.from(issues))}`
-    );
     return issues;
   }
 
-  getCommittersFromCommits(commits: any[]): Set<string> {
+  getCommittersFromCommits(commits: Commit[]): Set<string> {
     const committers = new Set<string>();
     for (const commit of commits) {
       if (commit.author) {

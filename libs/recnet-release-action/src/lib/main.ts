@@ -56,12 +56,12 @@ export async function run(): Promise<void> {
     // Update the PR content
     await github.appendIssuesToPR(pr, issues);
 
-    // // Find the committers of the commits
-    // const committers = github.getCommittersFromCommits(commits);
+    // Find the committers of the commits
+    const committers = github.getCommittersFromCommits(commits);
 
-    // // Assign the PR to the committers and tag them as reviewers
-    // await github.requestReviewers(pr.number, Array.from(committers));
-    // await github.addAssignees(pr.number, Array.from(committers));
+    // Assign the PR to the committers and tag them as reviewers
+    await github.requestReviewers(pr.number, Array.from(committers));
+    await github.addAssignees(pr.number, Array.from(committers));
 
     core.info("RecNet release action completed successfully");
   } catch (error) {
