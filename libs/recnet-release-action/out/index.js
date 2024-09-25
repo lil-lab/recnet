@@ -28415,37 +28415,6 @@ class GitHubAPI {
         this.owner = owner;
         this.repo = repo;
     }
-    hasNewCommits(headBranch) {
-        return __awaiter(this, void 0, void 0, function* () {
-            try {
-                const { data: tagRef } = yield this.octokit.request("GET /repos/{owner}/{repo}/git/ref/{ref}", {
-                    owner: this.owner,
-                    repo: this.repo,
-                    ref: `tags/${env_1.inputs.ref}`,
-                });
-                const { data: headRef } = yield this.octokit.request("GET /repos/{owner}/{repo}/git/ref/{ref}", {
-                    owner: this.owner,
-                    repo: this.repo,
-                    ref: `heads/${headBranch}`,
-                });
-                if (tagRef.object.sha === headRef.object.sha) {
-                    return false;
-                }
-                const { data: comparison } = yield this.octokit.request("GET /repos/{owner}/{repo}/compare/{base}...{head}", {
-                    owner: this.owner,
-                    repo: this.repo,
-                    base: tagRef.object.sha,
-                    head: headRef.object.sha,
-                });
-                return comparison.ahead_by > 0;
-            }
-            catch (error) {
-                core.error("Error checking for new commits:");
-                core.error(error instanceof Error ? error.message : String(error));
-                throw error;
-            }
-        });
-    }
     findPRCreatedByBot(baseBranch, headBranch) {
         return __awaiter(this, void 0, void 0, function* () {
             const { data } = yield this.octokit.request("GET /repos/{owner}/{repo}/pulls", {
@@ -28531,12 +28500,12 @@ class GitHubAPI {
             });
         });
     }
-    addAssignees(issueNumber, assignees) {
+    addAssignees(prNumber, assignees) {
         return __awaiter(this, void 0, void 0, function* () {
             yield this.octokit.request("POST /repos/{owner}/{repo}/issues/{issue_number}/assignees", {
                 owner: this.owner,
                 repo: this.repo,
-                issue_number: issueNumber,
+                issue_number: prNumber,
                 assignees,
             });
         });
@@ -28553,7 +28522,6 @@ class GitHubAPI {
                 });
             }
         }
-        core.debug(`Issues found in commits: ${JSON.stringify(Array.from(issues))}`);
         return issues;
     }
     getCommittersFromCommits(commits) {
@@ -28634,11 +28602,11 @@ function run() {
             core.debug(`Issues: ${JSON.stringify(Array.from(issues))}`);
             // Update the PR content
             yield github.appendIssuesToPR(pr, issues);
-            // // Find the committers of the commits
-            // const committers = github.getCommittersFromCommits(commits);
-            // // Assign the PR to the committers and tag them as reviewers
-            // await github.requestReviewers(pr.number, Array.from(committers));
-            // await github.addAssignees(pr.number, Array.from(committers));
+            // Find the committers of the commits
+            const committers = github.getCommittersFromCommits(commits);
+            // Assign the PR to the committers and tag them as reviewers
+            yield github.requestReviewers(pr.number, Array.from(committers));
+            yield github.addAssignees(pr.number, Array.from(committers));
             core.info("RecNet release action completed successfully");
         }
         catch (error) {
