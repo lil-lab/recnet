@@ -18,10 +18,10 @@ jobs:
         uses: ./libs/recnet-release-action
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          head-branch: test-release-action
-          base-branch: dev
+          head-branch: dev
+          base-branch: master
           repo: ${{ github.repository }}
-          ref: f4d0d9874091417844fff836a87be666d7df99f5
+          ref: tags/staging
 
   update-tag:
     runs-on: ubuntu-latest
