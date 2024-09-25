@@ -28373,6 +28373,7 @@ const actionInputSchema = zod_1.z.object({
     githubToken: zod_1.z.string(),
     baseBranch: zod_1.z.string(),
     targetBranch: zod_1.z.string(),
+    owner: zod_1.z.string(),
     repo: zod_1.z.string(),
 });
 // parse and export

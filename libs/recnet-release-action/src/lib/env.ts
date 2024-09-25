@@ -5,6 +5,7 @@ const actionInputSchema = z.object({
   githubToken: z.string(),
   baseBranch: z.string(),
   targetBranch: z.string(),
+  owner: z.string(),
   repo: z.string(),
 });
 
