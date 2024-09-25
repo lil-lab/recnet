@@ -56,8 +56,15 @@ export async function run(): Promise<void> {
     core.info(`Found ${issuesFromPRBody.size} from PR desc`);
     core.debug(`Issues: ${JSON.stringify(Array.from(issues))}`);
 
+    const prsFromCommits = github.getPRFromCommits(commits);
+    const prsFromPRBody = github.getPRFromPRBody(pr);
+    const prs = new Set([...prsFromCommits, ...prsFromPRBody]);
+    core.info(`Found ${prsFromCommits.size} newly linked PRs`);
+    core.info(`Found ${prsFromPRBody.size} from PR desc`);
+    core.debug(`PRs: ${JSON.stringify(Array.from(prs))}`);
+
     // Update the PR content
-    await github.updatePRBody(pr, issues);
+    await github.updatePRBody(pr, issues, prs);
 
     // Find the committers of the commits
     const committers = github.getCommittersFromCommits(commits);

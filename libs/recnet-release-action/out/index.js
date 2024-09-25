@@ -28494,9 +28494,9 @@ class GitHubAPI {
             return filteredCommits;
         });
     }
-    updatePRBody(originalPR, issues) {
+    updatePRBody(originalPR, issues, prs) {
         return __awaiter(this, void 0, void 0, function* () {
-            const newBody = this.generatePRBody(issues);
+            const newBody = this.generatePRBody(issues, prs);
             yield this.octokit.request("PATCH /repos/{owner}/{repo}/pulls/{pull_number}", {
                 owner: this.owner,
                 repo: this.repo,
@@ -28555,9 +28555,42 @@ class GitHubAPI {
         }
         return issues;
     }
-    generatePRBody(issues) {
+    getPRFromCommits(commits) {
+        const prs = new Set();
+        for (const commit of commits) {
+            const prMatches = commit.commit.message.match(new RegExp(`https://github.com/${this.owner}/${this.repo}/pull/(\\d+)`, "g"));
+            if (prMatches) {
+                prMatches.forEach((match) => {
+                    const id = match.split("/").pop();
+                    if (id)
+                        prs.add(`${id}`);
+                });
+            }
+        }
+        return prs;
+    }
+    getPRFromPRBody(pr) {
+        const body = pr.body;
+        const prs = new Set();
+        if (!body) {
+            return prs;
+        }
+        const prMatches = body.match(new RegExp(`https://github.com/${this.owner}/${this.repo}/pull/(\\d+)`, "g"));
+        if (prMatches) {
+            prMatches.forEach((match) => {
+                const id = match.split("/").pop();
+                if (id)
+                    prs.add(`${id}`);
+            });
+        }
+        return prs;
+    }
+    generatePRBody(issues, prs) {
         const issuesList = Array.from(issues)
             .map((issueId) => `- [#${issueId}](https://github.com/${this.owner}/${this.repo}/issues/${issueId})`)
+            .join("\n");
+        const prList = Array.from(prs)
+            .map((prId) => `- [#${prId}](https://github.com/${this.owner}/${this.repo}/pull/${prId})`)
             .join("\n");
         let body = "";
         for (const item of ReleasePRTemplate) {
@@ -28565,6 +28598,9 @@ class GitHubAPI {
                 body += `## ${item.innerText}\n`;
                 if (item.innerText === "Related Issues") {
                     body += `${issuesList}\n`;
+                }
+                else if (item.innerText === "Related PRs") {
+                    body += `${prList}\n`;
                 }
             }
             else if (item.type === "text") {
@@ -28652,8 +28688,14 @@ function run() {
             core.info(`Found ${issuesFromCommits.size} newly linked issues`);
             core.info(`Found ${issuesFromPRBody.size} from PR desc`);
             core.debug(`Issues: ${JSON.stringify(Array.from(issues))}`);
+            const prsFromCommits = github.getPRFromCommits(commits);
+            const prsFromPRBody = github.getPRFromPRBody(pr);
+            const prs = new Set([...prsFromCommits, ...prsFromPRBody]);
+            core.info(`Found ${prsFromCommits.size} newly linked PRs`);
+            core.info(`Found ${prsFromPRBody.size} from PR desc`);
+            core.debug(`PRs: ${JSON.stringify(Array.from(prs))}`);
             // Update the PR content
-            yield github.updatePRBody(pr, issues);
+            yield github.updatePRBody(pr, issues, prs);
             // Find the committers of the commits
             const committers = github.getCommittersFromCommits(commits);
             // Assign the PR to the committers and tag them as reviewers

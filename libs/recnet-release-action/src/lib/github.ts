@@ -128,8 +128,8 @@ export class GitHubAPI {
     return filteredCommits;
   }
 
-  async updatePRBody(originalPR: PR, issues: Set<string>) {
-    const newBody = this.generatePRBody(issues);
+  async updatePRBody(originalPR: PR, issues: Set<string>, prs: Set<string>) {
+    const newBody = this.generatePRBody(issues, prs);
 
     await this.octokit.request(
       "PATCH /repos/{owner}/{repo}/pulls/{pull_number}",
@@ -246,11 +246,18 @@ export class GitHubAPI {
     return prs;
   }
 
-  generatePRBody(issues: Set<string>): string {
+  generatePRBody(issues: Set<string>, prs: Set<string>): string {
     const issuesList = Array.from(issues)
       .map(
         (issueId) =>
           `- [#${issueId}](https://github.com/${this.owner}/${this.repo}/issues/${issueId})`
+      )
+      .join("\n");
+
+    const prList = Array.from(prs)
+      .map(
+        (prId) =>
+          `- [#${prId}](https://github.com/${this.owner}/${this.repo}/pull/${prId})`
       )
       .join("\n");
 
@@ -261,7 +268,7 @@ export class GitHubAPI {
         if (item.innerText === "Related Issues") {
           body += `${issuesList}\n`;
         } else if (item.innerText === "Related PRs") {
-          // TODO
+          body += `${prList}\n`;
         }
       } else if (item.type === "text") {
         body += `${item.innerText}\n`;
