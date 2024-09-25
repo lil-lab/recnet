@@ -28510,7 +28510,7 @@ class GitHubAPI {
     appendIssuesToPR(originalPR, issues) {
         return __awaiter(this, void 0, void 0, function* () {
             const issuesList = Array.from(issues)
-                .map((issue) => `- ${issue}`)
+                .map((issueId) => `- [#${issueId}](https://github.com/${this.owner}/${this.repo}/issues/${issueId})`)
                 .join("\n");
             const updatedBody = `${originalPR.body}\n${issuesList}`;
             yield this.octokit.request("PATCH /repos/{owner}/{repo}/pulls/{pull_number}", {
@@ -28544,9 +28544,13 @@ class GitHubAPI {
     getIssuesFromCommits(commits) {
         const issues = new Set();
         for (const commit of commits) {
-            const issueMatch = commit.commit.message.match(/#(\d+)/g);
-            if (issueMatch) {
-                issueMatch.forEach((issue) => issues.add(issue));
+            const issueMatches = commit.commit.message.match(/https:\/\/github\.com\/lil-lab\/recnet\/issues\/(\d+)/g);
+            if (issueMatches) {
+                issueMatches.forEach((match) => {
+                    const id = match.split("/").pop();
+                    if (id)
+                        issues.add(`${id}`);
+                });
             }
         }
         core.debug(`Issues found in commits: ${JSON.stringify(Array.from(issues))}`);
@@ -28618,7 +28622,7 @@ function run() {
             pr = yield github.findPRCreatedByBot(env_1.inputs.baseBranch, env_1.inputs.headBranch);
             if (!pr) {
                 pr = yield github.createPR(`Release ${env_1.inputs.headBranch} to ${env_1.inputs.baseBranch}`, // PR title
-                env_1.inputs.baseBranch, env_1.inputs.headBranch, "## RecNet auto-release action\nThis is a auto-generated PR by recnet-release-action 🤖\n##Related Issues\n" // Initial PR body
+                env_1.inputs.baseBranch, env_1.inputs.headBranch, "## RecNet auto-release action\nThis is a auto-generated PR by recnet-release-action 🤖\n## Related Issues\n" // Initial PR body
                 );
                 core.info(`New PR created: #${pr.number}`);
             }
@@ -28628,8 +28632,8 @@ function run() {
             const issues = github.getIssuesFromCommits(commits);
             core.info(`Found ${issues.size} linked issues`);
             core.debug(`Issues: ${JSON.stringify(Array.from(issues))}`);
-            // // Update the PR content
-            // await github.appendIssuesToPR(pr, issues);
+            // Update the PR content
+            yield github.appendIssuesToPR(pr, issues);
             // // Find the committers of the commits
             // const committers = github.getCommittersFromCommits(commits);
             // // Assign the PR to the committers and tag them as reviewers

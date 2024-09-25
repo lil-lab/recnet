@@ -42,7 +42,7 @@ export async function run(): Promise<void> {
         `Release ${inputs.headBranch} to ${inputs.baseBranch}`, // PR title
         inputs.baseBranch,
         inputs.headBranch,
-        "## RecNet auto-release action\nThis is a auto-generated PR by recnet-release-action 🤖\n##Related Issues\n" // Initial PR body
+        "## RecNet auto-release action\nThis is a auto-generated PR by recnet-release-action 🤖\n## Related Issues\n" // Initial PR body
       );
       core.info(`New PR created: #${pr.number}`);
     } else {
@@ -53,8 +53,8 @@ export async function run(): Promise<void> {
     core.info(`Found ${issues.size} linked issues`);
     core.debug(`Issues: ${JSON.stringify(Array.from(issues))}`);
 
-    // // Update the PR content
-    // await github.appendIssuesToPR(pr, issues);
+    // Update the PR content
+    await github.appendIssuesToPR(pr, issues);
 
     // // Find the committers of the commits
     // const committers = github.getCommittersFromCommits(commits);
