@@ -46,20 +46,13 @@ export default class RecRepository {
   }
 
   public async findUpcomingRec(userId: string): Promise<Rec | null> {
-    const recommendation = await this.prisma.recommendation.findFirst({
+    return this.prisma.recommendation.findFirst({
       where: {
         userId: userId,
+        cutoff: getNextCutOff(),
       },
       select: rec.select,
-      orderBy: { cutoff: Prisma.SortOrder.desc },
     });
-    if (!recommendation) {
-      return null;
-    }
-    if (recommendation.cutoff.getTime() !== getNextCutOff().getTime()) {
-      return null;
-    }
-    return recommendation;
   }
 
   public async createRec(
