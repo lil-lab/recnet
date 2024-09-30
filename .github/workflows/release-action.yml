@@ -26,6 +26,9 @@ jobs:
   update-tag:
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
       - name: Update staging tag
         uses: actions/github-script@v5
         with:
