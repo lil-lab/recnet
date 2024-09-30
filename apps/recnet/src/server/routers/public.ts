@@ -70,12 +70,20 @@ export const publicRouter = router({
     .output(linkPreviewMetadataSchema)
     .query(async (opts) => {
       try {
+        /**
+            The metadata retrieving API call here might take a long time to respond, so we set a timeout of 1 second.
+        */
+        const TIMEOUT = 1000;
+        const controller = new AbortController();
+        const id = setTimeout(() => controller.abort(), TIMEOUT);
         const res = await fetch(
           `https://api.microlink.io/?url=${opts.input.url}`,
           {
             cache: "force-cache",
+            signal: controller.signal,
           }
         ).then((res) => res.json());
+        clearTimeout(id);
         return linkPreviewMetadataSchema.parse(res.data);
       } catch (e) {
         console.error(e);
