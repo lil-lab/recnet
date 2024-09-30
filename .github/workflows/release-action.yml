@@ -36,6 +36,6 @@ jobs:
             github.rest.git.updateRef({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              ref: 'refs/tags/staging',
+              ref: 'tags/staging',
               sha: context.sha
             })
