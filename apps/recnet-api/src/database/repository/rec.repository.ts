@@ -31,7 +31,11 @@ export default class RecRepository {
       where: this.transformRecFilterByToPrismaWhere(filter),
       take: pageSize,
       skip: getOffset(page, pageSize),
-      orderBy: { cutoff: Prisma.SortOrder.desc },
+      orderBy: [
+        { cutoff: Prisma.SortOrder.desc },
+        { article: { isVerified: Prisma.SortOrder.desc } },
+        { createdAt: Prisma.SortOrder.desc },
+      ],
     });
   }
 
