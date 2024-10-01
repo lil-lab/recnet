@@ -50,4 +50,10 @@ export default class DigitalLibraryRepository {
       select: digitalLibrary.select,
     });
   }
+
+  public async delete(id: number) {
+    return this.prisma.digitalLibrary.delete({
+      where: { id },
+    });
+  }
 }

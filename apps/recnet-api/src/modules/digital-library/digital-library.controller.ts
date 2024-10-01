@@ -9,6 +9,7 @@ import {
   Patch,
   ParseIntPipe,
   Param,
+  Delete,
 } from "@nestjs/common";
 import {
   ApiOkResponse,
@@ -91,5 +92,18 @@ export class DigitalLibraryController {
     @Body() dto: UpdateDigitalLibraryDto
   ): Promise<DigitalLibrary> {
     return this.digitalLibraryAdminService.updateDigitalLibrary(id, dto);
+  }
+
+  @ApiOperation({
+    summary: "Delete Digital Library",
+    description: "Delete digital library by id.",
+  })
+  @ApiBearerAuth()
+  @Delete("/:id")
+  @Auth({ allowedRoles: ["ADMIN"] })
+  public async deleteDigitalLibrary(
+    @Param("id", ParseIntPipe) id: number
+  ): Promise<void> {
+    return this.digitalLibraryAdminService.deleteDigitalLibrary(id);
   }
 }

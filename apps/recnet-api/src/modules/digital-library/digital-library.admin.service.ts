@@ -47,6 +47,10 @@ export class DigitalLibraryAdminService {
     return this.transformDigitalLibrary(updatedDbDigitalLibrary);
   }
 
+  public async deleteDigitalLibrary(id: number): Promise<void> {
+    await this.digitalLibraryRepository.delete(id);
+  }
+
   private transformDigitalLibrary(
     digitalLibrary: DbDigitalLibrary
   ): DigitalLibrary {
