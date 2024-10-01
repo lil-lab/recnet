@@ -1,8 +1,9 @@
 import { ImageResponse } from "next/og";
 
 import { serverClient } from "@recnet/recnet-web/app/_trpc/serverClient";
+import { cn } from "@recnet/recnet-web/utils/cn";
 
-// export const runtime = "edge";
+import { formatDate } from "@recnet/recnet-date-fns";
 
 // Image metadata
 export const alt = "RecNet Recommendation";
@@ -13,7 +14,11 @@ export const size = {
 
 export const contentType = "image/png";
 
-// Image generation
+/**
+  Styling: You can write Tailwind CSS via "tw" prop here.
+  However, our radix-theme preset won't be available here.
+  Therefore, only default Tailwind CSS classes are available.
+*/
 export default async function Image({ params }: { params: { id: string } }) {
   const { id } = params;
 
@@ -21,23 +26,43 @@ export default async function Image({ params }: { params: { id: string } }) {
     id,
   });
 
-  console.log(rec);
-
   return new ImageResponse(
     (
       // ImageResponse JSX element
       <div
-        style={{
-          fontSize: 48,
-          background: "white",
-          width: "100%",
-          height: "100%",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-        }}
+        tw={cn(
+          "flex flex-col justify-start h-full",
+          "p-8",
+          "gap-y-2",
+          "text-[48px]"
+        )}
       >
-        {rec.article.title}
+        <div tw="flex flex-row items-center">
+          {/* eslint-disable-next-line */}
+          <img
+            src={"https://imgur.com/jVp1pG1.png"}
+            tw="w-10 h-10 mr-4"
+            alt={rec.user.displayName}
+          />
+          <p tw={cn("text-gray-500", "text-[24px] text-[#0090FF]")}> RecNet </p>
+        </div>
+        <div tw="font-medium">{rec.article.title}</div>
+        <p tw={cn("text-[24px] text-gray-600")}>{rec.article.author} </p>
+        <div
+          tw={cn(
+            "flex flex-row items-center",
+            "mt-auto",
+            "text-gray-600 text-[24px]"
+          )}
+        >
+          {/* eslint-disable-next-line */}
+          <img
+            src={rec.user.photoUrl}
+            tw="w-12 h-12 rounded-full mr-4"
+            alt={rec.user.displayName}
+          />
+          <span tw="self-center">{`${rec.user.displayName} · ${formatDate(new Date(rec.cutoff))}`}</span>
+        </div>
       </div>
     ),
     // ImageResponse options

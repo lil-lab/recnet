@@ -136,7 +136,7 @@ export function RecCard(props: { recs: Rec[]; showDate?: boolean }) {
                     size="2"
                     className="text-gray-10"
                     weight="medium"
-                  >{` recommended on on ${cutoff}`}</Text>
+                  >{` recommended on ${cutoff}`}</Text>
                 ) : null}
                 {rec.isSelfRec ? <SelfRecBadge /> : null}
                 <LinkCopyButton link={getSharableLink(rec)} />
