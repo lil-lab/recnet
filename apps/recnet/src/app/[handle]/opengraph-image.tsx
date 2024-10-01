@@ -33,11 +33,11 @@ export default async function Image({
   return new ImageResponse(
     (
       // ImageResponse JSX element
-      <div tw={cn("flex w-full h-full")}>
+      <div tw={cn("flex w-full h-full justify-center items-center")}>
         {/* eslint-disable-next-line */}
         <img
           src={user?.photoUrl ?? "https://imgur.com/jVp1pG1.png"}
-          tw="w-full h-full rounded-full"
+          tw="w-[160px] h-[160px] rounded-full"
           alt={"User Profile Picture"}
         />
       </div>

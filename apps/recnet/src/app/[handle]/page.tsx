@@ -18,7 +18,7 @@ export async function generateMetadata({
   });
 
   return {
-    title: `${user?.handle} on RecNet`,
+    title: `${user?.displayName}(@${user?.handle}) on RecNet`,
     description: `${user?.bio}`,
   };
 }
