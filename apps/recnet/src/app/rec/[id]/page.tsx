@@ -1,4 +1,4 @@
-import type { Metadata, ResolvingMetadata } from "next";
+import type { Metadata } from "next";
 
 import { serverClient } from "@recnet/recnet-web/app/_trpc/serverClient";
 import { GoBackButton } from "@recnet/recnet-web/components/GoBackButton";
@@ -6,16 +6,13 @@ import { cn } from "@recnet/recnet-web/utils/cn";
 
 import { RecPageContent } from "./RecPageContent";
 
-type Props = {
+export async function generateMetadata({
+  params,
+}: {
   params: { id: string };
-  searchParams: { [key: string]: string | string[] | undefined };
-};
-
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  // read route params
+}): Promise<Metadata> {
   const id = params.id;
 
-  // fetch data
   const { rec } = await serverClient.getRecById({
     id,
   });
