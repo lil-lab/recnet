@@ -72,3 +72,12 @@ export const announcementSchema = z.object({
   createdBy: userPreviewSchema,
 });
 export type Announcement = z.infer<typeof announcementSchema>;
+
+export const digitalLibrarySchema = z.object({
+  id: z.number(),
+  name: z.string(),
+  regex: z.array(z.string()),
+  rank: z.number(),
+  isVerified: z.boolean(),
+});
+export type DigitalLibrary = z.infer<typeof digitalLibrarySchema>;

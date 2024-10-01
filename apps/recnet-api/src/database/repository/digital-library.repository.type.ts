@@ -10,4 +10,11 @@ export const digitalLibrary =
       rank: true,
     },
   });
-export type DigitalLibrary = Prisma.ArticleGetPayload<typeof digitalLibrary>;
+export type DigitalLibrary = Prisma.DigitalLibraryGetPayload<
+  typeof digitalLibrary
+>;
+
+export type DigitalLibraryFilterBy = {
+  id?: number;
+  name?: string;
+};
