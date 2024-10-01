@@ -8,6 +8,7 @@ import {
 
 import { GetDigitalLibrariesResponse } from "./digital-library.response";
 import { CreateDigitalLibraryDto } from "./dto/create.digital-library.dto";
+import { UpdateDigitalLibraryDto } from "./dto/update.digital-library.dto";
 import { DigitalLibrary } from "./entities/digital-library.entity";
 
 @Injectable()
@@ -31,11 +32,19 @@ export class DigitalLibraryAdminService {
   public async createDigitalLibrary(
     dto: CreateDigitalLibraryDto
   ): Promise<DigitalLibrary> {
-    const createAnnouncementInput = { ...dto };
-    const dbDigitalLibrary = await this.digitalLibraryRepository.create(
-      createAnnouncementInput
-    );
+    const dbDigitalLibrary = await this.digitalLibraryRepository.create(dto);
     return this.transformDigitalLibrary(dbDigitalLibrary);
+  }
+
+  public async updateDigitalLibrary(
+    id: number,
+    dto: UpdateDigitalLibraryDto
+  ): Promise<DigitalLibrary> {
+    const updatedDbDigitalLibrary = await this.digitalLibraryRepository.update(
+      id,
+      dto
+    );
+    return this.transformDigitalLibrary(updatedDbDigitalLibrary);
   }
 
   private transformDigitalLibrary(

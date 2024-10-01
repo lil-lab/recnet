@@ -6,6 +6,9 @@ import {
   Query,
   Body,
   Post,
+  Patch,
+  ParseIntPipe,
+  Param,
 } from "@nestjs/common";
 import {
   ApiOkResponse,
@@ -23,6 +26,7 @@ import {
 
 import {
   getDigitalLibrariesParamsSchema,
+  patchDigitalLibrariesRequestSchema,
   postDigitalLibrariesRequestSchema,
 } from "@recnet/recnet-api-model";
 
@@ -30,6 +34,7 @@ import { DigitalLibraryAdminService } from "./digital-library.admin.service";
 import { GetDigitalLibrariesResponse } from "./digital-library.response";
 import { CreateDigitalLibraryDto } from "./dto/create.digital-library.dto";
 import { QueryDigitalLibraryDto } from "./dto/query.digital-library.dto";
+import { UpdateDigitalLibraryDto } from "./dto/update.digital-library.dto";
 import { DigitalLibrary } from "./entities/digital-library.entity";
 
 @ApiTags("digital-libraries")
@@ -70,5 +75,21 @@ export class DigitalLibraryController {
     @Body() dto: CreateDigitalLibraryDto
   ): Promise<DigitalLibrary> {
     return this.digitalLibraryAdminService.createDigitalLibrary(dto);
+  }
+
+  @ApiOperation({
+    summary: "Update Digital Library",
+    description: "Update digital library by id.",
+  })
+  @ApiBearerAuth()
+  @ApiOkResponse({ type: DigitalLibrary })
+  @Patch("/:id")
+  @Auth({ allowedRoles: ["ADMIN"] })
+  @UsePipes(new ZodValidationBodyPipe(patchDigitalLibrariesRequestSchema))
+  public async updateAnnouncement(
+    @Param("id", ParseIntPipe) id: number,
+    @Body() dto: UpdateDigitalLibraryDto
+  ): Promise<DigitalLibrary> {
+    return this.digitalLibraryAdminService.updateDigitalLibrary(id, dto);
   }
 }

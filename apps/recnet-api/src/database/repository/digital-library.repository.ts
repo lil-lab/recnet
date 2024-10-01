@@ -7,6 +7,7 @@ import {
   CreateDigitalLibraryInput,
   digitalLibrary,
   DigitalLibraryFilterBy,
+  UpdateDigitalLibraryInput,
 } from "./digital-library.repository.type";
 @Injectable()
 export default class DigitalLibraryRepository {
@@ -37,6 +38,14 @@ export default class DigitalLibraryRepository {
 
   public async create(data: CreateDigitalLibraryInput) {
     return this.prisma.digitalLibrary.create({
+      data,
+      select: digitalLibrary.select,
+    });
+  }
+
+  public async update(id: number, data: UpdateDigitalLibraryInput) {
+    return this.prisma.digitalLibrary.update({
+      where: { id },
       data,
       select: digitalLibrary.select,
     });

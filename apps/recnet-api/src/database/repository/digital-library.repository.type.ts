@@ -25,3 +25,9 @@ export type CreateDigitalLibraryInput = {
   isVerified: boolean;
   rank: number;
 };
+
+export type UpdateDigitalLibraryInput = {
+  name?: string;
+  regex?: Array<string>;
+  isVerified?: boolean;
+};
