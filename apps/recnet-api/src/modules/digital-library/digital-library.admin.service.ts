@@ -7,6 +7,7 @@ import {
 } from "@recnet-api/database/repository/digital-library.repository.type";
 
 import { GetDigitalLibrariesResponse } from "./digital-library.response";
+import { CreateDigitalLibraryDto } from "./dto/create.digital-library.dto";
 import { DigitalLibrary } from "./entities/digital-library.entity";
 
 @Injectable()
@@ -20,11 +21,21 @@ export class DigitalLibraryAdminService {
     filter: DigitalLibraryFilterBy
   ): Promise<GetDigitalLibrariesResponse> {
     const digitalLibraries =
-      await this.digitalLibraryRepository.findDigitalLibraries(filter);
+      await this.digitalLibraryRepository.findMany(filter);
 
     return {
       digitalLibraries: digitalLibraries.map(this.transformDigitalLibrary),
     };
+  }
+
+  public async createDigitalLibrary(
+    dto: CreateDigitalLibraryDto
+  ): Promise<DigitalLibrary> {
+    const createAnnouncementInput = { ...dto };
+    const dbDigitalLibrary = await this.digitalLibraryRepository.create(
+      createAnnouncementInput
+    );
+    return this.transformDigitalLibrary(dbDigitalLibrary);
   }
 
   private transformDigitalLibrary(

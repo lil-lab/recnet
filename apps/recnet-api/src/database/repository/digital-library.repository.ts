@@ -4,6 +4,7 @@ import { Prisma } from "@prisma/client";
 import PrismaConnectionProvider from "@recnet-api/database/prisma/prisma.connection.provider";
 
 import {
+  CreateDigitalLibraryInput,
   digitalLibrary,
   DigitalLibraryFilterBy,
 } from "./digital-library.repository.type";
@@ -27,9 +28,16 @@ export default class DigitalLibraryRepository {
     });
   }
 
-  public async findDigitalLibraries(filter: DigitalLibraryFilterBy) {
+  public async findMany(filter: DigitalLibraryFilterBy) {
     return this.prisma.digitalLibrary.findMany({
       where: filter,
+      select: digitalLibrary.select,
+    });
+  }
+
+  public async create(data: CreateDigitalLibraryInput) {
+    return this.prisma.digitalLibrary.create({
+      data,
       select: digitalLibrary.select,
     });
   }

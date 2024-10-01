@@ -18,3 +18,10 @@ export type DigitalLibraryFilterBy = {
   id?: number;
   name?: string;
 };
+
+export type CreateDigitalLibraryInput = {
+  name: string;
+  regex: Array<string>;
+  isVerified: boolean;
+  rank: number;
+};

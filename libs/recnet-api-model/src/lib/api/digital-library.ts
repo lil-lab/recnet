@@ -22,7 +22,7 @@ export type GetDigitalLibrariesResponse = z.infer<
 export const postDigitalLibrariesRequestSchema = digitalLibrarySchema.omit({
   id: true,
 });
-export type postDigitalLibrariesRequestSchema = z.infer<
+export type PostDigitalLibrariesRequest = z.infer<
   typeof postDigitalLibrariesRequestSchema
 >;
 
