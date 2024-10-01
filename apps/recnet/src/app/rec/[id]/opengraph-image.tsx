@@ -44,7 +44,7 @@ export default async function Image({ params }: { params: { id: string } }) {
             tw="w-10 h-10 mr-4"
             alt={"recnet-logo"}
           />
-          <p tw={cn("text-gray-500", "text-[24px] text-[#0090FF]")}> RecNet </p>
+          <p tw={cn("text-[24px] text-[#0090FF]")}> RecNet </p>
         </div>
         <div tw="font-medium">{rec.article.title}</div>
         <p tw={cn("text-[24px] text-gray-600")}>{rec.article.author} </p>
