@@ -28,6 +28,7 @@ import {
 import {
   getDigitalLibrariesParamsSchema,
   patchDigitalLibrariesRequestSchema,
+  postDigitalLibrariesRankRequestSchema,
   postDigitalLibrariesRequestSchema,
 } from "@recnet/recnet-api-model";
 
@@ -35,7 +36,10 @@ import { DigitalLibraryAdminService } from "./digital-library.admin.service";
 import { GetDigitalLibrariesResponse } from "./digital-library.response";
 import { CreateDigitalLibraryDto } from "./dto/create.digital-library.dto";
 import { QueryDigitalLibraryDto } from "./dto/query.digital-library.dto";
-import { UpdateDigitalLibraryDto } from "./dto/update.digital-library.dto";
+import {
+  UpdateDigitalLibrariesRankDto,
+  UpdateDigitalLibraryDto,
+} from "./dto/update.digital-library.dto";
 import { DigitalLibrary } from "./entities/digital-library.entity";
 
 @ApiTags("digital-libraries")
@@ -87,7 +91,7 @@ export class DigitalLibraryController {
   @Patch("/:id")
   @Auth({ allowedRoles: ["ADMIN"] })
   @UsePipes(new ZodValidationBodyPipe(patchDigitalLibrariesRequestSchema))
-  public async updateAnnouncement(
+  public async updateDigitalLibrary(
     @Param("id", ParseIntPipe) id: number,
     @Body() dto: UpdateDigitalLibraryDto
   ): Promise<DigitalLibrary> {
@@ -105,5 +109,20 @@ export class DigitalLibraryController {
     @Param("id", ParseIntPipe) id: number
   ): Promise<void> {
     return this.digitalLibraryAdminService.deleteDigitalLibrary(id);
+  }
+
+  @ApiOperation({
+    summary: "Update Digital Libraries Rank",
+    description: "Update digital libraries rank.",
+  })
+  @ApiBearerAuth()
+  @ApiOkResponse({ type: GetDigitalLibrariesResponse })
+  @Post("/rank")
+  @Auth({ allowedRoles: ["ADMIN"] })
+  @UsePipes(new ZodValidationBodyPipe(postDigitalLibrariesRankRequestSchema))
+  public async updateDigitalLibrariesRank(
+    @Body() dto: UpdateDigitalLibrariesRankDto
+  ): Promise<GetDigitalLibrariesResponse> {
+    return this.digitalLibraryAdminService.updateDigitalLibrariesRank(dto);
   }
 }

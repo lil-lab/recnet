@@ -31,3 +31,8 @@ export type UpdateDigitalLibraryInput = {
   regex?: Array<string>;
   isVerified?: boolean;
 };
+
+export type UpdateDigitalLibrariesRankInput = Array<{
+  id: number;
+  rank: number;
+}>;

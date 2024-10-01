@@ -8,7 +8,10 @@ import {
 
 import { GetDigitalLibrariesResponse } from "./digital-library.response";
 import { CreateDigitalLibraryDto } from "./dto/create.digital-library.dto";
-import { UpdateDigitalLibraryDto } from "./dto/update.digital-library.dto";
+import {
+  UpdateDigitalLibrariesRankDto,
+  UpdateDigitalLibraryDto,
+} from "./dto/update.digital-library.dto";
 import { DigitalLibrary } from "./entities/digital-library.entity";
 
 @Injectable()
@@ -49,6 +52,16 @@ export class DigitalLibraryAdminService {
 
   public async deleteDigitalLibrary(id: number): Promise<void> {
     await this.digitalLibraryRepository.delete(id);
+  }
+
+  public async updateDigitalLibrariesRank(
+    dto: UpdateDigitalLibrariesRankDto
+  ): Promise<GetDigitalLibrariesResponse> {
+    await this.digitalLibraryRepository.updateRanks(dto);
+    const digitalLibraries = await this.digitalLibraryRepository.findAll();
+    return {
+      digitalLibraries: digitalLibraries.map(this.transformDigitalLibrary),
+    };
   }
 
   private transformDigitalLibrary(

@@ -16,3 +16,17 @@ export class UpdateDigitalLibraryDto {
   })
   isVerified?: boolean;
 }
+
+export class UpdateRank {
+  @ApiProperty({
+    example: 1,
+  })
+  id: number;
+
+  @ApiProperty({
+    example: 1,
+  })
+  rank: number;
+}
+
+export type UpdateDigitalLibrariesRankDto = Array<UpdateRank>;
