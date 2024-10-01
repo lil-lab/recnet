@@ -6,8 +6,8 @@ import { cn } from "@recnet/recnet-web/utils/cn";
 // Image metadata
 export const alt = "User Profile";
 export const size = {
-  width: 160,
-  height: 160,
+  width: 1200,
+  height: 630,
 };
 
 export const contentType = "image/png";
@@ -30,16 +30,56 @@ export default async function Image({
 
   console.log(user);
 
+  if (!user) {
+    throw new Error("User not found");
+  }
+
   return new ImageResponse(
     (
       // ImageResponse JSX element
-      <div tw={cn("flex w-full h-full justify-center items-center")}>
-        {/* eslint-disable-next-line */}
-        <img
-          src={user?.photoUrl ?? "https://imgur.com/jVp1pG1.png"}
-          tw="w-[160px] h-[160px] rounded-full"
-          alt={"User Profile Picture"}
-        />
+      <div
+        tw={cn(
+          "flex flex-col justify-start bg-white w-full h-full",
+          "p-8",
+          "gap-y-2",
+          "text-[32px]"
+        )}
+      >
+        <div tw="flex flex-row items-center">
+          {/* eslint-disable-next-line */}
+          <img
+            src={"https://imgur.com/jVp1pG1.png"}
+            tw="w-10 h-10 mr-4"
+            alt={"recnet-logo"}
+          />
+          <p tw={cn("text-gray-500", "text-[24px] text-[#0090FF]")}> RecNet </p>
+        </div>
+        <div tw={cn("flex flex-row justify-between")}>
+          <div tw={cn("flex flex-col gap-y-2", "w-[65%]")}>
+            <p>
+              {user?.displayName}{" "}
+              <span tw="text-gray-600 mx-1 text-[32px]">(@{user.handle})</span>
+            </p>
+            <div tw="whitespace-pre-line text-[24px] text-gray-600">
+              {user.bio}
+            </div>
+          </div>
+          {/* eslint-disable-next-line */}
+          <img
+            src={user?.photoUrl ?? "https://imgur.com/jVp1pG1.png"}
+            tw="w-[120px] h-[120px] rounded-full mx-8"
+            alt={"User Profile Picture"}
+          />
+        </div>
+        <p tw="text-[18px] text-gray-500">
+          <span>
+            {user.numFollowers} follower{user.numFollowers > 1 ? "s" : ""}
+          </span>
+          <span tw="mx-4"> • </span>
+          <span>
+            {user.numRecs} Rec{user.numRecs > 1 ? "s" : ""}
+          </span>
+        </p>
       </div>
     ),
     // ImageResponse options

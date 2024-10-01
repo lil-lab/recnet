@@ -42,7 +42,7 @@ export default async function Image({ params }: { params: { id: string } }) {
           <img
             src={"https://imgur.com/jVp1pG1.png"}
             tw="w-10 h-10 mr-4"
-            alt={rec.user.displayName}
+            alt={"recnet-logo"}
           />
           <p tw={cn("text-gray-500", "text-[24px] text-[#0090FF]")}> RecNet </p>
         </div>
