@@ -28,8 +28,6 @@ export default async function Image({
     handle,
   });
 
-  console.log(user);
-
   if (!user) {
     throw new Error("User not found");
   }
