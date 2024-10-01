@@ -31,7 +31,7 @@ export default async function Image({ params }: { params: { id: string } }) {
       // ImageResponse JSX element
       <div
         tw={cn(
-          "flex flex-col justify-start h-full",
+          "flex flex-col justify-start h-full bg-white",
           "p-8",
           "gap-y-2",
           "text-[48px]"
