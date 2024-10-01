@@ -13,11 +13,6 @@ export const contentType = "image/png";
 
 // Image generation
 export default async function Image() {
-  // Font
-  const sfProRegular = fetch(
-    new URL("../../../fonts/SF-Pro-Text-Regular.otf", import.meta.url)
-  ).then((res) => res.arrayBuffer());
-
   return new ImageResponse(
     (
       // ImageResponse JSX element
@@ -40,14 +35,6 @@ export default async function Image() {
       // For convenience, we can re-use the exported opengraph-image
       // size config to also set the ImageResponse's width and height.
       ...size,
-      fonts: [
-        {
-          name: "SF-Pro",
-          data: await sfProRegular,
-          style: "normal",
-          weight: 400,
-        },
-      ],
     }
   );
 }
