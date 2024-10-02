@@ -97,6 +97,12 @@ export default function AboutPage() {
           </Flex>
         ))}
       </div>
+      <Text size="7" className="text-gray-12" weight="bold">
+        Acknowledgements
+      </Text>
+      <ol className="list-decimal list-inside text-gray-11">
+        <li>Thank you to arXiv for use of its open access interoperability.</li>
+      </ol>
     </div>
   );
 }
