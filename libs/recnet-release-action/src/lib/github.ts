@@ -176,16 +176,26 @@ export class GitHubAPI {
   getIssuesFromCommits(commits: Commit[]): Set<string> {
     const issues = new Set<string>();
     for (const commit of commits) {
-      const issueMatches = commit.commit.message.match(
+      // Extract full GitHub issue URLs
+      const urlMatches = commit.commit.message.match(
         new RegExp(
           `https://github.com/${this.owner}/${this.repo}/issues/(\\d+)`,
           "g"
         )
       );
-      if (issueMatches) {
-        issueMatches.forEach((match: string) => {
+      if (urlMatches) {
+        urlMatches.forEach((match: string) => {
           const id = match.split("/").pop();
-          if (id) issues.add(`${id}`);
+          if (id) issues.add(id);
+        });
+      }
+
+      // Extract issue IDs from "#123" pattern
+      const hashMatches = commit.commit.message.match(/#(\d+)/g);
+      if (hashMatches) {
+        hashMatches.forEach((match: string) => {
+          const id = match.substring(1); // Remove the '#' character
+          issues.add(id);
         });
       }
     }
@@ -195,16 +205,26 @@ export class GitHubAPI {
   getPRsFromCommits(commits: Commit[]): Set<string> {
     const prs = new Set<string>();
     for (const commit of commits) {
-      const prMatches = commit.commit.message.match(
+      // Extract full GitHub PR URLs
+      const urlMatches = commit.commit.message.match(
         new RegExp(
           `https://github.com/${this.owner}/${this.repo}/pull/(\\d+)`,
           "g"
         )
       );
-      if (prMatches) {
-        prMatches.forEach((match: string) => {
+      if (urlMatches) {
+        urlMatches.forEach((match: string) => {
           const id = match.split("/").pop();
-          if (id) prs.add(`${id}`);
+          if (id) prs.add(id);
+        });
+      }
+
+      // Extract PR numbers from "#123" pattern
+      const hashMatches = commit.commit.message.match(/#(\d+)/g);
+      if (hashMatches) {
+        hashMatches.forEach((match: string) => {
+          const id = match.substring(1); // Remove the '#' character
+          prs.add(id);
         });
       }
     }

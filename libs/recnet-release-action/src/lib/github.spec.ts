@@ -311,7 +311,7 @@ describe("GitHubAPI", () => {
   });
 
   describe("getIssuesFromCommits", () => {
-    it("should extract issue numbers from commit messages", () => {
+    it("should extract issue numbers from commit messages with full URLs and '#' references", () => {
       const commits: Commit[] = [
         {
           commit: {
@@ -323,17 +323,29 @@ describe("GitHubAPI", () => {
             message: "Update docs https://github.com/owner/repo/issues/456",
           },
         },
-        { commit: { message: "Refactor code" } },
+        { commit: { message: "Refactor code #789" } },
+        { commit: { message: "Fix typo, closes #101" } },
+        { commit: { message: "Unrelated change" } },
       ] as Commit[];
 
       const result = github.getIssuesFromCommits(commits);
 
-      expect(result).toEqual(new Set(["123", "456"]));
+      expect(result).toEqual(new Set(["123", "456", "789", "101"]));
+    });
+
+    it("should return an empty set if no issues are found in commits", () => {
+      const commits: Commit[] = [
+        { commit: { message: "Update without issue reference" } },
+      ] as Commit[];
+
+      const result = github.getIssuesFromCommits(commits);
+
+      expect(result).toEqual(new Set());
     });
   });
 
   describe("getPRsFromCommits", () => {
-    it("should extract PR numbers from commit messages", () => {
+    it("should extract PR numbers from commit messages with full URLs and '#' references", () => {
       const commits: Commit[] = [
         {
           commit: {
@@ -346,12 +358,14 @@ describe("GitHubAPI", () => {
               "Update docs\n\nRelated to https://github.com/owner/repo/pull/456",
           },
         },
+        { commit: { message: "Implement feature, closes #789" } },
+        { commit: { message: "Address feedback from #101" } },
         { commit: { message: "Refactor code" } },
       ] as Commit[];
 
       const result = github.getPRsFromCommits(commits);
 
-      expect(result).toEqual(new Set(["123", "456"]));
+      expect(result).toEqual(new Set(["123", "456", "789", "101"]));
     });
 
     it("should return an empty set if no PRs are found in commits", () => {
