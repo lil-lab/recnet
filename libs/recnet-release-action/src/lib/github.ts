@@ -173,6 +173,18 @@ export class GitHubAPI {
     );
   }
 
+  extractIssuesFromCommits(commit: Commit): string {
+    /**
+        Extract the part of the commit message that contains the issue ID
+        This implementation depends on our PULL_REQUEST_TEMPLATE.md
+    */
+    const issueMatch = commit.commit.message.match(/## Related Issue\s*(.*)/i);
+    if (!issueMatch) {
+      throw new Error("Could not find related issue in commit message");
+    }
+    return issueMatch[1].trim();
+  }
+
   getIssuesFromCommits(commits: Commit[]): Set<string> {
     const issues = new Set<string>();
     for (const commit of commits) {
@@ -200,6 +212,14 @@ export class GitHubAPI {
       }
     }
     return issues;
+  }
+
+  extractPRsFromCommits(commit: Commit): string {
+    /**
+        Extract the part of the commit message that contains the PR ID
+        This implementation works under the assumption that the PR ID is in the first line of commit message
+    */
+    return commit.commit.message.split("\n")[0];
   }
 
   getPRsFromCommits(commits: Commit[]): Set<string> {

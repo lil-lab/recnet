@@ -384,6 +384,76 @@ describe("GitHubAPI", () => {
     });
   });
 
+  describe("extractIssuesFromCommits", () => {
+    it("should extract issue ID from commit message", () => {
+      const commit: Commit = {
+        commit: {
+          message: "Some commit message\n\n## Related Issue\n#123",
+        },
+      } as Commit;
+
+      const result = github.extractIssuesFromCommits(commit);
+      expect(result).toBe("#123");
+    });
+
+    it("should extract multiple issue IDs from commit message", () => {
+      const commit: Commit = {
+        commit: {
+          message: "Some commit message\n\n## Related Issue\n#123 #456",
+        },
+      } as Commit;
+
+      const result = github.extractIssuesFromCommits(commit);
+      expect(result).toBe("#123 #456");
+    });
+
+    it("should throw an error if no related issue is found", () => {
+      const commit: Commit = {
+        commit: {
+          message: "Some commit message without related issue",
+        },
+      } as Commit;
+
+      expect(() => github.extractIssuesFromCommits(commit)).toThrow(
+        "Could not find related issue in commit message"
+      );
+    });
+
+    it("should extract issue ID even with additional text", () => {
+      const commit: Commit = {
+        commit: {
+          message:
+            "Some commit message\n\n## Related Issue\nFixes #789 and resolves some other stuff",
+        },
+      } as Commit;
+
+      const result = github.extractIssuesFromCommits(commit);
+      expect(result).toBe("Fixes #789 and resolves some other stuff");
+    });
+
+    it("should handle empty issue ID", () => {
+      const commit: Commit = {
+        commit: {
+          message: "Some commit message\n\n## Related Issue\n",
+        },
+      } as Commit;
+
+      const result = github.extractIssuesFromCommits(commit);
+      expect(result).toBe("");
+    });
+
+    it("should ignore case sensitivity in header", () => {
+      const commit: Commit = {
+        commit: {
+          message: "Some commit message\n\n## RELATED ISSUE\n#999",
+        },
+      } as Commit;
+
+      const result = github.extractIssuesFromCommits(commit);
+      expect(result).toBe("#999");
+    });
+  });
+
   describe("getIssuesFromCommits", () => {
     it("should extract issue numbers from commit messages with full URLs and '#' references", () => {
       const commits: Commit[] = [
@@ -415,6 +485,75 @@ describe("GitHubAPI", () => {
       const result = github.getIssuesFromCommits(commits);
 
       expect(result).toEqual(new Set());
+    });
+  });
+
+  describe("extractPRsFromCommits", () => {
+    it("should extract the first line of the commit message", () => {
+      const commit: Commit = {
+        commit: {
+          message: "Fix bug (#123)\n\nDetailed description here.",
+        },
+      } as Commit;
+
+      const result = github.extractPRsFromCommits(commit);
+      expect(result).toBe("Fix bug (#123)");
+    });
+
+    it("should handle single-line commit messages", () => {
+      const commit: Commit = {
+        commit: {
+          message: "Update documentation",
+        },
+      } as Commit;
+
+      const result = github.extractPRsFromCommits(commit);
+      expect(result).toBe("Update documentation");
+    });
+
+    it("should handle commit messages with multiple lines", () => {
+      const commit: Commit = {
+        commit: {
+          message:
+            "Implement new feature (#456)\n\nThis commit adds a new feature.\nIt includes multiple changes.",
+        },
+      } as Commit;
+
+      const result = github.extractPRsFromCommits(commit);
+      expect(result).toBe("Implement new feature (#456)");
+    });
+
+    it("should handle commit messages without PR references", () => {
+      const commit: Commit = {
+        commit: {
+          message: "Refactor code\n\nImprove code structure and readability.",
+        },
+      } as Commit;
+
+      const result = github.extractPRsFromCommits(commit);
+      expect(result).toBe("Refactor code");
+    });
+
+    it("should handle empty commit messages", () => {
+      const commit: Commit = {
+        commit: {
+          message: "",
+        },
+      } as Commit;
+
+      const result = github.extractPRsFromCommits(commit);
+      expect(result).toBe("");
+    });
+
+    it("should handle commit messages with only newline characters", () => {
+      const commit: Commit = {
+        commit: {
+          message: "\n\n\n",
+        },
+      } as Commit;
+
+      const result = github.extractPRsFromCommits(commit);
+      expect(result).toBe("");
     });
   });
 
