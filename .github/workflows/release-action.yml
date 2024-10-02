@@ -3,8 +3,8 @@ name: RecNet Prod-Release Pipeline
 on:
   workflow_dispatch: {}
   push:
-    # branches:
-    #   - dev
+    branches:
+      - dev
 
 jobs:
   release:
@@ -21,21 +21,3 @@ jobs:
           head-branch: dev
           base-branch: master
           repo: ${{ github.repository }}
-          # ref: tags/staging
-
-  # update-tag:
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - name: Checkout code
-  #       uses: actions/checkout@v2
-
-  #     - name: Update staging tag
-  #       uses: actions/github-script@v5
-  #       with:
-  #         script: |
-  #           github.rest.git.updateRef({
-  #             owner: context.repo.owner,
-  #             repo: context.repo.repo,
-  #             ref: 'tags/staging',
-  #             sha: context.sha
-  #           })
