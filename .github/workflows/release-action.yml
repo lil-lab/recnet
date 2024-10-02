@@ -1,0 +1,23 @@
+name: RecNet Prod-Release Pipeline
+
+on:
+  workflow_dispatch: {}
+  push:
+    branches:
+      - dev
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Run RecNet Release Action
+        uses: ./libs/recnet-release-action
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          head-branch: dev
+          base-branch: master
+          repo: ${{ github.repository }}

@@ -9,6 +9,7 @@ import {
   getRecsUpcomingResponseSchema,
   postRecsUpcomingRequestSchema,
   patchRecsUpcomingRequestSchema,
+  getRecIdResponseSchema,
 } from "@recnet/recnet-api-model";
 
 import {
@@ -20,6 +21,18 @@ import {
 import { router } from "../trpc";
 
 export const recRouter = router({
+  getRecById: publicApiProcedure
+    .input(
+      z.object({
+        id: z.string(),
+      })
+    )
+    .output(getRecIdResponseSchema)
+    .query(async (opts) => {
+      const { recnetApi } = opts.ctx;
+      const { data } = await recnetApi.get(`/recs/rec/${opts.input.id}`);
+      return getRecIdResponseSchema.parse(data);
+    }),
   getHistoricalRecs: publicApiProcedure
     .input(
       z.object({

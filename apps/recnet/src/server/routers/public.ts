@@ -9,6 +9,26 @@ import { publicApiProcedure } from "./middleware";
 
 import { router } from "../trpc";
 
+const linkPreviewMetadataSchema = z
+  .object({
+    // api response schema: https://microlink.io/docs/api/getting-started/data-fields
+    title: z.string().nullish(),
+    description: z.string().nullish(),
+    image: z
+      .object({
+        url: z.string().nullish(),
+      })
+      .nullish(),
+    logo: z
+      .object({
+        url: z.string().nullish(),
+      })
+      .nullish(),
+    url: z.string().nullish(),
+  })
+  .passthrough()
+  .nullable();
+
 export const publicRouter = router({
   search: publicApiProcedure
     .input(
@@ -39,6 +59,35 @@ export const publicRouter = router({
         return { ok: true };
       } catch {
         return { ok: false };
+      }
+    }),
+  getLinkPreviewMetadata: publicApiProcedure
+    .input(
+      z.object({
+        url: z.string(),
+      })
+    )
+    .output(linkPreviewMetadataSchema)
+    .query(async (opts) => {
+      try {
+        /**
+            The metadata retrieving API call here might take a long time to respond, so we set a timeout of 1 second.
+        */
+        const TIMEOUT = 1000;
+        const controller = new AbortController();
+        const id = setTimeout(() => controller.abort(), TIMEOUT);
+        const res = await fetch(
+          `https://api.microlink.io/?url=${opts.input.url}`,
+          {
+            cache: "force-cache",
+            signal: controller.signal,
+          }
+        ).then((res) => res.json());
+        clearTimeout(id);
+        return linkPreviewMetadataSchema.parse(res.data);
+      } catch (e) {
+        console.error(e);
+        return null;
       }
     }),
 });

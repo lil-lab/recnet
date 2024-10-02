@@ -1,6 +1,7 @@
 import { CalendarIcon } from "@radix-ui/react-icons";
-import { Badge, Flex, Text, Tooltip } from "@radix-ui/themes";
+import { Flex, Text } from "@radix-ui/themes";
 import { ChevronRight } from "lucide-react";
+import Link from "next/link";
 
 import { Avatar } from "@recnet/recnet-web/components/Avatar";
 import { RecNetLink } from "@recnet/recnet-web/components/Link";
@@ -11,6 +12,11 @@ import { numToMonth } from "@recnet/recnet-date-fns";
 import { formatDate } from "@recnet/recnet-date-fns";
 
 import { Rec } from "@recnet/recnet-api-model";
+
+import { LinkCopyButton } from "./LinkCopyButton";
+import { SelfRecBadge } from "./SelfRecBadge";
+
+import { getSharableLink } from "../utils/getSharableRecLink";
 
 export function RecCardSkeleton() {
   return (
@@ -116,7 +122,7 @@ export function RecCard(props: { recs: Rec[]; showDate?: boolean }) {
           <Flex className="items-start gap-x-3 px-4 py-2" key={user.id}>
             <Avatar user={user} className="w-[40px] aspect-square" />
             <Flex className="flex flex-col gap-y-1">
-              <Text className="items-end">
+              <Flex className="items-center gap-x-2">
                 <RecNetLink
                   href={`/${user.handle}`}
                   radixLinkProps={{
@@ -130,21 +136,22 @@ export function RecCard(props: { recs: Rec[]; showDate?: boolean }) {
                     size="2"
                     className="text-gray-10"
                     weight="medium"
-                  >{` recommended on on ${cutoff}`}</Text>
+                  >{` recommended on ${cutoff}`}</Text>
                 ) : null}
-                {rec.isSelfRec ? (
-                  <Tooltip content="This recommendation was made by the same person who wrote the article.">
-                    <Badge color="orange" className="ml-2 cursor-pointer">
-                      Self Rec
-                    </Badge>
-                  </Tooltip>
-                ) : null}
-              </Text>
-              <Flex>
-                <Text size="3" className="text-gray-11">
-                  {rec.description}
-                </Text>
+                {rec.isSelfRec ? <SelfRecBadge /> : null}
+                <LinkCopyButton link={getSharableLink(rec)} />
               </Flex>
+              <Link
+                href={getSharableLink(rec)}
+                key={user.id}
+                className="hover:bg-gray-2 rounded-4 transition-all ease-in-out"
+              >
+                <Flex>
+                  <Text size="3" className="text-gray-11">
+                    {rec.description}
+                  </Text>
+                </Flex>
+              </Link>
             </Flex>
           </Flex>
         );

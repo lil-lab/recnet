@@ -1,11 +1,12 @@
 "use client";
 
 import { Button } from "@radix-ui/themes";
-import { trpc } from "@recnet/recnet-web/app/_trpc/client";
 import { useRouter } from "next/navigation";
-import { useAuth } from "@recnet/recnet-web/app/AuthContext";
 import { useState } from "react";
 import { toast } from "sonner";
+
+import { useAuth } from "@recnet/recnet-web/app/AuthContext";
+import { trpc } from "@recnet/recnet-web/app/_trpc/client";
 
 export function ReactivateButton() {
   const [isLoading, setIsLoading] = useState(false);

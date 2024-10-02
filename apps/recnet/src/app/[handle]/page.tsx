@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { notFound, redirect } from "next/navigation";
 
 import { serverClient } from "@recnet/recnet-web/app/_trpc/serverClient";
@@ -5,6 +6,22 @@ import { cn } from "@recnet/recnet-web/utils/cn";
 
 import { HistoricalRecs } from "./HistoricalRecs";
 import { Profile } from "./Profile";
+
+export async function generateMetadata({
+  params,
+}: {
+  params: { handle: string };
+}): Promise<Metadata> {
+  const handle = params.handle;
+  const { user } = await serverClient.getUserByHandle({
+    handle,
+  });
+
+  return {
+    title: `${user?.displayName}(@${user?.handle}) on RecNet`,
+    description: `${user?.bio}`,
+  };
+}
 
 export default async function UserProfilePage({
   params,
