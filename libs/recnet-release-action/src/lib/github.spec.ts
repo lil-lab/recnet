@@ -144,6 +144,7 @@ describe("GitHubAPI", () => {
           sha: env.inputs.headBranch,
           since: "2023-01-01T00:00:00Z",
           per_page: 100,
+          page: 1,
         }
       );
     });

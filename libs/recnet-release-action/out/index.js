@@ -28481,6 +28481,32 @@ class GitHubAPI {
             return data;
         });
     }
+    // modified from: https://docs.github.com/en/rest/using-the-rest-api/using-pagination-in-the-rest-api?apiVersion=2022-11-28#example-creating-a-pagination-method
+    getPaginatedCommitsData(headBranch, commitDateTs) {
+        return __awaiter(this, void 0, void 0, function* () {
+            var _a;
+            let pagesRemaining = true;
+            let data = [];
+            let currPage = 1;
+            while (pagesRemaining) {
+                const response = yield this.octokit.request("GET /repos/{owner}/{repo}/commits", {
+                    owner: this.owner,
+                    repo: this.repo,
+                    sha: headBranch,
+                    since: commitDateTs,
+                    per_page: 100,
+                    page: currPage,
+                });
+                data = [...data, ...response.data];
+                const linkHeader = (_a = response === null || response === void 0 ? void 0 : response.headers) === null || _a === void 0 ? void 0 : _a.link;
+                pagesRemaining = Boolean(linkHeader && linkHeader.includes(`rel="next"`));
+                if (pagesRemaining) {
+                    currPage = currPage + 1;
+                }
+            }
+            return data;
+        });
+    }
     getLatestCommits(headBranch) {
         return __awaiter(this, void 0, void 0, function* () {
             var _a;
@@ -28495,14 +28521,7 @@ class GitHubAPI {
             if (!commitDateTs) {
                 throw new Error("Could not find the commit date of the base branch");
             }
-            // Get commits after the latest "staging" tag
-            const { data: commits } = yield this.octokit.request("GET /repos/{owner}/{repo}/commits", {
-                owner: this.owner,
-                repo: this.repo,
-                sha: headBranch,
-                since: commitDateTs,
-                per_page: 100,
-            });
+            const commits = yield this.getPaginatedCommitsData(headBranch, commitDateTs);
             // filter out commit where the ref is pointing to
             const filteredCommits = commits.filter((commit) => commit.sha !== baseBranchLatestCommit.sha);
             return filteredCommits;

@@ -113,6 +113,39 @@ export class GitHubAPI {
     return data;
   }
 
+  // modified from: https://docs.github.com/en/rest/using-the-rest-api/using-pagination-in-the-rest-api?apiVersion=2022-11-28#example-creating-a-pagination-method
+  async getPaginatedCommitsData(headBranch: string, commitDateTs: string) {
+    let pagesRemaining = true;
+    let data: Commit[] = [];
+    let currPage = 1;
+
+    while (pagesRemaining) {
+      const response = await this.octokit.request(
+        "GET /repos/{owner}/{repo}/commits",
+        {
+          owner: this.owner,
+          repo: this.repo,
+          sha: headBranch,
+          since: commitDateTs,
+          per_page: 100,
+          page: currPage,
+        }
+      );
+
+      data = [...data, ...response.data];
+
+      const linkHeader = response?.headers?.link;
+
+      pagesRemaining = Boolean(linkHeader && linkHeader.includes(`rel="next"`));
+
+      if (pagesRemaining) {
+        currPage = currPage + 1;
+      }
+    }
+
+    return data;
+  }
+
   async getLatestCommits(headBranch: string): Promise<Commit[]> {
     // Find the latest commit on base branch
     const { data: baseBranchLatestCommit } = await this.octokit.request(
@@ -129,16 +162,9 @@ export class GitHubAPI {
       throw new Error("Could not find the commit date of the base branch");
     }
 
-    // Get commits after the latest "staging" tag
-    const { data: commits } = await this.octokit.request(
-      "GET /repos/{owner}/{repo}/commits",
-      {
-        owner: this.owner,
-        repo: this.repo,
-        sha: headBranch,
-        since: commitDateTs,
-        per_page: 100,
-      }
+    const commits = await this.getPaginatedCommitsData(
+      headBranch,
+      commitDateTs
     );
 
     // filter out commit where the ref is pointing to
