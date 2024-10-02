@@ -28530,12 +28530,21 @@ class GitHubAPI {
     getIssuesFromCommits(commits) {
         const issues = new Set();
         for (const commit of commits) {
-            const issueMatches = commit.commit.message.match(new RegExp(`https://github.com/${this.owner}/${this.repo}/issues/(\\d+)`, "g"));
-            if (issueMatches) {
-                issueMatches.forEach((match) => {
+            // Extract full GitHub issue URLs
+            const urlMatches = commit.commit.message.match(new RegExp(`https://github.com/${this.owner}/${this.repo}/issues/(\\d+)`, "g"));
+            if (urlMatches) {
+                urlMatches.forEach((match) => {
                     const id = match.split("/").pop();
                     if (id)
-                        issues.add(`${id}`);
+                        issues.add(id);
+                });
+            }
+            // Extract issue IDs from "#123" pattern
+            const hashMatches = commit.commit.message.match(/#(\d+)/g);
+            if (hashMatches) {
+                hashMatches.forEach((match) => {
+                    const id = match.substring(1); // Remove the '#' character
+                    issues.add(id);
                 });
             }
         }
@@ -28544,12 +28553,21 @@ class GitHubAPI {
     getPRsFromCommits(commits) {
         const prs = new Set();
         for (const commit of commits) {
-            const prMatches = commit.commit.message.match(new RegExp(`https://github.com/${this.owner}/${this.repo}/pull/(\\d+)`, "g"));
-            if (prMatches) {
-                prMatches.forEach((match) => {
+            // Extract full GitHub PR URLs
+            const urlMatches = commit.commit.message.match(new RegExp(`https://github.com/${this.owner}/${this.repo}/pull/(\\d+)`, "g"));
+            if (urlMatches) {
+                urlMatches.forEach((match) => {
                     const id = match.split("/").pop();
                     if (id)
-                        prs.add(`${id}`);
+                        prs.add(id);
+                });
+            }
+            // Extract PR numbers from "#123" pattern
+            const hashMatches = commit.commit.message.match(/#(\d+)/g);
+            if (hashMatches) {
+                hashMatches.forEach((match) => {
+                    const id = match.substring(1); // Remove the '#' character
+                    prs.add(id);
                 });
             }
         }
@@ -28557,10 +28575,10 @@ class GitHubAPI {
     }
     generatePRBody(issues, prs) {
         const issuesList = Array.from(issues)
-            .map((issueId) => `- [#${issueId}](https://github.com/${this.owner}/${this.repo}/issues/${issueId})`)
+            .map((issueId) => `- #${issueId}`)
             .join("\n");
-        const prList = Array.from(prs)
-            .map((prId) => `- [#${prId}](https://github.com/${this.owner}/${this.repo}/pull/${prId})`)
+        const prsList = Array.from(prs)
+            .map((prId) => `- #${prId}`)
             .join("\n");
         let body = "";
         for (const item of ReleasePRTemplate) {
@@ -28570,7 +28588,7 @@ class GitHubAPI {
                     body += `${issuesList}\n`;
                 }
                 else if (item.innerText === "Related PRs") {
-                    body += `${prList}\n`;
+                    body += `${prsList}\n`;
                 }
             }
             else if (item.type === "text") {
