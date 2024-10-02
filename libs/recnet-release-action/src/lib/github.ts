@@ -100,20 +100,19 @@ export class GitHubAPI {
   }
 
   async getLatestCommits(headBranch: string): Promise<Commit[]> {
-    // Find the commit where the "staging" tag is on
-    const { data: taggedCommit } = await this.octokit.request(
+    // Find the latest commit on base branch
+    const { data: baseBranchLatestCommit } = await this.octokit.request(
       "GET /repos/{owner}/{repo}/commits/{ref}",
       {
         owner: this.owner,
         repo: this.repo,
-        ref: inputs.ref,
+        ref: inputs.baseBranch,
       }
     );
     // get the date of the tagged commit
-    const tag = taggedCommit as Commit;
-    const commitDateTs = tag.commit.author?.date;
+    const commitDateTs = baseBranchLatestCommit.commit.author?.date;
     if (!commitDateTs) {
-      throw new Error("Could not find the commit date of the staging tag");
+      throw new Error("Could not find the commit date of the base branch");
     }
 
     // Get commits after the latest "staging" tag
@@ -129,7 +128,9 @@ export class GitHubAPI {
     );
 
     // filter out commit where the ref is pointing to
-    const filteredCommits = commits.filter((commit) => commit.sha !== tag.sha);
+    const filteredCommits = commits.filter(
+      (commit) => commit.sha !== baseBranchLatestCommit.sha
+    );
 
     return filteredCommits;
   }

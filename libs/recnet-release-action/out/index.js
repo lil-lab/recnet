@@ -28375,7 +28375,6 @@ const actionInputSchema = zod_1.z.object({
     baseBranch: zod_1.z.string(),
     owner: zod_1.z.string(),
     repo: zod_1.z.string(),
-    ref: zod_1.z.string(),
 });
 // parse and export
 exports.inputs = actionInputSchema.parse({
@@ -28384,7 +28383,6 @@ exports.inputs = actionInputSchema.parse({
     baseBranch: core.getInput("base-branch"),
     owner: core.getInput("repo").split("/")[0],
     repo: core.getInput("repo").split("/")[1],
-    ref: core.getInput("ref"),
 });
 
 
@@ -28474,17 +28472,16 @@ class GitHubAPI {
     getLatestCommits(headBranch) {
         return __awaiter(this, void 0, void 0, function* () {
             var _a;
-            // Find the commit where the "staging" tag is on
-            const { data: taggedCommit } = yield this.octokit.request("GET /repos/{owner}/{repo}/commits/{ref}", {
+            // Find the latest commit on base branch
+            const { data: baseBranchLatestCommit } = yield this.octokit.request("GET /repos/{owner}/{repo}/commits/{ref}", {
                 owner: this.owner,
                 repo: this.repo,
-                ref: env_1.inputs.ref,
+                ref: env_1.inputs.baseBranch,
             });
             // get the date of the tagged commit
-            const tag = taggedCommit;
-            const commitDateTs = (_a = tag.commit.author) === null || _a === void 0 ? void 0 : _a.date;
+            const commitDateTs = (_a = baseBranchLatestCommit.commit.author) === null || _a === void 0 ? void 0 : _a.date;
             if (!commitDateTs) {
-                throw new Error("Could not find the commit date of the staging tag");
+                throw new Error("Could not find the commit date of the base branch");
             }
             // Get commits after the latest "staging" tag
             const { data: commits } = yield this.octokit.request("GET /repos/{owner}/{repo}/commits", {
@@ -28495,7 +28492,7 @@ class GitHubAPI {
                 per_page: 100,
             });
             // filter out commit where the ref is pointing to
-            const filteredCommits = commits.filter((commit) => commit.sha !== tag.sha);
+            const filteredCommits = commits.filter((commit) => commit.sha !== baseBranchLatestCommit.sha);
             return filteredCommits;
         });
     }
@@ -28680,7 +28677,7 @@ function run() {
             pr = yield github.findPRCreatedByBot(env_1.inputs.baseBranch, env_1.inputs.headBranch);
             if (!pr) {
                 pr = yield github.createPR(`Release ${env_1.inputs.headBranch} to ${env_1.inputs.baseBranch}`, // PR title
-                env_1.inputs.baseBranch, env_1.inputs.headBranch, "## RecNet auto-release action\nThis is a auto-generated PR by recnet-release-action 🤖\n## Related Issues\n" // Initial PR body
+                env_1.inputs.baseBranch, env_1.inputs.headBranch, "init body" // Initial PR body
                 );
                 core.info(`New PR created: #${pr.number}`);
             }

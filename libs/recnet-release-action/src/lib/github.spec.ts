@@ -132,7 +132,7 @@ describe("GitHubAPI", () => {
         {
           owner: env.inputs.owner,
           repo: env.inputs.repo,
-          ref: env.inputs.ref,
+          ref: env.inputs.baseBranch,
         }
       );
       expect(mockOctokit.request).toHaveBeenNthCalledWith(
@@ -158,7 +158,7 @@ describe("GitHubAPI", () => {
 
       await expect(
         github.getLatestCommits(env.inputs.headBranch)
-      ).rejects.toThrow("Could not find the commit date of the staging tag");
+      ).rejects.toThrow("Could not find the commit date of the base branch");
 
       expect(mockOctokit.request).toHaveBeenCalledTimes(1);
       expect(mockOctokit.request).toHaveBeenCalledWith(
@@ -166,7 +166,7 @@ describe("GitHubAPI", () => {
         {
           owner: env.inputs.owner,
           repo: env.inputs.repo,
-          ref: env.inputs.ref,
+          ref: env.inputs.baseBranch,
         }
       );
     });

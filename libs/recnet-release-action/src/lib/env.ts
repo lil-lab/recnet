@@ -7,7 +7,6 @@ const actionInputSchema = z.object({
   baseBranch: z.string(),
   owner: z.string(),
   repo: z.string(),
-  ref: z.string(),
 });
 
 // parse and export
@@ -17,5 +16,4 @@ export const inputs = actionInputSchema.parse({
   baseBranch: core.getInput("base-branch"),
   owner: core.getInput("repo").split("/")[0],
   repo: core.getInput("repo").split("/")[1],
-  ref: core.getInput("ref"),
 });

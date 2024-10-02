@@ -42,7 +42,7 @@ export async function run(): Promise<void> {
         `Release ${inputs.headBranch} to ${inputs.baseBranch}`, // PR title
         inputs.baseBranch,
         inputs.headBranch,
-        "## RecNet auto-release action\nThis is a auto-generated PR by recnet-release-action 🤖\n## Related Issues\n" // Initial PR body
+        "init body" // Initial PR body
       );
       core.info(`New PR created: #${pr.number}`);
     } else {

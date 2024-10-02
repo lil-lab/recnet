@@ -20,10 +20,6 @@ inputs:
     description: "The repo owner and name"
     required: true
 
-  ref:
-    description: "The ref pointing to the previous staging release"
-    required: true
-
 runs:
   using: node20
   main: out/index.js
