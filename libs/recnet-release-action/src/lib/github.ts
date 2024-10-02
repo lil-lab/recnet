@@ -233,17 +233,11 @@ export class GitHubAPI {
 
   generatePRBody(issues: Set<string>, prs: Set<string>): string {
     const issuesList = Array.from(issues)
-      .map(
-        (issueId) =>
-          `- [#${issueId}](https://github.com/${this.owner}/${this.repo}/issues/${issueId})`
-      )
+      .map((issueId) => `- #${issueId}`)
       .join("\n");
 
-    const prList = Array.from(prs)
-      .map(
-        (prId) =>
-          `- [#${prId}](https://github.com/${this.owner}/${this.repo}/pull/${prId})`
-      )
+    const prsList = Array.from(prs)
+      .map((prId) => `- #${prId}`)
       .join("\n");
 
     let body = "";
@@ -253,7 +247,7 @@ export class GitHubAPI {
         if (item.innerText === "Related Issues") {
           body += `${issuesList}\n`;
         } else if (item.innerText === "Related PRs") {
-          body += `${prList}\n`;
+          body += `${prsList}\n`;
         }
       } else if (item.type === "text") {
         body += `${item.innerText}\n`;

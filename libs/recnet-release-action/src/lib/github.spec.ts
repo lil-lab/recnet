@@ -189,9 +189,7 @@ describe("GitHubAPI", () => {
           owner: env.inputs.owner,
           repo: env.inputs.repo,
           pull_number: 1,
-          body: expect.stringContaining(
-            "## Related Issues\n- [#123](https://github.com/owner/repo/issues/123)\n- [#456](https://github.com/owner/repo/issues/456)"
-          ),
+          body: expect.stringContaining("## Related Issues\n- #123\n- #456"),
         }
       );
       expect(mockOctokit.request).toHaveBeenCalledWith(
@@ -200,9 +198,7 @@ describe("GitHubAPI", () => {
           owner: env.inputs.owner,
           repo: env.inputs.repo,
           pull_number: 1,
-          body: expect.stringContaining(
-            "## Related PRs\n- [#789](https://github.com/owner/repo/pull/789)\n- [#101](https://github.com/owner/repo/pull/101)"
-          ),
+          body: expect.stringContaining("## Related PRs\n- #789\n- #101"),
         }
       );
     });
@@ -223,7 +219,67 @@ describe("GitHubAPI", () => {
           owner: env.inputs.owner,
           repo: env.inputs.repo,
           pull_number: 1,
-          body: expect.not.stringContaining("- [#"),
+          body: expect.not.stringContaining("- #"),
+        }
+      );
+    });
+
+    it("should update PR body with only issues", async () => {
+      const mockPR: PR = {
+        number: 1,
+        body: "Original PR body",
+      } as PR;
+      const issues = new Set(["123", "456"]);
+      const prs = new Set<string>();
+
+      await github.updatePRBody(mockPR, issues, prs);
+
+      expect(mockOctokit.request).toHaveBeenCalledWith(
+        "PATCH /repos/{owner}/{repo}/pulls/{pull_number}",
+        {
+          owner: env.inputs.owner,
+          repo: env.inputs.repo,
+          pull_number: 1,
+          body: expect.stringContaining("## Related Issues\n- #123\n- #456"),
+        }
+      );
+      expect(mockOctokit.request).toHaveBeenCalledWith(
+        "PATCH /repos/{owner}/{repo}/pulls/{pull_number}",
+        {
+          owner: env.inputs.owner,
+          repo: env.inputs.repo,
+          pull_number: 1,
+          body: expect.not.stringContaining("## Related PRs\n- #"),
+        }
+      );
+    });
+
+    it("should update PR body with only PRs", async () => {
+      const mockPR: PR = {
+        number: 1,
+        body: "Original PR body",
+      } as PR;
+      const issues = new Set<string>();
+      const prs = new Set(["789", "101"]);
+
+      await github.updatePRBody(mockPR, issues, prs);
+
+      expect(mockOctokit.request).toHaveBeenCalledWith(
+        "PATCH /repos/{owner}/{repo}/pulls/{pull_number}",
+        {
+          owner: env.inputs.owner,
+          repo: env.inputs.repo,
+          pull_number: 1,
+          body: expect.not.stringContaining("## Related Issues\n- #"),
+        }
+      );
+      expect(mockOctokit.request).toHaveBeenCalledWith(
+        "PATCH /repos/{owner}/{repo}/pulls/{pull_number}",
+        {
+          owner: env.inputs.owner,
+          repo: env.inputs.repo,
+          pull_number: 1,
+          body: expect.stringContaining("## Related PRs\n- #789\n- #101"),
         }
       );
     });
@@ -241,19 +297,11 @@ describe("GitHubAPI", () => {
         "This is an auto-generated PR by recnet-release-action 🤖"
       );
       expect(result).toContain("## Related Issues");
-      expect(result).toContain(
-        "- [#123](https://github.com/owner/repo/issues/123)"
-      );
-      expect(result).toContain(
-        "- [#456](https://github.com/owner/repo/issues/456)"
-      );
+      expect(result).toContain("- #123");
+      expect(result).toContain("- #456");
       expect(result).toContain("## Related PRs");
-      expect(result).toContain(
-        "- [#789](https://github.com/owner/repo/pull/789)"
-      );
-      expect(result).toContain(
-        "- [#101](https://github.com/owner/repo/pull/101)"
-      );
+      expect(result).toContain("- #789");
+      expect(result).toContain("- #101");
     });
 
     it("should generate PR body with empty issues and PRs", () => {
@@ -268,7 +316,33 @@ describe("GitHubAPI", () => {
       );
       expect(result).toContain("## Related Issues");
       expect(result).toContain("## Related PRs");
-      expect(result).not.toContain("- [#");
+      expect(result).not.toContain("- #");
+    });
+
+    it("should generate PR body with only issues", () => {
+      const issues = new Set(["123", "456"]);
+      const prs = new Set<string>();
+
+      const result = github.generatePRBody(issues, prs);
+
+      expect(result).toContain("## Related Issues");
+      expect(result).toContain("- #123");
+      expect(result).toContain("- #456");
+      expect(result).toContain("## Related PRs");
+      expect(result).not.toContain("- #789");
+    });
+
+    it("should generate PR body with only PRs", () => {
+      const issues = new Set<string>();
+      const prs = new Set(["789", "101"]);
+
+      const result = github.generatePRBody(issues, prs);
+
+      expect(result).toContain("## Related Issues");
+      expect(result).toContain("## Related PRs");
+      expect(result).toContain("- #789");
+      expect(result).toContain("- #101");
+      expect(result).not.toContain("- #123");
     });
   });
 
