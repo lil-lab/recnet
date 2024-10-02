@@ -26,6 +26,20 @@ const ReleasePRTemplate = [
     type: "h2",
     innerText: "Related PRs",
   },
+  {
+    type: "h2",
+    innerText: "Staging links",
+  },
+  {
+    type: "text",
+    innerText:
+      "recnet-web: [https://vercel.live/link/recnet-git-dev-recnet-542617e7.vercel.app](https://vercel.live/link/recnet-git-dev-recnet-542617e7.vercel.app)",
+  },
+  {
+    type: "text",
+    innerText:
+      "recnet-api: [https://dev-api.recnet.io/api](https://dev-api.recnet.io/api)",
+  },
 ] as const;
 
 type FoundPR =
