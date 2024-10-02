@@ -2,6 +2,44 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [1.14.0](https://github.com/lil-lab/recnet/compare/recnet-web-v1.12.0...recnet-web-v1.14.0) (2024-10-02)
+
+
+### Features
+
+* add open graph for rec page ([98cbe7a](https://github.com/lil-lab/recnet/commit/98cbe7a68723c525bcaedacd9888d2d15631c04e))
+* add PR extracting functions ([0e1e8dc](https://github.com/lil-lab/recnet/commit/0e1e8dcb5269c59c6ea0689dbb1921cad041be65))
+* add profile page metadata ([e6a4693](https://github.com/lil-lab/recnet/commit/e6a4693133d2a9b18c31684da5a4fc6106b721a8))
+* create withServerSideAuth and reduce code duplication at pages which required auth ([8a1384c](https://github.com/lil-lab/recnet/commit/8a1384c21155f3cade4836073650c5c2202884f4))
+* finish app og ([1a68452](https://github.com/lil-lab/recnet/commit/1a684529fe8ddd6d91dbbaff046e91faa986566b))
+* finish reactivate page and deactivate dialog ([a0a84ce](https://github.com/lil-lab/recnet/commit/a0a84ce9a13746a97f404b8e898d8eaa6731973e))
+* finish rec page ([5e44fbc](https://github.com/lil-lab/recnet/commit/5e44fbcf579f86ca9ed08b2c36343b1d2c0b369e))
+* finish sharable rec feature ([788381a](https://github.com/lil-lab/recnet/commit/788381a7a85dfd97d32078ec148c67f285fc79cc))
+* only run on push on dev branch ([febcee9](https://github.com/lil-lab/recnet/commit/febcee99a24040f6e80f13c00fa0bb39283b181b))
+* prioritize verified recs in feeds and weekly digest email ([9be0282](https://github.com/lil-lab/recnet/commit/9be0282b8bf5c9621580416b6341b8d765627873))
+
+
+### Bug Fixes
+
+* add lint ignore to output build ([5751556](https://github.com/lil-lab/recnet/commit/57515565373e9155c1a2b67862ad3b0d821eae0c))
+* disable nx cloud ([6ce1e6f](https://github.com/lil-lab/recnet/commit/6ce1e6fb832f6b1ffffb790b520e02839ca245cf))
+* export function interface ([be9b68d](https://github.com/lil-lab/recnet/commit/be9b68df47d92a8f2da405d0477940fd51edcbdb))
+* fix action bug ([978639c](https://github.com/lil-lab/recnet/commit/978639c1dd6524df612a4ff5c79dd48130dc7375))
+* fix announcement layout ([82b4036](https://github.com/lil-lab/recnet/commit/82b4036a652c695b329e46fabbcbc47e9797eb29))
+* fix api timeout ([7eee9f2](https://github.com/lil-lab/recnet/commit/7eee9f2532e76f02fb747a736e770690b1cbb3f3))
+* fix bg color ([e87c042](https://github.com/lil-lab/recnet/commit/e87c042f969976286583799d640944c351cd9cb9))
+* fix bug ([97221da](https://github.com/lil-lab/recnet/commit/97221dacad354932f38d50e1a352579422f341e0))
+* fix bug ([1335f36](https://github.com/lil-lab/recnet/commit/1335f3658b6d8a1c03b8c19ef5a524513a7b52e5))
+* fix bug ([7e30294](https://github.com/lil-lab/recnet/commit/7e302943e217f981a0e293cc3566199a8b84a745))
+* fix bug ([3869535](https://github.com/lil-lab/recnet/commit/3869535179398c3066f867179a95a8550a0e8068))
+* fix bug ([aeff457](https://github.com/lil-lab/recnet/commit/aeff457b253365661718d7901ac175fac3f37678))
+* fix bug ([fad7e37](https://github.com/lil-lab/recnet/commit/fad7e37547e83e98ba2e33ed74b595001bcdd97c))
+* fix bug ([1ea126a](https://github.com/lil-lab/recnet/commit/1ea126a52dab529aa6cd3dbee28735a944e3bec5))
+* fix test ([d1bed64](https://github.com/lil-lab/recnet/commit/d1bed644835a9ce683bf06fc04285b48aaec3ac4))
+* fix typo ([7b1ebeb](https://github.com/lil-lab/recnet/commit/7b1ebeb4b02f18ab27a178f4f9c6d9404bbc3080))
+* update og for profile page ([a30f29b](https://github.com/lil-lab/recnet/commit/a30f29b6f0e20d28398ca3a54fd2fc2f0bd1e92b))
+* use unified link from backend ([be700b0](https://github.com/lil-lab/recnet/commit/be700b057d5896cdaf75bcd044edc3bff7f66000))
+
 ## [1.13.0](https://github.com/lil-lab/recnet/compare/recnet-web-v1.12.0...recnet-web-v1.13.0) (2024-09-23)
 
 ## [1.12.0](https://github.com/lil-lab/recnet/compare/recnet-web-v1.11.1...recnet-web-v1.12.0) (2024-09-19)
