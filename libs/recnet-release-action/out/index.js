@@ -28485,6 +28485,7 @@ class GitHubAPI {
     getPaginatedCommitsData(sha, since) {
         return __awaiter(this, void 0, void 0, function* () {
             var _a;
+            core.info("Fetching commits data from paginated API...");
             let pagesRemaining = true;
             let data = [];
             let currPage = 1;
@@ -28504,6 +28505,7 @@ class GitHubAPI {
                     currPage = currPage + 1;
                 }
             }
+            core.info(`Fetched ${data.length} commits`);
             return data;
         });
     }

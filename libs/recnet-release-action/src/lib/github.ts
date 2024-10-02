@@ -115,6 +115,7 @@ export class GitHubAPI {
 
   // modified from: https://docs.github.com/en/rest/using-the-rest-api/using-pagination-in-the-rest-api?apiVersion=2022-11-28#example-creating-a-pagination-method
   async getPaginatedCommitsData(sha: string, since: string) {
+    core.info("Fetching commits data from paginated API...");
     let pagesRemaining = true;
     let data: Commit[] = [];
     let currPage = 1;
@@ -135,14 +136,13 @@ export class GitHubAPI {
       data = [...data, ...response.data];
 
       const linkHeader = response?.headers?.link;
-
       pagesRemaining = Boolean(linkHeader && linkHeader.includes(`rel="next"`));
-
       if (pagesRemaining) {
         currPage = currPage + 1;
       }
     }
 
+    core.info(`Fetched ${data.length} commits`);
     return data;
   }
 
