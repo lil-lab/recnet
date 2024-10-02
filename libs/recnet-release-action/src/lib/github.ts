@@ -11,7 +11,7 @@ const ReleasePRTemplate = [
   },
   {
     type: "text",
-    innerText: "This is an auto-generated PR by recnet-release-action 🤖",
+    innerText: `This is an auto-generated PR by recnet-release-action 🤖`,
   },
   {
     type: "text",
@@ -114,7 +114,7 @@ export class GitHubAPI {
   }
 
   // modified from: https://docs.github.com/en/rest/using-the-rest-api/using-pagination-in-the-rest-api?apiVersion=2022-11-28#example-creating-a-pagination-method
-  async getPaginatedCommitsData(headBranch: string, commitDateTs: string) {
+  async getPaginatedCommitsData(sha: string, since: string) {
     let pagesRemaining = true;
     let data: Commit[] = [];
     let currPage = 1;
@@ -125,8 +125,8 @@ export class GitHubAPI {
         {
           owner: this.owner,
           repo: this.repo,
-          sha: headBranch,
-          since: commitDateTs,
+          sha: sha,
+          since: since,
           per_page: 100,
           page: currPage,
         }

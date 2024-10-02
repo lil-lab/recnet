@@ -28414,7 +28414,7 @@ const ReleasePRTemplate = [
     },
     {
         type: "text",
-        innerText: "This is an auto-generated PR by recnet-release-action 🤖",
+        innerText: `This is an auto-generated PR by recnet-release-action 🤖`,
     },
     {
         type: "text",
@@ -28482,7 +28482,7 @@ class GitHubAPI {
         });
     }
     // modified from: https://docs.github.com/en/rest/using-the-rest-api/using-pagination-in-the-rest-api?apiVersion=2022-11-28#example-creating-a-pagination-method
-    getPaginatedCommitsData(headBranch, commitDateTs) {
+    getPaginatedCommitsData(sha, since) {
         return __awaiter(this, void 0, void 0, function* () {
             var _a;
             let pagesRemaining = true;
@@ -28492,8 +28492,8 @@ class GitHubAPI {
                 const response = yield this.octokit.request("GET /repos/{owner}/{repo}/commits", {
                     owner: this.owner,
                     repo: this.repo,
-                    sha: headBranch,
-                    since: commitDateTs,
+                    sha: sha,
+                    since: since,
                     per_page: 100,
                     page: currPage,
                 });
