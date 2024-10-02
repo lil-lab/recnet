@@ -231,7 +231,7 @@ export class GitHubAPI {
         }
       } catch (error) {
         // If extractIssuesFromCommits throws an error, we skip this commit
-        console.warn(`Failed to extract issues from commit: ${error}`);
+        core.debug(`Failed to extract issues from commit: ${error}`);
       }
     }
     return issues;

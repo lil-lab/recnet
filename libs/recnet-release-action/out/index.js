@@ -28577,7 +28577,7 @@ class GitHubAPI {
             }
             catch (error) {
                 // If extractIssuesFromCommits throws an error, we skip this commit
-                console.warn(`Failed to extract issues from commit: ${error}`);
+                core.debug(`Failed to extract issues from commit: ${error}`);
             }
         }
         return issues;
@@ -28694,7 +28694,7 @@ function run() {
             const github = new github_1.GitHubAPI(env_1.inputs.githubToken, env_1.inputs.owner, env_1.inputs.repo);
             const commits = yield github.getLatestCommits(env_1.inputs.headBranch);
             core.info(`Found ${commits.length} new commits`);
-            core.info(`Commits: ${JSON.stringify(commits)}`);
+            core.debug(`Commits: ${JSON.stringify(commits)}`);
             if (commits.length === 0) {
                 core.info("No new commits found. Exiting...");
                 return;
