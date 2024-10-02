@@ -177,38 +177,47 @@ export class GitHubAPI {
     /**
         Extract the part of the commit message that contains the issue ID
         This implementation depends on our PULL_REQUEST_TEMPLATE.md
+        Find the line that starts with "## Related Issue" and extract the string after it
     */
-    const issueMatch = commit.commit.message.match(/## Related Issue\s*(.*)/i);
-    if (!issueMatch) {
+    const message = commit.commit.message;
+    const index = message.indexOf("## Related Issue");
+    if (index === -1) {
       throw new Error("Could not find related issue in commit message");
     }
-    return issueMatch[1].trim();
+    return message.substring(index + "## Related Issue".length).trim();
   }
 
   getIssuesFromCommits(commits: Commit[]): Set<string> {
     const issues = new Set<string>();
     for (const commit of commits) {
-      // Extract full GitHub issue URLs
-      const urlMatches = commit.commit.message.match(
-        new RegExp(
-          `https://github.com/${this.owner}/${this.repo}/issues/(\\d+)`,
-          "g"
-        )
-      );
-      if (urlMatches) {
-        urlMatches.forEach((match: string) => {
-          const id = match.split("/").pop();
-          if (id) issues.add(id);
-        });
-      }
+      try {
+        const extractedIssues = this.extractIssuesFromCommits(commit);
 
-      // Extract issue IDs from "#123" pattern
-      const hashMatches = commit.commit.message.match(/#(\d+)/g);
-      if (hashMatches) {
-        hashMatches.forEach((match: string) => {
-          const id = match.substring(1); // Remove the '#' character
-          issues.add(id);
-        });
+        // Extract full GitHub issue URLs
+        const urlMatches = extractedIssues.match(
+          new RegExp(
+            `https://github.com/${this.owner}/${this.repo}/issues/(\\d+)`,
+            "g"
+          )
+        );
+        if (urlMatches) {
+          urlMatches.forEach((match: string) => {
+            const id = match.split("/").pop();
+            if (id) issues.add(id);
+          });
+        }
+
+        // Extract issue IDs from "#123" pattern
+        const hashMatches = extractedIssues.match(/#(\d+)/g);
+        if (hashMatches) {
+          hashMatches.forEach((match: string) => {
+            const id = match.substring(1); // Remove the '#' character
+            issues.add(id);
+          });
+        }
+      } catch (error) {
+        // If extractIssuesFromCommits throws an error, we skip this commit
+        console.warn(`Failed to extract issues from commit: ${error}`);
       }
     }
     return issues;
@@ -225,8 +234,10 @@ export class GitHubAPI {
   getPRsFromCommits(commits: Commit[]): Set<string> {
     const prs = new Set<string>();
     for (const commit of commits) {
+      const extractedPRs = this.extractPRsFromCommits(commit);
+
       // Extract full GitHub PR URLs
-      const urlMatches = commit.commit.message.match(
+      const urlMatches = extractedPRs.match(
         new RegExp(
           `https://github.com/${this.owner}/${this.repo}/pull/(\\d+)`,
           "g"
@@ -240,7 +251,7 @@ export class GitHubAPI {
       }
 
       // Extract PR numbers from "#123" pattern
-      const hashMatches = commit.commit.message.match(/#(\d+)/g);
+      const hashMatches = extractedPRs.match(/#(\d+)/g);
       if (hashMatches) {
         hashMatches.forEach((match: string) => {
           const id = match.substring(1); // Remove the '#' character

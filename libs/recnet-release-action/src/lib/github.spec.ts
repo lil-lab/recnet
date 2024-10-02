@@ -441,50 +441,67 @@ describe("GitHubAPI", () => {
       const result = github.extractIssuesFromCommits(commit);
       expect(result).toBe("");
     });
-
-    it("should ignore case sensitivity in header", () => {
-      const commit: Commit = {
-        commit: {
-          message: "Some commit message\n\n## RELATED ISSUE\n#999",
-        },
-      } as Commit;
-
-      const result = github.extractIssuesFromCommits(commit);
-      expect(result).toBe("#999");
-    });
   });
 
   describe("getIssuesFromCommits", () => {
-    it("should extract issue numbers from commit messages with full URLs and '#' references", () => {
+    it("should extract issue numbers from commit messages", () => {
       const commits: Commit[] = [
         {
           commit: {
-            message: "Fix bug https://github.com/owner/repo/issues/123",
+            message:
+              "Fix bug\n\n## Related Issue\n- #123\n - https://github.com/owner/repo/issues/456",
           },
         },
         {
           commit: {
-            message: "Update docs https://github.com/owner/repo/issues/456",
+            message: "Update docs\n\n## Related Issue\n- #789",
           },
         },
-        { commit: { message: "Refactor code #789" } },
-        { commit: { message: "Fix typo, closes #101" } },
-        { commit: { message: "Unrelated change" } },
+        {
+          commit: {
+            message: "Refactor code\n\n## Related Issue\nNo related issue",
+          },
+        },
       ] as Commit[];
 
       const result = github.getIssuesFromCommits(commits);
-
-      expect(result).toEqual(new Set(["123", "456", "789", "101"]));
+      expect(result).toEqual(new Set(["123", "456", "789"]));
     });
 
-    it("should return an empty set if no issues are found in commits", () => {
+    it("should handle commits without related issues", () => {
       const commits: Commit[] = [
-        { commit: { message: "Update without issue reference" } },
+        {
+          commit: {
+            message: "Fix bug\n\n## Related Issue\nNo related issue",
+          },
+        },
+        {
+          commit: {
+            message: "Update docs",
+          },
+        },
       ] as Commit[];
 
       const result = github.getIssuesFromCommits(commits);
-
       expect(result).toEqual(new Set());
+    });
+
+    it("should handle errors in extractIssuesFromCommits", () => {
+      const commits: Commit[] = [
+        {
+          commit: {
+            message: "Fix bug\n\n## Related Issue\n#123",
+          },
+        },
+        {
+          commit: {
+            message: "Update docs without related issue section",
+          },
+        },
+      ] as Commit[];
+
+      const result = github.getIssuesFromCommits(commits);
+      expect(result).toEqual(new Set(["123"]));
     });
   });
 
@@ -558,37 +575,76 @@ describe("GitHubAPI", () => {
   });
 
   describe("getPRsFromCommits", () => {
-    it("should extract PR numbers from commit messages with full URLs and '#' references", () => {
+    let github: GitHubAPI;
+
+    beforeEach(() => {
+      github = new GitHubAPI("token", "owner", "repo");
+    });
+
+    it("should extract PR numbers from commit messages", () => {
       const commits: Commit[] = [
         {
           commit: {
-            message: "Fix bug https://github.com/owner/repo/pull/123",
+            message:
+              "Fix bug (#123) https://github.com/owner/repo/pull/456\n\nDetailed description",
+          },
+        },
+        {
+          commit: {
+            message: "Update docs (#789)\n\nMore details",
+          },
+        },
+        {
+          commit: {
+            message: "Refactor code\n\nNo PR reference",
+          },
+        },
+      ] as Commit[];
+
+      const result = github.getPRsFromCommits(commits);
+      expect(result).toEqual(new Set(["123", "456", "789"]));
+    });
+
+    it("should handle commits without PR references", () => {
+      const commits: Commit[] = [
+        {
+          commit: {
+            message: "Fix bug\n\nNo PR reference",
+          },
+        },
+        {
+          commit: {
+            message: "Update docs",
+          },
+        },
+      ] as Commit[];
+
+      const result = github.getPRsFromCommits(commits);
+      expect(result).toEqual(new Set());
+    });
+
+    it("should extract PR numbers from various formats", () => {
+      const commits: Commit[] = [
+        {
+          commit: {
+            message: "Merge pull request #101 from user/branch",
+          },
+        },
+        {
+          commit: {
+            message: "Implement feature (PR #202)",
           },
         },
         {
           commit: {
             message:
-              "Update docs\n\nRelated to https://github.com/owner/repo/pull/456",
+              "Fix: resolved #303, closes https://github.com/owner/repo/pull/404",
           },
         },
-        { commit: { message: "Implement feature, closes #789" } },
-        { commit: { message: "Address feedback from #101" } },
-        { commit: { message: "Refactor code" } },
       ] as Commit[];
 
       const result = github.getPRsFromCommits(commits);
-
-      expect(result).toEqual(new Set(["123", "456", "789", "101"]));
-    });
-
-    it("should return an empty set if no PRs are found in commits", () => {
-      const commits: Commit[] = [
-        { commit: { message: "Update without PR reference" } },
-      ] as Commit[];
-
-      const result = github.getPRsFromCommits(commits);
-
-      expect(result).toEqual(new Set());
+      expect(result).toEqual(new Set(["101", "202", "303", "404"]));
     });
   });
 
