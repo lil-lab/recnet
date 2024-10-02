@@ -312,6 +312,7 @@ export function NewArticleForm(props: {
                   const foundArticle = data?.article;
                   if (foundArticle) {
                     // prefill if article is found
+                    setValue("link", foundArticle.link);
                     setValue("articleId", foundArticle.id);
                     setValue("doi", foundArticle.doi || undefined);
                     setValue("title", foundArticle.title);
