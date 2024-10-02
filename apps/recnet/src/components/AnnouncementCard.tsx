@@ -89,9 +89,7 @@ export function AnnouncementCard(props: AnnouncementCardProps) {
             "flex",
             "flex-col",
             "gap-y-2",
-            "sm:flex-row",
-            "sm:justify-between",
-            "sm:items-start",
+            "sm:relative",
             "text-gray-11 dark:text-gray-12",
             "text-[14px]",
             className
@@ -100,7 +98,7 @@ export function AnnouncementCard(props: AnnouncementCardProps) {
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -20 }}
         >
-          <div className="flex flex-col w-full sm:max-w-[75%] gap-y-1 items-start flex-wrap">
+          <div className="flex flex-col w-full sm:max-w-full gap-y-1 items-start flex-wrap">
             <Text>
               <span className="mr-1">{"📢"}</span>
               <span className="font-bold mr-1">{title}</span>
@@ -108,7 +106,7 @@ export function AnnouncementCard(props: AnnouncementCardProps) {
             {typeof content === "string" ? <Text>{content}</Text> : content}
           </div>
           {allowClose ? (
-            <div className="w-full flex flex-row justify-end gap-x-2 items-center sm:w-fit sm:min-w-[25%]">
+            <div className="w-full flex flex-row justify-end gap-x-2 items-center sm:w-fit sm:min-w-[25%] sm:absolute sm:z-2 sm:top-4 sm:right-4">
               <Button
                 variant="ghost"
                 className="text-gray-10 dark:text-gray-11 cursor-pointer text-[12px] transition-all ease-in-out"
