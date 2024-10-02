@@ -192,28 +192,7 @@ export class GitHubAPI {
     return issues;
   }
 
-  getIssuesFromPRBody(pr: PR): Set<string> {
-    const body = pr.body;
-    const issues = new Set<string>();
-    if (!body) {
-      return issues;
-    }
-    const issueMatches = body.match(
-      new RegExp(
-        `https://github.com/${this.owner}/${this.repo}/issues/(\\d+)`,
-        "g"
-      )
-    );
-    if (issueMatches) {
-      issueMatches.forEach((match: string) => {
-        const id = match.split("/").pop();
-        if (id) issues.add(`${id}`);
-      });
-    }
-    return issues;
-  }
-
-  getPRFromCommits(commits: Commit[]): Set<string> {
+  getPRsFromCommits(commits: Commit[]): Set<string> {
     const prs = new Set<string>();
     for (const commit of commits) {
       const prMatches = commit.commit.message.match(
@@ -228,27 +207,6 @@ export class GitHubAPI {
           if (id) prs.add(`${id}`);
         });
       }
-    }
-    return prs;
-  }
-
-  getPRFromPRBody(pr: PR): Set<string> {
-    const body = pr.body;
-    const prs = new Set<string>();
-    if (!body) {
-      return prs;
-    }
-    const prMatches = body.match(
-      new RegExp(
-        `https://github.com/${this.owner}/${this.repo}/pull/(\\d+)`,
-        "g"
-      )
-    );
-    if (prMatches) {
-      prMatches.forEach((match: string) => {
-        const id = match.split("/").pop();
-        if (id) prs.add(`${id}`);
-      });
     }
     return prs;
   }

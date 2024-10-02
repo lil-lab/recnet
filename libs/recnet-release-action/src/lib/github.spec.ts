@@ -227,46 +227,6 @@ describe("GitHubAPI", () => {
         }
       );
     });
-
-    it("should append new content to existing PR body", async () => {
-      const existingBody = `
-    ## Existing Content
-    This is some existing content in the PR body.
-
-    ## Related Issues
-    - [#100](https://github.com/owner/repo/issues/100)
-
-    ## Related PRs
-    - [#200](https://github.com/owner/repo/pull/200)
-        `.trim();
-
-      const mockPR: PR = {
-        number: 1,
-        body: existingBody,
-      } as PR;
-
-      const newIssues = new Set(["123", "456"]);
-      const issues = new Set([
-        ...github.getIssuesFromPRBody(mockPR),
-        ...newIssues,
-      ]);
-      const newPRs = new Set(["789", "101"]);
-      const prs = new Set([...github.getPRFromPRBody(mockPR), ...newPRs]);
-
-      await github.updatePRBody(mockPR, issues, prs);
-
-      expect(mockOctokit.request).toHaveBeenCalledWith(
-        "PATCH /repos/{owner}/{repo}/pulls/{pull_number}",
-        {
-          owner: env.inputs.owner,
-          repo: env.inputs.repo,
-          pull_number: 1,
-          body: expect.stringContaining(
-            "## Related PRs\n- [#200](https://github.com/owner/repo/pull/200)\n- [#789](https://github.com/owner/repo/pull/789)\n- [#101](https://github.com/owner/repo/pull/101)\n"
-          ),
-        }
-      );
-    });
   });
 
   describe("generatePRBody", () => {
@@ -372,29 +332,7 @@ describe("GitHubAPI", () => {
     });
   });
 
-  describe("getIssuesFromPRBody", () => {
-    it("should extract issue numbers from PR body", () => {
-      const mockPR: PR = {
-        body: "PR description\nhttps://github.com/owner/repo/issues/123\nhttps://github.com/owner/repo/issues/456",
-      } as PR;
-
-      const result = github.getIssuesFromPRBody(mockPR);
-
-      expect(result).toEqual(new Set(["123", "456"]));
-    });
-
-    it("should return empty set if PR body is null", () => {
-      const mockPR: PR = {
-        body: null,
-      } as PR;
-
-      const result = github.getIssuesFromPRBody(mockPR);
-
-      expect(result).toEqual(new Set());
-    });
-  });
-
-  describe("getPRFromCommits", () => {
+  describe("getPRsFromCommits", () => {
     it("should extract PR numbers from commit messages", () => {
       const commits: Commit[] = [
         {
@@ -411,7 +349,7 @@ describe("GitHubAPI", () => {
         { commit: { message: "Refactor code" } },
       ] as Commit[];
 
-      const result = github.getPRFromCommits(commits);
+      const result = github.getPRsFromCommits(commits);
 
       expect(result).toEqual(new Set(["123", "456"]));
     });
@@ -421,39 +359,7 @@ describe("GitHubAPI", () => {
         { commit: { message: "Update without PR reference" } },
       ] as Commit[];
 
-      const result = github.getPRFromCommits(commits);
-
-      expect(result).toEqual(new Set());
-    });
-  });
-
-  describe("getPRFromPRBody", () => {
-    it("should extract PR numbers from PR body", () => {
-      const mockPR: PR = {
-        body: "PR description\nhttps://github.com/owner/repo/pull/123\nhttps://github.com/owner/repo/pull/456",
-      } as PR;
-
-      const result = github.getPRFromPRBody(mockPR);
-
-      expect(result).toEqual(new Set(["123", "456"]));
-    });
-
-    it("should return an empty set if PR body is null", () => {
-      const mockPR: PR = {
-        body: null,
-      } as PR;
-
-      const result = github.getPRFromPRBody(mockPR);
-
-      expect(result).toEqual(new Set());
-    });
-
-    it("should return an empty set if no PRs are found in PR body", () => {
-      const mockPR: PR = {
-        body: "PR description without any PR references",
-      } as PR;
-
-      const result = github.getPRFromPRBody(mockPR);
+      const result = github.getPRsFromCommits(commits);
 
       expect(result).toEqual(new Set());
     });

@@ -28541,23 +28541,7 @@ class GitHubAPI {
         }
         return issues;
     }
-    getIssuesFromPRBody(pr) {
-        const body = pr.body;
-        const issues = new Set();
-        if (!body) {
-            return issues;
-        }
-        const issueMatches = body.match(new RegExp(`https://github.com/${this.owner}/${this.repo}/issues/(\\d+)`, "g"));
-        if (issueMatches) {
-            issueMatches.forEach((match) => {
-                const id = match.split("/").pop();
-                if (id)
-                    issues.add(`${id}`);
-            });
-        }
-        return issues;
-    }
-    getPRFromCommits(commits) {
+    getPRsFromCommits(commits) {
         const prs = new Set();
         for (const commit of commits) {
             const prMatches = commit.commit.message.match(new RegExp(`https://github.com/${this.owner}/${this.repo}/pull/(\\d+)`, "g"));
@@ -28568,22 +28552,6 @@ class GitHubAPI {
                         prs.add(`${id}`);
                 });
             }
-        }
-        return prs;
-    }
-    getPRFromPRBody(pr) {
-        const body = pr.body;
-        const prs = new Set();
-        if (!body) {
-            return prs;
-        }
-        const prMatches = body.match(new RegExp(`https://github.com/${this.owner}/${this.repo}/pull/(\\d+)`, "g"));
-        if (prMatches) {
-            prMatches.forEach((match) => {
-                const id = match.split("/").pop();
-                if (id)
-                    prs.add(`${id}`);
-            });
         }
         return prs;
     }
@@ -28684,17 +28652,11 @@ function run() {
             else {
                 core.info(`Existing PR found: #${pr.number}`);
             }
-            const issuesFromCommits = github.getIssuesFromCommits(commits);
-            const issuesFromPRBody = github.getIssuesFromPRBody(pr);
-            const issues = new Set([...issuesFromCommits, ...issuesFromPRBody]);
-            core.info(`Found ${issuesFromCommits.size} newly linked issues`);
-            core.info(`Found ${issuesFromPRBody.size} from PR desc`);
+            const issues = github.getIssuesFromCommits(commits);
+            core.info(`Found ${issues.size} newly linked issues`);
             core.debug(`Issues: ${JSON.stringify(Array.from(issues))}`);
-            const prsFromCommits = github.getPRFromCommits(commits);
-            const prsFromPRBody = github.getPRFromPRBody(pr);
-            const prs = new Set([...prsFromCommits, ...prsFromPRBody]);
-            core.info(`Found ${prsFromCommits.size} newly linked PRs`);
-            core.info(`Found ${prsFromPRBody.size} from PR desc`);
+            const prs = github.getPRsFromCommits(commits);
+            core.info(`Found ${prs.size} newly linked PRs`);
             core.debug(`PRs: ${JSON.stringify(Array.from(prs))}`);
             // Update the PR content
             yield github.updatePRBody(pr, issues, prs);
