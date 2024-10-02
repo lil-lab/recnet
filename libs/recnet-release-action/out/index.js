@@ -28527,34 +28527,62 @@ class GitHubAPI {
             });
         });
     }
+    extractIssuesFromCommits(commit) {
+        /**
+            Extract the part of the commit message that contains the issue ID
+            This implementation depends on our PULL_REQUEST_TEMPLATE.md
+            Find the line that starts with "## Related Issue" and extract the string after it
+        */
+        const message = commit.commit.message;
+        const index = message.indexOf("## Related Issue");
+        if (index === -1) {
+            throw new Error("Could not find related issue in commit message");
+        }
+        return message.substring(index + "## Related Issue".length).trim();
+    }
     getIssuesFromCommits(commits) {
         const issues = new Set();
         for (const commit of commits) {
-            // Extract full GitHub issue URLs
-            const urlMatches = commit.commit.message.match(new RegExp(`https://github.com/${this.owner}/${this.repo}/issues/(\\d+)`, "g"));
-            if (urlMatches) {
-                urlMatches.forEach((match) => {
-                    const id = match.split("/").pop();
-                    if (id)
+            try {
+                const extractedIssues = this.extractIssuesFromCommits(commit);
+                // Extract full GitHub issue URLs
+                const urlMatches = extractedIssues.match(new RegExp(`https://github.com/${this.owner}/${this.repo}/issues/(\\d+)`, "g"));
+                if (urlMatches) {
+                    urlMatches.forEach((match) => {
+                        const id = match.split("/").pop();
+                        if (id)
+                            issues.add(id);
+                    });
+                }
+                // Extract issue IDs from "#123" pattern
+                const hashMatches = extractedIssues.match(/#(\d+)/g);
+                if (hashMatches) {
+                    hashMatches.forEach((match) => {
+                        const id = match.substring(1); // Remove the '#' character
                         issues.add(id);
-                });
+                    });
+                }
             }
-            // Extract issue IDs from "#123" pattern
-            const hashMatches = commit.commit.message.match(/#(\d+)/g);
-            if (hashMatches) {
-                hashMatches.forEach((match) => {
-                    const id = match.substring(1); // Remove the '#' character
-                    issues.add(id);
-                });
+            catch (error) {
+                // If extractIssuesFromCommits throws an error, we skip this commit
+                console.warn(`Failed to extract issues from commit: ${error}`);
             }
         }
         return issues;
     }
+    extractPRsFromCommits(commit) {
+        /**
+            Extract the part of the commit message that contains the PR ID
+            This implementation works under the assumption that the PR ID is in the first line of commit message
+        */
+        return commit.commit.message.split("\n")[0];
+    }
     getPRsFromCommits(commits) {
         const prs = new Set();
         for (const commit of commits) {
+            const extractedPRs = this.extractPRsFromCommits(commit);
             // Extract full GitHub PR URLs
-            const urlMatches = commit.commit.message.match(new RegExp(`https://github.com/${this.owner}/${this.repo}/pull/(\\d+)`, "g"));
+            const urlMatches = extractedPRs.match(new RegExp(`https://github.com/${this.owner}/${this.repo}/pull/(\\d+)`, "g"));
             if (urlMatches) {
                 urlMatches.forEach((match) => {
                     const id = match.split("/").pop();
@@ -28563,7 +28591,7 @@ class GitHubAPI {
                 });
             }
             // Extract PR numbers from "#123" pattern
-            const hashMatches = commit.commit.message.match(/#(\d+)/g);
+            const hashMatches = extractedPRs.match(/#(\d+)/g);
             if (hashMatches) {
                 hashMatches.forEach((match) => {
                     const id = match.substring(1); // Remove the '#' character
