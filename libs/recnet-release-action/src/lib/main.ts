@@ -27,7 +27,7 @@ export async function run(): Promise<void> {
 
     const commits = await github.getLatestCommits(inputs.headBranch);
     core.info(`Found ${commits.length} new commits`);
-    core.info(`Commits: ${JSON.stringify(commits)}`);
+    core.debug(`Commits: ${JSON.stringify(commits)}`);
 
     if (commits.length === 0) {
       core.info("No new commits found. Exiting...");
@@ -42,25 +42,19 @@ export async function run(): Promise<void> {
         `Release ${inputs.headBranch} to ${inputs.baseBranch}`, // PR title
         inputs.baseBranch,
         inputs.headBranch,
-        "## RecNet auto-release action\nThis is a auto-generated PR by recnet-release-action 🤖\n## Related Issues\n" // Initial PR body
+        "init body" // Initial PR body
       );
       core.info(`New PR created: #${pr.number}`);
     } else {
       core.info(`Existing PR found: #${pr.number}`);
     }
 
-    const issuesFromCommits = github.getIssuesFromCommits(commits);
-    const issuesFromPRBody = github.getIssuesFromPRBody(pr);
-    const issues = new Set([...issuesFromCommits, ...issuesFromPRBody]);
-    core.info(`Found ${issuesFromCommits.size} newly linked issues`);
-    core.info(`Found ${issuesFromPRBody.size} from PR desc`);
+    const issues = github.getIssuesFromCommits(commits);
+    core.info(`Found ${issues.size} newly linked issues`);
     core.debug(`Issues: ${JSON.stringify(Array.from(issues))}`);
 
-    const prsFromCommits = github.getPRFromCommits(commits);
-    const prsFromPRBody = github.getPRFromPRBody(pr);
-    const prs = new Set([...prsFromCommits, ...prsFromPRBody]);
-    core.info(`Found ${prsFromCommits.size} newly linked PRs`);
-    core.info(`Found ${prsFromPRBody.size} from PR desc`);
+    const prs = github.getPRsFromCommits(commits);
+    core.info(`Found ${prs.size} newly linked PRs`);
     core.debug(`PRs: ${JSON.stringify(Array.from(prs))}`);
 
     // Update the PR content

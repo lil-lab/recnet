@@ -132,7 +132,7 @@ describe("GitHubAPI", () => {
         {
           owner: env.inputs.owner,
           repo: env.inputs.repo,
-          ref: env.inputs.ref,
+          ref: env.inputs.baseBranch,
         }
       );
       expect(mockOctokit.request).toHaveBeenNthCalledWith(
@@ -144,6 +144,7 @@ describe("GitHubAPI", () => {
           sha: env.inputs.headBranch,
           since: "2023-01-01T00:00:00Z",
           per_page: 100,
+          page: 1,
         }
       );
     });
@@ -158,7 +159,7 @@ describe("GitHubAPI", () => {
 
       await expect(
         github.getLatestCommits(env.inputs.headBranch)
-      ).rejects.toThrow("Could not find the commit date of the staging tag");
+      ).rejects.toThrow("Could not find the commit date of the base branch");
 
       expect(mockOctokit.request).toHaveBeenCalledTimes(1);
       expect(mockOctokit.request).toHaveBeenCalledWith(
@@ -166,7 +167,7 @@ describe("GitHubAPI", () => {
         {
           owner: env.inputs.owner,
           repo: env.inputs.repo,
-          ref: env.inputs.ref,
+          ref: env.inputs.baseBranch,
         }
       );
     });
@@ -189,9 +190,7 @@ describe("GitHubAPI", () => {
           owner: env.inputs.owner,
           repo: env.inputs.repo,
           pull_number: 1,
-          body: expect.stringContaining(
-            "## Related Issues\n- [#123](https://github.com/owner/repo/issues/123)\n- [#456](https://github.com/owner/repo/issues/456)"
-          ),
+          body: expect.stringContaining("## Related Issues\n- #123\n- #456"),
         }
       );
       expect(mockOctokit.request).toHaveBeenCalledWith(
@@ -200,9 +199,7 @@ describe("GitHubAPI", () => {
           owner: env.inputs.owner,
           repo: env.inputs.repo,
           pull_number: 1,
-          body: expect.stringContaining(
-            "## Related PRs\n- [#789](https://github.com/owner/repo/pull/789)\n- [#101](https://github.com/owner/repo/pull/101)"
-          ),
+          body: expect.stringContaining("## Related PRs\n- #789\n- #101"),
         }
       );
     });
@@ -223,35 +220,18 @@ describe("GitHubAPI", () => {
           owner: env.inputs.owner,
           repo: env.inputs.repo,
           pull_number: 1,
-          body: expect.not.stringContaining("- [#"),
+          body: expect.not.stringContaining("- #"),
         }
       );
     });
 
-    it("should append new content to existing PR body", async () => {
-      const existingBody = `
-    ## Existing Content
-    This is some existing content in the PR body.
-
-    ## Related Issues
-    - [#100](https://github.com/owner/repo/issues/100)
-
-    ## Related PRs
-    - [#200](https://github.com/owner/repo/pull/200)
-        `.trim();
-
+    it("should update PR body with only issues", async () => {
       const mockPR: PR = {
         number: 1,
-        body: existingBody,
+        body: "Original PR body",
       } as PR;
-
-      const newIssues = new Set(["123", "456"]);
-      const issues = new Set([
-        ...github.getIssuesFromPRBody(mockPR),
-        ...newIssues,
-      ]);
-      const newPRs = new Set(["789", "101"]);
-      const prs = new Set([...github.getPRFromPRBody(mockPR), ...newPRs]);
+      const issues = new Set(["123", "456"]);
+      const prs = new Set<string>();
 
       await github.updatePRBody(mockPR, issues, prs);
 
@@ -261,9 +241,46 @@ describe("GitHubAPI", () => {
           owner: env.inputs.owner,
           repo: env.inputs.repo,
           pull_number: 1,
-          body: expect.stringContaining(
-            "## Related PRs\n- [#200](https://github.com/owner/repo/pull/200)\n- [#789](https://github.com/owner/repo/pull/789)\n- [#101](https://github.com/owner/repo/pull/101)\n"
-          ),
+          body: expect.stringContaining("## Related Issues\n- #123\n- #456"),
+        }
+      );
+      expect(mockOctokit.request).toHaveBeenCalledWith(
+        "PATCH /repos/{owner}/{repo}/pulls/{pull_number}",
+        {
+          owner: env.inputs.owner,
+          repo: env.inputs.repo,
+          pull_number: 1,
+          body: expect.not.stringContaining("## Related PRs\n- #"),
+        }
+      );
+    });
+
+    it("should update PR body with only PRs", async () => {
+      const mockPR: PR = {
+        number: 1,
+        body: "Original PR body",
+      } as PR;
+      const issues = new Set<string>();
+      const prs = new Set(["789", "101"]);
+
+      await github.updatePRBody(mockPR, issues, prs);
+
+      expect(mockOctokit.request).toHaveBeenCalledWith(
+        "PATCH /repos/{owner}/{repo}/pulls/{pull_number}",
+        {
+          owner: env.inputs.owner,
+          repo: env.inputs.repo,
+          pull_number: 1,
+          body: expect.not.stringContaining("## Related Issues\n- #"),
+        }
+      );
+      expect(mockOctokit.request).toHaveBeenCalledWith(
+        "PATCH /repos/{owner}/{repo}/pulls/{pull_number}",
+        {
+          owner: env.inputs.owner,
+          repo: env.inputs.repo,
+          pull_number: 1,
+          body: expect.stringContaining("## Related PRs\n- #789\n- #101"),
         }
       );
     });
@@ -281,19 +298,11 @@ describe("GitHubAPI", () => {
         "This is an auto-generated PR by recnet-release-action 🤖"
       );
       expect(result).toContain("## Related Issues");
-      expect(result).toContain(
-        "- [#123](https://github.com/owner/repo/issues/123)"
-      );
-      expect(result).toContain(
-        "- [#456](https://github.com/owner/repo/issues/456)"
-      );
+      expect(result).toContain("- #123");
+      expect(result).toContain("- #456");
       expect(result).toContain("## Related PRs");
-      expect(result).toContain(
-        "- [#789](https://github.com/owner/repo/pull/789)"
-      );
-      expect(result).toContain(
-        "- [#101](https://github.com/owner/repo/pull/101)"
-      );
+      expect(result).toContain("- #789");
+      expect(result).toContain("- #101");
     });
 
     it("should generate PR body with empty issues and PRs", () => {
@@ -308,7 +317,33 @@ describe("GitHubAPI", () => {
       );
       expect(result).toContain("## Related Issues");
       expect(result).toContain("## Related PRs");
-      expect(result).not.toContain("- [#");
+      expect(result).not.toContain("- #");
+    });
+
+    it("should generate PR body with only issues", () => {
+      const issues = new Set(["123", "456"]);
+      const prs = new Set<string>();
+
+      const result = github.generatePRBody(issues, prs);
+
+      expect(result).toContain("## Related Issues");
+      expect(result).toContain("- #123");
+      expect(result).toContain("- #456");
+      expect(result).toContain("## Related PRs");
+      expect(result).not.toContain("- #789");
+    });
+
+    it("should generate PR body with only PRs", () => {
+      const issues = new Set<string>();
+      const prs = new Set(["789", "101"]);
+
+      const result = github.generatePRBody(issues, prs);
+
+      expect(result).toContain("## Related Issues");
+      expect(result).toContain("## Related PRs");
+      expect(result).toContain("- #789");
+      expect(result).toContain("- #101");
+      expect(result).not.toContain("- #123");
     });
   });
 
@@ -350,112 +385,267 @@ describe("GitHubAPI", () => {
     });
   });
 
+  describe("extractIssuesFromCommits", () => {
+    it("should extract issue ID from commit message", () => {
+      const commit: Commit = {
+        commit: {
+          message: "Some commit message\n\n## Related Issue\n#123",
+        },
+      } as Commit;
+
+      const result = github.extractIssuesFromCommits(commit);
+      expect(result).toBe("#123");
+    });
+
+    it("should extract multiple issue IDs from commit message", () => {
+      const commit: Commit = {
+        commit: {
+          message: "Some commit message\n\n## Related Issue\n#123 #456",
+        },
+      } as Commit;
+
+      const result = github.extractIssuesFromCommits(commit);
+      expect(result).toBe("#123 #456");
+    });
+
+    it("should throw an error if no related issue is found", () => {
+      const commit: Commit = {
+        commit: {
+          message: "Some commit message without related issue",
+        },
+      } as Commit;
+
+      expect(() => github.extractIssuesFromCommits(commit)).toThrow(
+        "Could not find related issue in commit message"
+      );
+    });
+
+    it("should extract issue ID even with additional text", () => {
+      const commit: Commit = {
+        commit: {
+          message:
+            "Some commit message\n\n## Related Issue\nFixes #789 and resolves some other stuff",
+        },
+      } as Commit;
+
+      const result = github.extractIssuesFromCommits(commit);
+      expect(result).toBe("Fixes #789 and resolves some other stuff");
+    });
+
+    it("should handle empty issue ID", () => {
+      const commit: Commit = {
+        commit: {
+          message: "Some commit message\n\n## Related Issue\n",
+        },
+      } as Commit;
+
+      const result = github.extractIssuesFromCommits(commit);
+      expect(result).toBe("");
+    });
+  });
+
   describe("getIssuesFromCommits", () => {
     it("should extract issue numbers from commit messages", () => {
       const commits: Commit[] = [
         {
           commit: {
-            message: "Fix bug https://github.com/owner/repo/issues/123",
+            message:
+              "Fix bug\n\n## Related Issue\n- #123\n - https://github.com/owner/repo/issues/456",
           },
         },
         {
           commit: {
-            message: "Update docs https://github.com/owner/repo/issues/456",
+            message: "Update docs\n\n## Related Issue\n- #789",
           },
         },
-        { commit: { message: "Refactor code" } },
+        {
+          commit: {
+            message: "Refactor code\n\n## Related Issue\nNo related issue",
+          },
+        },
       ] as Commit[];
 
       const result = github.getIssuesFromCommits(commits);
-
-      expect(result).toEqual(new Set(["123", "456"]));
-    });
-  });
-
-  describe("getIssuesFromPRBody", () => {
-    it("should extract issue numbers from PR body", () => {
-      const mockPR: PR = {
-        body: "PR description\nhttps://github.com/owner/repo/issues/123\nhttps://github.com/owner/repo/issues/456",
-      } as PR;
-
-      const result = github.getIssuesFromPRBody(mockPR);
-
-      expect(result).toEqual(new Set(["123", "456"]));
+      expect(result).toEqual(new Set(["123", "456", "789"]));
     });
 
-    it("should return empty set if PR body is null", () => {
-      const mockPR: PR = {
-        body: null,
-      } as PR;
+    it("should handle commits without related issues", () => {
+      const commits: Commit[] = [
+        {
+          commit: {
+            message: "Fix bug\n\n## Related Issue\nNo related issue",
+          },
+        },
+        {
+          commit: {
+            message: "Update docs",
+          },
+        },
+      ] as Commit[];
 
-      const result = github.getIssuesFromPRBody(mockPR);
-
+      const result = github.getIssuesFromCommits(commits);
       expect(result).toEqual(new Set());
     });
+
+    it("should handle errors in extractIssuesFromCommits", () => {
+      const commits: Commit[] = [
+        {
+          commit: {
+            message: "Fix bug\n\n## Related Issue\n#123",
+          },
+        },
+        {
+          commit: {
+            message: "Update docs without related issue section",
+          },
+        },
+      ] as Commit[];
+
+      const result = github.getIssuesFromCommits(commits);
+      expect(result).toEqual(new Set(["123"]));
+    });
   });
 
-  describe("getPRFromCommits", () => {
+  describe("extractPRsFromCommits", () => {
+    it("should extract the first line of the commit message", () => {
+      const commit: Commit = {
+        commit: {
+          message: "Fix bug (#123)\n\nDetailed description here.",
+        },
+      } as Commit;
+
+      const result = github.extractPRsFromCommits(commit);
+      expect(result).toBe("Fix bug (#123)");
+    });
+
+    it("should handle single-line commit messages", () => {
+      const commit: Commit = {
+        commit: {
+          message: "Update documentation",
+        },
+      } as Commit;
+
+      const result = github.extractPRsFromCommits(commit);
+      expect(result).toBe("Update documentation");
+    });
+
+    it("should handle commit messages with multiple lines", () => {
+      const commit: Commit = {
+        commit: {
+          message:
+            "Implement new feature (#456)\n\nThis commit adds a new feature.\nIt includes multiple changes.",
+        },
+      } as Commit;
+
+      const result = github.extractPRsFromCommits(commit);
+      expect(result).toBe("Implement new feature (#456)");
+    });
+
+    it("should handle commit messages without PR references", () => {
+      const commit: Commit = {
+        commit: {
+          message: "Refactor code\n\nImprove code structure and readability.",
+        },
+      } as Commit;
+
+      const result = github.extractPRsFromCommits(commit);
+      expect(result).toBe("Refactor code");
+    });
+
+    it("should handle empty commit messages", () => {
+      const commit: Commit = {
+        commit: {
+          message: "",
+        },
+      } as Commit;
+
+      const result = github.extractPRsFromCommits(commit);
+      expect(result).toBe("");
+    });
+
+    it("should handle commit messages with only newline characters", () => {
+      const commit: Commit = {
+        commit: {
+          message: "\n\n\n",
+        },
+      } as Commit;
+
+      const result = github.extractPRsFromCommits(commit);
+      expect(result).toBe("");
+    });
+  });
+
+  describe("getPRsFromCommits", () => {
+    let github: GitHubAPI;
+
+    beforeEach(() => {
+      github = new GitHubAPI("token", "owner", "repo");
+    });
+
     it("should extract PR numbers from commit messages", () => {
       const commits: Commit[] = [
         {
           commit: {
-            message: "Fix bug https://github.com/owner/repo/pull/123",
+            message:
+              "Fix bug (#123) https://github.com/owner/repo/pull/456\n\nDetailed description",
+          },
+        },
+        {
+          commit: {
+            message: "Update docs (#789)\n\nMore details",
+          },
+        },
+        {
+          commit: {
+            message: "Refactor code\n\nNo PR reference",
+          },
+        },
+      ] as Commit[];
+
+      const result = github.getPRsFromCommits(commits);
+      expect(result).toEqual(new Set(["123", "456", "789"]));
+    });
+
+    it("should handle commits without PR references", () => {
+      const commits: Commit[] = [
+        {
+          commit: {
+            message: "Fix bug\n\nNo PR reference",
+          },
+        },
+        {
+          commit: {
+            message: "Update docs",
+          },
+        },
+      ] as Commit[];
+
+      const result = github.getPRsFromCommits(commits);
+      expect(result).toEqual(new Set());
+    });
+
+    it("should extract PR numbers from various formats", () => {
+      const commits: Commit[] = [
+        {
+          commit: {
+            message: "Merge pull request #101 from user/branch",
+          },
+        },
+        {
+          commit: {
+            message: "Implement feature (PR #202)",
           },
         },
         {
           commit: {
             message:
-              "Update docs\n\nRelated to https://github.com/owner/repo/pull/456",
+              "Fix: resolved #303, closes https://github.com/owner/repo/pull/404",
           },
         },
-        { commit: { message: "Refactor code" } },
       ] as Commit[];
 
-      const result = github.getPRFromCommits(commits);
-
-      expect(result).toEqual(new Set(["123", "456"]));
-    });
-
-    it("should return an empty set if no PRs are found in commits", () => {
-      const commits: Commit[] = [
-        { commit: { message: "Update without PR reference" } },
-      ] as Commit[];
-
-      const result = github.getPRFromCommits(commits);
-
-      expect(result).toEqual(new Set());
-    });
-  });
-
-  describe("getPRFromPRBody", () => {
-    it("should extract PR numbers from PR body", () => {
-      const mockPR: PR = {
-        body: "PR description\nhttps://github.com/owner/repo/pull/123\nhttps://github.com/owner/repo/pull/456",
-      } as PR;
-
-      const result = github.getPRFromPRBody(mockPR);
-
-      expect(result).toEqual(new Set(["123", "456"]));
-    });
-
-    it("should return an empty set if PR body is null", () => {
-      const mockPR: PR = {
-        body: null,
-      } as PR;
-
-      const result = github.getPRFromPRBody(mockPR);
-
-      expect(result).toEqual(new Set());
-    });
-
-    it("should return an empty set if no PRs are found in PR body", () => {
-      const mockPR: PR = {
-        body: "PR description without any PR references",
-      } as PR;
-
-      const result = github.getPRFromPRBody(mockPR);
-
-      expect(result).toEqual(new Set());
+      const result = github.getPRsFromCommits(commits);
+      expect(result).toEqual(new Set(["101", "202", "303", "404"]));
     });
   });
 

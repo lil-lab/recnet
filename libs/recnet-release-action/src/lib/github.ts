@@ -11,7 +11,7 @@ const ReleasePRTemplate = [
   },
   {
     type: "text",
-    innerText: "This is an auto-generated PR by recnet-release-action 🤖",
+    innerText: `This is an auto-generated PR by recnet-release-action 🤖`,
   },
   {
     type: "text",
@@ -25,6 +25,20 @@ const ReleasePRTemplate = [
   {
     type: "h2",
     innerText: "Related PRs",
+  },
+  {
+    type: "h2",
+    innerText: "Staging links",
+  },
+  {
+    type: "text",
+    innerText:
+      "recnet-web: [https://vercel.live/link/recnet-git-dev-recnet-542617e7.vercel.app](https://vercel.live/link/recnet-git-dev-recnet-542617e7.vercel.app)",
+  },
+  {
+    type: "text",
+    innerText:
+      "recnet-api: [https://dev-api.recnet.io/api](https://dev-api.recnet.io/api)",
   },
 ] as const;
 
@@ -99,37 +113,64 @@ export class GitHubAPI {
     return data;
   }
 
+  // modified from: https://docs.github.com/en/rest/using-the-rest-api/using-pagination-in-the-rest-api?apiVersion=2022-11-28#example-creating-a-pagination-method
+  async getPaginatedCommitsData(sha: string, since: string) {
+    core.info("Fetching commits data from paginated API...");
+    let pagesRemaining = true;
+    let data: Commit[] = [];
+    let currPage = 1;
+
+    while (pagesRemaining) {
+      const response = await this.octokit.request(
+        "GET /repos/{owner}/{repo}/commits",
+        {
+          owner: this.owner,
+          repo: this.repo,
+          sha: sha,
+          since: since,
+          per_page: 100,
+          page: currPage,
+        }
+      );
+
+      data = [...data, ...response.data];
+
+      const linkHeader = response?.headers?.link;
+      pagesRemaining = Boolean(linkHeader && linkHeader.includes(`rel="next"`));
+      if (pagesRemaining) {
+        currPage = currPage + 1;
+      }
+    }
+
+    core.info(`Fetched ${data.length} commits`);
+    return data;
+  }
+
   async getLatestCommits(headBranch: string): Promise<Commit[]> {
-    // Find the commit where the "staging" tag is on
-    const { data: taggedCommit } = await this.octokit.request(
+    // Find the latest commit on base branch
+    const { data: baseBranchLatestCommit } = await this.octokit.request(
       "GET /repos/{owner}/{repo}/commits/{ref}",
       {
         owner: this.owner,
         repo: this.repo,
-        ref: inputs.ref,
+        ref: inputs.baseBranch,
       }
     );
     // get the date of the tagged commit
-    const tag = taggedCommit as Commit;
-    const commitDateTs = tag.commit.author?.date;
+    const commitDateTs = baseBranchLatestCommit.commit.author?.date;
     if (!commitDateTs) {
-      throw new Error("Could not find the commit date of the staging tag");
+      throw new Error("Could not find the commit date of the base branch");
     }
 
-    // Get commits after the latest "staging" tag
-    const { data: commits } = await this.octokit.request(
-      "GET /repos/{owner}/{repo}/commits",
-      {
-        owner: this.owner,
-        repo: this.repo,
-        sha: headBranch,
-        since: commitDateTs,
-        per_page: 100,
-      }
+    const commits = await this.getPaginatedCommitsData(
+      headBranch,
+      commitDateTs
     );
 
     // filter out commit where the ref is pointing to
-    const filteredCommits = commits.filter((commit) => commit.sha !== tag.sha);
+    const filteredCommits = commits.filter(
+      (commit) => commit.sha !== baseBranchLatestCommit.sha
+    );
 
     return filteredCommits;
   }
@@ -172,99 +213,102 @@ export class GitHubAPI {
     );
   }
 
+  extractIssuesFromCommits(commit: Commit): string {
+    /**
+        Extract the part of the commit message that contains the issue ID
+        This implementation depends on our PULL_REQUEST_TEMPLATE.md
+        Find the line that starts with "## Related Issue" and extract the string after it
+    */
+    const message = commit.commit.message;
+    const index = message.indexOf("## Related Issue");
+    if (index === -1) {
+      throw new Error("Could not find related issue in commit message");
+    }
+    return message.substring(index + "## Related Issue".length).trim();
+  }
+
   getIssuesFromCommits(commits: Commit[]): Set<string> {
     const issues = new Set<string>();
     for (const commit of commits) {
-      const issueMatches = commit.commit.message.match(
-        new RegExp(
-          `https://github.com/${this.owner}/${this.repo}/issues/(\\d+)`,
-          "g"
-        )
-      );
-      if (issueMatches) {
-        issueMatches.forEach((match: string) => {
-          const id = match.split("/").pop();
-          if (id) issues.add(`${id}`);
-        });
+      try {
+        const extractedIssues = this.extractIssuesFromCommits(commit);
+
+        // Extract full GitHub issue URLs
+        const urlMatches = extractedIssues.match(
+          new RegExp(
+            `https://github.com/${this.owner}/${this.repo}/issues/(\\d+)`,
+            "g"
+          )
+        );
+        if (urlMatches) {
+          urlMatches.forEach((match: string) => {
+            const id = match.split("/").pop();
+            if (id) issues.add(id);
+          });
+        }
+
+        // Extract issue IDs from "#123" pattern
+        const hashMatches = extractedIssues.match(/#(\d+)/g);
+        if (hashMatches) {
+          hashMatches.forEach((match: string) => {
+            const id = match.substring(1); // Remove the '#' character
+            issues.add(id);
+          });
+        }
+      } catch (error) {
+        // If extractIssuesFromCommits throws an error, we skip this commit
+        core.debug(`Failed to extract issues from commit: ${error}`);
       }
     }
     return issues;
   }
 
-  getIssuesFromPRBody(pr: PR): Set<string> {
-    const body = pr.body;
-    const issues = new Set<string>();
-    if (!body) {
-      return issues;
-    }
-    const issueMatches = body.match(
-      new RegExp(
-        `https://github.com/${this.owner}/${this.repo}/issues/(\\d+)`,
-        "g"
-      )
-    );
-    if (issueMatches) {
-      issueMatches.forEach((match: string) => {
-        const id = match.split("/").pop();
-        if (id) issues.add(`${id}`);
-      });
-    }
-    return issues;
+  extractPRsFromCommits(commit: Commit): string {
+    /**
+        Extract the part of the commit message that contains the PR ID
+        This implementation works under the assumption that the PR ID is in the first line of commit message
+    */
+    return commit.commit.message.split("\n")[0];
   }
 
-  getPRFromCommits(commits: Commit[]): Set<string> {
+  getPRsFromCommits(commits: Commit[]): Set<string> {
     const prs = new Set<string>();
     for (const commit of commits) {
-      const prMatches = commit.commit.message.match(
+      const extractedPRs = this.extractPRsFromCommits(commit);
+
+      // Extract full GitHub PR URLs
+      const urlMatches = extractedPRs.match(
         new RegExp(
           `https://github.com/${this.owner}/${this.repo}/pull/(\\d+)`,
           "g"
         )
       );
-      if (prMatches) {
-        prMatches.forEach((match: string) => {
+      if (urlMatches) {
+        urlMatches.forEach((match: string) => {
           const id = match.split("/").pop();
-          if (id) prs.add(`${id}`);
+          if (id) prs.add(id);
         });
       }
-    }
-    return prs;
-  }
 
-  getPRFromPRBody(pr: PR): Set<string> {
-    const body = pr.body;
-    const prs = new Set<string>();
-    if (!body) {
-      return prs;
-    }
-    const prMatches = body.match(
-      new RegExp(
-        `https://github.com/${this.owner}/${this.repo}/pull/(\\d+)`,
-        "g"
-      )
-    );
-    if (prMatches) {
-      prMatches.forEach((match: string) => {
-        const id = match.split("/").pop();
-        if (id) prs.add(`${id}`);
-      });
+      // Extract PR numbers from "#123" pattern
+      const hashMatches = extractedPRs.match(/#(\d+)/g);
+      if (hashMatches) {
+        hashMatches.forEach((match: string) => {
+          const id = match.substring(1); // Remove the '#' character
+          prs.add(id);
+        });
+      }
     }
     return prs;
   }
 
   generatePRBody(issues: Set<string>, prs: Set<string>): string {
     const issuesList = Array.from(issues)
-      .map(
-        (issueId) =>
-          `- [#${issueId}](https://github.com/${this.owner}/${this.repo}/issues/${issueId})`
-      )
+      .map((issueId) => `- #${issueId}`)
       .join("\n");
 
-    const prList = Array.from(prs)
-      .map(
-        (prId) =>
-          `- [#${prId}](https://github.com/${this.owner}/${this.repo}/pull/${prId})`
-      )
+    const prsList = Array.from(prs)
+      .map((prId) => `- #${prId}`)
       .join("\n");
 
     let body = "";
@@ -274,7 +318,7 @@ export class GitHubAPI {
         if (item.innerText === "Related Issues") {
           body += `${issuesList}\n`;
         } else if (item.innerText === "Related PRs") {
-          body += `${prList}\n`;
+          body += `${prsList}\n`;
         }
       } else if (item.type === "text") {
         body += `${item.innerText}\n`;
