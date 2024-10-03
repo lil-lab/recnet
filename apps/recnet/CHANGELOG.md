@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [1.14.1](https://github.com/lil-lab/recnet/compare/recnet-web-v1.14.0...recnet-web-v1.14.1) (2024-10-03)
+
+
+### Features
+
+* get commit using pagination api ([160525e](https://github.com/lil-lab/recnet/commit/160525edf3a32576edb6e30bba3a4431c6f57256))
+
 ## [1.14.0](https://github.com/lil-lab/recnet/compare/recnet-web-v1.12.0...recnet-web-v1.14.0) (2024-10-02)
 
 

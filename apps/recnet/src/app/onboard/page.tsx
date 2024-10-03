@@ -4,6 +4,7 @@ import { HomeIcon, Link2Icon } from "@radix-ui/react-icons";
 import { Text, TextField, Button } from "@radix-ui/themes";
 import { getAuth } from "firebase/auth";
 import { AnimatePresence, motion } from "framer-motion";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
@@ -170,7 +171,21 @@ export default function OnboardPage() {
         })}
       >
         <div className="flex flex-col gap-y-1">
-          <Text>Invite code</Text>
+          <Text>
+            Invite code
+            <span className="mx-2 text-[14px] text-gray-10">
+              (Need an invite code? request one{" "}
+              <RecNetLink
+                href="https://forms.gle/pBzfxvLifZkrVz1J7"
+                radixLinkProps={{
+                  target: "_blank",
+                }}
+              >
+                here
+              </RecNetLink>
+              )
+            </span>
+          </Text>
           <TextField.Root
             className="w-full"
             size="3"
