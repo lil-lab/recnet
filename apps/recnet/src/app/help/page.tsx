@@ -39,7 +39,12 @@ const faqs: {
     title: "Cycle",
     content: () => {
       const nextCutOff = getNextCutOff();
-      return `The cutoff time of each cycle is 11:59:59 PM GMT on each Tuesday. The next cutoff in your local time: ${getVerboseDateString(nextCutOff)}.`;
+      return `The cutoff time of each cycle is 11:59:59 PM GMT on each Tuesday. The next cutoff in your local time: ${getVerboseDateString(
+        nextCutOff,
+        {
+          hourCycle: "h11",
+        }
+      )}.`;
     },
   },
 ];
