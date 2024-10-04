@@ -152,11 +152,11 @@ export function DatePicker(props: DatePickerProps) {
 
   const tableCellBaseClass = "font-[12px] text-gray-9 px-1";
 
-  // get years from START_DATE to cuurent year + 10
+  // get years from START_DATE to current year +- 10
   const now = new Date();
   const startYear = new Date(START_DATE).getFullYear();
   const years: number[] = [];
-  for (let i = startYear; i <= now.getFullYear() + 10; i++) {
+  for (let i = startYear - 10; i <= now.getFullYear() + 10; i++) {
     years.push(i);
   }
 
@@ -180,6 +180,7 @@ export function DatePicker(props: DatePickerProps) {
       <Popover.Content
         className="overflow-hidden"
         maxWidth={"376px"}
+        minWidth={"376px"}
         side="bottom"
       >
         {selectedDate ? (
@@ -316,6 +317,7 @@ export function DatePicker(props: DatePickerProps) {
                                         "transition-all ease-in-out"
                                       )}
                                       onClick={() => {
+                                        console.log("date: ", v);
                                         setSelectedDate(v);
                                       }}
                                     >
