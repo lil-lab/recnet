@@ -85,22 +85,26 @@ export const getVerboseDateString = (
   }
 ): string => {
   const { withTime = true, ...restOptions } = options || {};
-  const localTime = date.toLocaleTimeString();
-  return (
-    Intl.DateTimeFormat("default", {
-      weekday: "long",
-      month: "numeric",
-      day: "numeric",
-      // hour: "2-digit",
-      // minute: "2-digit",
-      // second: "2-digit",
-      // timeZoneName: "short",
-      // hourCycle: "h11",
-      ...restOptions,
-    })
-      .format(date)
-      .replaceAll(",", " ") + (withTime ? ` ${localTime}` : "")
-  );
+
+  const dateTimeFormatTimeOptions: Intl.DateTimeFormatOptions = withTime
+    ? {
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+        // timeZoneName: "short",
+        hourCycle: "h23",
+      }
+    : {};
+
+  return Intl.DateTimeFormat("default", {
+    weekday: "long",
+    month: "numeric",
+    day: "numeric",
+    ...dateTimeFormatTimeOptions,
+    ...restOptions,
+  })
+    .format(date)
+    .replaceAll(",", " ");
 };
 
 export const formatDate = (date: Date): string => {
