@@ -125,6 +125,7 @@ interface DatePickerProps {
   value: Date;
   onChange: (date: Date) => void;
   renderTrigger: (val?: Date) => React.ReactNode;
+  mode?: "date" | "datetime";
 }
 
 /**
@@ -134,10 +135,11 @@ interface DatePickerProps {
  * @param props.value The current value of the date picker.
  * @param props.onChange The function to call when the date picker value changes.
  * @param props.renderTrigger The function to render the trigger component.
+ * @param props.mode The mode of the date picker. Can be either "date" or "datetime". "datetime" allows the user to select the time as well.
  */
 
 export function DatePicker(props: DatePickerProps) {
-  const { value, onChange, renderTrigger } = props;
+  const { value, onChange, renderTrigger, mode = "date" } = props;
   const [isOpen, setIsOpen] = useState(false);
   const [view, setView] = useState<View>("default");
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
@@ -317,8 +319,13 @@ export function DatePicker(props: DatePickerProps) {
                                         "transition-all ease-in-out"
                                       )}
                                       onClick={() => {
-                                        console.log("date: ", v);
-                                        setSelectedDate(v);
+                                        // if mode is "datetime", proceed to time selector
+                                        if (mode === "datetime") {
+                                          setSelectedDate(v);
+                                          return;
+                                        }
+                                        onChange(v);
+                                        setIsOpen(false);
                                       }}
                                     >
                                       <div
