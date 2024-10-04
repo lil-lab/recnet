@@ -81,6 +81,10 @@ export function CutoffDatePicker(props: CutoffDatePickerProps) {
               More
             </Button>
           )}
+          popoverContentProps={{
+            side: "right",
+            alignOffset: -50,
+          }}
         />
       </div>
     </div>

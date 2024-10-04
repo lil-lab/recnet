@@ -127,6 +127,7 @@ interface DatePickerProps {
   renderTrigger: (val?: Date) => React.ReactNode;
   mode?: "date" | "datetime";
   shouldDisable?: (date: Date) => boolean;
+  popoverContentProps?: React.ComponentProps<typeof Popover.Content>;
 }
 
 /**
@@ -147,6 +148,7 @@ export function DatePicker(props: DatePickerProps) {
     renderTrigger,
     mode = "date",
     shouldDisable = () => false,
+    popoverContentProps = {},
   } = props;
   const [isOpen, setIsOpen] = useState(false);
   const [view, setView] = useState<View>("default");
@@ -192,6 +194,7 @@ export function DatePicker(props: DatePickerProps) {
         maxWidth={"376px"}
         minWidth={"376px"}
         side="bottom"
+        {...popoverContentProps}
       >
         {selectedDate ? (
           <div className="flex flex-col p-2">
