@@ -13,9 +13,15 @@
 
 <!-- Other thing to say -->
 
+## Test
+
+<!--- Please describe in detail how you tested your changes locally. -->
+
+## Screenshots (if appropriate):
+
+<!--- Add screenshots of your changes here -->
+
 ## TODO
 
-- [ ] Paste the testing link
 - [ ] Clear `console.log` or `console.error` for debug usage
 - [ ] Update the documentation `recnet-docs` if needed
-- [ ] Version bump in `package.json` if needed
