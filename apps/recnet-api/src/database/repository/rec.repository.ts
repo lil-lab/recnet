@@ -1,5 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import { Prisma } from "@prisma/client";
+import { Prisma, ReactionType } from "@prisma/client";
 
 import PrismaConnectionProvider from "@recnet-api/database/prisma/prisma.connection.provider";
 import { rec, Rec } from "@recnet-api/database/repository/rec.repository.type";
@@ -126,6 +126,20 @@ export default class RecRepository {
       cutoff: entry.cutoff,
       count: entry._count._all,
     }));
+  }
+
+  public async createRecReaction(
+    userId: string,
+    recId: string,
+    reaction: ReactionType
+  ) {
+    return this.prisma.recReaction.create({
+      data: {
+        userId: userId,
+        recId: recId,
+        reaction: reaction,
+      },
+    });
   }
 
   private transformRecFilterByToPrismaWhere(

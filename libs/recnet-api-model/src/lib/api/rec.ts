@@ -87,3 +87,24 @@ export const patchRecsUpcomingResponseSchema = z.object({
 export type PatchRecsUpcomingResponse = z.infer<
   typeof patchRecsUpcomingResponseSchema
 >;
+
+// POST /recs/:id/reactions
+export const postRecsReactionsRequestSchema = z.object({
+  reaction: z.enum([
+    "THUMBS_UP",
+    "THINKING",
+    "SURPRISED",
+    "CRYING",
+    "STARRY_EYES",
+    "MINDBLOWN",
+    "EYES",
+    "ROCKET",
+    "HEART",
+    "PRAY",
+    "PARTY",
+  ]),
+});
+
+export type PostRecsReactionsRequest = z.infer<
+  typeof postRecsReactionsRequestSchema
+>;

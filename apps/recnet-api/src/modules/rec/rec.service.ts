@@ -1,4 +1,5 @@
 import { HttpStatus, Inject, Injectable } from "@nestjs/common";
+import { ReactionType } from "@prisma/client";
 
 import ArticleRepository from "@recnet-api/database/repository/article.repository";
 import { CreateArticleInput } from "@recnet-api/database/repository/article.repository.type";
@@ -211,6 +212,27 @@ export class RecService {
     await this.recRepository.deleteUpcomingRec(rec.id);
   }
 
+  public async createRecReaction(
+    userId: string,
+    recId: string,
+    reaction: string
+  ): Promise<void> {
+    // Check if the rec exists
+    await this.recRepository.findRecById(recId);
+
+    // Check if the reaction is valid
+    const reactionType = this.convertStringToReactionType(reaction);
+    if (!reactionType) {
+      throw new RecnetError(
+        ErrorCode.INVALID_REACTION_TYPE,
+        HttpStatus.BAD_REQUEST,
+        "Invalid reaction type"
+      );
+    }
+
+    await this.recRepository.createRecReaction(userId, recId, reactionType);
+  }
+
   private getRecsFromDbRecs(dbRec: DbRec[]): Rec[] {
     return dbRec.map(this.getRecFromDbRec);
   }
@@ -273,5 +295,13 @@ export class RecService {
       targetArticleId = newArticle.id;
     }
     return targetArticleId;
+  }
+
+  private convertStringToReactionType(reaction: string): ReactionType | null {
+    if (reaction in ReactionType) {
+      return ReactionType[reaction as keyof typeof ReactionType]; // Return enum value
+    }
+
+    return null;
   }
 }

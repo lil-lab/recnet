@@ -32,10 +32,12 @@ import {
   getRecsFeedsParamsSchema,
   getRecsParamsSchema,
   patchRecsUpcomingRequestSchema,
+  postRecsReactionsRequestSchema,
   postRecsUpcomingRequestSchema,
 } from "@recnet/recnet-api-model";
 
 import { CreateRecDto } from "./dto/create.rec.dto";
+import { CreateRecReactionDto } from "./dto/create.rec.reaction.dto";
 import { QueryFeedsDto } from "./dto/query.feeds.dto";
 import { QueryRecsDto } from "./dto/query.recs.dto";
 import { UpdateRecDto } from "./dto/update.rec.dto";
@@ -171,5 +173,22 @@ export class RecController {
   public async deleteUpcomingRec(@User() authUser: AuthUser): Promise<void> {
     const { userId } = authUser;
     return this.recService.deleteUpcomingRec(userId);
+  }
+
+  @ApiOperation({
+    summary: "Create a rec reaction",
+    description: "Create a rec reaction.",
+  })
+  @ApiBearerAuth()
+  @Post(":id/reactions")
+  @Auth()
+  @UsePipes(new ZodValidationBodyPipe(postRecsReactionsRequestSchema))
+  public async createRecReaction(
+    @Param("id") recId: string,
+    @Body() body: CreateRecReactionDto,
+    @User() authUser: AuthUser
+  ): Promise<void> {
+    const { userId } = authUser;
+    return this.recService.createRecReaction(userId, recId, body.reaction);
   }
 }

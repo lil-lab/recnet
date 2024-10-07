@@ -32,6 +32,21 @@ enum CronStatus {
   IN_PROGRESS
 }
 
+enum ReactionType {
+  THUMBS_UP
+  THINKING
+  SURPRISED
+  CRYING
+  STARRY_EYES
+  MINDBLOWN
+  EYES
+  ROCKET
+  HEART
+  PRAY
+  PARTY
+  // Add other reactions here as needed
+}
+
 model User {
   id                  String   @id @default(uuid()) @db.VarChar(64) // Primary key, UUID type
   provider            Provider // Enum type
@@ -59,6 +74,7 @@ model User {
   inviteCodeOwner InviteCode[]      @relation("InviteCodeOwner")
   inviteCodeUsed  InviteCode?       @relation("InviteCodeUsedBy")
   announcements   Announcement[]
+  recReactions    RecReaction[]
 
   @@unique([provider, providerId])
 }
@@ -85,7 +101,10 @@ model Recommendation {
 
   user    User    @relation(fields: [userId], references: [id]) // User who made the recommendation
   article Article @relation(fields: [articleId], references: [id]) // Article being recommended
+  reactions RecReaction[]
 }
+
+
 
 model Article {
   id         String   @id @default(uuid()) @db.VarChar(64)
@@ -137,6 +156,19 @@ model Announcement {
   updatedAt   DateTime @default(now()) @updatedAt
 
   createdBy User @relation(fields: [createdById], references: [id])
+}
+
+model RecReaction {
+  id          Int      @id @default(autoincrement())
+  userId      String   @db.VarChar(64)
+  recId       String   @db.VarChar(64)
+  reaction    ReactionType   
+  createdAt   DateTime @default(now())
+
+  user    User    @relation(fields: [userId], references: [id])
+  recommendation Recommendation @relation(fields: [recId], references: [id])
+
+  @@unique([userId, recId, reaction])
 }
 
 model WeeklyDigestCronLog {
