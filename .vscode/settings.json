@@ -4,8 +4,5 @@
   },
   "[prisma]": {
     "editor.defaultFormatter": "Prisma.prisma"
-  },
-  "cSpell.words": [
-    "Recnet"
-  ]
+  }
 }
