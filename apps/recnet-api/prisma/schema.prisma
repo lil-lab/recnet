@@ -99,12 +99,10 @@ model Recommendation {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @default(now()) @updatedAt
 
-  user    User    @relation(fields: [userId], references: [id]) // User who made the recommendation
-  article Article @relation(fields: [articleId], references: [id]) // Article being recommended
+  user      User          @relation(fields: [userId], references: [id]) // User who made the recommendation
+  article   Article       @relation(fields: [articleId], references: [id]) // Article being recommended
   reactions RecReaction[]
 }
-
-
 
 model Article {
   id         String   @id @default(uuid()) @db.VarChar(64)
@@ -159,13 +157,13 @@ model Announcement {
 }
 
 model RecReaction {
-  id          Int      @id @default(autoincrement())
-  userId      String   @db.VarChar(64)
-  recId       String   @db.VarChar(64)
-  reaction    ReactionType   
-  createdAt   DateTime @default(now())
+  id        Int          @id @default(autoincrement())
+  userId    String       @db.VarChar(64)
+  recId     String       @db.VarChar(64)
+  reaction  ReactionType
+  createdAt DateTime     @default(now())
 
-  user    User    @relation(fields: [userId], references: [id])
+  user           User           @relation(fields: [userId], references: [id])
   recommendation Recommendation @relation(fields: [recId], references: [id])
 
   @@unique([userId, recId, reaction])
