@@ -320,12 +320,4 @@ export class RecService {
       );
     }
   }
-
-  private convertStringToReactionType(reaction: string): ReactionType | null {
-    if (reaction in ReactionType) {
-      return ReactionType[reaction as keyof typeof ReactionType]; // Return enum value
-    }
-
-    return null;
-  }
 }
