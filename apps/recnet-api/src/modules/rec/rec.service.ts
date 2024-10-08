@@ -217,20 +217,27 @@ export class RecService {
     recId: string,
     reaction: string
   ): Promise<void> {
-    // Check if the rec exists
-    await this.recRepository.findRecById(recId);
+    await this.validateReaction(recId, reaction);
 
-    // Check if the reaction is valid
-    const reactionType = this.convertStringToReactionType(reaction);
-    if (!reactionType) {
-      throw new RecnetError(
-        ErrorCode.INVALID_REACTION_TYPE,
-        HttpStatus.BAD_REQUEST,
-        "Invalid reaction type"
-      );
-    }
+    await this.recRepository.createRecReaction(
+      userId,
+      recId,
+      reaction as ReactionType
+    );
+  }
 
-    await this.recRepository.createRecReaction(userId, recId, reactionType);
+  public async deleteRecReaction(
+    userId: string,
+    recId: string,
+    reaction: string
+  ): Promise<void> {
+    await this.validateReaction(recId, reaction);
+
+    await this.recRepository.deleteRecReaction(
+      userId,
+      recId,
+      reaction as ReactionType
+    );
   }
 
   private getRecsFromDbRecs(dbRec: DbRec[]): Rec[] {
@@ -295,6 +302,23 @@ export class RecService {
       targetArticleId = newArticle.id;
     }
     return targetArticleId;
+  }
+
+  private async validateReaction(
+    recId: string,
+    reaction: string
+  ): Promise<void> {
+    // Check if the rec exists
+    await this.recRepository.findRecById(recId);
+
+    // Check if the reaction is valid
+    if (!Object.values(ReactionType).includes(reaction as ReactionType)) {
+      throw new RecnetError(
+        ErrorCode.INVALID_REACTION_TYPE,
+        HttpStatus.BAD_REQUEST,
+        "Invalid reaction type"
+      );
+    }
   }
 
   private convertStringToReactionType(reaction: string): ReactionType | null {

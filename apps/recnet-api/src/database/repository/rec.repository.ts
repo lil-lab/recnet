@@ -142,6 +142,22 @@ export default class RecRepository {
     });
   }
 
+  public async deleteRecReaction(
+    userId: string,
+    recId: string,
+    reaction: ReactionType
+  ) {
+    return this.prisma.recReaction.delete({
+      where: {
+        userId_recId_reaction: {
+          userId: userId,
+          recId: recId,
+          reaction: reaction,
+        },
+      },
+    });
+  }
+
   private transformRecFilterByToPrismaWhere(
     filter: RecFilterBy
   ): Prisma.RecommendationWhereInput {

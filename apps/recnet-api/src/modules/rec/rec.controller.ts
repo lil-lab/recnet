@@ -29,6 +29,7 @@ import {
 import { getLatestCutOff } from "@recnet/recnet-date-fns";
 
 import {
+  deleteRecReactionParamsSchema,
   getRecsFeedsParamsSchema,
   getRecsParamsSchema,
   patchRecsUpcomingRequestSchema,
@@ -38,6 +39,7 @@ import {
 
 import { CreateRecDto } from "./dto/create.rec.dto";
 import { CreateRecReactionDto } from "./dto/create.rec.reaction.dto";
+import { DeleteRecReactionDto } from "./dto/delete.rec.reaction.dto";
 import { QueryFeedsDto } from "./dto/query.feeds.dto";
 import { QueryRecsDto } from "./dto/query.recs.dto";
 import { UpdateRecDto } from "./dto/update.rec.dto";
@@ -190,5 +192,22 @@ export class RecController {
   ): Promise<void> {
     const { userId } = authUser;
     return this.recService.createRecReaction(userId, recId, body.reaction);
+  }
+
+  @ApiOperation({
+    summary: "Delete a rec reaction",
+    description: "Delete a rec reaction.",
+  })
+  @ApiBearerAuth()
+  @Delete(":id/reactions")
+  @Auth()
+  @UsePipes(new ZodValidationQueryPipe(deleteRecReactionParamsSchema))
+  public async deleteRecReaction(
+    @Param("id") recId: string,
+    @Query() dto: DeleteRecReactionDto,
+    @User() authUser: AuthUser
+  ): Promise<void> {
+    const { userId } = authUser;
+    return this.recService.deleteRecReaction(userId, recId, dto.reaction);
   }
 }

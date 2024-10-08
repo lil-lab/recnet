@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-import { articleSchema, recSchema } from "../model";
+import { articleSchema, reactionTypeSchema, recSchema } from "../model";
 
 export const recFormSubmissionSchema = z.intersection(
   z.union([
@@ -90,21 +90,17 @@ export type PatchRecsUpcomingResponse = z.infer<
 
 // POST /recs/:id/reactions
 export const postRecsReactionsRequestSchema = z.object({
-  reaction: z.enum([
-    "THUMBS_UP",
-    "THINKING",
-    "SURPRISED",
-    "CRYING",
-    "STARRY_EYES",
-    "MINDBLOWN",
-    "EYES",
-    "ROCKET",
-    "HEART",
-    "PRAY",
-    "PARTY",
-  ]),
+  reaction: reactionTypeSchema,
 });
 
 export type PostRecsReactionsRequest = z.infer<
   typeof postRecsReactionsRequestSchema
+>;
+
+// DELETE /recs/:id/reactions
+export const deleteRecReactionParamsSchema = z.object({
+  reaction: reactionTypeSchema,
+});
+export type DeleteRecReactionParams = z.infer<
+  typeof deleteRecReactionParamsSchema
 >;
