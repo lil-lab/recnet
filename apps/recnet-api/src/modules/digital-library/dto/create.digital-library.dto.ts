@@ -13,8 +13,10 @@ export class CreateDigitalLibraryDto {
 
   @ApiProperty({
     description:
-      "The rank of the digital library. The smaller the rank, the higher the priority.",
+      "The rank of the digital library. The smaller the rank, the higher the priority. The rank must be between 1 and 100.",
     example: 1,
+    minimum: 1,
+    maximum: 100,
   })
   rank: number;
 

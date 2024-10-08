@@ -1,10 +1,12 @@
-import { Inject, Injectable } from "@nestjs/common";
+import { HttpStatus, Inject, Injectable } from "@nestjs/common";
 
 import DigitalLibraryRepository from "@recnet-api/database/repository/digital-library.repository";
 import {
   DigitalLibrary as DbDigitalLibrary,
   DigitalLibraryFilterBy,
 } from "@recnet-api/database/repository/digital-library.repository.type";
+import { RecnetError } from "@recnet-api/utils/error/recnet.error";
+import { ErrorCode } from "@recnet-api/utils/error/recnet.error.const";
 
 import { GetDigitalLibrariesResponse } from "./digital-library.response";
 import { CreateDigitalLibraryDto } from "./dto/create.digital-library.dto";
@@ -57,6 +59,7 @@ export class DigitalLibraryAdminService {
   public async updateDigitalLibrariesRank(
     dto: UpdateDigitalLibrariesRankDto
   ): Promise<GetDigitalLibrariesResponse> {
+    await this.validateRankUnique(dto);
     await this.digitalLibraryRepository.updateRanks(dto);
     const digitalLibraries = await this.digitalLibraryRepository.findAll();
     return {
@@ -74,5 +77,17 @@ export class DigitalLibraryAdminService {
       rank: digitalLibrary.rank,
       isVerified: digitalLibrary.isVerified,
     };
+  }
+
+  private async validateRankUnique(
+    dto: UpdateDigitalLibrariesRankDto
+  ): Promise<void> {
+    const ranks = dto.map((rank) => rank.rank);
+    if (new Set(ranks).size !== dto.length) {
+      throw new RecnetError(
+        ErrorCode.DIGITAL_LIBRARY_RANK_CONFLICT,
+        HttpStatus.CONFLICT
+      );
+    }
   }
 }

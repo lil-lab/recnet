@@ -48,7 +48,7 @@ export const patchDigitalLibrariesResponseSchema = digitalLibrarySchema;
 export const postDigitalLibrariesRankRequestSchema = z.array(
   z.object({
     id: z.number(),
-    rank: z.number(),
+    rank: z.number().min(1).max(100),
   })
 );
 export type PostDigitalLibrariesRankRequest = z.infer<

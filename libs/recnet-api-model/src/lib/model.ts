@@ -77,7 +77,7 @@ export const digitalLibrarySchema = z.object({
   id: z.number(),
   name: z.string(),
   regex: z.array(z.string()),
-  rank: z.number(),
+  rank: z.number().min(1).max(100),
   isVerified: z.boolean(),
 });
 export type DigitalLibrary = z.infer<typeof digitalLibrarySchema>;
