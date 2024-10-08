@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { Avatar } from "@recnet/recnet-web/components/Avatar";
 import { cn } from "@recnet/recnet-web/utils/cn";
 import { getUserServerSide } from "@recnet/recnet-web/utils/getUserServerSide";
+
 import { ReactivateButton } from "./ReactivateButton";
 
 export default async function ReactivatePage() {
