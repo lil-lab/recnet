@@ -2,6 +2,25 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [1.14.2](https://github.com/lil-lab/recnet/compare/recnet-web-v1.14.1...recnet-web-v1.14.2) (2024-10-09)
+
+
+### Features
+
+* add DELETE /digital-libraries/:id ([8813f6e](https://github.com/lil-lab/recnet/commit/8813f6efa829672a75356bd59ba8a33ce06d3329))
+* add DELETE /recs/{id}/reactions ([5f74ac9](https://github.com/lil-lab/recnet/commit/5f74ac9e7ad46f822dff06f150278df34c5f1562))
+* add GET /digital-libraries ([942d525](https://github.com/lil-lab/recnet/commit/942d525f491a45a350bac4737a17d6625ad9fb9a))
+* add PATCH /digital-libraries/:id ([e5f358d](https://github.com/lil-lab/recnet/commit/e5f358d01e44e07eab877650d147aa081dbafb67))
+* add POST /digital-libraries ([2059d01](https://github.com/lil-lab/recnet/commit/2059d0144bb251b0c166cf0163e614f7af6164b2))
+* add POST /digital-libraries/rank ([9e97a88](https://github.com/lil-lab/recnet/commit/9e97a880f3c29e198e56a8957b1b2da24ba91631))
+* add POST /recs/{id}/reactions ([bda631e](https://github.com/lil-lab/recnet/commit/bda631ebd6d8953294c53c70bd4b860f09d7d2f8))
+* generalize datepicker by adding selection mode ([30fc462](https://github.com/lil-lab/recnet/commit/30fc462f66c7644896694855858295cb3ceaac2c))
+
+
+### Bug Fixes
+
+* fix datepicker width ([ea9d621](https://github.com/lil-lab/recnet/commit/ea9d621d3477c088ec26af3cb8cafb25a0ba796b))
+
 ## [1.14.1](https://github.com/lil-lab/recnet/compare/recnet-web-v1.14.0...recnet-web-v1.14.1) (2024-10-03)
 
 
