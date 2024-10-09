@@ -177,6 +177,7 @@ export function AnnouncementForm(props: AnnouncementFormProps) {
                 render={({ field }) => (
                   <Flex gap="2" className="items-center text-gray-12 w-full">
                     <DatePicker
+                      mode="datetime"
                       value={field.value}
                       onChange={(date) => {
                         field.onChange(date);
@@ -212,6 +213,7 @@ export function AnnouncementForm(props: AnnouncementFormProps) {
                 render={({ field }) => (
                   <Flex gap="2" className="items-center text-gray-12 w-full">
                     <DatePicker
+                      mode="datetime"
                       value={field.value}
                       onChange={(date) => {
                         field.onChange(date);

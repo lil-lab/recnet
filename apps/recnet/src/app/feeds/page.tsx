@@ -17,6 +17,7 @@ import {
   getCutOff,
   getLatestCutOff,
   START_DATE,
+  formatDate,
 } from "@recnet/recnet-date-fns";
 
 import { GetRecsFeedsResponse, Rec } from "@recnet/recnet-api-model";
@@ -139,22 +140,29 @@ export default function FeedPage({
     >
       <OnboardingDialog />
       {Object.keys(recsGroupByTitle).length > 0 ? (
-        <InfiniteScroll
-          dataLength={Object.keys(recsGroupByTitle).length}
-          next={fetchNextPage}
-          hasMore={hasNextPage}
-          loader={<RecCardSkeleton />}
-          className="flex flex-col gap-y-4"
-        >
-          {Object.keys(recsGroupByTitle).map((recTitle, idx) => {
-            const recs = recsGroupByTitle[recTitle];
-            return <RecCard key={`${recTitle}-${idx}`} recs={recs} />;
-          })}
-        </InfiniteScroll>
+        <>
+          <div className="w-full mb-2 hidden md:flex flex-row justify-start">
+            <Text size="1" className="text-gray-10">
+              Current cycle: {formatDate(cutoff)}
+            </Text>
+          </div>
+          <InfiniteScroll
+            dataLength={Object.keys(recsGroupByTitle).length}
+            next={fetchNextPage}
+            hasMore={hasNextPage}
+            loader={<RecCardSkeleton />}
+            className="flex flex-col gap-y-4"
+          >
+            {Object.keys(recsGroupByTitle).map((recTitle, idx) => {
+              const recs = recsGroupByTitle[recTitle];
+              return <RecCard key={`${recTitle}-${idx}`} recs={recs} />;
+            })}
+          </InfiniteScroll>
+        </>
       ) : (
         <div className="h-[150px] w-full flex justify-center items-center">
           <Text size="3" className="text-gray-10">
-            No recommendations from your network this week.
+            No recommendations from your network on {formatDate(cutoff)}.
           </Text>
         </div>
       )}
