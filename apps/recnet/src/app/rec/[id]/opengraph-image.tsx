@@ -47,7 +47,8 @@ export default async function Image({ params }: { params: { id: string } }) {
           <p tw={cn("text-[24px] text-[#0090FF]")}> RecNet </p>
         </div>
         <div tw="font-medium">{rec.article.title}</div>
-        <p tw={cn("text-[24px] text-gray-600")}>{rec.article.author} </p>
+        <p tw="text-[24px] text-gray-700">{rec.description} </p>
+        <p tw={cn("text-[18px] text-gray-600")}>{rec.article.author} </p>
         <div
           tw={cn(
             "flex flex-row items-center",
@@ -62,6 +63,11 @@ export default async function Image({ params }: { params: { id: string } }) {
             alt={rec.user.displayName}
           />
           <span tw="self-center">{`${rec.user.displayName} · ${formatDate(new Date(rec.cutoff))}`}</span>
+          {rec.isSelfRec ? (
+            <div tw="ml-4 bg-[#FFEFDD] text-[#D14E00] rounded-md px-2 py-1 text-[16px] font-medium w-fit max-w-fit">
+              Self Rec
+            </div>
+          ) : null}
         </div>
       </div>
     ),
