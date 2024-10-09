@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-import { articleSchema, recSchema } from "../model";
+import { articleSchema, reactionTypeSchema, recSchema } from "../model";
 
 export const recFormSubmissionSchema = z.intersection(
   z.union([
@@ -86,4 +86,21 @@ export const patchRecsUpcomingResponseSchema = z.object({
 });
 export type PatchRecsUpcomingResponse = z.infer<
   typeof patchRecsUpcomingResponseSchema
+>;
+
+// POST /recs/:id/reactions
+export const postRecsReactionsRequestSchema = z.object({
+  reaction: reactionTypeSchema,
+});
+
+export type PostRecsReactionsRequest = z.infer<
+  typeof postRecsReactionsRequestSchema
+>;
+
+// DELETE /recs/:id/reactions
+export const deleteRecReactionParamsSchema = z.object({
+  reaction: reactionTypeSchema,
+});
+export type DeleteRecReactionParams = z.infer<
+  typeof deleteRecReactionParamsSchema
 >;

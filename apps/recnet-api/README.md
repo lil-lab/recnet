@@ -56,6 +56,7 @@ docker rm recnet-postgres
 ```bash
 # if you don't have Postgres CLI, install libpq first
 brew install libpq  # macOS
+brew install postgresql@16  # macOS
 
 # copy from sample file and modify the .env.dbdump.local
 cp apps/recnet-api/scripts/.env.dbdump.sample apps/recnet-api/scripts/.env.dbdump.local

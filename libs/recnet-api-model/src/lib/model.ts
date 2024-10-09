@@ -5,6 +5,21 @@ export const dateSchema = z.string().datetime();
 export const userRoleSchema = z.enum(["ADMIN", "USER"]);
 export type UserRole = z.infer<typeof userRoleSchema>;
 
+export const reactionTypeSchema = z.enum([
+  "THUMBS_UP",
+  "THINKING",
+  "SURPRISED",
+  "CRYING",
+  "STARRY_EYES",
+  "MINDBLOWN",
+  "EYES",
+  "ROCKET",
+  "HEART",
+  "PRAY",
+  "PARTY",
+]);
+export type ReactionType = z.infer<typeof reactionTypeSchema>;
+
 export const userPreviewSchema = z.object({
   id: z.string(),
   handle: z.string(),
@@ -72,3 +87,12 @@ export const announcementSchema = z.object({
   createdBy: userPreviewSchema,
 });
 export type Announcement = z.infer<typeof announcementSchema>;
+
+export const digitalLibrarySchema = z.object({
+  id: z.number(),
+  name: z.string(),
+  regex: z.array(z.string()),
+  rank: z.number().min(1).max(100),
+  isVerified: z.boolean(),
+});
+export type DigitalLibrary = z.infer<typeof digitalLibrarySchema>;

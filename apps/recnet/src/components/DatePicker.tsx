@@ -125,6 +125,9 @@ interface DatePickerProps {
   value: Date;
   onChange: (date: Date) => void;
   renderTrigger: (val?: Date) => React.ReactNode;
+  mode?: "date" | "datetime";
+  shouldDisable?: (date: Date) => boolean;
+  popoverContentProps?: React.ComponentProps<typeof Popover.Content>;
 }
 
 /**
@@ -134,10 +137,19 @@ interface DatePickerProps {
  * @param props.value The current value of the date picker.
  * @param props.onChange The function to call when the date picker value changes.
  * @param props.renderTrigger The function to render the trigger component.
+ * @param props.mode The mode of the date picker. Can be either "date" or "datetime". "datetime" allows the user to select the time as well.
+ * @param props.disableRule The function to determine if a date should be disabled. Return true to disable the date.
  */
 
 export function DatePicker(props: DatePickerProps) {
-  const { value, onChange, renderTrigger } = props;
+  const {
+    value,
+    onChange,
+    renderTrigger,
+    mode = "date",
+    shouldDisable = () => false,
+    popoverContentProps = {},
+  } = props;
   const [isOpen, setIsOpen] = useState(false);
   const [view, setView] = useState<View>("default");
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
@@ -152,11 +164,11 @@ export function DatePicker(props: DatePickerProps) {
 
   const tableCellBaseClass = "font-[12px] text-gray-9 px-1";
 
-  // get years from START_DATE to cuurent year + 10
+  // get years from START_DATE to current year +- 10
   const now = new Date();
   const startYear = new Date(START_DATE).getFullYear();
   const years: number[] = [];
-  for (let i = startYear; i <= now.getFullYear() + 10; i++) {
+  for (let i = startYear - 10; i <= now.getFullYear() + 10; i++) {
     years.push(i);
   }
 
@@ -180,7 +192,9 @@ export function DatePicker(props: DatePickerProps) {
       <Popover.Content
         className="overflow-hidden"
         maxWidth={"376px"}
+        minWidth={"376px"}
         side="bottom"
+        {...popoverContentProps}
       >
         {selectedDate ? (
           <div className="flex flex-col p-2">
@@ -305,18 +319,44 @@ export function DatePicker(props: DatePickerProps) {
                                           isSelected ? "after:bg-blue-4" : null
                                         );
 
+                                  const isNotThisMonth =
+                                    v.getMonth() !== currentSelectedMonth;
+                                  if (isNotThisMonth) {
+                                    return (
+                                      <td
+                                        key={dayKey}
+                                        className={cn(
+                                          tableCellBaseClass,
+                                          "cursor-not-allowed text-gray-6"
+                                        )}
+                                      >
+                                        <div className="flex flex-row justify-center">
+                                          {v.getDate()}
+                                        </div>
+                                      </td>
+                                    );
+                                  }
+
+                                  const isDisabled = shouldDisable(v);
                                   return (
                                     <td
                                       key={dayKey}
                                       className={cn(
                                         tableCellBaseClass,
-                                        "cursor-pointer",
-                                        "text-gray-11",
-                                        "hover:text-blue-10",
+                                        !isDisabled
+                                          ? "cursor-pointer text-gray-11 hover:text-blue-10"
+                                          : "cursor-not-allowed",
                                         "transition-all ease-in-out"
                                       )}
                                       onClick={() => {
-                                        setSelectedDate(v);
+                                        if (isDisabled) return;
+                                        // if mode is "datetime", proceed to time selector
+                                        if (mode === "datetime") {
+                                          setSelectedDate(v);
+                                          return;
+                                        }
+                                        onChange(v);
+                                        setIsOpen(false);
                                       }}
                                     >
                                       <div

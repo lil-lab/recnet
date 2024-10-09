@@ -19,6 +19,16 @@ export const rec = Prisma.validator<Prisma.RecommendationDefaultArgs>()({
 });
 export type Rec = Prisma.RecommendationGetPayload<typeof rec>;
 
+export const recReaction = Prisma.validator<Prisma.RecReactionDefaultArgs>()({
+  select: {
+    id: true,
+    userId: true,
+    recId: true,
+    reaction: true,
+  },
+});
+export type RecReaction = Prisma.RecReactionGetPayload<typeof recReaction>;
+
 export type DateRange = {
   from?: Date;
   to?: Date;
