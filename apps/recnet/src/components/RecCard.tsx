@@ -105,6 +105,14 @@ export function RecCard(props: { recs: Rec[]; showDate?: boolean }) {
             <Flex className="items-center gap-x-2 text-gray-10">
               <CalendarIcon width={16} height={16} />
               <Text size="2">{`${!rec.article.month ? "" : `${numToMonth[rec.article.month]}, `}${rec.article.year}`}</Text>
+              {rec.article.isVerified ? (
+                <Tooltip content="This article comes from trusted sources.">
+                  <div className="flex items-center gap-x-1 cursor-pointer mx-2">
+                    <CheckCircledIcon />
+                    <Text size="2">Verified</Text>
+                  </div>
+                </Tooltip>
+              ) : null}
             </Flex>
             <Flex className="items-center gap-x-1 text-accent-11">
               <Text size="1">Read</Text>{" "}
@@ -140,16 +148,6 @@ export function RecCard(props: { recs: Rec[]; showDate?: boolean }) {
                 ) : null}
                 {rec.isSelfRec ? <SelfRecBadge /> : null}
                 <LinkCopyButton link={getSharableLink(rec)} />
-                {rec.article.isVerified ? (
-                  <Tooltip content="This article comes from trusted sources.">
-                    <div className="flex items-center gap-x-1 cursor-pointer">
-                      <CheckCircledIcon className="text-gray-11" />
-                      <Text size="1" className="text-gray-11 text-[10px]">
-                        Verified
-                      </Text>
-                    </div>
-                  </Tooltip>
-                ) : null}
               </Flex>
               <Link
                 href={getSharableLink(rec)}
