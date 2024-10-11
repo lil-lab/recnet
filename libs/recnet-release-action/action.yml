@@ -45,5 +45,5 @@ runs:
         export HEAD_BRANCH="${{ inputs.head-branch }}"
         export BASE_BRANCH="${{ inputs.base-branch }}"
         export REPO="${{ inputs.repo }}"
-        node ./libs/recnet-release-action/dist/index.js
+        node ./libs/recnet-release-action/out/index.js
       shell: sh
