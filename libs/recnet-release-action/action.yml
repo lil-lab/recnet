@@ -38,7 +38,7 @@ runs:
     - run: export NX_NO_CLOUD=true
       shell: sh
     # - uses: nrwl/nx-set-shas@v4
-    - run: pnpm nx build recnet-release-action --verbose
+    - run: pnpm nx build recnet-release-action --verbose --no-cloud
       shell: sh
     - run: pwd
       shell: sh
