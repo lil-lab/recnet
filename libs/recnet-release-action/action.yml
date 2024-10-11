@@ -35,8 +35,10 @@ runs:
         cache: "pnpm"
     - run: pnpm install --frozen-lockfile
       shell: sh
-    - run: pnpm nx build recnet-release-action --no-cloud
+    - run: pnpm nx build recnet-release-action
       shell: sh
+      env:
+        NX_NO_CLOUD: true
     - run: |
         export GITHUB_TOKEN="${{ inputs.github-token }}"
         export HEAD_BRANCH="${{ inputs.head-branch }}"
