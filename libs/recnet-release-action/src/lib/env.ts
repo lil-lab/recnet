@@ -1,4 +1,3 @@
-import * as core from "@actions/core";
 import { z } from "zod";
 
 const actionInputSchema = z.object({
@@ -9,11 +8,16 @@ const actionInputSchema = z.object({
   repo: z.string(),
 });
 
+const githubToken = process.env["GITHUB_TOKEN"];
+const headBranch = process.env["HEAD_BRANCH"];
+const baseBranch = process.env["BASE_BRANCH"];
+const repo = process.env["REPO"] || "";
+
 // parse and export
 export const inputs = actionInputSchema.parse({
-  githubToken: core.getInput("github-token"),
-  headBranch: core.getInput("head-branch"),
-  baseBranch: core.getInput("base-branch"),
-  owner: core.getInput("repo").split("/")[0],
-  repo: core.getInput("repo").split("/")[1],
+  githubToken: githubToken,
+  headBranch: headBranch,
+  baseBranch: baseBranch,
+  owner: repo.split("/")[0],
+  repo: repo.split("/")[1],
 });

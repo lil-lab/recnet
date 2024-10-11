@@ -3,8 +3,8 @@ name: RecNet Prod-Release Pipeline
 on:
   workflow_dispatch: {}
   push:
-    branches:
-      - dev
+    # branches:
+    # - dev
 
 jobs:
   release:
