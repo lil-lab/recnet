@@ -28367,7 +28367,6 @@ exports.NEVER = parseUtil_1.INVALID;
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.inputs = void 0;
-const core = __nccwpck_require__(3847);
 const zod_1 = __nccwpck_require__(4966);
 const actionInputSchema = zod_1.z.object({
     githubToken: zod_1.z.string(),
@@ -28376,13 +28375,17 @@ const actionInputSchema = zod_1.z.object({
     owner: zod_1.z.string(),
     repo: zod_1.z.string(),
 });
+const githubToken = process.env["GITHUB_TOKEN"];
+const headBranch = process.env["HEAD_BRANCH"];
+const baseBranch = process.env["BASE_BRANCH"];
+const repo = process.env["REPO"] || "";
 // parse and export
 exports.inputs = actionInputSchema.parse({
-    githubToken: core.getInput("github-token"),
-    headBranch: core.getInput("head-branch"),
-    baseBranch: core.getInput("base-branch"),
-    owner: core.getInput("repo").split("/")[0],
-    repo: core.getInput("repo").split("/")[1],
+    githubToken: githubToken,
+    headBranch: headBranch,
+    baseBranch: baseBranch,
+    owner: repo.split("/")[0],
+    repo: repo.split("/")[1],
 });
 
 
