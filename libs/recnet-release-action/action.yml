@@ -34,16 +34,16 @@ runs:
         node-version: 20
         cache: "pnpm"
     - run: pnpm install --frozen-lockfile
-      shell: bash
+      shell: sh
     - run: export NX_NO_CLOUD=true
-      shell: bash
+      shell: sh
     # - uses: nrwl/nx-set-shas@v4
     - run: pnpm nx build recnet-release-action
-      shell: bash
+      shell: sh
     - run: |
         export GITHUB_TOKEN="${{ inputs.github-token }}"
         export HEAD_BRANCH="${{ inputs.head-branch }}"
         export BASE_BRANCH="${{ inputs.base-branch }}"
         export REPO="${{ inputs.repo }}"
         node ./libs/recnet-release-action/dist/index.js
-      shell: bash
+      shell: sh
