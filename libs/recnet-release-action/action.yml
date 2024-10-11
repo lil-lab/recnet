@@ -37,7 +37,7 @@ runs:
       shell: bash
     - run: export NX_NO_CLOUD=true
       shell: bash
-    - uses: nrwl/nx-set-shas@v4
+    # - uses: nrwl/nx-set-shas@v4
     - run: pnpm nx build recnet-release-action
       shell: bash
     - run: |
