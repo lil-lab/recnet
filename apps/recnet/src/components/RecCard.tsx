@@ -1,5 +1,5 @@
-import { CalendarIcon } from "@radix-ui/react-icons";
-import { Flex, Text } from "@radix-ui/themes";
+import { CalendarIcon, CheckCircledIcon } from "@radix-ui/react-icons";
+import { Flex, Text, Tooltip } from "@radix-ui/themes";
 import { ChevronRight } from "lucide-react";
 import Link from "next/link";
 
@@ -140,6 +140,16 @@ export function RecCard(props: { recs: Rec[]; showDate?: boolean }) {
                 ) : null}
                 {rec.isSelfRec ? <SelfRecBadge /> : null}
                 <LinkCopyButton link={getSharableLink(rec)} />
+                {rec.article.isVerified ? (
+                  <Tooltip content="This article comes from trusted sources.">
+                    <div className="flex items-center gap-x-1 cursor-pointer">
+                      <CheckCircledIcon className="text-gray-11" />
+                      <Text size="1" className="text-gray-11 text-[10px]">
+                        Verified
+                      </Text>
+                    </div>
+                  </Tooltip>
+                ) : null}
               </Flex>
               <Link
                 href={getSharableLink(rec)}
