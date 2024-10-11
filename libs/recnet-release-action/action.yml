@@ -40,7 +40,7 @@ runs:
     # - uses: nrwl/nx-set-shas@v4
     - run: pnpm nx build recnet-release-action
       shell: sh
-    - run: ls -a
+    - run: pwd
       shell: sh
     - run: |
         export GITHUB_TOKEN="${{ inputs.github-token }}"
