@@ -34,6 +34,20 @@ export const User = createParamDecorator<
   return prop ? recnetUser[prop] : recnetUser;
 });
 
+export const UserOptional = createParamDecorator<
+  RecNetJwtPayloadProps | undefined,
+  ExecutionContext
+>((prop, ctx) => {
+  const request = ctx.switchToHttp().getRequest();
+  const recnetJwtPayload = recnetJwtPayloadSchema.safeParse(request.user);
+  if (!recnetJwtPayload.success) {
+    return null;
+  }
+  const recnetUser = recnetJwtPayload.data.recnet;
+
+  return prop ? recnetUser[prop] : recnetUser;
+});
+
 export const FirebaseUser = createParamDecorator<undefined, ExecutionContext>(
   (_, ctx): AuthFirebaseUser => {
     const request = ctx.switchToHttp().getRequest();
