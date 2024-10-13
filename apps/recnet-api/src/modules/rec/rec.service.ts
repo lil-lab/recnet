@@ -7,7 +7,6 @@ import RecRepository from "@recnet-api/database/repository/rec.repository";
 import {
   Rec as DbRec,
   RecFilterBy,
-  RecReaction as DbRecReaction,
 } from "@recnet-api/database/repository/rec.repository.type";
 import UserRepository from "@recnet-api/database/repository/user.repository";
 import { getOffset } from "@recnet-api/utils";
@@ -16,7 +15,6 @@ import { ErrorCode } from "@recnet-api/utils/error/recnet.error.const";
 
 import { getCutOff } from "@recnet/recnet-date-fns";
 
-import { Rec } from "./entities/rec.entity";
 import {
   CreateRecResponse,
   GetFeedsResponse,
@@ -25,8 +23,7 @@ import {
   GetUpcomingRecResponse,
   UpdateRecResponse,
 } from "./rec.response";
-
-import { transformUserPreview } from "../user/user.transformer";
+import { transformRec } from "./rec.transformer";
 
 @Injectable()
 export class RecService {
@@ -44,9 +41,13 @@ export class RecService {
     authUserId: string | null
   ): Promise<GetRecResponse> {
     const dbRec = await this.recRepository.findRecById(recId);
-    return { rec: this.getRecFromDbRec(dbRec, authUserId) };
+    return { rec: transformRec(dbRec, authUserId) };
   }
 
+  /**
+   * @param userId is the user id of the user whose recs are being fetched
+   * @param authUserId is the user id of the user who is making the request
+   */
   public async getRecs(
     page: number,
     pageSize: number,
@@ -69,7 +70,7 @@ export class RecService {
     };
     const recCount = await this.recRepository.countRecs(filter);
     const dbRecs = await this.recRepository.findRecs(page, pageSize, filter);
-    const recs = this.getRecsFromDbRecs(dbRecs, authUserId);
+    const recs = dbRecs.map((dbRec) => transformRec(dbRec, authUserId));
 
     return {
       hasNext: recs.length + getOffset(page, pageSize) < recCount,
@@ -94,7 +95,7 @@ export class RecService {
     };
     const recCount = await this.recRepository.countRecs(filter);
     const dbRecs = await this.recRepository.findRecs(page, pageSize, filter);
-    const recs = this.getRecsFromDbRecs(dbRecs, userId);
+    const recs = dbRecs.map((dbRec) => transformRec(dbRec, userId));
 
     return {
       hasNext: recs.length + getOffset(page, pageSize) < recCount,
@@ -110,7 +111,7 @@ export class RecService {
       };
     }
     return {
-      rec: this.getRecFromDbRec(dbRec, userId),
+      rec: transformRec(dbRec, userId),
     };
   }
 
@@ -151,7 +152,7 @@ export class RecService {
       articleIdToConnect
     );
     return {
-      rec: this.getRecFromDbRec(newRec, userId),
+      rec: transformRec(newRec, userId),
     };
   }
 
@@ -201,7 +202,7 @@ export class RecService {
       );
     }
     return {
-      rec: this.getRecFromDbRec(updatedRec, userId),
+      rec: transformRec(updatedRec, userId),
     };
   }
 
@@ -243,44 +244,6 @@ export class RecService {
       recId,
       reaction as ReactionType
     );
-  }
-
-  private getRecsFromDbRecs(dbRecs: DbRec[], authUserId: string | null): Rec[] {
-    return dbRecs.map((dbRec) => this.getRecFromDbRec(dbRec, authUserId));
-  }
-
-  private getRecFromDbRec(dbRec: DbRec, authUserId: string | null): Rec {
-    let selfReactions: ReactionType[] = [];
-    if (authUserId) {
-      selfReactions = dbRec.reactions
-        .filter((reaction) => reaction.userId == authUserId)
-        .map((reaction) => reaction.reaction);
-    }
-
-    const reactionCounts = dbRec.reactions.reduce(
-      (acc: Record<ReactionType, number>, reaction: DbRecReaction) => {
-        if (!acc[reaction.reaction]) {
-          acc[reaction.reaction] = 0;
-        }
-        acc[reaction.reaction] += 1;
-        return acc;
-      },
-      {} as Record<ReactionType, number>
-    );
-    const numReactions = Object.keys(reactionCounts).map((reactionType) => ({
-      type: reactionType as ReactionType,
-      count: reactionCounts[reactionType as ReactionType],
-    }));
-
-    return {
-      ...dbRec,
-      cutoff: dbRec.cutoff.toISOString(),
-      user: transformUserPreview(dbRec.user),
-      reactions: {
-        selfReactions,
-        numReactions,
-      },
-    };
   }
 
   /**
