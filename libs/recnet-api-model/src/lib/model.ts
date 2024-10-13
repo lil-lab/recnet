@@ -63,6 +63,15 @@ export const recSchema = z.object({
   cutoff: dateSchema,
   user: userPreviewSchema,
   article: articleSchema,
+  reactions: z.object({
+    selfReactions: z.array(reactionTypeSchema),
+    numReactions: z.array(
+      z.object({
+        type: reactionTypeSchema,
+        count: z.number(),
+      })
+    ),
+  }),
 });
 export type Rec = z.infer<typeof recSchema>;
 

@@ -162,6 +162,10 @@ export class EmailService {
       ...dbRec,
       cutoff: dbRec.cutoff.toISOString(),
       user: transformUserPreview(dbRec.user),
+      reactions: {
+        selfReactions: [],
+        numReactions: [],
+      },
     };
   }
 }

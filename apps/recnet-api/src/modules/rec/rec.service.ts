@@ -7,6 +7,7 @@ import RecRepository from "@recnet-api/database/repository/rec.repository";
 import {
   Rec as DbRec,
   RecFilterBy,
+  RecReaction as DbRecReaction,
 } from "@recnet-api/database/repository/rec.repository.type";
 import UserRepository from "@recnet-api/database/repository/user.repository";
 import { getOffset } from "@recnet-api/utils";
@@ -38,16 +39,20 @@ export class RecService {
     private readonly articleRepository: ArticleRepository
   ) {}
 
-  public async getRec(recId: string): Promise<GetRecResponse> {
+  public async getRec(
+    recId: string,
+    authUserId: string | null
+  ): Promise<GetRecResponse> {
     const dbRec = await this.recRepository.findRecById(recId);
-    return { rec: this.getRecFromDbRec(dbRec) };
+    return { rec: this.getRecFromDbRec(dbRec, authUserId) };
   }
 
   public async getRecs(
     page: number,
     pageSize: number,
     userId: string,
-    to: Date
+    to: Date,
+    authUserId: string | null
   ): Promise<GetRecsResponse> {
     // validate if the user exists and is activated
     const user = await this.userRepository.findUserById(userId);
@@ -64,7 +69,7 @@ export class RecService {
     };
     const recCount = await this.recRepository.countRecs(filter);
     const dbRecs = await this.recRepository.findRecs(page, pageSize, filter);
-    const recs = this.getRecsFromDbRecs(dbRecs);
+    const recs = this.getRecsFromDbRecs(dbRecs, authUserId);
 
     return {
       hasNext: recs.length + getOffset(page, pageSize) < recCount,
@@ -89,7 +94,7 @@ export class RecService {
     };
     const recCount = await this.recRepository.countRecs(filter);
     const dbRecs = await this.recRepository.findRecs(page, pageSize, filter);
-    const recs = this.getRecsFromDbRecs(dbRecs);
+    const recs = this.getRecsFromDbRecs(dbRecs, userId);
 
     return {
       hasNext: recs.length + getOffset(page, pageSize) < recCount,
@@ -105,7 +110,7 @@ export class RecService {
       };
     }
     return {
-      rec: this.getRecFromDbRec(dbRec),
+      rec: this.getRecFromDbRec(dbRec, userId),
     };
   }
 
@@ -146,7 +151,7 @@ export class RecService {
       articleIdToConnect
     );
     return {
-      rec: this.getRecFromDbRec(newRec),
+      rec: this.getRecFromDbRec(newRec, userId),
     };
   }
 
@@ -196,7 +201,7 @@ export class RecService {
       );
     }
     return {
-      rec: this.getRecFromDbRec(updatedRec),
+      rec: this.getRecFromDbRec(updatedRec, userId),
     };
   }
 
@@ -240,15 +245,41 @@ export class RecService {
     );
   }
 
-  private getRecsFromDbRecs(dbRec: DbRec[]): Rec[] {
-    return dbRec.map(this.getRecFromDbRec);
+  private getRecsFromDbRecs(dbRecs: DbRec[], authUserId: string | null): Rec[] {
+    return dbRecs.map((dbRec) => this.getRecFromDbRec(dbRec, authUserId));
   }
 
-  private getRecFromDbRec(dbRec: DbRec): Rec {
+  private getRecFromDbRec(dbRec: DbRec, authUserId: string | null): Rec {
+    let selfReactions: ReactionType[] = [];
+    if (authUserId) {
+      selfReactions = dbRec.reactions
+        .filter((reaction) => reaction.userId == authUserId)
+        .map((reaction) => reaction.reaction);
+    }
+
+    const reactionCounts = dbRec.reactions.reduce(
+      (acc: Record<ReactionType, number>, reaction: DbRecReaction) => {
+        if (!acc[reaction.reaction]) {
+          acc[reaction.reaction] = 0;
+        }
+        acc[reaction.reaction] += 1;
+        return acc;
+      },
+      {} as Record<ReactionType, number>
+    );
+    const numReactions = Object.keys(reactionCounts).map((reactionType) => ({
+      type: reactionType as ReactionType,
+      count: reactionCounts[reactionType as ReactionType],
+    }));
+
     return {
       ...dbRec,
       cutoff: dbRec.cutoff.toISOString(),
       user: transformUserPreview(dbRec.user),
+      reactions: {
+        selfReactions,
+        numReactions,
+      },
     };
   }
 
