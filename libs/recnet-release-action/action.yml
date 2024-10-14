@@ -21,5 +21,26 @@ inputs:
     required: true
 
 runs:
-  using: node20
-  main: out/index.js
+  using: "composite"
+  steps:
+    - uses: actions/checkout@v4
+    - uses: pnpm/action-setup@v2
+      with:
+        version: 8.15.5
+    - uses: actions/setup-node@v3
+      with:
+        node-version: 20
+        cache: "pnpm"
+    - run: pnpm install --frozen-lockfile
+      shell: sh
+    - run: pnpm nx build recnet-release-action
+      shell: sh
+      env:
+        NX_NO_CLOUD: true
+    - run: |
+        export GITHUB_TOKEN="${{ inputs.github-token }}"
+        export HEAD_BRANCH="${{ inputs.head-branch }}"
+        export BASE_BRANCH="${{ inputs.base-branch }}"
+        export REPO="${{ inputs.repo }}"
+        node ./libs/recnet-release-action/dist/index.js
+      shell: sh
