@@ -1,5 +1,5 @@
-import { CalendarIcon } from "@radix-ui/react-icons";
-import { Flex, Text } from "@radix-ui/themes";
+import { CalendarIcon, CheckCircledIcon } from "@radix-ui/react-icons";
+import { Flex, Text, Tooltip } from "@radix-ui/themes";
 import { ChevronRight } from "lucide-react";
 import Link from "next/link";
 
@@ -105,6 +105,14 @@ export function RecCard(props: { recs: Rec[]; showDate?: boolean }) {
             <Flex className="items-center gap-x-2 text-gray-10">
               <CalendarIcon width={16} height={16} />
               <Text size="2">{`${!rec.article.month ? "" : `${numToMonth[rec.article.month]}, `}${rec.article.year}`}</Text>
+              {rec.article.isVerified ? (
+                <Tooltip content="This article comes from trusted sources.">
+                  <div className="flex items-center gap-x-1 cursor-pointer mx-2">
+                    <CheckCircledIcon />
+                    <Text size="2">Verified</Text>
+                  </div>
+                </Tooltip>
+              ) : null}
             </Flex>
             <Flex className="items-center gap-x-1 text-accent-11">
               <Text size="1">Read</Text>{" "}
