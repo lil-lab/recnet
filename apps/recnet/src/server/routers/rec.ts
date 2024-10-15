@@ -10,6 +10,8 @@ import {
   postRecsUpcomingRequestSchema,
   patchRecsUpcomingRequestSchema,
   getRecIdResponseSchema,
+  postRecsReactionsRequestSchema,
+  deleteRecReactionParamsSchema,
 } from "@recnet/recnet-api-model";
 
 import {
@@ -106,6 +108,34 @@ export const recRouter = router({
     const { recnetApi } = opts.ctx;
     await recnetApi.delete(`/recs/upcoming`);
   }),
+  addReaction: checkRecnetJWTProcedure
+    .input(
+      postRecsReactionsRequestSchema.extend({
+        recId: z.string(),
+      })
+    )
+    .mutation(async (opts) => {
+      const { recnetApi } = opts.ctx;
+      const { recId, reaction } = opts.input;
+      await recnetApi.post(`/recs/rec/${recId}/reactions`, {
+        reaction,
+      });
+    }),
+  removeReaction: checkRecnetJWTProcedure
+    .input(
+      deleteRecReactionParamsSchema.extend({
+        recId: z.string(),
+      })
+    )
+    .mutation(async (opts) => {
+      const { recnetApi } = opts.ctx;
+      const { recId, reaction } = opts.input;
+      await recnetApi.delete(`/recs/rec/${recId}/reactions`, {
+        params: {
+          ...deleteRecReactionParamsSchema.parse({ reaction }),
+        },
+      });
+    }),
   getNumOfRecs: checkIsAdminProcedure
     .output(
       z.object({
