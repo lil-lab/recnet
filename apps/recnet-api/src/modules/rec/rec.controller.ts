@@ -71,7 +71,7 @@ export class RecController {
     @Param("id") id: string,
     @UserOptional() authUser: AuthOptionalUser
   ): Promise<GetRecResponse> {
-    const authUserId = authUser ? authUser.userId : null;
+    const authUserId = authUser?.userId ?? null;
     return this.recService.getRec(id, authUserId);
   }
 
@@ -89,7 +89,7 @@ export class RecController {
     @UserOptional() authUser: AuthOptionalUser
   ): Promise<GetRecsResponse> {
     const { page, pageSize, userId } = dto;
-    const authUserId = authUser ? authUser.userId : null;
+    const authUserId = authUser?.userId ?? null;
 
     // Get the Recs to current date to avoid upcoming rec from showing in a user's profile page
     const to = new Date();
