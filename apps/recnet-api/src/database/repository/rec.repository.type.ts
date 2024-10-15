@@ -3,6 +3,16 @@ import { Prisma } from "@prisma/client";
 import { article } from "./article.repository.type";
 import { userPreview } from "./user.repository.type";
 
+export const recReaction = Prisma.validator<Prisma.RecReactionDefaultArgs>()({
+  select: {
+    id: true,
+    userId: true,
+    recId: true,
+    reaction: true,
+  },
+});
+export type RecReaction = Prisma.RecReactionGetPayload<typeof recReaction>;
+
 export const rec = Prisma.validator<Prisma.RecommendationDefaultArgs>()({
   select: {
     id: true,
@@ -15,19 +25,12 @@ export const rec = Prisma.validator<Prisma.RecommendationDefaultArgs>()({
     article: {
       select: article.select,
     },
+    reactions: {
+      select: recReaction.select,
+    },
   },
 });
 export type Rec = Prisma.RecommendationGetPayload<typeof rec>;
-
-export const recReaction = Prisma.validator<Prisma.RecReactionDefaultArgs>()({
-  select: {
-    id: true,
-    userId: true,
-    recId: true,
-    reaction: true,
-  },
-});
-export type RecReaction = Prisma.RecReactionGetPayload<typeof recReaction>;
 
 export type DateRange = {
   from?: Date;

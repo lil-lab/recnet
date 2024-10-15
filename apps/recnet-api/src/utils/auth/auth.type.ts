@@ -17,6 +17,8 @@ export type AuthUser<
   ? RecNetJwtPayload["recnet"][Prop]
   : RecNetJwtPayload["recnet"];
 
+export type AuthOptionalUser = AuthUser | null;
+
 export type AuthFirebaseUser = {
   provider: AuthProvider;
   providerId: string;
