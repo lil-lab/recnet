@@ -14,14 +14,14 @@ import {
 
 import {
   checkIsAdminProcedure,
+  checkOptionalRecnetJWTProcedure,
   checkRecnetJWTProcedure,
-  publicApiProcedure,
 } from "./middleware";
 
 import { router } from "../trpc";
 
 export const recRouter = router({
-  getRecById: publicApiProcedure
+  getRecById: checkOptionalRecnetJWTProcedure
     .input(
       z.object({
         id: z.string(),
@@ -33,7 +33,7 @@ export const recRouter = router({
       const { data } = await recnetApi.get(`/recs/rec/${opts.input.id}`);
       return getRecIdResponseSchema.parse(data);
     }),
-  getHistoricalRecs: publicApiProcedure
+  getHistoricalRecs: checkOptionalRecnetJWTProcedure
     .input(
       z.object({
         userId: z.string(),
