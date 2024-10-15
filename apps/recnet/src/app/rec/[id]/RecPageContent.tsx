@@ -7,6 +7,7 @@ import { LinkPreview } from "@recnet/recnet-web/components/LinkPreview";
 import { SelfRecBadge } from "@recnet/recnet-web/components/SelfRecBadge";
 
 import { formatDate } from "@recnet/recnet-date-fns";
+import { RecReactionsList } from "./RecReactionsList";
 
 const fallbackImage =
   "https://recnet.io/_next/image?url=%2Frecnet-logo.webp&w=64&q=100";
@@ -54,6 +55,7 @@ export async function RecPageContent(props: { id: string }) {
           fallbackImage
         }
       />
+      <RecReactionsList id={id} />
     </div>
   );
 }

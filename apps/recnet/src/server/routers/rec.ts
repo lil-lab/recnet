@@ -117,7 +117,7 @@ export const recRouter = router({
     .mutation(async (opts) => {
       const { recnetApi } = opts.ctx;
       const { recId, reaction } = opts.input;
-      await recnetApi.post(`/recs/rec/${recId}/reactions`, {
+      await recnetApi.post(`/recs/${recId}/reactions`, {
         reaction,
       });
     }),
@@ -130,7 +130,7 @@ export const recRouter = router({
     .mutation(async (opts) => {
       const { recnetApi } = opts.ctx;
       const { recId, reaction } = opts.input;
-      await recnetApi.delete(`/recs/rec/${recId}/reactions`, {
+      await recnetApi.delete(`/recs/${recId}/reactions`, {
         params: {
           ...deleteRecReactionParamsSchema.parse({ reaction }),
         },
