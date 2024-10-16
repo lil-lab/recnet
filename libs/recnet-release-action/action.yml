@@ -24,19 +24,46 @@ runs:
   using: "composite"
   steps:
     - uses: actions/checkout@v4
+
     - uses: pnpm/action-setup@v2
       with:
         version: 8.15.5
+
     - uses: actions/setup-node@v3
       with:
         node-version: 20
         cache: "pnpm"
-    - run: pnpm install --frozen-lockfile
+
+    - name: Get hash of source files
+      id: hash
+      run: echo "hash=$(bash ./libs/recnet-release-action/scripts/hash_source.sh)" >> $GITHUB_OUTPUT
+      shell: bash
+
+    - name: Cache build output
+      uses: actions/cache@v3
+      id: cache
+      with:
+        path: ./libs/recnet-release-action/dist
+        key: ${{ runner.os }}-recnet-release-action-${{ steps.hash.outputs.hash }}
+
+    - name: Display hash and cache status
+      run: |
+        echo "Source hash: ${{ steps.hash.outputs.hash }}"
+        echo "Cache hit: ${{ steps.cache.outputs.cache-hit == 'true' && 'Yes' || 'No' }}"
+      shell: bash
+
+    - name: Install dependencies
+      if: steps.cache.outputs.cache-hit != 'true'
+      run: pnpm install --frozen-lockfile
       shell: sh
-    - run: pnpm nx build recnet-release-action
+
+    - name: Build
+      if: steps.cache.outputs.cache-hit != 'true'
+      run: pnpm nx build recnet-release-action
       shell: sh
       env:
         NX_NO_CLOUD: true
+
     - run: |
         export GITHUB_TOKEN="${{ inputs.github-token }}"
         export HEAD_BRANCH="${{ inputs.head-branch }}"
