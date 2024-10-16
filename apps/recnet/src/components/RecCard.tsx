@@ -17,6 +17,7 @@ import { LinkCopyButton } from "./LinkCopyButton";
 import { SelfRecBadge } from "./SelfRecBadge";
 
 import { getSharableLink } from "../utils/getSharableRecLink";
+import { RecReactionsList } from "../app/rec/[id]/RecReactionsList";
 
 export function RecCardSkeleton() {
   return (
@@ -160,6 +161,9 @@ export function RecCard(props: { recs: Rec[]; showDate?: boolean }) {
                   </Text>
                 </Flex>
               </Link>
+              <div className="mt-2">
+                <RecReactionsList id={rec.id} />
+              </div>
             </Flex>
           </Flex>
         );

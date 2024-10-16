@@ -108,6 +108,32 @@ export const checkRecnetJWTProcedure = publicProcedure.use(async (opts) => {
   });
 });
 
+export const checkOptionalRecnetJWTProcedure = publicProcedure.use(
+  async (opts) => {
+    const tokens = await getTokenServerSide();
+    const parseRes = recnetTokenSchema.safeParse(tokens);
+    if (!tokens || !parseRes.success) {
+      // if no token, just continue
+      return opts.next({
+        ctx: {
+          ...opts.ctx,
+        },
+      });
+    }
+    const user = await getUserByTokens();
+    const recnetApiInstance = createRecnetApiInstanceWithToken(tokens);
+
+    return opts.next({
+      ctx: {
+        ...opts.ctx,
+        tokens: parseRes.data,
+        user: user,
+        recnetApi: recnetApiInstance,
+      },
+    });
+  }
+);
+
 export const checkIsAdminProcedure = publicProcedure.use(async (opts) => {
   const tokens = await getTokenServerSide();
   const parseRes = recnetJwtPayloadSchema.safeParse(tokens?.decodedToken);
