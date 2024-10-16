@@ -16,8 +16,8 @@ import { Rec } from "@recnet/recnet-api-model";
 import { LinkCopyButton } from "./LinkCopyButton";
 import { SelfRecBadge } from "./SelfRecBadge";
 
-import { getSharableLink } from "../utils/getSharableRecLink";
 import { RecReactionsList } from "../app/rec/[id]/RecReactionsList";
+import { getSharableLink } from "../utils/getSharableRecLink";
 
 export function RecCardSkeleton() {
   return (
