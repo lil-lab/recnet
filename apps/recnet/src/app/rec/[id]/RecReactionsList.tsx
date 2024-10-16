@@ -29,7 +29,7 @@ function ReactionButton(props: { onSelect: (reaction: ReactionType) => void }) {
   return (
     <Popover.Root>
       <Popover.Trigger>
-        <div className="cursor-pointer rounded-[999px] mx-1 p-2 bg-gray-4">
+        <div className="cursor-pointer rounded-[999px] mr-1 p-2 bg-gray-4">
           <FaceIcon width="16" height="16" className="text-gray-11" />
         </div>
       </Popover.Trigger>
