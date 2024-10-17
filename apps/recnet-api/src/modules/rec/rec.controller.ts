@@ -17,9 +17,9 @@ import {
   ApiTags,
 } from "@nestjs/swagger";
 
-import { Auth } from "@recnet-api/utils/auth/auth.decorator";
-import { AuthUser } from "@recnet-api/utils/auth/auth.type";
-import { User } from "@recnet-api/utils/auth/auth.user.decorator";
+import { Auth, AuthOptional } from "@recnet-api/utils/auth/auth.decorator";
+import { AuthUser, AuthOptionalUser } from "@recnet-api/utils/auth/auth.type";
+import { User, UserOptional } from "@recnet-api/utils/auth/auth.user.decorator";
 import { RecnetExceptionFilter } from "@recnet-api/utils/filters/recnet.exception.filter";
 import {
   ZodValidationBodyPipe,
@@ -63,10 +63,16 @@ export class RecController {
     summary: "Get a single rec",
     description: "Get a single rec by id.",
   })
+  @ApiBearerAuth()
   @ApiOkResponse({ type: GetRecResponse })
   @Get("rec/:id")
-  public async getRec(@Param("id") id: string): Promise<GetRecResponse> {
-    return this.recService.getRec(id);
+  @AuthOptional()
+  public async getRec(
+    @Param("id") id: string,
+    @UserOptional() authUser: AuthOptionalUser
+  ): Promise<GetRecResponse> {
+    const authUserId = authUser?.userId ?? null;
+    return this.recService.getRec(id, authUserId);
   }
 
   @ApiOperation({
@@ -76,13 +82,18 @@ export class RecController {
   @ApiOkResponse({ type: GetRecsResponse })
   @ApiBearerAuth()
   @Get()
+  @AuthOptional()
   @UsePipes(new ZodValidationQueryPipe(getRecsParamsSchema))
-  public async getRecs(@Query() dto: QueryRecsDto): Promise<GetRecsResponse> {
+  public async getRecs(
+    @Query() dto: QueryRecsDto,
+    @UserOptional() authUser: AuthOptionalUser
+  ): Promise<GetRecsResponse> {
     const { page, pageSize, userId } = dto;
+    const authUserId = authUser?.userId ?? null;
 
     // Get the Recs to current date to avoid upcoming rec from showing in a user's profile page
     const to = new Date();
-    return this.recService.getRecs(page, pageSize, userId, to);
+    return this.recService.getRecs(page, pageSize, userId, to, authUserId);
   }
 
   @ApiOperation({

@@ -7,14 +7,12 @@ import groupBy from "lodash.groupby";
 
 import { AppConfig, NodemailerConfig } from "@recnet-api/config/common.config";
 import RecRepository from "@recnet-api/database/repository/rec.repository";
-import {
-  Rec as DbRec,
-  RecFilterBy,
-} from "@recnet-api/database/repository/rec.repository.type";
+import { RecFilterBy } from "@recnet-api/database/repository/rec.repository.type";
 import UserRepository from "@recnet-api/database/repository/user.repository";
 import { User as DbUser } from "@recnet-api/database/repository/user.repository.type";
 import WeeklyDigestCronLogRepository from "@recnet-api/database/repository/weekly-digest-cron-log.repository";
 import { Rec } from "@recnet-api/modules/rec/entities/rec.entity";
+import { transformRec } from "@recnet-api/modules/rec/rec.transformer";
 import { sleep } from "@recnet-api/utils";
 
 import { getLatestCutOff } from "@recnet/recnet-date-fns";
@@ -27,8 +25,6 @@ import {
 } from "./email.const";
 import { SendMailResult, Transporter } from "./email.type";
 import WeeklyDigest, { WeeklyDigestSubject } from "./templates/WeeklyDigest";
-
-import { transformUserPreview } from "../user/user.transformer";
 
 @Injectable()
 export class EmailService {
@@ -125,7 +121,7 @@ export class EmailService {
       MAX_REC_PER_MAIL,
       filter
     );
-    return dbRecs.map((dbRec) => this.getRecFromDbRec(dbRec));
+    return dbRecs.map((dbRec) => transformRec(dbRec));
   }
 
   private async sendWeeklyDigest(
@@ -155,13 +151,5 @@ export class EmailService {
     }
 
     return result;
-  }
-
-  private getRecFromDbRec(dbRec: DbRec): Rec {
-    return {
-      ...dbRec,
-      cutoff: dbRec.cutoff.toISOString(),
-      user: transformUserPreview(dbRec.user),
-    };
   }
 }

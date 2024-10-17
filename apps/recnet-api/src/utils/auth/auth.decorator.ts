@@ -16,12 +16,21 @@ export const Auth = (
   } = {}
 ) => {
   const { allowNonActivated = false, allowedRoles = ["USER", "ADMIN"] } = opts;
+  const isOptional = false;
 
   return applyDecorators(
-    UseGuards(new AuthGuard(verifyRecnetJwt)),
+    UseGuards(AuthGuard(verifyRecnetJwt, isOptional)),
     UseGuards(ActivatedGuard(allowNonActivated)),
     UseGuards(RoleGuard(allowedRoles))
   );
 };
 
-export const AuthFirebase = () => UseGuards(new AuthGuard(verifyFirebaseJwt));
+export const AuthOptional = () => {
+  const isOptional = true;
+  return UseGuards(AuthGuard(verifyRecnetJwt, isOptional));
+};
+
+export const AuthFirebase = () => {
+  const isOptional = false;
+  return UseGuards(AuthGuard(verifyFirebaseJwt, isOptional));
+};

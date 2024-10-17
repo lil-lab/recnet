@@ -2,6 +2,24 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [1.15.0](https://github.com/lil-lab/recnet/compare/recnet-web-v1.14.2...recnet-web-v1.15.0) (2024-10-16)
+
+
+### Features
+
+* add add/remove reaction procedure ([13d5d1d](https://github.com/lil-lab/recnet/commit/13d5d1d373ae70af9f8498c4f5bc3dd98690618f))
+* add AuthOptional decorator ([d804f48](https://github.com/lil-lab/recnet/commit/d804f48c407d01d93588b588960086016ecab1b9))
+* add reactions to rec card ([5224b88](https://github.com/lil-lab/recnet/commit/5224b88cadb0820d13b0102e0b2f6ddbddf98fa5))
+* add reactions to rec response ([cf809e8](https://github.com/lil-lab/recnet/commit/cf809e8f2929c2e3648c1fec36b26bcc434edc70))
+* add verified badge ([26d8533](https://github.com/lil-lab/recnet/commit/26d8533c50434eb60e979feca53443503775a901))
+* finish reaction feature ([fb2ea7d](https://github.com/lil-lab/recnet/commit/fb2ea7dfd27094e59463c0c1b155891c2a41a0f2))
+
+
+### Bug Fixes
+
+* adjust ui ([7cb3f5e](https://github.com/lil-lab/recnet/commit/7cb3f5edddfa908df89139e5068b6956066aa1f8))
+* delete unused action ([1546bef](https://github.com/lil-lab/recnet/commit/1546bef2c51f8dc713b85a9b18e160fd6a4eb2a3))
+
 ## [1.14.2](https://github.com/lil-lab/recnet/compare/recnet-web-v1.14.1...recnet-web-v1.14.2) (2024-10-09)
 
 

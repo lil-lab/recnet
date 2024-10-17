@@ -15,7 +15,6 @@ import { ErrorCode } from "@recnet-api/utils/error/recnet.error.const";
 
 import { getCutOff } from "@recnet/recnet-date-fns";
 
-import { Rec } from "./entities/rec.entity";
 import {
   CreateRecResponse,
   GetFeedsResponse,
@@ -24,8 +23,7 @@ import {
   GetUpcomingRecResponse,
   UpdateRecResponse,
 } from "./rec.response";
-
-import { transformUserPreview } from "../user/user.transformer";
+import { transformRec } from "./rec.transformer";
 
 @Injectable()
 export class RecService {
@@ -38,16 +36,24 @@ export class RecService {
     private readonly articleRepository: ArticleRepository
   ) {}
 
-  public async getRec(recId: string): Promise<GetRecResponse> {
+  public async getRec(
+    recId: string,
+    authUserId: string | null
+  ): Promise<GetRecResponse> {
     const dbRec = await this.recRepository.findRecById(recId);
-    return { rec: this.getRecFromDbRec(dbRec) };
+    return { rec: transformRec(dbRec, authUserId) };
   }
 
+  /**
+   * @param userId is the user id of the user whose recs are being fetched
+   * @param authUserId is the user id of the user who is making the request
+   */
   public async getRecs(
     page: number,
     pageSize: number,
     userId: string,
-    to: Date
+    to: Date,
+    authUserId: string | null
   ): Promise<GetRecsResponse> {
     // validate if the user exists and is activated
     const user = await this.userRepository.findUserById(userId);
@@ -64,7 +70,7 @@ export class RecService {
     };
     const recCount = await this.recRepository.countRecs(filter);
     const dbRecs = await this.recRepository.findRecs(page, pageSize, filter);
-    const recs = this.getRecsFromDbRecs(dbRecs);
+    const recs = dbRecs.map((dbRec) => transformRec(dbRec, authUserId));
 
     return {
       hasNext: recs.length + getOffset(page, pageSize) < recCount,
@@ -89,7 +95,7 @@ export class RecService {
     };
     const recCount = await this.recRepository.countRecs(filter);
     const dbRecs = await this.recRepository.findRecs(page, pageSize, filter);
-    const recs = this.getRecsFromDbRecs(dbRecs);
+    const recs = dbRecs.map((dbRec) => transformRec(dbRec, userId));
 
     return {
       hasNext: recs.length + getOffset(page, pageSize) < recCount,
@@ -105,7 +111,7 @@ export class RecService {
       };
     }
     return {
-      rec: this.getRecFromDbRec(dbRec),
+      rec: transformRec(dbRec, userId),
     };
   }
 
@@ -146,7 +152,7 @@ export class RecService {
       articleIdToConnect
     );
     return {
-      rec: this.getRecFromDbRec(newRec),
+      rec: transformRec(newRec, userId),
     };
   }
 
@@ -196,7 +202,7 @@ export class RecService {
       );
     }
     return {
-      rec: this.getRecFromDbRec(updatedRec),
+      rec: transformRec(updatedRec, userId),
     };
   }
 
@@ -238,18 +244,6 @@ export class RecService {
       recId,
       reaction as ReactionType
     );
-  }
-
-  private getRecsFromDbRecs(dbRec: DbRec[]): Rec[] {
-    return dbRec.map(this.getRecFromDbRec);
-  }
-
-  private getRecFromDbRec(dbRec: DbRec): Rec {
-    return {
-      ...dbRec,
-      cutoff: dbRec.cutoff.toISOString(),
-      user: transformUserPreview(dbRec.user),
-    };
   }
 
   /**

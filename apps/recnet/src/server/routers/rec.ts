@@ -10,18 +10,20 @@ import {
   postRecsUpcomingRequestSchema,
   patchRecsUpcomingRequestSchema,
   getRecIdResponseSchema,
+  postRecsReactionsRequestSchema,
+  deleteRecReactionParamsSchema,
 } from "@recnet/recnet-api-model";
 
 import {
   checkIsAdminProcedure,
+  checkOptionalRecnetJWTProcedure,
   checkRecnetJWTProcedure,
-  publicApiProcedure,
 } from "./middleware";
 
 import { router } from "../trpc";
 
 export const recRouter = router({
-  getRecById: publicApiProcedure
+  getRecById: checkOptionalRecnetJWTProcedure
     .input(
       z.object({
         id: z.string(),
@@ -33,7 +35,7 @@ export const recRouter = router({
       const { data } = await recnetApi.get(`/recs/rec/${opts.input.id}`);
       return getRecIdResponseSchema.parse(data);
     }),
-  getHistoricalRecs: publicApiProcedure
+  getHistoricalRecs: checkOptionalRecnetJWTProcedure
     .input(
       z.object({
         userId: z.string(),
@@ -106,6 +108,34 @@ export const recRouter = router({
     const { recnetApi } = opts.ctx;
     await recnetApi.delete(`/recs/upcoming`);
   }),
+  addReaction: checkRecnetJWTProcedure
+    .input(
+      postRecsReactionsRequestSchema.extend({
+        recId: z.string(),
+      })
+    )
+    .mutation(async (opts) => {
+      const { recnetApi } = opts.ctx;
+      const { recId, reaction } = opts.input;
+      await recnetApi.post(`/recs/${recId}/reactions`, {
+        reaction,
+      });
+    }),
+  removeReaction: checkRecnetJWTProcedure
+    .input(
+      deleteRecReactionParamsSchema.extend({
+        recId: z.string(),
+      })
+    )
+    .mutation(async (opts) => {
+      const { recnetApi } = opts.ctx;
+      const { recId, reaction } = opts.input;
+      await recnetApi.delete(`/recs/${recId}/reactions`, {
+        params: {
+          ...deleteRecReactionParamsSchema.parse({ reaction }),
+        },
+      });
+    }),
   getNumOfRecs: checkIsAdminProcedure
     .output(
       z.object({
