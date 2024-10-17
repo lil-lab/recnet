@@ -6,6 +6,7 @@ import { toast } from "sonner";
 import { useAuth } from "@recnet/recnet-web/app/AuthContext";
 import { trpc } from "@recnet/recnet-web/app/_trpc/client";
 import { cn } from "@recnet/recnet-web/utils/cn";
+import { notEmpty } from "@recnet/recnet-web/utils/notEmpty";
 
 import { ReactionType, reactionTypeSchema } from "@recnet/recnet-api-model";
 
@@ -86,9 +87,127 @@ export function RecReactionsList(props: { id: string }) {
   const { data, isLoading, refetch } = trpc.getRecById.useQuery({
     id,
   });
+  const utils = trpc.useUtils();
 
-  const addReactionMutation = trpc.addReaction.useMutation();
-  const removeReactionMutation = trpc.removeReaction.useMutation();
+  /**
+    These mutations use optimistic updates to update the UI before the server responds.
+    and roll back if the server responds with an error.
+  */
+  const addReactionMutation = trpc.addReaction.useMutation({
+    onMutate: async ({ recId, reaction }) => {
+      // Cancel any outgoing refetches
+      await utils.getRecById.cancel({
+        id: recId,
+      });
+      // Snapshot the previous value
+      const previousData = utils.getRecById.getData({
+        id: recId,
+      });
+      // Optimistically update to the new value
+      if (previousData) {
+        utils.getRecById.setData(
+          {
+            id: recId,
+          },
+          {
+            ...previousData,
+            rec: {
+              ...previousData.rec,
+              reactions: {
+                ...previousData.rec.reactions,
+                numReactions: previousData.rec.reactions.numReactions.map(
+                  (reactionCountPair) => {
+                    if (reactionCountPair.type === reaction) {
+                      return {
+                        type: reaction,
+                        count: reactionCountPair.count + 1,
+                      };
+                    }
+                    return reactionCountPair;
+                  }
+                ),
+                selfReactions: [
+                  ...previousData.rec.reactions.selfReactions,
+                  reaction,
+                ],
+              },
+            },
+          }
+        );
+      }
+      // Return a rollback value in context
+      return { previousData };
+    },
+    onError: (error, variables, context) => {
+      // If the mutation failed, use the context to roll back
+      if (context?.previousData) {
+        utils.getRecById.setData({ id: variables.recId }, context.previousData);
+      }
+    },
+    onSettled: () => {
+      // Re-fetch the query
+      utils.getRecById.refetch();
+    },
+  });
+  const removeReactionMutation = trpc.removeReaction.useMutation({
+    onMutate: async ({ recId, reaction }) => {
+      // Cancel any outgoing refetches
+      await utils.getRecById.cancel({
+        id: recId,
+      });
+      // Snapshot the previous value
+      const previousData = utils.getRecById.getData({
+        id: recId,
+      });
+      // Optimistically update to the new value
+      if (previousData) {
+        utils.getRecById.setData(
+          {
+            id: recId,
+          },
+          {
+            ...previousData,
+            rec: {
+              ...previousData.rec,
+              reactions: {
+                ...previousData.rec.reactions,
+                numReactions: previousData.rec.reactions.numReactions
+                  .map((reactionCountPair) => {
+                    if (reactionCountPair.type === reaction) {
+                      // If the count is 1, remove the reaction
+                      if (reactionCountPair.count === 1) {
+                        return null;
+                      }
+                      return {
+                        type: reaction,
+                        count: reactionCountPair.count - 1,
+                      };
+                    }
+                    return reactionCountPair;
+                  })
+                  .filter(notEmpty),
+                selfReactions: previousData.rec.reactions.selfReactions.filter(
+                  (r) => r !== reaction
+                ),
+              },
+            },
+          }
+        );
+      }
+      // Return a rollback value in context
+      return { previousData };
+    },
+    onError: (error, variables, context) => {
+      // If the mutation failed, use the context to roll back
+      if (context?.previousData) {
+        utils.getRecById.setData({ id: variables.recId }, context.previousData);
+      }
+    },
+    onSettled: () => {
+      // Re-fetch the query
+      utils.getRecById.refetch();
+    },
+  });
 
   const onClickReaction = async (reaction: ReactionType) => {
     if (isLoading || !data) {
