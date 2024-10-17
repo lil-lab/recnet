@@ -82,6 +82,9 @@ export class UserController {
     @FirebaseUser() firebaseUser: AuthFirebaseUser
   ): Promise<GetUserMeResponse> {
     const { provider, providerId } = firebaseUser;
+
+    console.log("photoURL: ", firebaseUser.metadata?.photoURL);
+
     const user = await this.userService.login(provider, providerId);
     return { user };
   }
