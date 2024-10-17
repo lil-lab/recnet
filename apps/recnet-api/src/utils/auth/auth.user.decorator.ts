@@ -60,6 +60,7 @@ export const FirebaseUser = createParamDecorator<undefined, ExecutionContext>(
       );
     }
     const rawFirebaseUser = firebaseJwtPayload.data;
+    const photoURL = firebaseJwtPayload.data.picture;
 
     // transform the rawFirebaseUser to a FirebaseUser object
     const provider = rawFirebaseUser.source_sign_in_provider;
@@ -103,6 +104,9 @@ export const FirebaseUser = createParamDecorator<undefined, ExecutionContext>(
     return {
       provider,
       providerId,
+      metadata: {
+        photoURL,
+      },
     };
   }
 );

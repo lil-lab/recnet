@@ -22,4 +22,7 @@ export type AuthOptionalUser = AuthUser | null;
 export type AuthFirebaseUser = {
   provider: AuthProvider;
   providerId: string;
+  metadata?: {
+    photoURL?: string | undefined;
+  };
 };
