@@ -19,7 +19,6 @@ import {
   formatDate,
 } from "@recnet/recnet-date-fns";
 
-import { useAuth } from "../AuthContext";
 import { trpc } from "../_trpc/client";
 import { OnboardingDialog } from "../onboard/OnboardingDialog";
 
@@ -33,7 +32,6 @@ export default function FeedPage({
   };
 }) {
   const date = searchParams["date"];
-  const { user } = useAuth();
   const router = useRouter();
 
   const cutoff = useMemo(() => {
