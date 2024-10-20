@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [1.15.1](https://github.com/lil-lab/recnet/compare/recnet-web-v1.15.0...recnet-web-v1.15.1) (2024-10-20)
+
+
+### Bug Fixes
+
+* fix bug: did not priortize verfied rec ([b049136](https://github.com/lil-lab/recnet/commit/b049136be86e45daac04b77d359384abb9c52e11))
+
 ## [1.15.0](https://github.com/lil-lab/recnet/compare/recnet-web-v1.14.2...recnet-web-v1.15.0) (2024-10-16)
 
 
