@@ -1,7 +1,6 @@
 "use client";
 
 import { Text } from "@radix-ui/themes";
-import { InfiniteData } from "@tanstack/react-query";
 import groupBy from "lodash.groupby";
 import { useRouter } from "next/navigation";
 import { useMemo } from "react";
@@ -10,8 +9,8 @@ import InfiniteScroll from "react-infinite-scroll-component";
 import { RecCardSkeleton } from "@recnet/recnet-web/components/RecCard";
 import { RecCard } from "@recnet/recnet-web/components/RecCard";
 import { cn } from "@recnet/recnet-web/utils/cn";
+import { getDataFromInfiniteQuery } from "@recnet/recnet-web/utils/getDataFromInfiniteQuery";
 import { notEmpty } from "@recnet/recnet-web/utils/notEmpty";
-import { shuffleArray } from "@recnet/recnet-web/utils/shuffle";
 
 import {
   getCutOff,
@@ -20,26 +19,10 @@ import {
   formatDate,
 } from "@recnet/recnet-date-fns";
 
-import { GetRecsFeedsResponse, Rec } from "@recnet/recnet-api-model";
-
-import { useAuth } from "../AuthContext";
 import { trpc } from "../_trpc/client";
 import { OnboardingDialog } from "../onboard/OnboardingDialog";
 
 const PAGE_SIZE = 5;
-
-const getShuffledRecsFromInfiniteQuery = (
-  infiniteQueryData: InfiniteData<GetRecsFeedsResponse> | undefined,
-  shuffleKey: string | undefined
-) => {
-  if (!infiniteQueryData) {
-    return [];
-  }
-  return (infiniteQueryData?.pages ?? []).reduce((acc, page) => {
-    const newBatch = shuffleArray(page.recs, shuffleKey || "");
-    return [...acc, ...newBatch];
-  }, [] as Rec[]);
-};
 
 export default function FeedPage({
   searchParams,
@@ -49,7 +32,6 @@ export default function FeedPage({
   };
 }) {
   const date = searchParams["date"];
-  const { user } = useAuth();
   const router = useRouter();
 
   const cutoff = useMemo(() => {
@@ -88,10 +70,14 @@ export default function FeedPage({
         initialCursor: 1,
       }
     );
-  const recs = useMemo(
-    () => getShuffledRecsFromInfiniteQuery(data, user?.id),
-    [data, user]
-  );
+  const recs = useMemo(() => {
+    if (!data) {
+      return [];
+    }
+    return getDataFromInfiniteQuery(data, (page) => {
+      return page.recs;
+    });
+  }, [data]);
 
   const recsGroupByTitle = useMemo(
     () =>
