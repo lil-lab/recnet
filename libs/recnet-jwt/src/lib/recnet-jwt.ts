@@ -30,6 +30,7 @@ export const firebaseJwtPayloadSchema = z
       identities: z.record(z.array(z.string())),
     }),
     source_sign_in_provider: providerSchema,
+    picture: z.string().optional(),
   })
   .passthrough();
 export type FirebaseJwtPayload = z.infer<typeof firebaseJwtPayloadSchema>;
