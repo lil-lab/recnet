@@ -209,6 +209,29 @@ describe("ArXivService", () => {
         )
       );
     });
+
+    it("should include abstract if available", async () => {
+      (axios.get as jest.Mock).mockResolvedValue({
+        data: "<xml><feed><entry><title>Sample Title</title><author><name>Author 1</name></author><published>2023-09-18T00:00:00Z</published><summary>Sample abstract</summary></entry></feed></xml>",
+      });
+
+      (XMLParser.prototype.parse as jest.Mock).mockReturnValue({
+        feed: {
+          entry: {
+            title: "Sample Title",
+            author: { name: "Author 1" },
+            published: "2023-09-18T00:00:00Z",
+            summary: "Sample abstract",
+          },
+        },
+      });
+
+      const mockArXivId = "2409.11377v1";
+      const link = `https://arxiv.org/abs/${mockArXivId}`;
+      const metadata = await service.getMetadata(link);
+
+      expect(metadata.abstract).toEqual("Sample abstract");
+    });
   });
 
   describe("getUnifiedLink", () => {
