@@ -256,6 +256,7 @@ export function NewArticleForm(props: {
                     author: res.data.author,
                     year: res.data.year,
                     month: res.data.month ?? null,
+                    abstract: null,
                   },
                   description: res.data.description,
                   isSelfRec: res.data.isSelfRec,
