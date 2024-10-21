@@ -23,5 +23,8 @@ export class Article {
   month: number | null;
 
   @ApiProperty()
+  abstract: string | null;
+
+  @ApiProperty()
   isVerified: boolean;
 }

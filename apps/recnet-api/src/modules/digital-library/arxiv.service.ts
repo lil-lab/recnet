@@ -122,6 +122,7 @@ export class ArXivService implements DigitalLibraryService {
     }
 
     const date = new Date(publishDate);
+    const abstract: string | null = get(parsed, "feed.entry.summary", null);
 
     const metadata: ArXivMetadata = {
       title,
@@ -132,6 +133,7 @@ export class ArXivService implements DigitalLibraryService {
         : (authors as { name: string }).name,
       year: date.getFullYear(),
       month: date.getMonth(),
+      abstract: abstract ?? undefined,
     };
 
     return metadata;
