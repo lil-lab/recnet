@@ -115,17 +115,24 @@ export function RecReactionsList(props: { id: string }) {
               ...previousData.rec,
               reactions: {
                 ...previousData.rec.reactions,
-                numReactions: previousData.rec.reactions.numReactions.map(
-                  (reactionCountPair) => {
-                    if (reactionCountPair.type === reaction) {
-                      return {
-                        type: reaction,
-                        count: reactionCountPair.count + 1,
-                      };
-                    }
-                    return reactionCountPair;
-                  }
-                ),
+                numReactions: previousData.rec.reactions.numReactions.some(
+                  (pair) => pair.type === reaction
+                )
+                  ? previousData.rec.reactions.numReactions.map(
+                      (reactionCountPair) => {
+                        if (reactionCountPair.type === reaction) {
+                          return {
+                            type: reaction,
+                            count: reactionCountPair.count + 1,
+                          };
+                        }
+                        return reactionCountPair;
+                      }
+                    )
+                  : [
+                      ...previousData.rec.reactions.numReactions,
+                      { type: reaction, count: 1 },
+                    ],
                 selfReactions: [
                   ...previousData.rec.reactions.selfReactions,
                   reaction,
