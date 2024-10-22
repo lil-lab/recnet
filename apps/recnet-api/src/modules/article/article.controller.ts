@@ -24,7 +24,8 @@ export class ArticleController {
 
   @ApiOperation({
     summary: "Get Article By Link",
-    description: "Get article by link.",
+    description:
+      "Get article by link. If the article is not found in the database, it will try to get metadata using the digital library service. Now it only supports arXiv.",
   })
   @ApiOkResponse({ type: GetArticleByLinkResponse })
   @ApiBearerAuth()

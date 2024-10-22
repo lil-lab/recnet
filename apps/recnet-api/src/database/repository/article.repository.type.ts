@@ -9,11 +9,16 @@ export const article = Prisma.validator<Prisma.ArticleDefaultArgs>()({
     link: true,
     year: true,
     month: true,
+    abstract: true,
     isVerified: true,
   },
 });
 export type Article = Prisma.ArticleGetPayload<typeof article>;
 
-export type CreateArticleInput = Omit<Article, "id" | "isVerified"> & {
+export type CreateArticleInput = Omit<
+  Article,
+  "id" | "isVerified" | "abstract"
+> & {
+  abstract?: string;
   isVerified?: boolean;
 };
