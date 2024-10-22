@@ -10,7 +10,11 @@ export const recFormSubmissionSchema = z.intersection(
     }),
     z.object({
       articleId: z.null(),
-      article: articleSchema.omit({ id: true, isVerified: true }),
+      article: articleSchema.omit({
+        id: true,
+        isVerified: true,
+        abstract: true,
+      }),
     }),
   ]),
   z.object({
