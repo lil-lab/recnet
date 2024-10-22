@@ -52,6 +52,7 @@ export const articleSchema = z.object({
   link: z.string().url(),
   year: z.number(),
   month: z.number().min(0).max(11).nullable(),
+  abstract: z.string().nullable(),
   isVerified: z.boolean(),
 });
 export type Article = z.infer<typeof articleSchema>;

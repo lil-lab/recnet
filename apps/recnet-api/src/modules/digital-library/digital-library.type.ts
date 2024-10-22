@@ -3,6 +3,7 @@ export type Metadata = {
   author: string;
   year: number;
   month: number;
+  abstract?: string;
   isVerified: boolean;
 };
 

@@ -5,6 +5,7 @@ import { Article } from "@recnet-api/modules/article/entities/article.entity";
 export class UpdateArticleDto extends OmitType(Article, [
   "id",
   "isVerified",
+  "abstract",
 ] as const) {}
 
 export class UpdateRecDto {
