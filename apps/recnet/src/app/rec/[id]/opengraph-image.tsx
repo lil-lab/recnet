@@ -8,8 +8,8 @@ import { formatDate } from "@recnet/recnet-date-fns";
 // Image metadata
 export const alt = "RecNet Recommendation";
 export const size = {
-  width: 1200,
-  height: 630,
+  width: 1600,
+  height: 900,
 };
 
 export const contentType = "image/png";
@@ -44,11 +44,11 @@ export default async function Image({ params }: { params: { id: string } }) {
             tw="w-10 h-10 mr-4"
             alt={"recnet-logo"}
           />
-          <p tw={cn("text-[24px] text-[#0090FF]")}> RecNet </p>
+          <p tw={cn("text-[32px] text-[#0090FF]")}> RecNet </p>
         </div>
         <div tw="font-medium">{rec.article.title}</div>
-        <p tw="text-[24px] text-gray-700">{rec.description} </p>
-        <p tw={cn("text-[18px] text-gray-600")}>{rec.article.author} </p>
+        <p tw="text-[28px] text-gray-700">{rec.description} </p>
+        <p tw={cn("text-[24px] text-gray-600")}>{rec.article.author} </p>
         <div
           tw={cn(
             "flex flex-row items-center",
