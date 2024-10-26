@@ -19,7 +19,7 @@ export async function generateMetadata({
 
   return {
     title: rec.article.title,
-    description: rec.description,
+    description: `${rec.user.displayName} recommends ${rec.description}`,
   };
 }
 
