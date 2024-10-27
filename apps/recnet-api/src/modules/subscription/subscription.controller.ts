@@ -24,7 +24,7 @@ export class SubscriptionController {
 
   /* Development only */
   @ApiOperation({
-    summary: "[WIP] Send weekly digest slack to the designated user.",
+    summary: "Send weekly digest slack to the designated user.",
     description: "This endpoint is for development only.",
   })
   @ApiCreatedResponse()
@@ -39,9 +39,7 @@ export class SubscriptionController {
   @Post("slack/test")
   public async testSendingWeeklyDigest(
     @Body("userId") userId: string
-  ): Promise<{
-    success: boolean;
-  }> {
+  ): Promise<void> {
     if (this.appConfig.nodeEnv === "production") {
       throw new RecnetError(
         ErrorCode.INTERNAL_SERVER_ERROR,
@@ -49,6 +47,6 @@ export class SubscriptionController {
         "This endpoint is only for development"
       );
     }
-    return this.slackService.sendTestSlackMessage(userId);
+    return this.slackService.sendDirectMessage(userId, "Test message");
   }
 }
