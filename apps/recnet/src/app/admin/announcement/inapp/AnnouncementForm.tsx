@@ -53,9 +53,9 @@ export function AnnouncementForm(props: AnnouncementFormProps) {
       defaultValues: {
         title: isCreateMode
           ? "RecNet Announcement"
-          : prefilledData?.title ?? "",
-        content: isCreateMode ? "" : prefilledData?.content ?? "",
-        allowClose: isCreateMode ? false : prefilledData?.allowClose ?? false,
+          : (prefilledData?.title ?? ""),
+        content: isCreateMode ? "" : (prefilledData?.content ?? ""),
+        allowClose: isCreateMode ? false : (prefilledData?.allowClose ?? false),
         startAt: isCreateMode
           ? today
           : prefilledData?.startAt

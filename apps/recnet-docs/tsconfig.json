@@ -13,11 +13,11 @@
     "incremental": true,
     "plugins": [
       {
-        "name": "next",
-      },
+        "name": "next"
+      }
     ],
-    "types": ["jest", "node"],
+    "types": ["jest", "node"]
   },
   "include": ["**/*.ts", "**/*.tsx", "**/*.js", "**/*.jsx", "next-env.d.ts"],
-  "exclude": ["node_modules", "jest.config.ts", "**/*.spec.ts", "**/*.test.ts"],
+  "exclude": ["node_modules", "jest.config.ts", "**/*.spec.ts", "**/*.test.ts"]
 }
