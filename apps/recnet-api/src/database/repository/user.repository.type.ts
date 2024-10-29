@@ -40,6 +40,7 @@ export const user = Prisma.validator<Prisma.UserDefaultArgs>()({
       },
     },
     email: true,
+    slackEmail: true,
     role: true,
     isActivated: true,
     following: {

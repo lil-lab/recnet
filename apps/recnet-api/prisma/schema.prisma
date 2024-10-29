@@ -47,6 +47,17 @@ enum ReactionType {
   // Add other reactions here as needed
 }
 
+enum Channel {
+  EMAIL
+  SLACK
+  // Add other channels here as needed
+}
+
+enum SubscriptionType {
+  WEEKLY_DIGEST
+  // Add other subscription types here as needed
+}
+
 model User {
   id                  String   @id @default(uuid()) @db.VarChar(64) // Primary key, UUID type
   provider            Provider // Enum type
@@ -65,6 +76,7 @@ model User {
   lastLoginAt         DateTime
   role                Role     @default(USER) // Enum type
   isActivated         Boolean  @default(true)
+  slackEmail          String?  @db.VarChar(128)
   createdAt           DateTime @default(now())
   updatedAt           DateTime @default(now()) @updatedAt
 
@@ -75,6 +87,7 @@ model User {
   inviteCodeUsed  InviteCode?       @relation("InviteCodeUsedBy")
   announcements   Announcement[]
   recReactions    RecReaction[]
+  subscriptions   Subscription[]
 
   @@unique([provider, providerId])
 }
@@ -168,6 +181,18 @@ model RecReaction {
   recommendation Recommendation @relation(fields: [recId], references: [id])
 
   @@unique([userId, recId, reaction])
+}
+
+model Subscription {
+  id        Int              @id @default(autoincrement())
+  userId    String           @db.VarChar(64)
+  type      SubscriptionType
+  channel   Channel
+  createdAt DateTime         @default(now())
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@unique([userId, type, channel])
 }
 
 model WeeklyDigestCronLog {

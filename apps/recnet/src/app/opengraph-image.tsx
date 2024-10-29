@@ -5,8 +5,8 @@ import { cn } from "@recnet/recnet-web/utils/cn";
 // Image metadata
 export const alt = "RecNet";
 export const size = {
-  width: 1200,
-  height: 630,
+  width: 1600,
+  height: 900,
 };
 
 export const contentType = "image/png";

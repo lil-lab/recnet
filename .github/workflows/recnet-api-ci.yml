@@ -3,14 +3,14 @@ name: recnet-api-ci
 on:
   push:
     paths:
-      - 'apps/recnet-api/package.json'
+      - "apps/recnet-api/package.json"
 
 jobs:
   version_bump:
     runs-on: ubuntu-latest
     permissions: write-all
     if: github.event_name == 'push' &&
-        github.ref == 'refs/heads/master'
+      github.ref == 'refs/heads/master'
     steps:
       - name: Checkout code
         uses: actions/checkout@v2

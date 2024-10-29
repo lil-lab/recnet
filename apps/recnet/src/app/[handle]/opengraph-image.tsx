@@ -6,8 +6,8 @@ import { cn } from "@recnet/recnet-web/utils/cn";
 // Image metadata
 export const alt = "User Profile";
 export const size = {
-  width: 1200,
-  height: 630,
+  width: 1600,
+  height: 900,
 };
 
 export const contentType = "image/png";
@@ -40,7 +40,7 @@ export default async function Image({
           "flex flex-col justify-start bg-white w-full h-full",
           "p-8",
           "gap-y-2",
-          "text-[32px]"
+          "text-[48px]"
         )}
       >
         <div tw="flex flex-row items-center">
@@ -50,13 +50,15 @@ export default async function Image({
             tw="w-10 h-10 mr-4"
             alt={"recnet-logo"}
           />
-          <p tw={cn("text-[24px] text-[#0090FF]")}> RecNet </p>
+          <p tw={cn("text-[32px] text-[#0090FF]")}> RecNet </p>
         </div>
         <div tw={cn("flex flex-row justify-between")}>
           <div tw={cn("flex flex-col gap-y-2", "w-[65%]")}>
-            <p>
+            <p tw="inline-block align-bottom">
               {user?.displayName}{" "}
-              <span tw="text-gray-600 mx-1 text-[32px]">(@{user.handle})</span>
+              <span tw="text-gray-600 mx-3 text-[36px] my-auto">
+                (@{user.handle})
+              </span>
             </p>
             <div tw="whitespace-pre-line text-[24px] text-gray-600">
               {user.bio}
@@ -65,11 +67,11 @@ export default async function Image({
           {/* eslint-disable-next-line */}
           <img
             src={user?.photoUrl ?? "https://imgur.com/jVp1pG1.png"}
-            tw="w-[120px] h-[120px] rounded-full mx-8"
+            tw="w-[150px] h-[150px] rounded-full mx-8"
             alt={"User Profile Picture"}
           />
         </div>
-        <p tw="text-[18px] text-gray-500">
+        <p tw="text-[24px] text-gray-500">
           <span>
             {user.numFollowers} follower{user.numFollowers > 1 ? "s" : ""}
           </span>

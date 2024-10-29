@@ -1,20 +1,16 @@
 import { HttpStatus, Inject, Injectable } from "@nestjs/common";
 
 import AnnouncementRepository from "@recnet-api/database/repository/announcement.repository";
-import {
-  AnnouncementFilterBy,
-  Announcement as DbAnnouncement,
-} from "@recnet-api/database/repository/announcement.repository.type";
+import { AnnouncementFilterBy } from "@recnet-api/database/repository/announcement.repository.type";
 import { getOffset } from "@recnet-api/utils";
 import { RecnetError } from "@recnet-api/utils/error/recnet.error";
 import { ErrorCode } from "@recnet-api/utils/error/recnet.error.const";
 
 import { GetAnnouncementsResponse } from "./announcement.response";
+import { transformAnnouncement } from "./announcement.transform";
 import { CreateAnnouncementDto } from "./dto/create.announcement.dto";
 import { UpdateAnnouncementDto } from "./dto/update.announcement.dto";
 import { Announcement } from "./entities/announcement.entity";
-
-import { transformUserPreview } from "../user/user.transformer";
 
 @Injectable()
 export class AnnouncementService {
@@ -39,7 +35,7 @@ export class AnnouncementService {
     return {
       hasNext: dbAnnouncements.length + getOffset(page, pageSize) < totalCount,
       totalCount,
-      announcements: dbAnnouncements.map(this.transformAnnouncement),
+      announcements: dbAnnouncements.map(transformAnnouncement),
     };
   }
 
@@ -59,7 +55,7 @@ export class AnnouncementService {
     const dbAnnouncement = await this.announcementRepository.createAnnouncement(
       createAnnouncementInput
     );
-    return this.transformAnnouncement(dbAnnouncement);
+    return transformAnnouncement(dbAnnouncement);
   }
 
   public async updateAnnouncement(
@@ -99,21 +95,6 @@ export class AnnouncementService {
         id,
         updateAnnouncementInput
       );
-    return this.transformAnnouncement(updatedDbAnnouncement);
-  }
-
-  private transformAnnouncement(dbAnnouncement: DbAnnouncement): Announcement {
-    const { createdBy } = dbAnnouncement;
-    const createdByUserPreview = transformUserPreview(createdBy);
-    return {
-      id: dbAnnouncement.id,
-      title: dbAnnouncement.title,
-      content: dbAnnouncement.content,
-      startAt: dbAnnouncement.startAt,
-      endAt: dbAnnouncement.endAt,
-      isActivated: dbAnnouncement.isActivated,
-      allowClose: dbAnnouncement.allowClose,
-      createdBy: createdByUserPreview,
-    };
+    return transformAnnouncement(updatedDbAnnouncement);
   }
 }
