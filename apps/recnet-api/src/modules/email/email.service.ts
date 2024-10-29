@@ -6,12 +6,14 @@ import { render } from "@react-email/render";
 import groupBy from "lodash.groupby";
 
 import { AppConfig, NodemailerConfig } from "@recnet-api/config/common.config";
+import AnnouncementRepository from "@recnet-api/database/repository/announcement.repository";
 import InviteCodeRepository from "@recnet-api/database/repository/invite-code.repository";
 import RecRepository from "@recnet-api/database/repository/rec.repository";
 import { RecFilterBy } from "@recnet-api/database/repository/rec.repository.type";
 import UserRepository from "@recnet-api/database/repository/user.repository";
 import { User as DbUser } from "@recnet-api/database/repository/user.repository.type";
 import WeeklyDigestCronLogRepository from "@recnet-api/database/repository/weekly-digest-cron-log.repository";
+import { transformAnnouncement } from "@recnet-api/modules/announcement/announcement.transform";
 import { Rec } from "@recnet-api/modules/rec/entities/rec.entity";
 import { transformRec } from "@recnet-api/modules/rec/rec.transformer";
 import { sleep } from "@recnet-api/utils";
@@ -43,7 +45,9 @@ export class EmailService {
     @Inject(WeeklyDigestCronLogRepository)
     private readonly weeklyDigestCronLogRepository: WeeklyDigestCronLogRepository,
     @Inject(InviteCodeRepository)
-    private readonly inviteCodeRepository: InviteCodeRepository
+    private readonly inviteCodeRepository: InviteCodeRepository,
+    @Inject(AnnouncementRepository)
+    private readonly announcementRepository: AnnouncementRepository
   ) {}
 
   @Cron(WEEKLY_DIGEST_CRON, { utcOffset: 0 })
@@ -142,13 +146,29 @@ export class EmailService {
         used: false,
         ownerId: user.id,
       });
+    const currentActivatedAnnouncements =
+      await this.announcementRepository.findAnnouncements(1, 1, {
+        activatedOnly: true,
+        currentOnly: true,
+      });
+    const latestAnnouncement =
+      currentActivatedAnnouncements.length > 0
+        ? transformAnnouncement(currentActivatedAnnouncements[0])
+        : undefined;
 
     // send email
     const mailOptions = {
       from: this.nodemailerConfig.user,
       to: user.email,
       subject: WeeklyDigestSubject(cutoff, this.appConfig.nodeEnv),
-      html: render(WeeklyDigest({ recsGroupByTitle, numUnusedInviteCodes })),
+      html: render(
+        WeeklyDigest({
+          env: this.appConfig.nodeEnv,
+          recsGroupByTitle,
+          numUnusedInviteCodes,
+          latestAnnouncement,
+        })
+      ),
     };
 
     let result;

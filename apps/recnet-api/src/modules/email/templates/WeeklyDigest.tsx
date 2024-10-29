@@ -13,15 +13,18 @@ import {
   Hr,
   Link,
   Img,
-  Row,
-  Column,
 } from "@react-email/components";
 import * as React from "react";
 
 import { formatDate } from "@recnet/recnet-date-fns";
 
-import { Rec } from "@recnet/recnet-api-model";
-import { ZodNativeEnum } from "zod";
+import {
+  Rec,
+  Announcement,
+  generateMock,
+  announcementSchema,
+  recSchema,
+} from "@recnet/recnet-api-model";
 
 interface EmailRecCardProps {
   recs: Rec[];
@@ -73,47 +76,39 @@ function EmailRecCard(props: EmailRecCardProps) {
   );
 }
 
-function MockEmailRecCard() {
-  return (
-    <div className="p-2 border border-2 border-[#646464]">
-      <div className="p-3 bg-[#F1F1F1] rounded-md mb-2">
-        <Link href={"https://google.com"} className="text-brand">
-          <Text className="text-[18px]">{"I am paper's title"}</Text>
-        </Link>
-        <Text>{"Author 1, Author 2, Author 3"}</Text>
-        <div className="flex flex-row items-center text-[14px] gap-x-2">
-          <CalendarIcon className="w-4 h-4" />
-          <div>{2024}</div>
-        </div>
-      </div>
-      <div className="px-4 pt-1">
-        <div className="flex flex-row items-center gap-x-4">
-          <Img
-            src={
-              "https://lh3.googleusercontent.com/a/ACg8ocL6DSnMAUCuiMFjcvW477_gHLTaBDOUP5vgv5mSVO5fJs8=s96-c"
-            }
-            alt="avatar"
-            className="w-[40px] aspect-square rounded-[999px] object-cover"
-          />
-          <Text>{"Mock user"}</Text>
-          <Badge>{"Self Rec"}</Badge>
-        </div>
-        <Text>
-          {
-            "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed non risus."
-          }
-        </Text>
-      </div>
-    </div>
-  );
-}
-
 const WeeklyDigest = (props: {
+  env?: string;
   recsGroupByTitle?: Record<string, Rec[]>;
   numUnusedInviteCodes?: number;
+  latestAnnouncement?: Omit<Announcement, "startAt" | "endAt">;
 }) => {
-  const { recsGroupByTitle = {}, numUnusedInviteCodes = 0 } = props;
+  const { env = "development" } = props;
+
+  let numUnusedInviteCodes: number = props.numUnusedInviteCodes || 0;
+  if (env !== "production" && !props.numUnusedInviteCodes) {
+    numUnusedInviteCodes = 3;
+  }
+
+  let latestAnnouncement: Omit<Announcement, "startAt" | "endAt"> | undefined =
+    props.latestAnnouncement;
+  if (env !== "production" && !props.latestAnnouncement) {
+    latestAnnouncement = generateMock(announcementSchema, {
+      stringMap: {
+        content: () => "This is a mock announcement",
+      },
+    });
+  }
+
+  let recsGroupByTitle: Record<string, Rec[]> = props.recsGroupByTitle || {};
+  if (env !== "production" && Object.keys(recsGroupByTitle).length === 0) {
+    recsGroupByTitle = {
+      "Paper Title 1": [generateMock(recSchema)],
+      "Paper Title 2": [generateMock(recSchema), generateMock(recSchema)],
+      "Paper Title 3": [generateMock(recSchema)],
+    };
+  }
   const recsCount = Object.keys(recsGroupByTitle).length;
+
   return (
     <Html>
       <Tailwind
@@ -171,28 +166,31 @@ const WeeklyDigest = (props: {
                 )}
               </Text>
             </Section>
+            {latestAnnouncement ? (
+              <Container>
+                <Hr className="pb-1" />
+                <div className="m-2 p-4 rounded-lg bg-[#3591FF40] flex flex-col gap-y-1 text-[14px]">
+                  <Text className="my-0">
+                    <span className="mr-1">{"📢"}</span>
+                    <span className="font-bold mr-1">
+                      {latestAnnouncement.title}
+                    </span>
+                  </Text>
+                  <Text className="my-0">{latestAnnouncement.content}</Text>
+                </div>
+              </Container>
+            ) : null}
             {Object.keys(recsGroupByTitle).map((key, i) => {
               const recs = recsGroupByTitle[key];
               return (
                 <React.Fragment key={`${key}-${i}`}>
-                  <Hr />
+                  {i === 0 ? null : <Hr />}
                   <EmailRecCard recs={recs} />
                 </React.Fragment>
               );
             })}
-            {numUnusedInviteCodes > 0 ? (
-              <>
-                <Hr className="my-0 py-0" />
-                <Container className="flex justify-center">
-                  <Text className="text-[12px]">
-                    You have {numUnusedInviteCodes} unused invite code
-                    {numUnusedInviteCodes > 1 ? "s" : ""}! Share the love ❤️
-                  </Text>
-                </Container>
-              </>
-            ) : null}
-            <Hr className="my-0 py-0" />
-            <Section className="px-4">
+            <Hr />
+            <Section className="px-4 py-2">
               <Text className="text-[16px]">
                 Any interesting read this week? 👀
               </Text>
@@ -206,10 +204,17 @@ const WeeklyDigest = (props: {
                 </Button>
               </div>
             </Section>
-
-            <Text className="text-text opacity-[40%] p-2 text-[12px]">
-              Please reply directly if you find any error. Thank you!
-            </Text>
+            {numUnusedInviteCodes > 0 ? (
+              <>
+                <Hr className="mb-0 py-0" />
+                <Container className="flex justify-center">
+                  <Text className="text-[12px]">
+                    You have {numUnusedInviteCodes} unused invite code
+                    {numUnusedInviteCodes > 1 ? "s" : ""}! Share the love ❤️
+                  </Text>
+                </Container>
+              </>
+            ) : null}
           </Container>
         </Body>
       </Tailwind>
