@@ -107,12 +107,9 @@ const WeeklyDigest = (props: {
   latestAnnouncement?: Omit<Announcement, "startAt" | "endAt">;
 }) => {
   /**
-    Use mock data if in local development mode for testing purposes.
+    Use mock data if testing via email:dev command for testing purposes
   */
-  const data =
-    !props.env || props.env === "development"
-      ? getMockWeeklyDigestData()
-      : props;
+  const data = !props.env ? getMockWeeklyDigestData() : props;
   const {
     recsGroupByTitle = {},
     latestAnnouncement,
