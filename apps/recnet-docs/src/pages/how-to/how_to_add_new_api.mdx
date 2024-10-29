@@ -1,4 +1,4 @@
-import { Callout } from 'nextra/components'
+import { Callout } from "nextra/components";
 
 <Callout type="warning" emoji="🚧">
   The document is under construction now. Some information may be missing.
@@ -11,6 +11,7 @@ Let's say we decided to implement a new API endpoint at `recnet-api` and we want
 The API route look like this `GET /api/examples?keyword=foo`.
 
 The request parameters are:
+
 ```ts
 {
   keyword: string | undefined;
@@ -18,13 +19,12 @@ The request parameters are:
 ```
 
 The response type is:
+
 ```ts
 {
   results: string[];
 }
 ```
-
-
 
 ## Define API schema at `recnet-api-model`
 

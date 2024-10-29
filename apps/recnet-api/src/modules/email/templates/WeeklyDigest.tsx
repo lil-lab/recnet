@@ -18,7 +18,13 @@ import * as React from "react";
 
 import { formatDate } from "@recnet/recnet-date-fns";
 
-import { Rec } from "@recnet/recnet-api-model";
+import {
+  Rec,
+  Announcement,
+  generateMock,
+  announcementSchema,
+  recSchema,
+} from "@recnet/recnet-api-model";
 
 interface EmailRecCardProps {
   recs: Rec[];
@@ -29,6 +35,26 @@ function Badge(props: { children: React.ReactNode }) {
     <div className="bg-[#FFEFDD] text-[#D14E00] rounded-md px-2 py-1 text-[12px] w-fit max-w-fit">
       {props.children}
     </div>
+  );
+}
+
+function ReactionButton(props: { href: string }) {
+  const emojiClass =
+    "bg-gray-100 aspect-square rounded-[99px] w-auto h-fit text-center translate-x-[-50%] translate-y-[-50%] relative top-1/2 left-1/2 p-1";
+  return (
+    <a href={props.href} className="no-underline">
+      <div className="flex flex-row text-[12px]">
+        <div className="z-30 flex flex-row justify-center items-center ml-[-4px]">
+          <div className={emojiClass}>👍</div>
+        </div>
+        <div className="z-20 flex flex-row justify-center items-center ml-[-4px]">
+          <div className={emojiClass}>❤️</div>
+        </div>
+        <div className="z-10 flex flex-row justify-center items-center ml-[-4px]">
+          <div className={emojiClass}>🚀</div>
+        </div>
+      </div>
+    </a>
   );
 }
 
@@ -62,7 +88,15 @@ function EmailRecCard(props: EmailRecCardProps) {
               <Text>{rec.user.displayName}</Text>
               {rec.isSelfRec ? <Badge>{"Self Rec"}</Badge> : null}
             </div>
-            <Text>{rec.description}</Text>
+            <a
+              href={`https://recnet.io/rec/${rec.id}`}
+              className="no-underline text-text"
+            >
+              <Text>{rec.description}</Text>
+            </a>
+            <ReactionButton
+              href={`https://recnet.io/rec/${rec.id}?openEmojiPopover=true`}
+            />
           </Container>
         );
       })}
@@ -70,44 +104,48 @@ function EmailRecCard(props: EmailRecCardProps) {
   );
 }
 
-function MockEmailRecCard() {
-  return (
-    <div className="p-2 border border-2 border-[#646464]">
-      <div className="p-3 bg-[#F1F1F1] rounded-md mb-2">
-        <Link href={"https://google.com"} className="text-brand">
-          <Text className="text-[18px]">{"I am paper's title"}</Text>
-        </Link>
-        <Text>{"Author 1, Author 2, Author 3"}</Text>
-        <div className="flex flex-row items-center text-[14px] gap-x-2">
-          <CalendarIcon className="w-4 h-4" />
-          <div>{2024}</div>
-        </div>
-      </div>
-      <div className="px-4 pt-1">
-        <div className="flex flex-row items-center gap-x-4">
-          <Img
-            src={
-              "https://lh3.googleusercontent.com/a/ACg8ocL6DSnMAUCuiMFjcvW477_gHLTaBDOUP5vgv5mSVO5fJs8=s96-c"
-            }
-            alt="avatar"
-            className="w-[40px] aspect-square rounded-[999px] object-cover"
-          />
-          <Text>{"Mock user"}</Text>
-          <Badge>{"Self Rec"}</Badge>
-        </div>
-        <Text>
-          {
-            "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed non risus."
-          }
-        </Text>
-      </div>
-    </div>
-  );
+function getMockWeeklyDigestData(): WeeklyDigestProps {
+  const getMockRec = () =>
+    generateMock(recSchema, {
+      stringMap: {
+        photoUrl: () => "https://avatar.iran.liara.run/public",
+      },
+    });
+  return {
+    env: "development",
+    recsGroupByTitle: {
+      "Paper Title 1": [getMockRec()],
+      "Paper Title 2": [getMockRec(), getMockRec()],
+      "Paper Title 3": [getMockRec()],
+    },
+    numUnusedInviteCodes: 3,
+    latestAnnouncement: generateMock(announcementSchema, {
+      stringMap: {
+        content: () => "This is a test announcement!",
+      },
+    }),
+  };
 }
 
-const WeeklyDigest = (props: { recsGroupByTitle?: Record<string, Rec[]> }) => {
-  const { recsGroupByTitle = {} } = props;
+interface WeeklyDigestProps {
+  env?: string;
+  recsGroupByTitle?: Record<string, Rec[]>;
+  numUnusedInviteCodes?: number;
+  latestAnnouncement?: Omit<Announcement, "startAt" | "endAt">;
+}
+
+const WeeklyDigest = (props: WeeklyDigestProps) => {
+  /**
+    Use mock data if testing via email:dev command for testing purposes
+  */
+  const data = !props.env ? getMockWeeklyDigestData() : props;
+  const {
+    recsGroupByTitle = {},
+    latestAnnouncement,
+    numUnusedInviteCodes,
+  } = data;
   const recsCount = Object.keys(recsGroupByTitle).length;
+
   return (
     <Html>
       <Tailwind
@@ -165,20 +203,35 @@ const WeeklyDigest = (props: { recsGroupByTitle?: Record<string, Rec[]> }) => {
                 )}
               </Text>
             </Section>
+            {latestAnnouncement ? (
+              <Container>
+                <Hr className="pb-1" />
+                <div className="m-2 p-4 rounded-lg bg-[#3591FF40] flex flex-col gap-y-1 text-[14px]">
+                  <Text className="my-0">
+                    <span className="mr-1">{"📢"}</span>
+                    <span className="font-bold mr-1">
+                      {latestAnnouncement.title}
+                    </span>
+                  </Text>
+                  <Text className="my-0">{latestAnnouncement.content}</Text>
+                </div>
+              </Container>
+            ) : null}
             {Object.keys(recsGroupByTitle).map((key, i) => {
               const recs = recsGroupByTitle[key];
               return (
                 <React.Fragment key={`${key}-${i}`}>
-                  <Hr />
+                  {i === 0 ? null : <Hr />}
                   <EmailRecCard recs={recs} />
                 </React.Fragment>
               );
             })}
             <Hr />
-            <Section className="px-2">
+            <Section className="px-4 py-2">
               <Text className="text-[16px]">
                 Any interesting read this week? 👀
               </Text>
+
               <div className="w-full flex justify-center">
                 <Button
                   href="https://recnet.io"
@@ -188,9 +241,17 @@ const WeeklyDigest = (props: { recsGroupByTitle?: Record<string, Rec[]> }) => {
                 </Button>
               </div>
             </Section>
-            <Text className="text-text opacity-[40%] p-2 text-[12px]">
-              Please reply directly if you find any error. Thank you!
-            </Text>
+            {numUnusedInviteCodes && numUnusedInviteCodes > 0 ? (
+              <>
+                <Hr className="mb-0 py-0" />
+                <Container className="flex justify-center">
+                  <Text className="text-[12px]">
+                    You have {numUnusedInviteCodes} unused invite code
+                    {numUnusedInviteCodes > 1 ? "s" : ""}! Share the love ❤️
+                  </Text>
+                </Container>
+              </>
+            ) : null}
           </Container>
         </Body>
       </Tailwind>
