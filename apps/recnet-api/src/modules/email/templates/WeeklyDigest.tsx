@@ -38,6 +38,26 @@ function Badge(props: { children: React.ReactNode }) {
   );
 }
 
+function ReactionButton(props: { href: string }) {
+  const emojiClass =
+    "bg-gray-100 aspect-square rounded-[99px] w-auto h-fit text-center translate-x-[-50%] translate-y-[-50%] relative top-1/2 left-1/2 p-1";
+  return (
+    <a href={props.href} className="no-underline">
+      <div className="flex flex-row text-[12px]">
+        <div className="z-30 flex flex-row justify-center items-center ml-[-4px]">
+          <div className={emojiClass}>👍</div>
+        </div>
+        <div className="z-20 flex flex-row justify-center items-center ml-[-4px]">
+          <div className={emojiClass}>❤️</div>
+        </div>
+        <div className="z-10 flex flex-row justify-center items-center ml-[-4px]">
+          <div className={emojiClass}>🚀</div>
+        </div>
+      </div>
+    </a>
+  );
+}
+
 function EmailRecCard(props: EmailRecCardProps) {
   const { recs } = props;
   if (recs.length === 0) {
@@ -68,7 +88,15 @@ function EmailRecCard(props: EmailRecCardProps) {
               <Text>{rec.user.displayName}</Text>
               {rec.isSelfRec ? <Badge>{"Self Rec"}</Badge> : null}
             </div>
-            <Text>{rec.description}</Text>
+            <a
+              href={`https://recnet.io/rec/${rec.id}`}
+              className="no-underline text-text"
+            >
+              <Text>{rec.description}</Text>
+            </a>
+            <ReactionButton
+              href={`https://recnet.io/rec/${rec.id}?openEmojiPopover=true`}
+            />
           </Container>
         );
       })}
