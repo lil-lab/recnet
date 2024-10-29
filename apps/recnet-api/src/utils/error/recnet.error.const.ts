@@ -20,6 +20,7 @@ export const ErrorCode = {
   // Third party error codes
   EMAIL_SEND_ERROR: 3000,
   FETCH_DIGITAL_LIBRARY_ERROR: 3001,
+  SLACK_ERROR: 3002,
 };
 
 export const errorMessages = {
@@ -42,4 +43,5 @@ export const errorMessages = {
   [ErrorCode.DB_REC_NOT_FOUND]: "Rec not found",
   [ErrorCode.EMAIL_SEND_ERROR]: "Email send error",
   [ErrorCode.FETCH_DIGITAL_LIBRARY_ERROR]: "Fetch digital library error",
+  [ErrorCode.SLACK_ERROR]: "Slack error",
 };

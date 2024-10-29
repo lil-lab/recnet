@@ -31,3 +31,7 @@ export const NodemailerConfig = registerAs("nodemailer", () => ({
   user: parsedEnv.SMTP_USER,
   pass: parsedEnv.SMTP_PASS,
 }));
+
+export const SlackConfig = registerAs("slack", () => ({
+  token: parsedEnv.SLACK_TOKEN,
+}));

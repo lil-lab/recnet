@@ -7,6 +7,7 @@ import { LinkPreview } from "@recnet/recnet-web/components/LinkPreview";
 import { SelfRecBadge } from "@recnet/recnet-web/components/SelfRecBadge";
 
 import { formatDate } from "@recnet/recnet-date-fns";
+
 import { RecReactionsList } from "./RecReactionsList";
 
 const fallbackImage =
