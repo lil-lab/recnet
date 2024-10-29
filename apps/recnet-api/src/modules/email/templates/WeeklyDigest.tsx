@@ -13,12 +13,15 @@ import {
   Hr,
   Link,
   Img,
+  Row,
+  Column,
 } from "@react-email/components";
 import * as React from "react";
 
 import { formatDate } from "@recnet/recnet-date-fns";
 
 import { Rec } from "@recnet/recnet-api-model";
+import { ZodNativeEnum } from "zod";
 
 interface EmailRecCardProps {
   recs: Rec[];
@@ -105,8 +108,11 @@ function MockEmailRecCard() {
   );
 }
 
-const WeeklyDigest = (props: { recsGroupByTitle?: Record<string, Rec[]> }) => {
-  const { recsGroupByTitle = {} } = props;
+const WeeklyDigest = (props: {
+  recsGroupByTitle?: Record<string, Rec[]>;
+  numUnusedInviteCodes?: number;
+}) => {
+  const { recsGroupByTitle = {}, numUnusedInviteCodes = 0 } = props;
   const recsCount = Object.keys(recsGroupByTitle).length;
   return (
     <Html>
@@ -175,19 +181,41 @@ const WeeklyDigest = (props: { recsGroupByTitle?: Record<string, Rec[]> }) => {
               );
             })}
             <Hr />
-            <Section className="px-2">
-              <Text className="text-[16px]">
-                Any interesting read this week? 👀
-              </Text>
-              <div className="w-full flex justify-center">
-                <Button
-                  href="https://recnet.io"
-                  className="bg-brand w-full text-center text-white rounded-md p-2"
-                >
-                  Share it with your network!
-                </Button>
-              </div>
-            </Section>
+            <Row>
+              <Column align="left" className="w-1/2 m-1 p-1">
+                <Container className="m-1">
+                  <Text className="text-[16px]">
+                    Any interesting read this week? 👀
+                  </Text>
+                  <div className="w-full flex justify-center">
+                    <Button
+                      href="https://recnet.io"
+                      className="bg-brand w-full text-center text-white rounded-md p-2"
+                    >
+                      Share it with your network!
+                    </Button>
+                  </div>
+                </Container>
+              </Column>
+              {numUnusedInviteCodes > 0 ? (
+                <Column align="left" className="w-1/2 m-1 p-1">
+                  <Container className="m-1">
+                    <Text className="text-[16px]">
+                      🎉 You have {numUnusedInviteCodes} unused invite code
+                      {numUnusedInviteCodes > 1 ? "s" : ""}!
+                    </Text>
+                    <div className="w-full flex justify-center">
+                      <Button
+                        href="https://recnet.io"
+                        className="bg-brand w-full text-center text-white rounded-md p-2"
+                      >
+                        Share the love ❤️
+                      </Button>
+                    </div>
+                  </Container>
+                </Column>
+              ) : null}
+            </Row>
             <Text className="text-text opacity-[40%] p-2 text-[12px]">
               Please reply directly if you find any error. Thank you!
             </Text>

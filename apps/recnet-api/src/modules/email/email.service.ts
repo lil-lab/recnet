@@ -6,6 +6,7 @@ import { render } from "@react-email/render";
 import groupBy from "lodash.groupby";
 
 import { AppConfig, NodemailerConfig } from "@recnet-api/config/common.config";
+import InviteCodeRepository from "@recnet-api/database/repository/invite-code.repository";
 import RecRepository from "@recnet-api/database/repository/rec.repository";
 import { RecFilterBy } from "@recnet-api/database/repository/rec.repository.type";
 import UserRepository from "@recnet-api/database/repository/user.repository";
@@ -40,7 +41,9 @@ export class EmailService {
     @Inject(RecRepository)
     private readonly recRepository: RecRepository,
     @Inject(WeeklyDigestCronLogRepository)
-    private readonly weeklyDigestCronLogRepository: WeeklyDigestCronLogRepository
+    private readonly weeklyDigestCronLogRepository: WeeklyDigestCronLogRepository,
+    @Inject(InviteCodeRepository)
+    private readonly inviteCodeRepository: InviteCodeRepository
   ) {}
 
   @Cron(WEEKLY_DIGEST_CRON, { utcOffset: 0 })
@@ -134,13 +137,18 @@ export class EmailService {
       const words = titleLowercase.split(" ").filter((w) => w.length > 0);
       return words.join("");
     });
+    const numUnusedInviteCodes =
+      await this.inviteCodeRepository.countInviteCodes({
+        used: false,
+        ownerId: user.id,
+      });
 
     // send email
     const mailOptions = {
       from: this.nodemailerConfig.user,
       to: user.email,
       subject: WeeklyDigestSubject(cutoff, this.appConfig.nodeEnv),
-      html: render(WeeklyDigest({ recsGroupByTitle })),
+      html: render(WeeklyDigest({ recsGroupByTitle, numUnusedInviteCodes })),
     };
 
     let result;
