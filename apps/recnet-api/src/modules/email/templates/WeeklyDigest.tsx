@@ -76,37 +76,48 @@ function EmailRecCard(props: EmailRecCardProps) {
   );
 }
 
+function getMockWeeklyDigestData(): WeeklyDigestProps {
+  return {
+    env: "development",
+    recsGroupByTitle: {
+      "Paper Title 1": [generateMock(recSchema)],
+      "Paper Title 2": [generateMock(recSchema), generateMock(recSchema)],
+      "Paper Title 3": [generateMock(recSchema)],
+    },
+    numUnusedInviteCodes: 3,
+    latestAnnouncement: generateMock(announcementSchema, {
+      stringMap: {
+        content: () => "This is a test announcement!",
+      },
+    }),
+  };
+}
+
+interface WeeklyDigestProps {
+  env?: string;
+  recsGroupByTitle?: Record<string, Rec[]>;
+  numUnusedInviteCodes?: number;
+  latestAnnouncement?: Omit<Announcement, "startAt" | "endAt">;
+}
+
 const WeeklyDigest = (props: {
   env?: string;
   recsGroupByTitle?: Record<string, Rec[]>;
   numUnusedInviteCodes?: number;
   latestAnnouncement?: Omit<Announcement, "startAt" | "endAt">;
 }) => {
-  const { env = "development" } = props;
-
-  let numUnusedInviteCodes: number = props.numUnusedInviteCodes || 0;
-  if (env !== "production" && !props.numUnusedInviteCodes) {
-    numUnusedInviteCodes = 3;
-  }
-
-  let latestAnnouncement: Omit<Announcement, "startAt" | "endAt"> | undefined =
-    props.latestAnnouncement;
-  if (env !== "production" && !props.latestAnnouncement) {
-    latestAnnouncement = generateMock(announcementSchema, {
-      stringMap: {
-        content: () => "This is a mock announcement",
-      },
-    });
-  }
-
-  let recsGroupByTitle: Record<string, Rec[]> = props.recsGroupByTitle || {};
-  if (env !== "production" && Object.keys(recsGroupByTitle).length === 0) {
-    recsGroupByTitle = {
-      "Paper Title 1": [generateMock(recSchema)],
-      "Paper Title 2": [generateMock(recSchema), generateMock(recSchema)],
-      "Paper Title 3": [generateMock(recSchema)],
-    };
-  }
+  /**
+    Use mock data if in local development mode for testing purposes.
+  */
+  const data =
+    !props.env || props.env === "development"
+      ? getMockWeeklyDigestData()
+      : props;
+  const {
+    recsGroupByTitle = {},
+    latestAnnouncement,
+    numUnusedInviteCodes,
+  } = data;
   const recsCount = Object.keys(recsGroupByTitle).length;
 
   return (
@@ -204,7 +215,7 @@ const WeeklyDigest = (props: {
                 </Button>
               </div>
             </Section>
-            {numUnusedInviteCodes > 0 ? (
+            {numUnusedInviteCodes && numUnusedInviteCodes > 0 ? (
               <>
                 <Hr className="mb-0 py-0" />
                 <Container className="flex justify-center">
