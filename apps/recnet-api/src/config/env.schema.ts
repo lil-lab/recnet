@@ -23,6 +23,8 @@ export const EnvSchema = z.object({
   SMTP_SECURE: z.string().optional().default("true"),
   SMTP_USER: z.string(),
   SMTP_PASS: z.string(),
+  // slack config
+  SLACK_TOKEN: z.string().optional(),
 });
 
 export const parseEnv = (env: Record<string, string | undefined>) => {

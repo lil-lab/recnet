@@ -1,6 +1,6 @@
 "use server";
 import "server-only";
-import { cookies } from "next/headers";
+import { cookies, headers } from "next/headers";
 import { getFirebaseAuth } from "next-firebase-auth-edge";
 import { refreshServerCookies } from "next-firebase-auth-edge/lib/next/cookies";
 
@@ -27,7 +27,7 @@ export async function setRecnetCustomClaims(role: UserRole, userId: string) {
       userId,
     },
   });
-  await refreshServerCookies(cookies(), {
+  await refreshServerCookies(cookies(), new Headers(headers()), {
     apiKey: authConfig.apiKey,
     serviceAccount: authConfig.serviceAccount,
     cookieName: authConfig.cookieName,
