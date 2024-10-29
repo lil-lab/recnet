@@ -1,6 +1,8 @@
 "use client";
 import { FaceIcon } from "@radix-ui/react-icons";
 import { Popover, Button, Flex, Spinner } from "@radix-ui/themes";
+import { useSearchParams, useRouter, usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
 import { useAuth } from "@recnet/recnet-web/app/AuthContext";
@@ -26,9 +28,28 @@ const reactionEmojiMap: Record<ReactionType, string> = {
 
 function ReactionButton(props: { onSelect: (reaction: ReactionType) => void }) {
   const { onSelect } = props;
+  const [open, isOpen] = useState(false);
+
+  /**
+    If there's a search query "openEmojiPopover=true", open the popover, and remove the query from the URL.
+  */
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const pathname = usePathname();
+  useEffect(() => {
+    if (searchParams.get("openEmojiPopover") === "true") {
+      isOpen(true);
+      router.replace(pathname);
+    }
+  }, [searchParams, pathname, router]);
 
   return (
-    <Popover.Root>
+    <Popover.Root
+      open={open}
+      onOpenChange={(state) => {
+        isOpen(state);
+      }}
+    >
       <Popover.Trigger>
         <div className="cursor-pointer rounded-[999px] mr-1 p-2 bg-gray-4">
           <FaceIcon width="16" height="16" className="text-gray-11" />
