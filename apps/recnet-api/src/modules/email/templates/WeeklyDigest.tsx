@@ -203,9 +203,20 @@ const WeeklyDigest = (props: WeeklyDigestProps) => {
                 )}
               </Text>
             </Section>
+            {numUnusedInviteCodes && numUnusedInviteCodes > 0 ? (
+              <>
+                <Hr className="mb-0" />
+                <Container className="flex justify-center">
+                  <Text className="text-[12px]">
+                    You have {numUnusedInviteCodes} unused invite code
+                    {numUnusedInviteCodes > 1 ? "s" : ""}! Share the love ❤️
+                  </Text>
+                </Container>
+              </>
+            ) : null}
             {latestAnnouncement ? (
               <Container>
-                <Hr className="pb-1" />
+                <Hr className="pb-1 mt-0" />
                 <div className="m-2 p-4 rounded-lg bg-[#3591FF40] flex flex-col gap-y-1 text-[14px]">
                   <Text className="my-0">
                     <span className="mr-1">{"📢"}</span>
@@ -241,17 +252,6 @@ const WeeklyDigest = (props: WeeklyDigestProps) => {
                 </Button>
               </div>
             </Section>
-            {numUnusedInviteCodes && numUnusedInviteCodes > 0 ? (
-              <>
-                <Hr className="mb-0 py-0" />
-                <Container className="flex justify-center">
-                  <Text className="text-[12px]">
-                    You have {numUnusedInviteCodes} unused invite code
-                    {numUnusedInviteCodes > 1 ? "s" : ""}! Share the love ❤️
-                  </Text>
-                </Container>
-              </>
-            ) : null}
           </Container>
         </Body>
       </Tailwind>
