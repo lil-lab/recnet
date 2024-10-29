@@ -180,42 +180,33 @@ const WeeklyDigest = (props: {
                 </React.Fragment>
               );
             })}
-            <Hr />
-            <Row>
-              <Column align="left" className="w-1/2 m-1 p-1">
-                <Container className="m-1">
-                  <Text className="text-[16px]">
-                    Any interesting read this week? 👀
+            {numUnusedInviteCodes > 0 ? (
+              <>
+                <Hr className="my-0 py-0" />
+                <Container className="flex justify-center">
+                  <Text className="text-[12px]">
+                    You have {numUnusedInviteCodes} unused invite code
+                    {numUnusedInviteCodes > 1 ? "s" : ""}! Share the love ❤️
                   </Text>
-                  <div className="w-full flex justify-center">
-                    <Button
-                      href="https://recnet.io"
-                      className="bg-brand w-full text-center text-white rounded-md p-2"
-                    >
-                      Share it with your network!
-                    </Button>
-                  </div>
                 </Container>
-              </Column>
-              {numUnusedInviteCodes > 0 ? (
-                <Column align="left" className="w-1/2 m-1 p-1">
-                  <Container className="m-1">
-                    <Text className="text-[16px]">
-                      🎉 You have {numUnusedInviteCodes} unused invite code
-                      {numUnusedInviteCodes > 1 ? "s" : ""}!
-                    </Text>
-                    <div className="w-full flex justify-center">
-                      <Button
-                        href="https://recnet.io"
-                        className="bg-brand w-full text-center text-white rounded-md p-2"
-                      >
-                        Share the love ❤️
-                      </Button>
-                    </div>
-                  </Container>
-                </Column>
-              ) : null}
-            </Row>
+              </>
+            ) : null}
+            <Hr className="my-0 py-0" />
+            <Section className="px-4">
+              <Text className="text-[16px]">
+                Any interesting read this week? 👀
+              </Text>
+
+              <div className="w-full flex justify-center">
+                <Button
+                  href="https://recnet.io"
+                  className="bg-brand w-full text-center text-white rounded-md p-2"
+                >
+                  Share it with your network!
+                </Button>
+              </div>
+            </Section>
+
             <Text className="text-text opacity-[40%] p-2 text-[12px]">
               Please reply directly if you find any error. Thank you!
             </Text>
