@@ -2,6 +2,31 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [1.15.2](https://github.com/lil-lab/recnet/compare/recnet-web-v1.15.1...recnet-web-v1.15.2) (2024-10-29)
+
+
+### Features
+
+* add abstract to article ([fa1d749](https://github.com/lil-lab/recnet/commit/fa1d7493c497114b43a3082acdd4890b2a13f621))
+* add announcement to email ([bb4438f](https://github.com/lil-lab/recnet/commit/bb4438fa475f74eb9021ff8916f36e7f91ed7759))
+* add invite code call to action block in email template ([dd7943e](https://github.com/lil-lab/recnet/commit/dd7943e1093ad9793e1c08479bfff7ee250fde6b))
+* add subscription table in DB ([1d7e471](https://github.com/lil-lab/recnet/commit/1d7e471019913a9aea8103b9b9a36002e573cc10))
+* finish adding reaction button ([6058013](https://github.com/lil-lab/recnet/commit/605801337364441ed8d17e2830a3df74dcff7223))
+* integrate slack api ([04445d9](https://github.com/lil-lab/recnet/commit/04445d9874307f6031a3ed658660761d1aa07669))
+* open emoji popover using search params ([fb16d33](https://github.com/lil-lab/recnet/commit/fb16d33a849d7d477debf289e6434b8b1c8b6750))
+
+
+### Bug Fixes
+
+* adjust og size ([f9ce7f0](https://github.com/lil-lab/recnet/commit/f9ce7f058c7747f6687c0a261c2ac3dc9f45c107))
+* apply lint fix ([87174fa](https://github.com/lil-lab/recnet/commit/87174fa282170e0868f02297709b835e4f0c8268))
+* cover uncovered case in optimistic UI ([3039496](https://github.com/lil-lab/recnet/commit/3039496b0c5df5c1501b503264ed0d6dcb6c0e12))
+* fix action ([5b523f2](https://github.com/lil-lab/recnet/commit/5b523f2e03391e750948614a2b67254f60f64c85))
+* fix action ([263e2cd](https://github.com/lil-lab/recnet/commit/263e2cd89fdd6ef65faf07a936186ee69adeed7c))
+* fix metadata desc ([49d6399](https://github.com/lil-lab/recnet/commit/49d63998064d2c92908aa16ddd5bc67d08e8ddcd))
+* fix pnpm lock ([bbc6cf8](https://github.com/lil-lab/recnet/commit/bbc6cf8edef2f525acae4d7757a7482da3e1e6b1))
+* upgrade nextjs version ([545a368](https://github.com/lil-lab/recnet/commit/545a36887a89054654356de3d1f4e2e0db5719c0))
+
 ## [1.15.1](https://github.com/lil-lab/recnet/compare/recnet-web-v1.15.0...recnet-web-v1.15.1) (2024-10-20)
 
 ### Bug Fixes
