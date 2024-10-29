@@ -105,12 +105,18 @@ function EmailRecCard(props: EmailRecCardProps) {
 }
 
 function getMockWeeklyDigestData(): WeeklyDigestProps {
+  const getMockRec = () =>
+    generateMock(recSchema, {
+      stringMap: {
+        photoUrl: () => "https://avatar.iran.liara.run/public",
+      },
+    });
   return {
     env: "development",
     recsGroupByTitle: {
-      "Paper Title 1": [generateMock(recSchema)],
-      "Paper Title 2": [generateMock(recSchema), generateMock(recSchema)],
-      "Paper Title 3": [generateMock(recSchema)],
+      "Paper Title 1": [getMockRec()],
+      "Paper Title 2": [getMockRec(), getMockRec()],
+      "Paper Title 3": [getMockRec()],
     },
     numUnusedInviteCodes: 3,
     latestAnnouncement: generateMock(announcementSchema, {
@@ -128,12 +134,7 @@ interface WeeklyDigestProps {
   latestAnnouncement?: Omit<Announcement, "startAt" | "endAt">;
 }
 
-const WeeklyDigest = (props: {
-  env?: string;
-  recsGroupByTitle?: Record<string, Rec[]>;
-  numUnusedInviteCodes?: number;
-  latestAnnouncement?: Omit<Announcement, "startAt" | "endAt">;
-}) => {
+const WeeklyDigest = (props: WeeklyDigestProps) => {
   /**
     Use mock data if testing via email:dev command for testing purposes
   */
