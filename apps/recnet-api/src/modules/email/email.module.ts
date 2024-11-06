@@ -4,7 +4,6 @@ import { ConfigService } from "@nestjs/config";
 import { DbRepositoryModule } from "@recnet-api/database/repository/db.repository.module";
 
 import { MAIL_TRANSPORTER } from "./email.const";
-import { EmailController } from "./email.controller";
 import { EmailService } from "./email.service";
 import { Transporter } from "./email.type";
 import EmailDevTransporter from "./transporters/email.dev.transporters";
@@ -20,7 +19,6 @@ const transporterFactory = (configService: ConfigService): Transporter => {
 };
 
 @Module({
-  controllers: [EmailController],
   providers: [
     EmailService,
     {
@@ -30,5 +28,6 @@ const transporterFactory = (configService: ConfigService): Transporter => {
     },
   ],
   imports: [DbRepositoryModule],
+  exports: [EmailService],
 })
 export class EmailModule {}

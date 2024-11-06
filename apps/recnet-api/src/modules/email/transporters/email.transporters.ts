@@ -8,7 +8,7 @@ import { sleep } from "@recnet-api/utils";
 import { RecnetError } from "@recnet-api/utils/error/recnet.error";
 import { ErrorCode } from "@recnet-api/utils/error/recnet.error.const";
 
-import { RETRY_LIMIT, SLEEP_DURATION_MS } from "../email.const";
+import { RETRY_LIMIT, RETRY_DURATION_MS } from "../email.const";
 import { SendMailResult } from "../email.type";
 
 @Injectable()
@@ -47,7 +47,7 @@ class EmailTransporter {
         );
 
         // avoid rate limit
-        await sleep(SLEEP_DURATION_MS);
+        await sleep(RETRY_DURATION_MS);
       }
     }
 

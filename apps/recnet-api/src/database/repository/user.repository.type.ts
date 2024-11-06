@@ -1,4 +1,4 @@
-import { Prisma } from "@prisma/client";
+import { Channel, Prisma, SubscriptionType } from "@prisma/client";
 
 import { AuthProvider } from "@recnet/recnet-jwt";
 
@@ -49,6 +49,7 @@ export const user = Prisma.validator<Prisma.UserDefaultArgs>()({
       },
     },
     recommendations: true,
+    subscriptions: true,
   },
 });
 
@@ -58,6 +59,11 @@ export type UserFilterBy = {
   handle?: string;
   keyword?: string;
   id?: string;
+};
+
+export type SubscriptionFilterBy = {
+  type?: SubscriptionType;
+  channel?: Channel;
 };
 
 export type CreateUserInput = {

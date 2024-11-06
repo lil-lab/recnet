@@ -1,4 +1,6 @@
 export type WeeklyDigestCronResult = {
-  successCount: number;
-  errorUserIds: string[];
+  email: {
+    successCount: number;
+    errorUserIds: string[];
+  };
 };
