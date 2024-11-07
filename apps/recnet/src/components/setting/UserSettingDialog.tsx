@@ -301,11 +301,6 @@ function EditProfileForm(props: TabProps) {
       </Flex>
 
       <Flex gap="3" mt="4" justify="end">
-        <Dialog.Close>
-          <Button variant="soft" color="gray" className="cursor-pointer">
-            Cancel
-          </Button>
-        </Dialog.Close>
         <Button
           variant="solid"
           color="blue"
