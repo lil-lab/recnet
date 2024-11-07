@@ -1,4 +1,4 @@
-import { Inject, Injectable, Logger } from "@nestjs/common";
+import { Injectable, Logger } from "@nestjs/common";
 import { Cron } from "@nestjs/schedule";
 import { Channel, CronStatus, SubscriptionType } from "@prisma/client";
 
@@ -14,6 +14,7 @@ import { Announcement } from "@recnet-api/modules/announcement/entities/announce
 import { EmailService } from "@recnet-api/modules/email/email.service";
 import { Rec } from "@recnet-api/modules/rec/entities/rec.entity";
 import { transformRec } from "@recnet-api/modules/rec/rec.transformer";
+import { SlackService } from "@recnet-api/modules/slack/slack.service";
 import { sleep } from "@recnet-api/utils";
 
 import { getLatestCutOff } from "@recnet/recnet-date-fns";
@@ -23,24 +24,20 @@ import {
   SLEEP_DURATION_MS,
   WEEKLY_DIGEST_CRON,
 } from "./subscription.const";
+import { SendResult, WeeklyDigestContent } from "./subscription.type";
 
 @Injectable()
 export class WeeklyDigestWorker {
   private readonly logger = new Logger(WeeklyDigestWorker.name);
 
   constructor(
-    @Inject(UserRepository)
     private readonly userRepository: UserRepository,
-    @Inject(RecRepository)
     private readonly recRepository: RecRepository,
-    @Inject(WeeklyDigestCronLogRepository)
     private readonly weeklyDigestCronLogRepository: WeeklyDigestCronLogRepository,
-    @Inject(InviteCodeRepository)
     private readonly inviteCodeRepository: InviteCodeRepository,
-    @Inject(AnnouncementRepository)
     private readonly announcementRepository: AnnouncementRepository,
-    @Inject(EmailService)
-    private readonly emailService: EmailService
+    private readonly emailService: EmailService,
+    private readonly slackService: SlackService
   ) {}
 
   @Cron(WEEKLY_DIGEST_CRON, { utcOffset: 0 })
@@ -59,56 +56,30 @@ export class WeeklyDigestWorker {
       const latestAnnouncement = await this.getLatestAnnouncement();
 
       // send email
-      const emailResults = [];
-      const emailSubscribers =
-        await this.userRepository.findUsersBySubscription({
-          type: SubscriptionType.WEEKLY_DIGEST,
-          channel: Channel.EMAIL,
-        });
+      const emailResult = await this.sendEmailDigests(
+        cutoff,
+        latestAnnouncement
+      );
 
-      for (const subscriber of emailSubscribers) {
-        const weeklyDigestContent = {
-          recs: await this.getRecsForUser(subscriber, cutoff),
-          numUnusedInviteCodes:
-            await this.inviteCodeRepository.countInviteCodes({
-              used: false,
-              ownerId: subscriber.id,
-            }),
-          latestAnnouncement,
-        };
+      this.logger.log(
+        `Finish sending weekly digest email: ${emailResult.successCount} emails sent, ${emailResult.errorUserIds.length} errors`
+      );
 
-        if (weeklyDigestContent.recs.length === 0) {
-          emailResults.push({ success: true, skip: true });
-          continue;
-        }
+      // send slack
+      const slackResult = await this.sendSlackDigests(
+        cutoff,
+        latestAnnouncement
+      );
 
-        const result = await this.emailService.sendWeeklyDigest(
-          subscriber,
-          weeklyDigestContent,
-          cutoff
-        );
-        emailResults.push(result);
-
-        // avoid rate limit
-        await sleep(SLEEP_DURATION_MS);
-      }
-
-      const successCount = emailResults.filter(
-        (result) => result.success && !result.skip
-      ).length;
-      const errorUserIds = emailResults
-        .filter((result) => !result.success)
-        .map((result) => result.userId)
-        .filter((userId) => userId !== undefined) as string[];
+      this.logger.log(
+        `Finish sending weekly digest slack: ${slackResult.successCount} slack sent, ${slackResult.errorUserIds.length} errors`
+      );
 
       // log the successful result to DB
       await this.weeklyDigestCronLogRepository.endWeeklyDigestCron(cronLog.id, {
         status: CronStatus.SUCCESS,
-        result: { email: { successCount, errorUserIds } },
+        result: { email: emailResult, slack: slackResult },
       });
-      this.logger.log(
-        `Finish weekly digest cron: ${successCount} emails sent, ${errorUserIds.length} errors`
-      );
     } catch (error) {
       this.logger.error(`Error in weekly digest cron: ${error}`);
 
@@ -119,6 +90,99 @@ export class WeeklyDigestWorker {
         errorMsg,
       });
     }
+  }
+
+  private async sendEmailDigests(
+    cutoff: Date,
+    latestAnnouncement: Announcement | undefined
+  ): Promise<{
+    successCount: number;
+    errorUserIds: string[];
+  }> {
+    const results: Array<SendResult> = [];
+    const emailSubscribers = await this.userRepository.findUsersBySubscription({
+      type: SubscriptionType.WEEKLY_DIGEST,
+      channel: Channel.EMAIL,
+    });
+
+    for (const subscriber of emailSubscribers) {
+      const weeklyDigestContent = await this.getWeeklyDigestContent(
+        subscriber,
+        cutoff,
+        latestAnnouncement
+      );
+
+      if (weeklyDigestContent.recs.length === 0) {
+        results.push({ success: true, skip: true });
+        continue;
+      }
+
+      const result = await this.emailService.sendWeeklyDigest(
+        subscriber,
+        weeklyDigestContent,
+        cutoff
+      );
+      results.push(result);
+
+      // avoid rate limit
+      await sleep(SLEEP_DURATION_MS);
+    }
+
+    return this.transformSendResults(results);
+  }
+
+  private async sendSlackDigests(
+    cutoff: Date,
+    latestAnnouncement: Announcement | undefined
+  ): Promise<{
+    successCount: number;
+    errorUserIds: string[];
+  }> {
+    const results: Array<SendResult> = [];
+    const slackSubscribers = await this.userRepository.findUsersBySubscription({
+      type: SubscriptionType.WEEKLY_DIGEST,
+      channel: Channel.SLACK,
+    });
+
+    for (const subscriber of slackSubscribers) {
+      const weeklyDigestContent = await this.getWeeklyDigestContent(
+        subscriber,
+        cutoff,
+        latestAnnouncement
+      );
+
+      if (weeklyDigestContent.recs.length === 0) {
+        results.push({ success: true, skip: true });
+        continue;
+      }
+
+      const result = await this.slackService.sendWeeklyDigest(
+        subscriber,
+        weeklyDigestContent,
+        cutoff
+      );
+      results.push(result);
+
+      // avoid rate limit
+      await sleep(SLEEP_DURATION_MS);
+    }
+
+    return this.transformSendResults(results);
+  }
+
+  private async getWeeklyDigestContent(
+    user: DbUser,
+    cutoff: Date,
+    latestAnnouncement: Announcement | undefined
+  ): Promise<WeeklyDigestContent> {
+    return {
+      recs: await this.getRecsForUser(user, cutoff),
+      numUnusedInviteCodes: await this.inviteCodeRepository.countInviteCodes({
+        used: false,
+        ownerId: user.id,
+      }),
+      latestAnnouncement,
+    };
   }
 
   private async getRecsForUser(user: DbUser, cutoff: Date): Promise<Rec[]> {
@@ -148,5 +212,19 @@ export class WeeklyDigestWorker {
     return currentActivatedAnnouncements.length > 0
       ? transformAnnouncement(currentActivatedAnnouncements[0])
       : undefined;
+  }
+
+  private transformSendResults(results: SendResult[]): {
+    successCount: number;
+    errorUserIds: string[];
+  } {
+    const successCount = results.filter(
+      (result) => result.success && !result.skip
+    ).length;
+    const errorUserIds = results
+      .filter((result) => !result.success)
+      .map((result) => result.userId)
+      .filter((userId) => userId !== undefined) as string[];
+    return { successCount, errorUserIds };
   }
 }

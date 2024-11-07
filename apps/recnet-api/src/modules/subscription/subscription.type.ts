@@ -6,3 +6,9 @@ export type WeeklyDigestContent = {
   numUnusedInviteCodes: number;
   latestAnnouncement: Announcement | undefined;
 };
+
+export type SendResult = {
+  success: boolean;
+  skip?: boolean;
+  userId?: string;
+};

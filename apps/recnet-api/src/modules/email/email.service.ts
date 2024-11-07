@@ -5,11 +5,13 @@ import groupBy from "lodash.groupby";
 
 import { AppConfig, NodemailerConfig } from "@recnet-api/config/common.config";
 import { User as DbUser } from "@recnet-api/database/repository/user.repository.type";
-import { WeeklyDigestContent } from "@recnet-api/modules/subscription/subscription.type";
+import {
+  SendResult,
+  WeeklyDigestContent,
+} from "@recnet-api/modules/subscription/subscription.type";
 
-import { MAIL_TRANSPORTER } from "./email.const";
-import { SendMailResult, Transporter } from "./email.type";
 import WeeklyDigest, { WeeklyDigestSubject } from "./templates/WeeklyDigest";
+import EmailTransporter from "./transporters/email.transporter";
 
 @Injectable()
 export class EmailService {
@@ -18,15 +20,14 @@ export class EmailService {
     private readonly appConfig: ConfigType<typeof AppConfig>,
     @Inject(NodemailerConfig.KEY)
     private readonly nodemailerConfig: ConfigType<typeof NodemailerConfig>,
-    @Inject(MAIL_TRANSPORTER)
-    private transporter: Transporter
+    private transporter: EmailTransporter
   ) {}
 
   public async sendWeeklyDigest(
     user: DbUser,
     content: WeeklyDigestContent,
     cutoff: Date
-  ): Promise<SendMailResult> {
+  ): Promise<SendResult> {
     const recsGroupByTitle = groupBy(content.recs, (rec) => {
       const titleLowercase = rec.article.title.toLowerCase();
       const words = titleLowercase.split(" ").filter((w) => w.length > 0);
