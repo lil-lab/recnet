@@ -1,6 +1,10 @@
 "use client";
 
-import { PersonIcon, Cross1Icon } from "@radix-ui/react-icons";
+import {
+  PersonIcon,
+  Cross1Icon,
+  EnvelopeClosedIcon,
+} from "@radix-ui/react-icons";
 import { Dialog, Button, Text } from "@radix-ui/themes";
 import { Settings } from "lucide-react";
 import React, { useMemo, useState, createContext, useContext } from "react";
@@ -10,6 +14,7 @@ import { cn } from "@recnet/recnet-web/utils/cn";
 
 import { AccountSetting } from "./account/AccountSetting";
 import { ProfileEditForm } from "./profile/ProfileEditForm";
+import { SubscriptionSetting } from "./subscription/SubscriptionSetting";
 
 const tabs = {
   PROFILE: {
@@ -21,6 +26,11 @@ const tabs = {
     label: "Account",
     icon: <Settings className="w-[15px] h-[15px]" />,
     component: AccountSetting,
+  },
+  SUBSCRIPTION: {
+    label: "Subscription",
+    icon: <EnvelopeClosedIcon />,
+    component: SubscriptionSetting,
   },
 } as const;
 type TabKey = keyof typeof tabs;

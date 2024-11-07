@@ -14,7 +14,7 @@ export function AccountSetting() {
   return (
     <div>
       <Dialog.Title>Account Setting</Dialog.Title>
-      <Dialog.Description size="2" mb="4">
+      <Dialog.Description size="2" mb="4" className="text-gray-11">
         Make changes to account settings.
       </Dialog.Description>
 
