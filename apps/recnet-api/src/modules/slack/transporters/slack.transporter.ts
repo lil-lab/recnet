@@ -37,7 +37,7 @@ export class SlackTransporter {
       this.appConfig.nodeEnv !== "production" &&
       !SLACK_DEV_HANDLE_WHITELIST.includes(user.handle)
     ) {
-      // hardcode the recipient to be joannechen1223 and swh00tw in dev environment
+      // hardcode the recipient whitelist in dev environment
       return { success: true, skip: true };
     }
 

@@ -40,11 +40,12 @@ class EmailTransporter {
     user: DbUser,
     mailOptions: SendMailOptions
   ): Promise<SendResult> {
-    if (this.appConfig.nodeEnv !== "production") {
-      // hardcode the recipient to be joannechen1223 and swh00tw in dev environment
-      if (!EMAIL_DEV_HANDLE_WHITELIST.includes(user.handle)) {
-        return { success: true, skip: true };
-      }
+    if (
+      this.appConfig.nodeEnv !== "production" &&
+      !EMAIL_DEV_HANDLE_WHITELIST.includes(user.handle)
+    ) {
+      // hardcode the recipient whitelist in dev environment
+      return { success: true, skip: true };
     }
 
     let retryCount = 0;
