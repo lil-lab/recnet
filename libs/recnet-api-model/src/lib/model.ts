@@ -114,5 +114,5 @@ export type DigitalLibrary = z.infer<typeof digitalLibrarySchema>;
 
 export const subscriptionSchema = z.object({
   type: subscriptionTypeSchema,
-  channel: z.array(subscriptionChannelSchema),
+  channels: z.array(subscriptionChannelSchema),
 });
