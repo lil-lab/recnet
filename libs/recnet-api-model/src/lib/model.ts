@@ -20,6 +20,11 @@ export const reactionTypeSchema = z.enum([
 ]);
 export type ReactionType = z.infer<typeof reactionTypeSchema>;
 
+export const subscriptionTypeSchema = z.enum(["WEEKLY_DIGEST"]);
+export type SubscriptionType = z.infer<typeof subscriptionTypeSchema>;
+export const subscriptionChannelSchema = z.enum(["EMAIL", "SLACK"]);
+export type SubscriptionChannel = z.infer<typeof subscriptionChannelSchema>;
+
 export const userPreviewSchema = z.object({
   id: z.string(),
   handle: z.string(),
@@ -106,3 +111,8 @@ export const digitalLibrarySchema = z.object({
   isVerified: z.boolean(),
 });
 export type DigitalLibrary = z.infer<typeof digitalLibrarySchema>;
+
+export const subscriptionSchema = z.object({
+  type: subscriptionTypeSchema,
+  channel: z.array(subscriptionChannelSchema),
+});
