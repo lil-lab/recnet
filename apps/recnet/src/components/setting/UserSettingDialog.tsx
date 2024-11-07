@@ -5,6 +5,7 @@ import { Dialog, Button, Text } from "@radix-ui/themes";
 import { Settings } from "lucide-react";
 import React, { useMemo, useState, createContext, useContext } from "react";
 
+import { useAuth } from "@recnet/recnet-web/app/AuthContext";
 import { cn } from "@recnet/recnet-web/utils/cn";
 
 import { AccountSetting } from "./account/AccountSetting";
@@ -29,7 +30,6 @@ const UserSettingDialogContext = createContext<{
   setOpen: (open: boolean) => void;
   activeTab: TabKey;
   setActiveTab: (tab: TabKey) => void;
-  userHandle: string;
 } | null>(null);
 
 export function useUserSettingDialogContext() {
@@ -43,16 +43,20 @@ export function useUserSettingDialogContext() {
 }
 
 interface UserSettingDialogProps {
-  handle: string;
-  trigger: React.ReactNode;
+  children: React.ReactNode;
 }
 
-export function UserSettingDialog(props: UserSettingDialogProps) {
-  const { handle, trigger } = props;
+export function UserSettingDialogProvider(props: UserSettingDialogProps) {
+  const { children } = props;
+  const { user } = useAuth();
   const [open, setOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<TabKey>("PROFILE");
 
   const TabComponent = useMemo(() => tabs[activeTab].component, [activeTab]);
+
+  if (!user) {
+    return children;
+  }
 
   return (
     <UserSettingDialogContext.Provider
@@ -61,11 +65,9 @@ export function UserSettingDialog(props: UserSettingDialogProps) {
         setOpen,
         activeTab,
         setActiveTab,
-        userHandle: handle,
       }}
     >
       <Dialog.Root open={open} onOpenChange={setOpen}>
-        <Dialog.Trigger>{trigger}</Dialog.Trigger>
         <Dialog.Content
           maxWidth={{
             initial: "480px",
@@ -109,6 +111,7 @@ export function UserSettingDialog(props: UserSettingDialogProps) {
           </div>
         </Dialog.Content>
       </Dialog.Root>
+      {children}
     </UserSettingDialogContext.Provider>
   );
 }

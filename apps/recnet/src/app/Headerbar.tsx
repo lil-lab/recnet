@@ -17,6 +17,7 @@ import { useState, useRef, useEffect, useCallback } from "react";
 
 import { useAuth } from "@recnet/recnet-web/app/AuthContext";
 import { Avatar } from "@recnet/recnet-web/components/Avatar";
+import { useUserSettingDialogContext } from "@recnet/recnet-web/components/setting/UserSettingDialog";
 import { UserRole } from "@recnet/recnet-web/constant";
 import { logout, useGoogleLogin } from "@recnet/recnet-web/firebase/auth";
 import { cn } from "@recnet/recnet-web/utils/cn";
@@ -29,6 +30,8 @@ export function UserDropdown({ user }: { user: User }) {
     await logout();
     router.push("/");
   };
+  const { setOpen: setUserSettingDialogOpen } = useUserSettingDialogContext();
+
   return (
     <DropdownMenu.Root>
       <DropdownMenu.Trigger>
@@ -42,6 +45,9 @@ export function UserDropdown({ user }: { user: User }) {
       <DropdownMenu.Content align="center" className="mt-1 sm:w-[120px]">
         <DropdownMenu.Item asChild>
           <Link href={`/${user.handle}`}>Profile</Link>
+        </DropdownMenu.Item>
+        <DropdownMenu.Item onClick={() => setUserSettingDialogOpen(true)}>
+          Settings
         </DropdownMenu.Item>
         {user.role && user.role === UserRole.ADMIN ? (
           <DropdownMenu.Item asChild>

@@ -10,7 +10,7 @@ import {
   TextArea,
 } from "@radix-ui/themes";
 import { TRPCClientError } from "@trpc/client";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { useForm, useFormState } from "react-hook-form";
 import { toast } from "sonner";
 import * as z from "zod";
@@ -69,9 +69,10 @@ const ProfileEditSchema = z.object({
 export function ProfileEditForm() {
   const utils = trpc.useUtils();
   const router = useRouter();
-  const { setOpen, userHandle } = useUserSettingDialogContext();
+  const { setOpen } = useUserSettingDialogContext();
   const { user, revalidateUser } = useAuth();
   const oldHandle = user?.handle;
+  const pathname = usePathname();
 
   const { register, handleSubmit, formState, setError, control, watch } =
     useForm({
@@ -134,12 +135,15 @@ export function ProfileEditForm() {
           // revalidate cache for user profile or redirect to new user profile if handle changed
           const updatedUser = updatedData.user;
           if (updatedUser.handle !== oldHandle) {
-            // if user change user handle, redirect to new user profile
-            router.replace(`/${updatedUser.handle}`);
+            // if user currently at their profile page,
+            // and if user change user handle, redirect to new user profile
+            if (pathname === `/${oldHandle}`) {
+              router.replace(`/${updatedUser.handle}`);
+            }
           } else {
-            utils.getUserByHandle.invalidate({ handle: userHandle });
-            setOpen(false);
+            utils.getUserByHandle.invalidate({ handle: oldHandle });
           }
+          setOpen(false);
         } catch (error) {
           console.log(error);
         }
