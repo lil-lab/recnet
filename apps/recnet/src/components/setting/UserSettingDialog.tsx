@@ -13,7 +13,7 @@ import {
 import { TRPCClientError } from "@trpc/client";
 import { Settings } from "lucide-react";
 import { useRouter } from "next/navigation";
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useState, createContext, useContext } from "react";
 import { useForm, useFormState } from "react-hook-form";
 import { toast } from "sonner";
 import * as z from "zod";
@@ -25,13 +25,6 @@ import { RecNetLink } from "@recnet/recnet-web/components/Link";
 import { ErrorMessages } from "@recnet/recnet-web/constant";
 import { logout } from "@recnet/recnet-web/firebase/auth";
 import { cn } from "@recnet/recnet-web/utils/cn";
-
-import { User } from "@recnet/recnet-api-model";
-
-interface TabProps {
-  onSuccess?: (user: User) => void;
-  setOpen: (open: boolean) => void;
-}
 
 const HandleBlacklist = [
   "about",
@@ -76,9 +69,12 @@ const EditUserProfileSchema = z.object({
   openReviewUserName: z.string().nullable(),
 });
 
-function EditProfileForm(props: TabProps) {
-  const { onSuccess = () => {}, setOpen } = props;
+function EditProfileForm() {
+  const utils = trpc.useUtils();
+  const router = useRouter();
+  const { setOpen, userHandle } = useUserSettingDialogContext();
   const { user, revalidateUser } = useAuth();
+  const oldHandle = user?.handle;
 
   const { register, handleSubmit, formState, setError, control, watch } =
     useForm({
@@ -138,8 +134,15 @@ function EditProfileForm(props: TabProps) {
           toast.success("Profile updated successfully!");
           // revaildate user profile
           revalidateUser();
-          // fire onSuccess callback
-          onSuccess(updatedData.user);
+          // revalidate cache for user profile or redirect to new user profile if handle changed
+          const updatedUser = updatedData.user;
+          if (updatedUser.handle !== oldHandle) {
+            // if user change user handle, redirect to new user profile
+            router.replace(`/${updatedUser.handle}`);
+          } else {
+            utils.getUserByHandle.invalidate({ handle: userHandle });
+            setOpen(false);
+          }
         } catch (error) {
           console.log(error);
         }
@@ -318,9 +321,9 @@ function EditProfileForm(props: TabProps) {
   );
 }
 
-function AccountSetting(props: TabProps) {
+function AccountSetting() {
   const deactivateMutation = trpc.deactivate.useMutation();
-  const { onSuccess = () => {} } = props;
+  const router = useRouter();
 
   return (
     <div>
@@ -343,9 +346,9 @@ function AccountSetting(props: TabProps) {
       <div className="flex flex-row w-full mt-4">
         <DoubleConfirmButton
           onConfirm={async () => {
-            const { user } = await deactivateMutation.mutateAsync();
+            await deactivateMutation.mutateAsync();
             await logout();
-            onSuccess(user);
+            router.replace("/");
           }}
           title="Deactivate Account"
           description="Are you sure you want to deactivate your account?"
@@ -373,6 +376,24 @@ const tabs = {
 } as const;
 type TabKey = keyof typeof tabs;
 
+const UserSettingDialogContext = createContext<{
+  open: boolean;
+  setOpen: (open: boolean) => void;
+  activeTab: TabKey;
+  setActiveTab: (tab: TabKey) => void;
+  userHandle: string;
+} | null>(null);
+
+export function useUserSettingDialogContext() {
+  const context = useContext(UserSettingDialogContext);
+  if (!context) {
+    throw new Error(
+      "useUserSettingDialog must be used within a UserSettingDialogProvider"
+    );
+  }
+  return context;
+}
+
 interface UserSettingDialogProps {
   handle: string;
   trigger: React.ReactNode;
@@ -380,84 +401,66 @@ interface UserSettingDialogProps {
 
 export function UserSettingDialog(props: UserSettingDialogProps) {
   const { handle, trigger } = props;
-  const utils = trpc.useUtils();
-  const router = useRouter();
   const [open, setOpen] = useState(false);
-  const { user } = useAuth();
-  const oldHandle = user?.handle;
-
-  const tabsProps = useMemo(() => {
-    return {
-      ACCOUNT: {
-        onSuccess: (updatedUser: User) => {
-          // redirect to home page after deactivating account
-          router.replace("/");
-        },
-        setOpen: setOpen,
-      },
-      PROFILE: {
-        onSuccess: (updatedUser: User) => {
-          if (updatedUser.handle !== oldHandle) {
-            // if user change user handle, redirect to new user profile
-            router.replace(`/${updatedUser.handle}`);
-          } else {
-            utils.getUserByHandle.invalidate({ handle: handle });
-            setOpen(false);
-          }
-        },
-        setOpen: setOpen,
-      },
-    };
-  }, [handle, oldHandle, router, utils]);
   const [activeTab, setActiveTab] = useState<TabKey>("PROFILE");
 
   const TabComponent = useMemo(() => tabs[activeTab].component, [activeTab]);
 
   return (
-    <Dialog.Root open={open} onOpenChange={setOpen}>
-      <Dialog.Trigger>{trigger}</Dialog.Trigger>
-      <Dialog.Content
-        maxWidth={{
-          initial: "480px",
-          md: "640px",
-        }}
-        className="relative"
-      >
-        <Dialog.Close className="absolute top-6 right-4 hidden md:block">
-          <Button variant="soft" color="gray" className="cursor-pointer">
-            <Cross1Icon />
-          </Button>
-        </Dialog.Close>
-        <div className="flex flex-row gap-x-8 md:p-4">
-          <div className="w-fit md:w-[25%] flex flex-col gap-y-2">
-            {Object.entries(tabs).map(([key, { label }]) => (
-              <div
-                key={key}
-                className={cn(
-                  "py-1 px-4 rounded-2 flex gap-x-2 items-center cursor-pointer hover:bg-gray-4",
-                  {
-                    "bg-gray-5": key === activeTab,
-                  }
-                )}
-                onClick={() => setActiveTab(key as TabKey)}
-              >
-                {tabs[key as TabKey].icon}
-                <Text
-                  size={{
-                    initial: "1",
-                    md: "2",
-                  }}
+    <UserSettingDialogContext.Provider
+      value={{
+        open,
+        setOpen,
+        activeTab,
+        setActiveTab,
+        userHandle: handle,
+      }}
+    >
+      <Dialog.Root open={open} onOpenChange={setOpen}>
+        <Dialog.Trigger>{trigger}</Dialog.Trigger>
+        <Dialog.Content
+          maxWidth={{
+            initial: "480px",
+            md: "640px",
+          }}
+          className="relative"
+        >
+          <Dialog.Close className="absolute top-6 right-4 hidden md:block">
+            <Button variant="soft" color="gray" className="cursor-pointer">
+              <Cross1Icon />
+            </Button>
+          </Dialog.Close>
+          <div className="flex flex-row gap-x-8 md:p-4">
+            <div className="w-fit md:w-[25%] flex flex-col gap-y-2">
+              {Object.entries(tabs).map(([key, { label }]) => (
+                <div
+                  key={key}
+                  className={cn(
+                    "py-1 px-4 rounded-2 flex gap-x-2 items-center cursor-pointer hover:bg-gray-4",
+                    {
+                      "bg-gray-5": key === activeTab,
+                    }
+                  )}
+                  onClick={() => setActiveTab(key as TabKey)}
                 >
-                  {label}
-                </Text>
-              </div>
-            ))}
+                  {tabs[key as TabKey].icon}
+                  <Text
+                    size={{
+                      initial: "1",
+                      md: "2",
+                    }}
+                  >
+                    {label}
+                  </Text>
+                </div>
+              ))}
+            </div>
+            <div className="w-full h-[600px] md:h-[750px] overflow-y-auto">
+              <TabComponent />
+            </div>
           </div>
-          <div className="w-full h-[600px] md:h-[750px] overflow-y-auto">
-            <TabComponent {...tabsProps[activeTab]} />
-          </div>
-        </div>
-      </Dialog.Content>
-    </Dialog.Root>
+        </Dialog.Content>
+      </Dialog.Root>
+    </UserSettingDialogContext.Provider>
   );
 }
