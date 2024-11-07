@@ -1,5 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import { Prisma, Provider, SubscriptionType } from "@prisma/client";
+import { Prisma, Provider } from "@prisma/client";
 
 import PrismaConnectionProvider from "@recnet-api/database/prisma/prisma.connection.provider";
 import { getOffset } from "@recnet-api/utils";
@@ -14,7 +14,6 @@ import {
   UserFilterBy,
   CreateUserInput,
   UpdateUserInput,
-  SubscriptionFilterBy,
 } from "./user.repository.type";
 
 @Injectable()
@@ -70,21 +69,6 @@ export default class UserRepository {
     return this.prisma.user.findMany({
       select: userPreview.select,
       where: { id: { in: userIds } },
-    });
-  }
-
-  public async findUsersBySubscription(filter: SubscriptionFilterBy) {
-    const where: Prisma.UserWhereInput = {
-      subscriptions: {
-        some: {
-          type: filter.type,
-          channel: filter.channel,
-        },
-      },
-    };
-    return this.prisma.user.findMany({
-      select: user.select,
-      where,
     });
   }
 

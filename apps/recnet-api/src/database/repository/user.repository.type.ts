@@ -1,4 +1,4 @@
-import { Channel, Prisma, SubscriptionType } from "@prisma/client";
+import { Prisma } from "@prisma/client";
 
 import { AuthProvider } from "@recnet/recnet-jwt";
 
@@ -59,11 +59,6 @@ export type UserFilterBy = {
   handle?: string;
   keyword?: string;
   id?: string;
-};
-
-export type SubscriptionFilterBy = {
-  type?: SubscriptionType;
-  channel?: Channel;
 };
 
 export type CreateUserInput = {
