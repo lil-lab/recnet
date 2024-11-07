@@ -19,8 +19,12 @@ export const subscriptionRouter = router({
 
       // Use mock data since the API is not ready
       const mockData = getUsersSubscriptionsResponseSchema.parse({
-        subscriptions: ["WEEKLY_DIGEST"],
-        channels: ["EMAIL"],
+        subscriptions: [
+          {
+            type: "WEEKLY_DIGEST",
+            channels: ["EMAIL"],
+          },
+        ],
       });
       return mockData;
     }),
