@@ -1,8 +1,21 @@
 "use client";
 
+import { zodResolver } from "@hookform/resolvers/zod";
 import * as Accordion from "@radix-ui/react-accordion";
-import { Card, Dialog, Flex, Text } from "@radix-ui/themes";
+import {
+  Card,
+  Dialog,
+  Flex,
+  Text,
+  CheckboxCards,
+  Badge,
+  Button,
+} from "@radix-ui/themes";
 import { ChevronDown } from "lucide-react";
+import { useState } from "react";
+import { Controller, useForm, useFormState } from "react-hook-form";
+import { toast } from "sonner";
+import { z } from "zod";
 
 import { trpc } from "@recnet/recnet-web/app/_trpc/client";
 import { LoadingBox } from "@recnet/recnet-web/components/LoadingBox";
@@ -12,6 +25,7 @@ import {
   SubscriptionChannel,
   SubscriptionType,
   subscriptionTypeSchema,
+  subscriptionChannelSchema,
 } from "@recnet/recnet-api-model";
 
 const transformSubscriptionEnum = (subType: string): string => {
@@ -22,6 +36,10 @@ const transformSubscriptionEnum = (subType: string): string => {
     .join(" ");
 };
 
+const subscriptionChannelEditSchema = z.object({
+  channels: subscriptionChannelSchema.array(),
+});
+
 function SubscriptionTypeCard(props: {
   type: SubscriptionType;
   selectedChannels: SubscriptionChannel[];
@@ -29,6 +47,19 @@ function SubscriptionTypeCard(props: {
   const { type, selectedChannels } = props;
   const title = transformSubscriptionEnum(type);
   const isActivated = selectedChannels.length > 0;
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const utils = trpc.useUtils();
+
+  const { handleSubmit, control, reset, setError, formState } = useForm({
+    resolver: zodResolver(subscriptionChannelEditSchema),
+    defaultValues: {
+      channels: selectedChannels,
+    },
+    mode: "onTouched",
+  });
+  const { isDirty } = useFormState({ control });
+
+  const updateSubscriptionMutation = trpc.updateSubscription.useMutation();
 
   return (
     <Accordion.Item value={type} className="w-full">
@@ -56,17 +87,118 @@ function SubscriptionTypeCard(props: {
           />
         </Card>
       </Accordion.Trigger>
-      <Accordion.Content>
-        <Flex className="p-4 text-[14px]">
-          Yes. It adheres to the WAI-ARIA design pattern.
-        </Flex>
+      <Accordion.Content asChild className="px-2 flex flex-col gap-y-2 py-4">
+        <form
+          onSubmit={handleSubmit(
+            async (data, e) => {
+              setIsSubmitting(true);
+              // handle special case for WEEKLY DIGEST
+              // for weekly digest, at least one channel must be selected
+              // if no, then show error message
+              if (type === "WEEKLY_DIGEST" && data.channels.length === 0) {
+                setError("channels", {
+                  type: "manual",
+                  message:
+                    "At least one channel must be selected for Weekly Digest",
+                });
+                setIsSubmitting(false);
+                return;
+              }
+              await updateSubscriptionMutation.mutateAsync({
+                subscription: {
+                  type,
+                  channels: data.channels,
+                },
+              });
+              utils.getSubscriptions.invalidate();
+              toast.success("Subscription updated successfully");
+              setIsSubmitting(false);
+            },
+            (e) => {
+              console.log(e);
+            }
+          )}
+        >
+          <div>
+            <Flex className="mb-1 text-[14px] flex-col gap-y-1">
+              Distribution Channels:
+            </Flex>
+            <Controller
+              control={control}
+              name="channels"
+              render={({ field }) => {
+                return (
+                  <div>
+                    <CheckboxCards.Root
+                      className="grid grid-cols-2 xl:grid-cols-3 py-2"
+                      value={field.value}
+                      onValueChange={(value) => field.onChange(value)}
+                    >
+                      {subscriptionChannelSchema.options.map((channel) => {
+                        return (
+                          <CheckboxCards.Item key={channel} value={channel}>
+                            {channel.charAt(0).toUpperCase() +
+                              channel.slice(1).toLowerCase()}
+                          </CheckboxCards.Item>
+                        );
+                      })}
+                    </CheckboxCards.Root>
+                    {formState.errors.channels && (
+                      <Text size="1" color="red">
+                        {`${formState.errors.channels.message}`}
+                      </Text>
+                    )}
+                  </div>
+                );
+              }}
+            />
+          </div>
+          <Flex className="gap-x-1 text-gray-11">
+            <Badge size="1" color="orange">
+              BETA
+            </Badge>
+            <Text size="1">
+              Distribute by Slack is currently in beta version. Only people in
+              Cornell-NLP slack workspace can use this feature. And the email
+              account of the slack account must match the RecNet account.
+            </Text>
+          </Flex>
+          <Flex className="py-2 gap-x-1">
+            <Button
+              variant="solid"
+              color="blue"
+              className={cn(
+                isDirty ? "bg-blue-10" : "bg-gray-8",
+                "cursor-pointer"
+              )}
+              type="submit"
+              disabled={isSubmitting || !isDirty}
+              loading={isSubmitting}
+            >
+              Save
+            </Button>
+            <Button
+              variant="outline"
+              className="cursor-pointer"
+              onClick={async () => {
+                reset();
+              }}
+              type="reset"
+            >
+              Cancel
+            </Button>
+          </Flex>
+        </form>
       </Accordion.Content>
     </Accordion.Item>
   );
 }
 
 export function SubscriptionSetting() {
-  const { data, isLoading } = trpc.getSubscriptions.useQuery();
+  const { data, isFetching } = trpc.getSubscriptions.useQuery();
+  const [openedType, setOpenType] = useState<SubscriptionType | undefined>(
+    undefined
+  );
 
   return (
     <div>
@@ -78,23 +210,25 @@ export function SubscriptionSetting() {
       <Text size="4" className="block mb-2">
         Subscriptions
       </Text>
-      {isLoading ? (
+      {isFetching ? (
         <LoadingBox />
       ) : (
         <Accordion.Root
           className="w-full rounded-md shadow-black/5"
           type="single"
           collapsible
+          value={openedType as string | undefined}
+          onValueChange={(value) => setOpenType(value as SubscriptionType)}
         >
           {subscriptionTypeSchema.options.map((subType) => {
-            const userSubscriptionObj = (data?.subscriptions ?? []).find(
+            const subscriptionTypeObj = (data?.subscriptions ?? []).find(
               (sub) => sub.type === subType
             );
             return (
               <SubscriptionTypeCard
                 key={subType}
                 type={subType}
-                selectedChannels={userSubscriptionObj?.channels ?? []}
+                selectedChannels={subscriptionTypeObj?.channels ?? []}
               />
             );
           })}

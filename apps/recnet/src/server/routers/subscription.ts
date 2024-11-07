@@ -8,6 +8,15 @@ import { checkRecnetJWTProcedure } from "./middleware";
 
 import { router } from "../trpc";
 
+let mockSubscriptionsData = {
+  subscriptions: [
+    {
+      type: "WEEKLY_DIGEST",
+      channels: ["EMAIL"],
+    },
+  ],
+};
+
 export const subscriptionRouter = router({
   getSubscriptions: checkRecnetJWTProcedure
     .output(getUsersSubscriptionsResponseSchema)
@@ -18,15 +27,7 @@ export const subscriptionRouter = router({
       // return getUsersSubscriptionsResponseSchema.parse(data)
 
       // Use mock data since the API is not ready
-      const mockData = getUsersSubscriptionsResponseSchema.parse({
-        subscriptions: [
-          {
-            type: "WEEKLY_DIGEST",
-            channels: ["EMAIL"],
-          },
-        ],
-      });
-      return mockData;
+      return getUsersSubscriptionsResponseSchema.parse(mockSubscriptionsData);
     }),
   updateSubscription: checkRecnetJWTProcedure
     .input(postUsersSubscriptionsRequestSchema)
@@ -41,6 +42,15 @@ export const subscriptionRouter = router({
       // return postUsersSubscriptionsResponseSchema.parse(data);
 
       // Use mock data(whatever user input) since the API is not ready
+      // update mockSubscriptionsData
+      mockSubscriptionsData = {
+        subscriptions: mockSubscriptionsData.subscriptions.map((s) => {
+          if (s.type === subscription.type) {
+            return subscription;
+          }
+          return s;
+        }),
+      };
       return postUsersSubscriptionsResponseSchema.parse({
         subscription,
       });
