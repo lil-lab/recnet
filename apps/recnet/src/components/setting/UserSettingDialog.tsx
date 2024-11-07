@@ -378,8 +378,13 @@ const tabs = {
 } as const;
 type TabKey = keyof typeof tabs;
 
-export function UserSettingDialog(props: { handle: string }) {
-  const { handle } = props;
+interface UserSettingDialogProps {
+  handle: string;
+  trigger: React.ReactNode;
+}
+
+export function UserSettingDialog(props: UserSettingDialogProps) {
+  const { handle, trigger } = props;
   const utils = trpc.useUtils();
   const router = useRouter();
   const [open, setOpen] = useState(false);
@@ -415,11 +420,7 @@ export function UserSettingDialog(props: { handle: string }) {
 
   return (
     <Dialog.Root open={open} onOpenChange={setOpen}>
-      <Dialog.Trigger>
-        <Button className="w-full cursor-pointer" variant="surface">
-          Settings
-        </Button>
-      </Dialog.Trigger>
+      <Dialog.Trigger>{trigger}</Dialog.Trigger>
       <Dialog.Content
         maxWidth={{
           initial: "480px",
