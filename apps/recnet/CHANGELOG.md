@@ -2,6 +2,26 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [1.16.0](https://github.com/lil-lab/recnet/compare/recnet-web-v1.15.2...recnet-web-v1.16.0) (2024-11-08)
+
+
+### Features
+
+* add GET /users/subscriptions ([aacff5e](https://github.com/lil-lab/recnet/commit/aacff5e9599dff37390856e44532056585307700))
+* add POST /users/subscriptions ([41dfeb9](https://github.com/lil-lab/recnet/commit/41dfeb96a40cdb00d64f4c2cb2db27f77546a6a9))
+* add subscription API model and schema ([67de25f](https://github.com/lil-lab/recnet/commit/67de25faeeb26e5fb74fe1be404483e31541ff6a))
+* add subscription card ([d77a169](https://github.com/lil-lab/recnet/commit/d77a1695898b2c62b7189294db50cd9082fd03f9))
+* add Subscription setting page ([6750714](https://github.com/lil-lab/recnet/commit/67507145fc7f09f3df9031d705034d6b75756a6b))
+* finish subscription setting panel ([2421bd6](https://github.com/lil-lab/recnet/commit/2421bd6140595797340eead29349113ffdc4e686))
+* finish subscription trpc procedures ([d2e44ad](https://github.com/lil-lab/recnet/commit/d2e44adf0f15e7db584b191fe20eae2318284548))
+* migrate email digest ([9aac34f](https://github.com/lil-lab/recnet/commit/9aac34f2f1d2b5aae0b5a40b9db9f9acf6d80a93))
+* send slack digest ([b947311](https://github.com/lil-lab/recnet/commit/b9473115ffb32aa0d4ae2b61558ee444fbb4529a))
+
+
+### Bug Fixes
+
+* fix typo ([0977b90](https://github.com/lil-lab/recnet/commit/0977b90696e3c618e871036ae0c32695f8b90f11))
+
 ## [1.15.2](https://github.com/lil-lab/recnet/compare/recnet-web-v1.15.1...recnet-web-v1.15.2) (2024-10-29)
 
 
