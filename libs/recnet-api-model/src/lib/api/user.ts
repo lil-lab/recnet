@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-import { userPreviewSchema, userSchema } from "../model";
+import { subscriptionSchema, userPreviewSchema, userSchema } from "../model";
 
 // GET /users
 export const getUsersParamsSchema = z.object({
@@ -108,4 +108,18 @@ export const deleteUserFollowParamsSchema = z.object({
 });
 export type DeleteUserFollowParams = z.infer<
   typeof deleteUserFollowParamsSchema
+>;
+
+// GET /users/subscriptions
+export const getUsersSubscriptionsResponseSchema = z.object({
+  subscriptions: z.array(subscriptionSchema),
+});
+export type GetUsersSubscriptionsResponse = z.infer<
+  typeof getUsersSubscriptionsResponseSchema
+>;
+
+// POST /users/subscriptions
+export const postUsersSubscriptionsRequestSchema = subscriptionSchema;
+export type PostUsersSubscriptionsRequest = z.infer<
+  typeof postUsersSubscriptionsRequestSchema
 >;
