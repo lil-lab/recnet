@@ -10,6 +10,7 @@ export const ErrorCode = {
   ACCOUNT_NOT_ACTIVATED: 1008,
   DIGITAL_LIBRARY_RANK_CONFLICT: 1009,
   INVALID_REACTION_TYPE: 1010,
+  INVALID_SUBSCRIPTION: 1011,
 
   // DB error codes
   DB_UNKNOWN_ERROR: 2000,
@@ -37,6 +38,7 @@ export const errorMessages = {
   [ErrorCode.DIGITAL_LIBRARY_RANK_CONFLICT]:
     "Digital library rank must be unique",
   [ErrorCode.INVALID_REACTION_TYPE]: "Invalid reaction type",
+  [ErrorCode.INVALID_SUBSCRIPTION]: "Invalid subscription",
   [ErrorCode.DB_UNKNOWN_ERROR]: "Database error",
   [ErrorCode.DB_USER_NOT_FOUND]: "User not found",
   [ErrorCode.DB_UNIQUE_CONSTRAINT]: "Unique constraint violation",

@@ -1,5 +1,11 @@
 import { Injectable } from "@nestjs/common";
-import { Prisma, Provider } from "@prisma/client";
+import {
+  Channel,
+  Prisma,
+  Provider,
+  Subscription,
+  SubscriptionType,
+} from "@prisma/client";
 
 import PrismaConnectionProvider from "@recnet-api/database/prisma/prisma.connection.provider";
 import { getOffset } from "@recnet-api/utils";
@@ -128,6 +134,44 @@ export default class UserRepository {
   public async isActivated(userId: string): Promise<boolean> {
     const user = await this.findUserById(userId);
     return user.isActivated;
+  }
+
+  public async createOrUpdateSubscription(
+    userId: string,
+    type: SubscriptionType,
+    channels: Channel[]
+  ): Promise<Subscription[]> {
+    // delete if not in list
+    return this.prisma.$transaction(async (prisma) => {
+      await prisma.subscription.deleteMany({
+        where: {
+          userId,
+          type,
+          channel: { notIn: channels },
+        },
+      });
+
+      // create new channels
+      const subscriptions = await this.prisma.subscription.findMany({
+        where: { userId, type },
+      });
+      const currentChannels = subscriptions.map((s) => s.channel);
+      const newChannels = channels.filter((c) => !currentChannels.includes(c));
+      await prisma.subscription.createMany({
+        data: newChannels.map((channel) => ({
+          userId,
+          type,
+          channel,
+        })),
+      });
+
+      return prisma.subscription.findMany({
+        where: {
+          userId,
+          type,
+        },
+      });
+    });
   }
 
   private transformUserFilterByToPrismaWhere(

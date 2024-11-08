@@ -21,3 +21,8 @@ export class GetSubscriptionsResponse {
   @ApiProperty()
   subscriptions: Subscription[];
 }
+
+export class PostSubscriptionsResponse {
+  @ApiProperty()
+  subscription: Subscription;
+}

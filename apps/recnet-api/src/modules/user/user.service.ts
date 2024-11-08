@@ -23,7 +23,11 @@ import { UpdateUserDto } from "./dto/update.user.dto";
 import { User } from "./entities/user.entity";
 import { UserPreview } from "./entities/user.preview.entity";
 import { Subscription } from "./entities/user.subscription.entity";
-import { GetSubscriptionsResponse, GetUsersResponse } from "./user.response";
+import {
+  GetSubscriptionsResponse,
+  GetUsersResponse,
+  PostSubscriptionsResponse,
+} from "./user.response";
 import { transformUserPreview } from "./user.transformer";
 
 @Injectable()
@@ -173,6 +177,32 @@ export class UserService {
     const user = await this.userRepository.findUserById(userId);
     return {
       subscriptions: this.transformSubscriptions(user.subscriptions),
+    };
+  }
+
+  public async createOrUpdateSubscription(
+    userId: string,
+    type: SubscriptionType,
+    channels: Channel[]
+  ): Promise<PostSubscriptionsResponse> {
+    if (type === SubscriptionType.WEEKLY_DIGEST && channels.length === 0) {
+      throw new RecnetError(
+        ErrorCode.INVALID_SUBSCRIPTION,
+        HttpStatus.BAD_REQUEST,
+        "Weekly digest subscription must have at least one channel."
+      );
+    }
+
+    const subscriptions = await this.userRepository.createOrUpdateSubscription(
+      userId,
+      type,
+      channels
+    );
+    return {
+      subscription: {
+        type,
+        channels: subscriptions.map((s) => s.channel),
+      },
     };
   }
 
