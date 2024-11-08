@@ -1,7 +1,6 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { PersonIcon, Cross1Icon } from "@radix-ui/react-icons";
 import {
   Dialog,
   Button,
@@ -11,27 +10,18 @@ import {
   TextArea,
 } from "@radix-ui/themes";
 import { TRPCClientError } from "@trpc/client";
-import { Settings } from "lucide-react";
-import { useRouter } from "next/navigation";
-import React, { useMemo, useState } from "react";
+import { useRouter, usePathname } from "next/navigation";
 import { useForm, useFormState } from "react-hook-form";
 import { toast } from "sonner";
 import * as z from "zod";
 
 import { useAuth } from "@recnet/recnet-web/app/AuthContext";
 import { trpc } from "@recnet/recnet-web/app/_trpc/client";
-import { DoubleConfirmButton } from "@recnet/recnet-web/components/DoubleConfirmButton";
 import { RecNetLink } from "@recnet/recnet-web/components/Link";
 import { ErrorMessages } from "@recnet/recnet-web/constant";
-import { logout } from "@recnet/recnet-web/firebase/auth";
 import { cn } from "@recnet/recnet-web/utils/cn";
 
-import { User } from "@recnet/recnet-api-model";
-
-interface TabProps {
-  onSuccess?: (user: User) => void;
-  setOpen: (open: boolean) => void;
-}
+import { useUserSettingDialogContext } from "../UserSettingDialog";
 
 const HandleBlacklist = [
   "about",
@@ -44,7 +34,7 @@ const HandleBlacklist = [
   "user",
 ];
 
-const EditUserProfileSchema = z.object({
+const ProfileEditSchema = z.object({
   displayName: z.string().min(1, "Name cannot be blank."),
   handle: z
     .string()
@@ -76,13 +66,17 @@ const EditUserProfileSchema = z.object({
   openReviewUserName: z.string().nullable(),
 });
 
-function EditProfileForm(props: TabProps) {
-  const { onSuccess = () => {}, setOpen } = props;
+export function ProfileEditForm() {
+  const utils = trpc.useUtils();
+  const router = useRouter();
+  const { setOpen } = useUserSettingDialogContext();
   const { user, revalidateUser } = useAuth();
+  const oldHandle = user?.handle;
+  const pathname = usePathname();
 
   const { register, handleSubmit, formState, setError, control, watch } =
     useForm({
-      resolver: zodResolver(EditUserProfileSchema),
+      resolver: zodResolver(ProfileEditSchema),
       defaultValues: {
         displayName: user?.displayName ?? null,
         handle: user?.handle ?? null,
@@ -104,7 +98,7 @@ function EditProfileForm(props: TabProps) {
       className="w-full"
       onSubmit={handleSubmit(async (data, e) => {
         e?.preventDefault();
-        const res = EditUserProfileSchema.safeParse(data);
+        const res = ProfileEditSchema.safeParse(data);
         if (!res.success || !user?.id) {
           // should not happen, just in case and for typescript to narrow down type
           console.error("Invalid form data.");
@@ -138,15 +132,25 @@ function EditProfileForm(props: TabProps) {
           toast.success("Profile updated successfully!");
           // revaildate user profile
           revalidateUser();
-          // fire onSuccess callback
-          onSuccess(updatedData.user);
+          // revalidate cache for user profile or redirect to new user profile if handle changed
+          const updatedUser = updatedData.user;
+          if (updatedUser.handle !== oldHandle) {
+            // if user currently at their profile page,
+            // and if user change user handle, redirect to new user profile
+            if (pathname === `/${oldHandle}`) {
+              router.replace(`/${updatedUser.handle}`);
+            }
+          } else {
+            utils.getUserByHandle.invalidate({ handle: oldHandle });
+          }
+          setOpen(false);
         } catch (error) {
           console.log(error);
         }
       })}
     >
       <Dialog.Title>Edit profile</Dialog.Title>
-      <Dialog.Description size="2" mb="4">
+      <Dialog.Description size="2" mb="4" className="text-gray-11">
         Make changes to your profile.
       </Dialog.Description>
 
@@ -301,11 +305,6 @@ function EditProfileForm(props: TabProps) {
       </Flex>
 
       <Flex gap="3" mt="4" justify="end">
-        <Dialog.Close>
-          <Button variant="soft" color="gray" className="cursor-pointer">
-            Cancel
-          </Button>
-        </Dialog.Close>
         <Button
           variant="solid"
           color="blue"
@@ -320,148 +319,5 @@ function EditProfileForm(props: TabProps) {
         </Button>
       </Flex>
     </form>
-  );
-}
-
-function AccountSetting(props: TabProps) {
-  const deactivateMutation = trpc.deactivate.useMutation();
-  const { onSuccess = () => {} } = props;
-
-  return (
-    <div>
-      <Dialog.Title>Account Setting</Dialog.Title>
-      <Dialog.Description size="2" mb="4">
-        Make changes to account settings.
-      </Dialog.Description>
-
-      <Text size="4" color="red" className="block">
-        Deactivate Account
-      </Text>
-      <Text size="1" className="text-gray-11 block">
-        {
-          "Your account will be deactivated and you will be logged out. You can reactivate your account by logging in again."
-        }
-        {
-          " While your account is deactivated, your profile will be hidden from other users. You will not receive any weekly digest emails."
-        }
-      </Text>
-      <div className="flex flex-row w-full mt-4">
-        <DoubleConfirmButton
-          onConfirm={async () => {
-            const { user } = await deactivateMutation.mutateAsync();
-            await logout();
-            onSuccess(user);
-          }}
-          title="Deactivate Account"
-          description="Are you sure you want to deactivate your account?"
-        >
-          <Button color="red" className="bg-red-10 cursor-pointer">
-            Deactivate Account
-          </Button>
-        </DoubleConfirmButton>
-      </div>
-    </div>
-  );
-}
-
-const tabs = {
-  PROFILE: {
-    label: "Profile",
-    icon: <PersonIcon />,
-    component: EditProfileForm,
-  },
-  ACCOUNT: {
-    label: "Account",
-    icon: <Settings className="w-[15px] h-[15px]" />,
-    component: AccountSetting,
-  },
-} as const;
-type TabKey = keyof typeof tabs;
-
-export function UserSettingDialog(props: { handle: string }) {
-  const { handle } = props;
-  const utils = trpc.useUtils();
-  const router = useRouter();
-  const [open, setOpen] = useState(false);
-  const { user } = useAuth();
-  const oldHandle = user?.handle;
-
-  const tabsProps = useMemo(() => {
-    return {
-      ACCOUNT: {
-        onSuccess: (updatedUser: User) => {
-          // redirect to home page after deactivating account
-          router.replace("/");
-        },
-        setOpen: setOpen,
-      },
-      PROFILE: {
-        onSuccess: (updatedUser: User) => {
-          if (updatedUser.handle !== oldHandle) {
-            // if user change user handle, redirect to new user profile
-            router.replace(`/${updatedUser.handle}`);
-          } else {
-            utils.getUserByHandle.invalidate({ handle: handle });
-            setOpen(false);
-          }
-        },
-        setOpen: setOpen,
-      },
-    };
-  }, [handle, oldHandle, router, utils]);
-  const [activeTab, setActiveTab] = useState<TabKey>("PROFILE");
-
-  const TabComponent = useMemo(() => tabs[activeTab].component, [activeTab]);
-
-  return (
-    <Dialog.Root open={open} onOpenChange={setOpen}>
-      <Dialog.Trigger>
-        <Button className="w-full cursor-pointer" variant="surface">
-          Settings
-        </Button>
-      </Dialog.Trigger>
-      <Dialog.Content
-        maxWidth={{
-          initial: "480px",
-          md: "640px",
-        }}
-        className="relative"
-      >
-        <Dialog.Close className="absolute top-6 right-4 hidden md:block">
-          <Button variant="soft" color="gray" className="cursor-pointer">
-            <Cross1Icon />
-          </Button>
-        </Dialog.Close>
-        <div className="flex flex-row gap-x-8 md:p-4">
-          <div className="w-fit md:w-[25%] flex flex-col gap-y-2">
-            {Object.entries(tabs).map(([key, { label }]) => (
-              <div
-                key={key}
-                className={cn(
-                  "py-1 px-4 rounded-2 flex gap-x-2 items-center cursor-pointer hover:bg-gray-4",
-                  {
-                    "bg-gray-5": key === activeTab,
-                  }
-                )}
-                onClick={() => setActiveTab(key as TabKey)}
-              >
-                {tabs[key as TabKey].icon}
-                <Text
-                  size={{
-                    initial: "1",
-                    md: "2",
-                  }}
-                >
-                  {label}
-                </Text>
-              </div>
-            ))}
-          </div>
-          <div className="w-full h-[600px] md:h-[750px] overflow-y-auto">
-            <TabComponent {...tabsProps[activeTab]} />
-          </div>
-        </div>
-      </Dialog.Content>
-    </Dialog.Root>
   );
 }

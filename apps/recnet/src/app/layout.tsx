@@ -7,6 +7,7 @@ import { Toaster } from "sonner";
 import { Footer } from "@recnet/recnet-web/app/Footer";
 import { Headerbar } from "@recnet/recnet-web/app/Headerbar";
 import { clientEnv } from "@recnet/recnet-web/clientEnv";
+import { UserSettingDialogProvider } from "@recnet/recnet-web/components/setting/UserSettingDialog";
 import { getUserServerSide } from "@recnet/recnet-web/utils/getUserServerSide";
 
 import { ApiErrorBoundary } from "./ApiErrorBoundary";
@@ -43,15 +44,17 @@ export default async function RootLayout({
               <HistoryProvider>
                 <ThemeProvider attribute="class">
                   <Theme accentColor="blue">
-                    <Headerbar />
-                    <Toaster position="top-right" richColors offset={80} />
-                    <ApiErrorBoundary>
-                      <div className="min-h-[90svh] flex justify-center">
-                        {children}
-                      </div>
-                    </ApiErrorBoundary>
-                    <Footer />
-                    <MobileNavigator />
+                    <UserSettingDialogProvider>
+                      <Headerbar />
+                      <Toaster position="top-right" richColors offset={80} />
+                      <ApiErrorBoundary>
+                        <div className="min-h-[90svh] flex justify-center">
+                          {children}
+                        </div>
+                      </ApiErrorBoundary>
+                      <Footer />
+                      <MobileNavigator />
+                    </UserSettingDialogProvider>
                   </Theme>
                 </ThemeProvider>
               </HistoryProvider>

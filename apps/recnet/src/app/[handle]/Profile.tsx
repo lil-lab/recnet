@@ -11,10 +11,9 @@ import { Avatar } from "@recnet/recnet-web/components/Avatar";
 import { FollowButton } from "@recnet/recnet-web/components/FollowButton";
 import { RecNetLink } from "@recnet/recnet-web/components/Link";
 import { Skeleton, SkeletonText } from "@recnet/recnet-web/components/Skeleton";
+import { useUserSettingDialogContext } from "@recnet/recnet-web/components/setting/UserSettingDialog";
 import { cn } from "@recnet/recnet-web/utils/cn";
 import { interleaveWithValue } from "@recnet/recnet-web/utils/interleaveWithValue";
-
-import { UserSettingDialog } from "./UserSettingDialog";
 
 function StatDivider() {
   return <div className="w-[1px] bg-gray-6 h-[18px] flex" />;
@@ -28,6 +27,7 @@ export function Profile(props: { handle: string }) {
   });
   const { user: me } = useAuth();
   const isMe = !!me && !!data?.user && me.handle === data.user.handle;
+  const { setOpen: setUserSettingDialogOpen } = useUserSettingDialogContext();
 
   const userUrl = useMemo(
     () => (data?.user?.url ? new URL(data.user.url) : null),
@@ -184,7 +184,15 @@ export function Profile(props: { handle: string }) {
             </Flex>
             <Flex className="w-fit hidden md:flex">
               {isMe ? (
-                <UserSettingDialog handle={data.user.handle} />
+                <Button
+                  className="w-full cursor-pointer"
+                  variant="surface"
+                  onClick={() => {
+                    setUserSettingDialogOpen(true);
+                  }}
+                >
+                  Settings
+                </Button>
               ) : (
                 <FollowButton user={data.user} />
               )}
@@ -196,7 +204,15 @@ export function Profile(props: { handle: string }) {
       <div className="sm:hidden">{userInfo}</div>
       <Flex className="w-full md:hidden">
         {isMe ? (
-          <UserSettingDialog handle={data.user.handle} />
+          <Button
+            className="w-full cursor-pointer"
+            variant="surface"
+            onClick={() => {
+              setUserSettingDialogOpen(true);
+            }}
+          >
+            Settings
+          </Button>
         ) : (
           <FollowButton user={data.user} />
         )}

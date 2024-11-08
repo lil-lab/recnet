@@ -123,3 +123,10 @@ export const postUsersSubscriptionsRequestSchema = subscriptionSchema;
 export type PostUsersSubscriptionsRequest = z.infer<
   typeof postUsersSubscriptionsRequestSchema
 >;
+
+export const postUsersSubscriptionsResponseSchema = z.object({
+  subscription: subscriptionSchema,
+});
+export type PostUsersSubscriptionsResponse = z.infer<
+  typeof postUsersSubscriptionsResponseSchema
+>;
