@@ -49,6 +49,7 @@ export const user = Prisma.validator<Prisma.UserDefaultArgs>()({
       },
     },
     recommendations: true,
+    subscriptions: true,
   },
 });
 
