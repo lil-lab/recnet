@@ -106,3 +106,9 @@ export const digitalLibrarySchema = z.object({
   isVerified: z.boolean(),
 });
 export type DigitalLibrary = z.infer<typeof digitalLibrarySchema>;
+
+export const subscriptionSchema = z.object({
+  type: z.enum(["WEEKLY_DIGEST"]),
+  channels: z.array(z.enum(["EMAIL", "SLACK"])),
+});
+export type Subscription = z.infer<typeof subscriptionSchema>;

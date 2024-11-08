@@ -2,6 +2,7 @@ import { ApiProperty } from "@nestjs/swagger";
 
 import { User } from "./entities/user.entity";
 import { UserPreview } from "./entities/user.preview.entity";
+import { Subscription } from "./entities/user.subscription.entity";
 
 export class GetUsersResponse {
   @ApiProperty()
@@ -14,4 +15,9 @@ export class GetUsersResponse {
 export class GetUserMeResponse {
   @ApiProperty()
   user: User;
+}
+
+export class GetSubscriptionsResponse {
+  @ApiProperty()
+  subscriptions: Subscription[];
 }

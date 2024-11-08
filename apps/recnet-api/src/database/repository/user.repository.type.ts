@@ -54,6 +54,7 @@ export const user = Prisma.validator<Prisma.UserDefaultArgs>()({
 });
 
 export type User = Prisma.UserGetPayload<typeof user>;
+export type Subscriptions = Prisma.UserGetPayload<typeof user>["subscriptions"];
 
 export type UserFilterBy = {
   handle?: string;

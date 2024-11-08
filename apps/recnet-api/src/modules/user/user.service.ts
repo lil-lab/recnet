@@ -1,4 +1,5 @@
 import { HttpStatus, Inject, Injectable } from "@nestjs/common";
+import { Channel, SubscriptionType } from "@prisma/client";
 
 import FollowingRecordRepository from "@recnet-api/database/repository/followingRecord.repository";
 import InviteCodeRepository from "@recnet-api/database/repository/invite-code.repository";
@@ -7,6 +8,7 @@ import {
   CreateUserInput,
   User as DbUser,
   UserPreview as DbUserPreview,
+  Subscriptions as DbSubscriptions,
   UpdateUserInput,
 } from "@recnet-api/database/repository/user.repository.type";
 import { UserFilterBy } from "@recnet-api/database/repository/user.repository.type";
@@ -20,7 +22,8 @@ import { CreateUserDto } from "./dto/create.user.dto";
 import { UpdateUserDto } from "./dto/update.user.dto";
 import { User } from "./entities/user.entity";
 import { UserPreview } from "./entities/user.preview.entity";
-import { GetUsersResponse } from "./user.response";
+import { Subscription } from "./entities/user.subscription.entity";
+import { GetSubscriptionsResponse, GetUsersResponse } from "./user.response";
 import { transformUserPreview } from "./user.transformer";
 
 @Injectable()
@@ -164,6 +167,15 @@ export class UserService {
     );
   }
 
+  public async getSubscriptions(
+    userId: string
+  ): Promise<GetSubscriptionsResponse> {
+    const user = await this.userRepository.findUserById(userId);
+    return {
+      subscriptions: this.transformSubscriptions(user.subscriptions),
+    };
+  }
+
   private async transformUser(user: DbUser): Promise<User> {
     const followingUserIds: string[] = user.following.map(
       (followingUser) => followingUser.followingId
@@ -191,5 +203,26 @@ export class UserService {
       isActivated: user.isActivated,
       following: followingUsers,
     };
+  }
+
+  private transformSubscriptions(
+    subscriptions: DbSubscriptions
+  ): Subscription[] {
+    const subscriptionMap: Map<SubscriptionType, Channel[]> = new Map();
+    Object.values(SubscriptionType).forEach((subscriptionType) => {
+      subscriptionMap.set(subscriptionType, []);
+    });
+
+    subscriptions.forEach((subscription) => {
+      const channels = subscriptionMap.get(subscription.type);
+      if (channels) {
+        channels.push(subscription.channel);
+      }
+    });
+
+    return Array.from(subscriptionMap.entries()).map(([type, channels]) => ({
+      type,
+      channels,
+    }));
   }
 }

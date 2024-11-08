@@ -47,7 +47,11 @@ import {
   ValidateUserHandleDto,
   ValidateUserInviteCodeDto,
 } from "./dto/validate.user.dto";
-import { GetUserMeResponse, GetUsersResponse } from "./user.response";
+import {
+  GetSubscriptionsResponse,
+  GetUserMeResponse,
+  GetUsersResponse,
+} from "./user.response";
 import { UserService } from "./user.service";
 
 @ApiTags("users")
@@ -219,5 +223,15 @@ export class UserController {
   ): Promise<void> {
     const { userId } = authUser;
     return this.userService.unfollowUser(userId, dto.userId);
+  }
+
+  @Get("subscriptions")
+  @ApiBearerAuth()
+  @Auth()
+  public async getSubscriptions(
+    @User() authUser: AuthUser
+  ): Promise<GetSubscriptionsResponse> {
+    const { userId } = authUser;
+    return this.userService.getSubscriptions(userId);
   }
 }
