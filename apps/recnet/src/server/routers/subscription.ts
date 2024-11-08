@@ -20,7 +20,6 @@ export const subscriptionRouter = router({
     .input(postUsersSubscriptionsRequestSchema)
     .output(postUsersSubscriptionsResponseSchema)
     .mutation(async (opts) => {
-      // TODO: after finish the API, use API call below
       const subscription = opts.input;
       const { recnetApi } = opts.ctx;
       const { data } = await recnetApi.post("/users/subscriptions", {
