@@ -105,10 +105,8 @@ function SubscriptionTypeCard(props: {
                 return;
               }
               await updateSubscriptionMutation.mutateAsync({
-                subscription: {
-                  type,
-                  channels: data.channels,
-                },
+                type,
+                channels: data.channels,
               });
               utils.getSubscriptions.invalidate();
               toast.success("Subscription updated successfully");

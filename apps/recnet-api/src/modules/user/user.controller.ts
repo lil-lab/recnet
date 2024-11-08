@@ -35,6 +35,7 @@ import {
   patchUserMeRequestSchema,
   postUserFollowRequestSchema,
   postUserMeRequestSchema,
+  postUsersSubscriptionsRequestSchema,
   postUserValidateHandleRequestSchema,
   postUserValidateInviteCodeRequestSchema,
 } from "@recnet/recnet-api-model";
@@ -47,7 +48,13 @@ import {
   ValidateUserHandleDto,
   ValidateUserInviteCodeDto,
 } from "./dto/validate.user.dto";
-import { GetUserMeResponse, GetUsersResponse } from "./user.response";
+import { Subscription } from "./entities/user.subscription.entity";
+import {
+  GetSubscriptionsResponse,
+  GetUserMeResponse,
+  GetUsersResponse,
+  PostSubscriptionsResponse,
+} from "./user.response";
 import { UserService } from "./user.service";
 
 @ApiTags("users")
@@ -219,5 +226,36 @@ export class UserController {
   ): Promise<void> {
     const { userId } = authUser;
     return this.userService.unfollowUser(userId, dto.userId);
+  }
+
+  @ApiOperation({
+    summary: "Get subscriptions",
+    description: "Get the current user's subscriptions.",
+  })
+  @Get("subscriptions")
+  @ApiBearerAuth()
+  @Auth()
+  public async getSubscriptions(
+    @User() authUser: AuthUser
+  ): Promise<GetSubscriptionsResponse> {
+    const { userId } = authUser;
+    return this.userService.getSubscriptions(userId);
+  }
+
+  @ApiOperation({
+    summary: "Create or update subscription",
+    description: "Create or update the current user's subscription.",
+  })
+  @Post("subscriptions")
+  @ApiBearerAuth()
+  @UsePipes(new ZodValidationBodyPipe(postUsersSubscriptionsRequestSchema))
+  @Auth()
+  public async createOrUpdateSubscription(
+    @User() authUser: AuthUser,
+    @Body() dto: Subscription
+  ): Promise<PostSubscriptionsResponse> {
+    const { userId } = authUser;
+    const { type, channels } = dto;
+    return this.userService.createOrUpdateSubscription(userId, type, channels);
   }
 }

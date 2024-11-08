@@ -116,3 +116,4 @@ export const subscriptionSchema = z.object({
   type: subscriptionTypeSchema,
   channels: z.array(subscriptionChannelSchema),
 });
+export type Subscription = z.infer<typeof subscriptionSchema>;

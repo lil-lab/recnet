@@ -2,14 +2,18 @@ import { HttpStatus, Inject, Injectable, Logger } from "@nestjs/common";
 import { ConfigType } from "@nestjs/config";
 import { createTransport, Transporter, SendMailOptions } from "nodemailer";
 
-import { NodemailerConfig } from "@recnet-api/config/common.config";
+import { AppConfig, NodemailerConfig } from "@recnet-api/config/common.config";
 import { User as DbUser } from "@recnet-api/database/repository/user.repository.type";
+import { SendResult } from "@recnet-api/modules/subscription/subscription.type";
 import { sleep } from "@recnet-api/utils";
 import { RecnetError } from "@recnet-api/utils/error/recnet.error";
 import { ErrorCode } from "@recnet-api/utils/error/recnet.error.const";
 
-import { RETRY_LIMIT, SLEEP_DURATION_MS } from "../email.const";
-import { SendMailResult } from "../email.type";
+import {
+  EMAIL_RETRY_LIMIT,
+  EMAIL_RETRY_DURATION_MS,
+  EMAIL_DEV_HANDLE_WHITELIST,
+} from "../email.const";
 
 @Injectable()
 class EmailTransporter {
@@ -18,7 +22,9 @@ class EmailTransporter {
 
   constructor(
     @Inject(NodemailerConfig.KEY)
-    private readonly nodemailerConfig: ConfigType<typeof NodemailerConfig>
+    private readonly nodemailerConfig: ConfigType<typeof NodemailerConfig>,
+    @Inject(AppConfig.KEY)
+    private readonly appConfig: ConfigType<typeof AppConfig>
   ) {
     const { service, host, port, secure, user, pass } = nodemailerConfig;
     this.transporter = createTransport({
@@ -33,10 +39,18 @@ class EmailTransporter {
   public async sendMail(
     user: DbUser,
     mailOptions: SendMailOptions
-  ): Promise<SendMailResult> {
+  ): Promise<SendResult> {
+    if (
+      this.appConfig.nodeEnv !== "production" &&
+      !EMAIL_DEV_HANDLE_WHITELIST.includes(user.handle)
+    ) {
+      // hardcode the recipient whitelist in dev environment
+      return { success: true, skip: true };
+    }
+
     let retryCount = 0;
 
-    while (retryCount < RETRY_LIMIT) {
+    while (retryCount < EMAIL_RETRY_LIMIT) {
       try {
         await this.transporter.sendMail(mailOptions);
         return { success: true };
@@ -47,7 +61,7 @@ class EmailTransporter {
         );
 
         // avoid rate limit
-        await sleep(SLEEP_DURATION_MS);
+        await sleep(EMAIL_RETRY_DURATION_MS);
       }
     }
 
