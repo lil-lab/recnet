@@ -9,7 +9,6 @@ import { Dialog, Button, Text } from "@radix-ui/themes";
 import { Settings } from "lucide-react";
 import React, { useMemo, useState, createContext, useContext } from "react";
 
-import { useAuth } from "@recnet/recnet-web/app/AuthContext";
 import { cn } from "@recnet/recnet-web/utils/cn";
 
 import { AccountSetting } from "./account/AccountSetting";
@@ -58,15 +57,10 @@ interface UserSettingDialogProps {
 
 export function UserSettingDialogProvider(props: UserSettingDialogProps) {
   const { children } = props;
-  const { user } = useAuth();
   const [open, setOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<TabKey>("PROFILE");
 
   const TabComponent = useMemo(() => tabs[activeTab].component, [activeTab]);
-
-  if (!user) {
-    return children;
-  }
 
   return (
     <UserSettingDialogContext.Provider
