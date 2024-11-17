@@ -13,7 +13,7 @@ import {
   SLACK_RETRY_DURATION_MS,
   SLACK_RETRY_LIMIT,
 } from "../slack.const";
-import { SendSlackResult } from "../slack.type";
+import { SendSlackResult, SlackMessageBlocks } from "../slack.type";
 
 @Injectable()
 export class SlackTransporter {
@@ -31,7 +31,7 @@ export class SlackTransporter {
 
   public async sendDirectMessage(
     user: DbUser,
-    message: string
+    message: SlackMessageBlocks
   ): Promise<SendSlackResult> {
     if (
       this.appConfig.nodeEnv !== "production" &&
@@ -82,7 +82,7 @@ export class SlackTransporter {
 
   private async postDirectMessage(
     userSlackId: string,
-    message: string
+    message: SlackMessageBlocks
   ): Promise<void> {
     // Open a direct message conversation
     const conversationResp = await this.client.conversations.open({
@@ -97,10 +97,12 @@ export class SlackTransporter {
       );
     }
 
+    const notificationText = `📬 Your RecNet weekly digest has arrived!`;
     // Send the message
     await this.client.chat.postMessage({
       channel: conversationId,
-      text: message,
+      text: notificationText,
+      blocks: message,
     });
   }
 }

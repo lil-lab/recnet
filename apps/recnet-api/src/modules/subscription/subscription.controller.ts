@@ -15,9 +15,9 @@ import { ErrorCode } from "@recnet-api/utils/error/recnet.error.const";
 
 import { getLatestCutOff } from "@recnet/recnet-date-fns";
 
-import { announcementSchema } from "@recnet/recnet-api-model";
+import { announcementSchema, recSchema } from "@recnet/recnet-api-model";
 
-import { WeeklyDigestWorker } from "./weekly-digest.worker";
+import { WeeklyDigestContent } from "./subscription.type";
 
 import { SlackService } from "../slack/slack.service";
 
@@ -28,8 +28,7 @@ export class SubscriptionController {
     @Inject(AppConfig.KEY)
     private readonly appConfig: ConfigType<typeof AppConfig>,
     private readonly slackService: SlackService,
-    private readonly userRepository: UserRepository,
-    private readonly weeklyDigestWorker: WeeklyDigestWorker
+    private readonly userRepository: UserRepository
   ) {}
 
   /* Development only */
@@ -57,18 +56,34 @@ export class SubscriptionController {
         "This endpoint is only for development"
       );
     }
+
+    function getMockWeeklyDigestData(): WeeklyDigestContent {
+      const getMockRec = (title = 1) =>
+        generateMock(recSchema, {
+          stringMap: {
+            photoUrl: () => "https://avatar.iran.liara.run/public",
+            title: () => `Paper Title ${title}`,
+          },
+        });
+      const announcement = generateMock(announcementSchema, {
+        stringMap: {
+          content: () => "This is a test announcement!",
+        },
+      });
+      return {
+        recs: [getMockRec(), getMockRec(2), getMockRec(3), getMockRec()],
+        numUnusedInviteCodes: 3,
+        latestAnnouncement: {
+          ...announcement,
+          startAt: new Date(announcement.startAt),
+          endAt: new Date(announcement.endAt),
+        },
+      };
+    }
+
     const cutoff = getLatestCutOff();
     const user = await this.userRepository.findUserById(userId);
-    const announcement = generateMock(announcementSchema);
-    const content = await this.weeklyDigestWorker.getWeeklyDigestContent(
-      user,
-      cutoff,
-      {
-        ...announcement,
-        startAt: new Date(announcement.startAt),
-        endAt: new Date(announcement.endAt),
-      }
-    );
+    const content = getMockWeeklyDigestData();
 
     this.slackService.sendWeeklyDigest(user, content, cutoff);
   }

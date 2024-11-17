@@ -128,7 +128,7 @@ export class WeeklyDigestWorker {
     }
   }
 
-  public async getWeeklyDigestContent(
+  private async getWeeklyDigestContent(
     user: DbUser,
     cutoff: Date,
     latestAnnouncement: Announcement | undefined
