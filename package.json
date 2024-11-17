@@ -71,6 +71,7 @@
     "reflect-metadata": "^0.1.13",
     "rxjs": "^7.8.0",
     "server-only": "^0.0.1",
+    "slack-block-builder": "^2.8.0",
     "sonner": "^1.4.32",
     "tailwind-merge": "^2.2.1",
     "tailwindcss-radix": "^3.0.3",
