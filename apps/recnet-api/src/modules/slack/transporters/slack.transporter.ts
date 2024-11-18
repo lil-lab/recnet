@@ -31,7 +31,8 @@ export class SlackTransporter {
 
   public async sendDirectMessage(
     user: DbUser,
-    message: SlackMessageBlocks
+    message: SlackMessageBlocks,
+    notificationText?: string
   ): Promise<SendSlackResult> {
     if (
       this.appConfig.nodeEnv !== "production" &&
@@ -45,7 +46,7 @@ export class SlackTransporter {
     while (retryCount < SLACK_RETRY_LIMIT) {
       try {
         const slackId = await this.getUserSlackId(user);
-        await this.postDirectMessage(slackId, message);
+        await this.postDirectMessage(slackId, message, notificationText);
         return { success: true };
       } catch (error) {
         retryCount++;
@@ -82,7 +83,8 @@ export class SlackTransporter {
 
   private async postDirectMessage(
     userSlackId: string,
-    message: SlackMessageBlocks
+    message: SlackMessageBlocks,
+    notificationText?: string
   ): Promise<void> {
     // Open a direct message conversation
     const conversationResp = await this.client.conversations.open({
@@ -97,7 +99,6 @@ export class SlackTransporter {
       );
     }
 
-    const notificationText = `📬 Your RecNet weekly digest has arrived!`;
     // Send the message
     await this.client.chat.postMessage({
       channel: conversationId,

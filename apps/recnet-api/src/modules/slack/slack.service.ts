@@ -29,7 +29,12 @@ export class SlackService {
         content,
         this.appConfig.nodeEnv
       );
-      result = await this.transporter.sendDirectMessage(user, slackMessage);
+      const notificationText = `📬 Your RecNet weekly digest has arrived!`;
+      result = await this.transporter.sendDirectMessage(
+        user,
+        slackMessage,
+        notificationText
+      );
     } catch (e) {
       return { success: false, userId: user.id };
     }
