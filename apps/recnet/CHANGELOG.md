@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [1.16.2](https://github.com/lil-lab/recnet/compare/recnet-web-v1.16.1...recnet-web-v1.16.2) (2024-11-18)
+
+
+### Features
+
+* add new slack msg template ([7807854](https://github.com/lil-lab/recnet/commit/780785445461f437b93ec1e9f325470120f38d98))
+* finish update slack msg template ([3860d5e](https://github.com/lil-lab/recnet/commit/3860d5e2ac7b92cb162aa5fc3b10073a85fbc518))
+* follow the person who invites the user ([2f213ae](https://github.com/lil-lab/recnet/commit/2f213ae8c5cf992281ebfc8ccac8f1fc9399fb92))
+* install slack block builder ([4d771a6](https://github.com/lil-lab/recnet/commit/4d771a61da05415a78078cb4abd0528b73c7f0b7))
+
+
+### Bug Fixes
+
+* use prisma instance inside the transaction ([75e5bcd](https://github.com/lil-lab/recnet/commit/75e5bcde05941e9d5dd20dca1d6e5b214e593395))
+
 ## [1.16.1](https://github.com/lil-lab/recnet/compare/recnet-web-v1.16.0...recnet-web-v1.16.1) (2024-11-08)
 
 
