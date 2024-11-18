@@ -7,11 +7,16 @@ import { formatDate } from "@recnet/recnet-date-fns";
 
 import type { SlackMessageBlocks } from "../slack.type";
 
+export type WeeklyDigestDto = {
+  notificationText?: string;
+  messageBlocks: SlackMessageBlocks;
+};
+
 export const weeklyDigestSlackTemplate = (
   cutoff: Date,
   content: WeeklyDigestContent,
   nodeEnv: string
-): SlackMessageBlocks => {
+): WeeklyDigestDto => {
   const { recs, numUnusedInviteCodes, latestAnnouncement } = content;
 
   const recsGroupByTitle = groupBy(recs, (rec) => {
@@ -50,7 +55,7 @@ export const weeklyDigestSlackTemplate = (
     );
   }
 
-  return BlockCollection(
+  const messageBlocks = BlockCollection(
     // headers: number of rec
     Blocks.Header({
       text: `${nodeEnv !== "production" && "[DEV] "}📬 Your Weekly Digest for ${formatDate(cutoff)}`,
@@ -68,4 +73,8 @@ export const weeklyDigestSlackTemplate = (
       text: `👀 Any interesting read this week? ${Md.link("https://recnet.io", "Share with your network!")}`,
     })
   );
+  return {
+    notificationText: `📬 Your RecNet weekly digest has arrived!`,
+    messageBlocks,
+  };
 };

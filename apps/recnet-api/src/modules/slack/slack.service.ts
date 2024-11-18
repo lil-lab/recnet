@@ -24,16 +24,15 @@ export class SlackService {
   ): Promise<SendSlackResult> {
     let result;
     try {
-      const slackMessage = weeklyDigestSlackTemplate(
+      const weeklyDigest = weeklyDigestSlackTemplate(
         cutoff,
         content,
         this.appConfig.nodeEnv
       );
-      const notificationText = `📬 Your RecNet weekly digest has arrived!`;
       result = await this.transporter.sendDirectMessage(
         user,
-        slackMessage,
-        notificationText
+        weeklyDigest.messageBlocks,
+        weeklyDigest.notificationText
       );
     } catch (e) {
       return { success: false, userId: user.id };
