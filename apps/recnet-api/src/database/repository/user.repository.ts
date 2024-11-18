@@ -107,11 +107,19 @@ export default class UserRepository {
         select: user.select,
       });
 
-      await prisma.inviteCode.update({
+      const inviteCode = await prisma.inviteCode.update({
         where: { code: createUserInput.inviteCode },
         data: {
           usedById: userInTransaction.id,
           usedAt: new Date(),
+        },
+      });
+
+      // follow the person who gave the invite code
+      await prisma.followingRecord.create({
+        data: {
+          followedById: userInTransaction.id,
+          followingId: inviteCode.ownerId,
         },
       });
 
