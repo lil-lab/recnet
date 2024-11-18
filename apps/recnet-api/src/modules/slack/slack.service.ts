@@ -24,12 +24,16 @@ export class SlackService {
   ): Promise<SendSlackResult> {
     let result;
     try {
-      const slackMessage = weeklyDigestSlackTemplate(
+      const weeklyDigest = weeklyDigestSlackTemplate(
         cutoff,
         content,
         this.appConfig.nodeEnv
       );
-      result = await this.transporter.sendDirectMessage(user, slackMessage);
+      result = await this.transporter.sendDirectMessage(
+        user,
+        weeklyDigest.messageBlocks,
+        weeklyDigest.notificationText
+      );
     } catch (e) {
       return { success: false, userId: user.id };
     }

@@ -13,7 +13,7 @@ import {
   SLACK_RETRY_DURATION_MS,
   SLACK_RETRY_LIMIT,
 } from "../slack.const";
-import { SendSlackResult } from "../slack.type";
+import { SendSlackResult, SlackMessageBlocks } from "../slack.type";
 
 @Injectable()
 export class SlackTransporter {
@@ -31,7 +31,8 @@ export class SlackTransporter {
 
   public async sendDirectMessage(
     user: DbUser,
-    message: string
+    message: SlackMessageBlocks,
+    notificationText?: string
   ): Promise<SendSlackResult> {
     if (
       this.appConfig.nodeEnv !== "production" &&
@@ -45,7 +46,7 @@ export class SlackTransporter {
     while (retryCount < SLACK_RETRY_LIMIT) {
       try {
         const slackId = await this.getUserSlackId(user);
-        await this.postDirectMessage(slackId, message);
+        await this.postDirectMessage(slackId, message, notificationText);
         return { success: true };
       } catch (error) {
         retryCount++;
@@ -82,7 +83,8 @@ export class SlackTransporter {
 
   private async postDirectMessage(
     userSlackId: string,
-    message: string
+    message: SlackMessageBlocks,
+    notificationText?: string
   ): Promise<void> {
     // Open a direct message conversation
     const conversationResp = await this.client.conversations.open({
@@ -100,7 +102,8 @@ export class SlackTransporter {
     // Send the message
     await this.client.chat.postMessage({
       channel: conversationId,
-      text: message,
+      text: notificationText,
+      blocks: message,
     });
   }
 }
