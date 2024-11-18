@@ -116,7 +116,7 @@ export default class UserRepository {
       });
 
       // follow the person who gave the invite code
-      await this.prisma.followingRecord.create({
+      await prisma.followingRecord.create({
         data: {
           followedById: userInTransaction.id,
           followingId: inviteCode.ownerId,
