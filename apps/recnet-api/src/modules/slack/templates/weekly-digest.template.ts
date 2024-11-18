@@ -56,7 +56,6 @@ export const weeklyDigestSlackTemplate = (
   }
 
   const messageBlocks = BlockCollection(
-    // headers: number of rec
     Blocks.Header({
       text: `${nodeEnv !== "production" && "[DEV] "}📬 Your Weekly Digest for ${formatDate(cutoff)}`,
     }),
