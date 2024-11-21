@@ -10,8 +10,6 @@ import { checkRecnetJWTProcedure } from "./middleware";
 
 import { router } from "../trpc";
 
-let workspaceName: string | undefined = undefined;
-
 export const subscriptionRouter = router({
   getSubscriptions: checkRecnetJWTProcedure
     .output(getUsersSubscriptionsResponseSchema)
@@ -42,7 +40,6 @@ export const subscriptionRouter = router({
       // return data;
 
       console.log("Slack OAuth 2FA success");
-      workspaceName = "Slack Mock Workspace";
       return;
     }),
   getSlackOAuthStatus: checkRecnetJWTProcedure
@@ -51,8 +48,9 @@ export const subscriptionRouter = router({
       // const { recnetApi } = opts.ctx;
       // const { data } = await recnetApi.get("/users/subscriptions/slack/oauth");
       // return getUsersSubscriptionsSlackOAuthResponseSchema.parse(data);
+
       return getUsersSubscriptionsSlackOAuthResponseSchema.parse({
-        workspaceName,
+        workspaceName: null,
       });
     }),
 });

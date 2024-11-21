@@ -195,6 +195,11 @@ function SubscriptionTypeCard(props: {
 
 export function SubscriptionSetting() {
   const { data, isFetching } = trpc.getSubscriptions.useQuery();
+  const { data: slackOAuthData, isFetching: isFetchingSlackOAuthData } =
+    trpc.getSlackOAuthStatus.useQuery();
+
+  console.log(slackOAuthData);
+
   const [openedType, setOpenType] = useState<SubscriptionType | undefined>(
     undefined
   );
@@ -237,9 +242,19 @@ export function SubscriptionSetting() {
       <Text size="4" className="block mb-2 mt-4">
         Slack Integration
       </Text>
-      <RecNetLink href="api/slack/oauth/install">
-        <Button variant="solid">Add Slack Integration to your workspace</Button>
-      </RecNetLink>
+      {isFetchingSlackOAuthData ? (
+        <LoadingBox />
+      ) : slackOAuthData?.workspaceName === null ? (
+        <RecNetLink href="api/slack/oauth/install">
+          <Button variant="solid">
+            Add Slack Integration to your workspace
+          </Button>
+        </RecNetLink>
+      ) : (
+        <Text size="2" mb="2" className="text-gray-11">
+          Currently integrated with workspace: {slackOAuthData?.workspaceName}
+        </Text>
+      )}
     </div>
   );
 }
