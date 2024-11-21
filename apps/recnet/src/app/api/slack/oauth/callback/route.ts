@@ -1,19 +1,21 @@
 import { redirect } from "next/navigation";
 import { type NextRequest } from "next/server";
 
+import { serverClient } from "@recnet/recnet-web/app/_trpc/serverClient";
+
 export async function GET(req: NextRequest) {
   const searchParams = req.nextUrl.searchParams;
   const code = searchParams.get("code");
-  console.log("req: ", req);
-  console.log("code", code);
 
   if (!code) {
     redirect("/feeds?slackOAuthStatus=error");
   }
+  // hit trpc api to forward the code to api server
+  let isSuccess = true;
   try {
-    // hit trpc api to forward the code to api server
-    redirect("/feeds?slackOAuthStatus=success");
+    await serverClient.slackOAuth2FA({ code });
   } catch (e) {
-    redirect("/feeds?slackOAuthStatus=error");
+    isSuccess = false;
   }
+  redirect(`/feeds?slackOAuthStatus=${isSuccess ? "success" : "error"}`);
 }
