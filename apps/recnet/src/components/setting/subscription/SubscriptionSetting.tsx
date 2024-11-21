@@ -18,7 +18,7 @@ import { toast } from "sonner";
 import { z } from "zod";
 
 import { trpc } from "@recnet/recnet-web/app/_trpc/client";
-import { RecNetLink } from "../../Link";
+import { RecNetLink } from "@recnet/recnet-web/components/Link";
 import { LoadingBox } from "@recnet/recnet-web/components/LoadingBox";
 import { cn } from "@recnet/recnet-web/utils/cn";
 
