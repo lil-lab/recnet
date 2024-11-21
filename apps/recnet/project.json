@@ -39,6 +39,18 @@
         ],
         "cwd": "apps/recnet"
       }
+    },
+    "dev:ssl": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          {
+            "command": "next dev --experimental-https",
+            "forwardAllArgs": true
+          }
+        ],
+        "cwd": "apps/recnet"
+      }
     }
   },
   "tags": ["type:app"]
