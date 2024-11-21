@@ -1,5 +1,15 @@
 import { z } from "zod";
 
+import { resolveBaseUrl } from "./utils/resolveBaseUrl";
+
+function resolveSlackRedirectUri(env: string | undefined) {
+  const baseUrl = resolveBaseUrl(env);
+  if (!baseUrl) {
+    return undefined;
+  }
+  return baseUrl + process.env.SLACK_OAUTH_REDIRECT_URI;
+}
+
 const serverConfigSchema = z.object({
   USE_SECURE_COOKIES: z.coerce.boolean(),
   COOKIE_SIGNATURE_KEY: z.string(),
@@ -9,6 +19,9 @@ const serverConfigSchema = z.object({
   NEXT_PUBLIC_FIREBASE_API_KEY: z.string(),
   NEXT_PUBLIC_FIREBASE_PROJECT_ID: z.string(),
   RECNET_API_ENDPOINT: z.string(),
+  SLACK_APP_CLIENT_ID: z.string(),
+  SLACK_OAUTH_APP_SCOPES: z.string(),
+  SLACK_OAUTH_REDIRECT_URI: z.string(),
 });
 
 const serverConfigRes = serverConfigSchema.safeParse({
@@ -20,6 +33,11 @@ const serverConfigRes = serverConfigSchema.safeParse({
   NEXT_PUBLIC_FIREBASE_API_KEY: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
   NEXT_PUBLIC_FIREBASE_PROJECT_ID: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
   RECNET_API_ENDPOINT: process.env.RECNET_API_ENDPOINT,
+  SLACK_APP_CLIENT_ID: process.env.SLACK_APP_CLIENT_ID,
+  SLACK_OAUTH_APP_SCOPES: process.env.SLACK_OAUTH_APP_SCOPES,
+  SLACK_OAUTH_REDIRECT_URI: resolveSlackRedirectUri(
+    process.env.NEXT_PUBLIC_VERCEL_ENV
+  ),
 });
 
 if (!serverConfigRes.success) {
