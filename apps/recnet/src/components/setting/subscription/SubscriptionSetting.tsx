@@ -18,6 +18,7 @@ import { toast } from "sonner";
 import { z } from "zod";
 
 import { trpc } from "@recnet/recnet-web/app/_trpc/client";
+import { RecNetLink } from "../../Link";
 import { LoadingBox } from "@recnet/recnet-web/components/LoadingBox";
 import { cn } from "@recnet/recnet-web/utils/cn";
 
@@ -232,6 +233,13 @@ export function SubscriptionSetting() {
           })}
         </Accordion.Root>
       )}
+
+      <Text size="4" className="block mb-2 mt-4">
+        Slack Integration
+      </Text>
+      <RecNetLink href="api/slack/oauth/install">
+        <Button variant="solid">Add Slack Integration to your workspace</Button>
+      </RecNetLink>
     </div>
   );
 }
