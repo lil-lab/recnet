@@ -198,11 +198,11 @@ export function SubscriptionSetting() {
   const { data: slackOAuthData, isFetching: isFetchingSlackOAuthData } =
     trpc.getSlackOAuthStatus.useQuery();
 
-  console.log(slackOAuthData);
-
   const [openedType, setOpenType] = useState<SubscriptionType | undefined>(
     undefined
   );
+
+  const workspaceName = slackOAuthData?.workspaceName ?? null;
 
   return (
     <div>
@@ -239,21 +239,25 @@ export function SubscriptionSetting() {
         </Accordion.Root>
       )}
 
-      <Text size="4" className="block mb-2 mt-4">
+      <Text size="4" className="block mt-4">
         Slack Integration
+      </Text>
+      <Text size="1" className="block text-gray-11 mb-2 mt-1">
+        Install our Slack App to enable distributing subscription through Slack.
       </Text>
       {isFetchingSlackOAuthData ? (
         <LoadingBox />
-      ) : slackOAuthData?.workspaceName === null ? (
+      ) : workspaceName === null ? (
         <RecNetLink href="api/slack/oauth/install">
-          <Button variant="solid">
-            Add Slack Integration to your workspace
-          </Button>
+          <Button variant="solid">Add our app to your workspace</Button>
         </RecNetLink>
       ) : (
-        <Text size="2" mb="2" className="text-gray-11">
-          Currently integrated with workspace: {slackOAuthData?.workspaceName}
-        </Text>
+        <div className="flex flex-col gap-y-2">
+          <Text size="2" className="text-gray-11">
+            ✅ Currently installed in workspace:{" "}
+            <span className="text-blue-8">{workspaceName}</span>
+          </Text>
+        </div>
       )}
     </div>
   );
