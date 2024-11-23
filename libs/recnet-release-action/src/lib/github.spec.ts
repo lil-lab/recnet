@@ -348,11 +348,85 @@ describe("GitHubAPI", () => {
   });
 
   describe("requestReviewers", () => {
-    it("should request reviewers for a PR", async () => {
+    it("should request only new reviewers for a PR", async () => {
       const prNumber = 1;
-      const reviewers = ["reviewer1", "reviewer2"];
+      const newReviewers = ["reviewer1", "reviewer2", "reviewer3"];
+      const existingReviewers = {
+        users: [{ login: "reviewer1" }],
+      };
 
-      await github.requestReviewers(prNumber, reviewers);
+      // Mock the GET request for current reviewers
+      mockOctokit.request.mockResolvedValueOnce({ data: existingReviewers });
+
+      await github.requestReviewers(prNumber, newReviewers);
+
+      // Verify GET request was called
+      expect(mockOctokit.request).toHaveBeenCalledWith(
+        "GET /repos/{owner}/{repo}/pulls/{pull_number}/requested_reviewers",
+        {
+          owner: env.inputs.owner,
+          repo: env.inputs.repo,
+          pull_number: prNumber,
+        }
+      );
+
+      // Verify POST request was called with only new reviewers
+      expect(mockOctokit.request).toHaveBeenCalledWith(
+        "POST /repos/{owner}/{repo}/pulls/{pull_number}/requested_reviewers",
+        {
+          owner: env.inputs.owner,
+          repo: env.inputs.repo,
+          pull_number: prNumber,
+          reviewers: ["reviewer2", "reviewer3"], // only new reviewers
+        }
+      );
+    });
+
+    it("should not make POST request if all reviewers are already requested", async () => {
+      const prNumber = 1;
+      const newReviewers = ["reviewer1", "reviewer2"];
+      const existingReviewers = {
+        users: [{ login: "reviewer1" }, { login: "reviewer2" }],
+      };
+
+      // Mock the GET request for current reviewers
+      mockOctokit.request.mockResolvedValueOnce({ data: existingReviewers });
+
+      await github.requestReviewers(prNumber, newReviewers);
+
+      // Verify only GET request was called
+      expect(mockOctokit.request).toHaveBeenCalledTimes(1);
+      expect(mockOctokit.request).toHaveBeenCalledWith(
+        "GET /repos/{owner}/{repo}/pulls/{pull_number}/requested_reviewers",
+        {
+          owner: env.inputs.owner,
+          repo: env.inputs.repo,
+          pull_number: prNumber,
+        }
+      );
+    });
+
+    it("should request all reviewers if none are currently requested", async () => {
+      const prNumber = 1;
+      const newReviewers = ["reviewer1", "reviewer2"];
+      const existingReviewers = {
+        users: [],
+      };
+
+      // Mock the GET request for current reviewers
+      mockOctokit.request.mockResolvedValueOnce({ data: existingReviewers });
+
+      await github.requestReviewers(prNumber, newReviewers);
+
+      // Verify both requests were made
+      expect(mockOctokit.request).toHaveBeenCalledWith(
+        "GET /repos/{owner}/{repo}/pulls/{pull_number}/requested_reviewers",
+        {
+          owner: env.inputs.owner,
+          repo: env.inputs.repo,
+          pull_number: prNumber,
+        }
+      );
 
       expect(mockOctokit.request).toHaveBeenCalledWith(
         "POST /repos/{owner}/{repo}/pulls/{pull_number}/requested_reviewers",
@@ -360,7 +434,7 @@ describe("GitHubAPI", () => {
           owner: env.inputs.owner,
           repo: env.inputs.repo,
           pull_number: prNumber,
-          reviewers,
+          reviewers: newReviewers,
         }
       );
     });
