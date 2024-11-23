@@ -61,6 +61,7 @@ function SubscriptionTypeCard(props: {
   const { isDirty } = useFormState({ control });
 
   const updateSubscriptionMutation = trpc.updateSubscription.useMutation();
+  const { data: slackOAuthData } = trpc.getSlackOAuthStatus.useQuery();
 
   return (
     <Accordion.Item value={type} className="w-full">
@@ -93,9 +94,11 @@ function SubscriptionTypeCard(props: {
           onSubmit={handleSubmit(
             async (data, e) => {
               setIsSubmitting(true);
-              // handle special case for WEEKLY DIGEST
-              // for weekly digest, at least one channel must be selected
-              // if no, then show error message
+              /**
+               * Special case 1: WEEKLY_DIGEST
+               * For weekly digest, at least one channel must be selected
+               * if no, then show error message
+               */
               if (type === "WEEKLY_DIGEST" && data.channels.length === 0) {
                 setError("channels", {
                   type: "manual",
@@ -105,6 +108,24 @@ function SubscriptionTypeCard(props: {
                 setIsSubmitting(false);
                 return;
               }
+              /*
+               * Special case 2: SLACK distribution channel
+               * When user selects slack channel, we need to check if the user has completed slack integration oauth flow or not
+               * If not, then show error message and ask user to complete slack integration
+               */
+              if (
+                slackOAuthData?.workspaceName === null &&
+                data.channels.includes(subscriptionChannelSchema.enum.SLACK)
+              ) {
+                setError("channels", {
+                  type: "manual",
+                  message:
+                    "To enable slack distribution channel, you need to complete slack integration first. See 'Slack Integration' below to learn more",
+                });
+                setIsSubmitting(false);
+                return;
+              }
+
               await updateSubscriptionMutation.mutateAsync({
                 type,
                 channels: data.channels,
@@ -152,16 +173,6 @@ function SubscriptionTypeCard(props: {
               }}
             />
           </div>
-          <Flex className="gap-x-1 text-gray-11">
-            <Badge size="1" color="orange">
-              BETA
-            </Badge>
-            <Text size="1">
-              Distribute by Slack is currently in beta version. Only people in
-              Cornell-NLP slack workspace can use this feature. And the email
-              account of the slack account must match the RecNet account.
-            </Text>
-          </Flex>
           <Flex className="py-2 gap-x-1">
             <Button
               variant="solid"
