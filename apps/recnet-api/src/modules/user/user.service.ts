@@ -213,7 +213,7 @@ export class UserService {
   public async getSlackOauthInfo(
     userId: string
   ): Promise<GetSlackOauthInfoResponse> {
-    const user = await this.userRepository.findUserSlackInfo(userId);
+    const user = await this.userRepository.findUserById(userId);
     return {
       workspaceName: user.slackWorkspaceName,
     };
@@ -223,7 +223,7 @@ export class UserService {
     userId: string,
     code: string
   ): Promise<GetSlackOauthInfoResponse> {
-    const user = await this.userRepository.findUserSlackInfo(userId);
+    const user = await this.userRepository.findUserById(userId);
     if (user.slackUserId) {
       throw new RecnetError(
         ErrorCode.SLACK_ALREADY_INSTALLED,

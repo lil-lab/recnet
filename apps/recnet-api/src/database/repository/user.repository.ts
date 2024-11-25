@@ -182,21 +182,6 @@ export default class UserRepository {
     });
   }
 
-  public async findUserSlackInfo(userId: string): Promise<{
-    slackUserId: string | null;
-    slackWorkspaceName: string | null;
-    slackAccessToken: string | null;
-  }> {
-    return this.prisma.user.findUniqueOrThrow({
-      where: { id: userId },
-      select: {
-        slackUserId: true,
-        slackWorkspaceName: true,
-        slackAccessToken: true,
-      },
-    });
-  }
-
   public async updateUserSlackInfo(
     userId: string,
     slackOauthInfo: {

@@ -43,6 +43,7 @@ export class SlackService {
       );
       result = await this.transporter.sendDirectMessage(
         user,
+        user.slackAccessToken || "", // TODO: pass decrypted access token
         weeklyDigest.messageBlocks,
         weeklyDigest.notificationText
       );
