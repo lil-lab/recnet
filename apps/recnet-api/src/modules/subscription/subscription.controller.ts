@@ -33,7 +33,7 @@ export class SubscriptionController {
 
   /* Development only */
   @ApiOperation({
-    summary: "Send weekly digest slack to the designated user.",
+    summary: "[Dev only] Send weekly digest slack to the designated user.",
     description: "This endpoint is for development only.",
   })
   @ApiCreatedResponse()

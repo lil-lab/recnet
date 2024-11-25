@@ -36,7 +36,6 @@ import {
   postUserFollowRequestSchema,
   postUserMeRequestSchema,
   postUsersSubscriptionsRequestSchema,
-  PostUsersSubscriptionsSlackOauthRequest,
   postUserValidateHandleRequestSchema,
   postUserValidateInviteCodeRequestSchema,
 } from "@recnet/recnet-api-model";
@@ -44,6 +43,7 @@ import {
 import { CreateUserDto } from "./dto/create.user.dto";
 import { FollowUserDto, UnfollowUserDto } from "./dto/follow.user.dto";
 import { QueryUsersDto } from "./dto/query.users.dto";
+import { SlackOauthDto } from "./dto/slack-oauth.user.dto";
 import { UpdateUserActivateDto, UpdateUserDto } from "./dto/update.user.dto";
 import {
   ValidateUserHandleDto,
@@ -284,7 +284,7 @@ export class UserController {
   @Auth()
   public async slackOauth(
     @User() authUser: AuthUser,
-    @Body() dto: PostUsersSubscriptionsSlackOauthRequest
+    @Body() dto: SlackOauthDto
   ): Promise<GetSlackOauthInfoResponse> {
     const { userId } = authUser;
     return this.userService.installSlack(userId, dto.code);
