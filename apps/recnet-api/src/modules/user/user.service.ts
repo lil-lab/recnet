@@ -223,8 +223,15 @@ export class UserService {
     userId: string,
     code: string
   ): Promise<GetSlackOauthInfoResponse> {
-    // TODO: installSlackOauth
+    const user = await this.userRepository.findUserSlackInfo(userId);
+    if (user.slackUserId) {
+      throw new RecnetError(
+        ErrorCode.SLACK_ALREADY_INSTALLED,
+        HttpStatus.BAD_REQUEST
+      );
+    }
     const oauthInfo = await this.slackService.installApp(userId, code);
+    await this.userRepository.updateUserSlackInfo(userId, oauthInfo);
     return {
       workspaceName: oauthInfo.slackWorkspaceName,
     };

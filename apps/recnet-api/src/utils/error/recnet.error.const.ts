@@ -11,6 +11,7 @@ export const ErrorCode = {
   DIGITAL_LIBRARY_RANK_CONFLICT: 1009,
   INVALID_REACTION_TYPE: 1010,
   INVALID_SUBSCRIPTION: 1011,
+  SLACK_ALREADY_INSTALLED: 1012,
 
   // DB error codes
   DB_UNKNOWN_ERROR: 2000,
@@ -39,6 +40,7 @@ export const errorMessages = {
     "Digital library rank must be unique",
   [ErrorCode.INVALID_REACTION_TYPE]: "Invalid reaction type",
   [ErrorCode.INVALID_SUBSCRIPTION]: "Invalid subscription",
+  [ErrorCode.SLACK_ALREADY_INSTALLED]: "Slack already installed",
   [ErrorCode.DB_UNKNOWN_ERROR]: "Database error",
   [ErrorCode.DB_USER_NOT_FOUND]: "User not found",
   [ErrorCode.DB_UNIQUE_CONSTRAINT]: "Unique constraint violation",
@@ -46,4 +48,5 @@ export const errorMessages = {
   [ErrorCode.EMAIL_SEND_ERROR]: "Email send error",
   [ErrorCode.FETCH_DIGITAL_LIBRARY_ERROR]: "Fetch digital library error",
   [ErrorCode.SLACK_ERROR]: "Slack error",
+  [ErrorCode.SLACK_ALREADY_INSTALLED]: "Slack already installed",
 };
