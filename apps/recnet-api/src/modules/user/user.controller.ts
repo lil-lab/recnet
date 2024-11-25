@@ -36,6 +36,7 @@ import {
   postUserFollowRequestSchema,
   postUserMeRequestSchema,
   postUsersSubscriptionsRequestSchema,
+  PostUsersSubscriptionsSlackOauthRequest,
   postUserValidateHandleRequestSchema,
   postUserValidateInviteCodeRequestSchema,
 } from "@recnet/recnet-api-model";
@@ -50,6 +51,7 @@ import {
 } from "./dto/validate.user.dto";
 import { Subscription } from "./entities/user.subscription.entity";
 import {
+  GetSlackOauthInfoResponse,
   GetSubscriptionsResponse,
   GetUserMeResponse,
   GetUsersResponse,
@@ -257,5 +259,46 @@ export class UserController {
     const { userId } = authUser;
     const { type, channels } = dto;
     return this.userService.createOrUpdateSubscription(userId, type, channels);
+  }
+
+  @ApiOperation({
+    summary: "Get Slack OAuth info",
+    description: "Get the current user's Slack OAuth info.",
+  })
+  @Get("subscriptions/slack/oauth")
+  @ApiBearerAuth()
+  @Auth()
+  public async getSlackOauthInfo(
+    @User() authUser: AuthUser
+  ): Promise<GetSlackOauthInfoResponse> {
+    const { userId } = authUser;
+    return this.userService.getSlackOauthInfo(userId);
+  }
+
+  @ApiOperation({
+    summary: "Slack OAuth",
+    description: "Slack OAuth",
+  })
+  @Post("subscriptions/slack/oauth")
+  @ApiBearerAuth()
+  @Auth()
+  public async slackOauth(
+    @User() authUser: AuthUser,
+    @Body() dto: PostUsersSubscriptionsSlackOauthRequest
+  ): Promise<GetSlackOauthInfoResponse> {
+    const { userId } = authUser;
+    return this.userService.installSlack(userId, dto.code);
+  }
+
+  @ApiOperation({
+    summary: "Delete Slack OAuth",
+    description: "Delete Slack OAuth",
+  })
+  @Delete("subscriptions/slack/oauth")
+  @ApiBearerAuth()
+  @Auth()
+  public async deleteSlackOauth(@User() authUser: AuthUser): Promise<void> {
+    const { userId } = authUser;
+    return this.userService.deleteSlack(userId);
   }
 }

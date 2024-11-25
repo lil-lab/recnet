@@ -12,6 +12,7 @@ import {
   UpdateUserInput,
 } from "@recnet-api/database/repository/user.repository.type";
 import { UserFilterBy } from "@recnet-api/database/repository/user.repository.type";
+import { SlackService } from "@recnet-api/modules/slack/slack.service";
 import { getOffset } from "@recnet-api/utils";
 import { RecnetError } from "@recnet-api/utils/error/recnet.error";
 import { ErrorCode } from "@recnet-api/utils/error/recnet.error.const";
@@ -24,6 +25,7 @@ import { User } from "./entities/user.entity";
 import { UserPreview } from "./entities/user.preview.entity";
 import { Subscription } from "./entities/user.subscription.entity";
 import {
+  GetSlackOauthInfoResponse,
   GetSubscriptionsResponse,
   GetUsersResponse,
   PostSubscriptionsResponse,
@@ -38,7 +40,9 @@ export class UserService {
     @Inject(InviteCodeRepository)
     private readonly inviteCodeRepository: InviteCodeRepository,
     @Inject(FollowingRecordRepository)
-    private readonly followingRecordRepository: FollowingRecordRepository
+    private readonly followingRecordRepository: FollowingRecordRepository,
+    @Inject(SlackService)
+    private readonly slackService: SlackService
   ) {}
 
   public async getUsers(
@@ -204,6 +208,30 @@ export class UserService {
         channels: subscriptions.map((s) => s.channel),
       },
     };
+  }
+
+  public async getSlackOauthInfo(
+    userId: string
+  ): Promise<GetSlackOauthInfoResponse> {
+    const user = await this.userRepository.findUserSlackInfo(userId);
+    return {
+      workspaceName: user.slackWorkspaceName,
+    };
+  }
+
+  public async installSlack(
+    userId: string,
+    code: string
+  ): Promise<GetSlackOauthInfoResponse> {
+    // TODO: installSlackOauth
+    const oauthInfo = await this.slackService.installApp(userId, code);
+    return {
+      workspaceName: oauthInfo.slackWorkspaceName,
+    };
+  }
+
+  public async deleteSlack(userId: string): Promise<void> {
+    await this.userRepository.deleteSlackInfo(userId);
   }
 
   private async transformUser(user: DbUser): Promise<User> {

@@ -26,3 +26,8 @@ export class PostSubscriptionsResponse {
   @ApiProperty()
   subscription: Subscription;
 }
+
+export class GetSlackOauthInfoResponse {
+  @ApiProperty()
+  workspaceName: string | null;
+}
