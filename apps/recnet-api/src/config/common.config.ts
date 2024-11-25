@@ -33,7 +33,7 @@ export const NodemailerConfig = registerAs("nodemailer", () => ({
 }));
 
 export const SlackConfig = registerAs("slack", () => ({
-  token: parsedEnv.SLACK_TOKEN, // to be de
+  token: parsedEnv.SLACK_TOKEN, // to be deprecated
   clientId: parsedEnv.SLACK_CLIENT_ID,
   clientSecret: parsedEnv.SLACK_CLIENT_SECRET,
   tokenEncryptionKey: parsedEnv.SLACK_TOKEN_ENCRYPTION_KEY,
