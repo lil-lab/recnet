@@ -182,6 +182,31 @@ export default class UserRepository {
     });
   }
 
+  public async updateUserSlackInfo(
+    userId: string,
+    slackOauthInfo: {
+      slackUserId: string;
+      slackWorkspaceName: string;
+      slackAccessToken: string;
+    }
+  ): Promise<void> {
+    await this.prisma.user.update({
+      where: { id: userId },
+      data: slackOauthInfo,
+    });
+  }
+
+  public async deleteSlackInfo(userId: string): Promise<void> {
+    await this.prisma.user.update({
+      where: { id: userId },
+      data: {
+        slackUserId: null,
+        slackWorkspaceName: null,
+        slackAccessToken: null,
+      },
+    });
+  }
+
   private transformUserFilterByToPrismaWhere(
     filter: UserFilterBy
   ): Prisma.UserWhereInput {

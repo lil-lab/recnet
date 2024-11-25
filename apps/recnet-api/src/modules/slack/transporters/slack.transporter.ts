@@ -26,11 +26,12 @@ export class SlackTransporter {
     @Inject(AppConfig.KEY)
     private readonly appConfig: ConfigType<typeof AppConfig>
   ) {
-    this.client = new WebClient(this.slackConfig.token);
+    this.client = new WebClient();
   }
 
   public async sendDirectMessage(
     user: DbUser,
+    accessToken: string,
     message: SlackMessageBlocks,
     notificationText?: string
   ): Promise<SendSlackResult> {
@@ -45,13 +46,28 @@ export class SlackTransporter {
     let retryCount = 0;
     while (retryCount < SLACK_RETRY_LIMIT) {
       try {
-        const slackId = await this.getUserSlackId(user);
-        await this.postDirectMessage(slackId, message, notificationText);
+        let userSlackId = user.slackUserId;
+
+        // Backward compatible
+        if (!userSlackId) {
+          userSlackId = await this.getUserSlackId(user);
+        }
+
+        if (!accessToken) {
+          accessToken = this.slackConfig.token || "";
+        }
+
+        await this.postDirectMessage(
+          userSlackId,
+          accessToken,
+          message,
+          notificationText
+        );
         return { success: true };
       } catch (error) {
         retryCount++;
         this.logger.error(
-          `[Attempt ${retryCount}] Failed to send email ${user.id}: ${error}`
+          `[Attempt ${retryCount}] Failed to send slack message to ${user.id}: ${error}`
         );
 
         // avoid rate limit
@@ -67,9 +83,13 @@ export class SlackTransporter {
     );
   }
 
+  // Backward compatible
   private async getUserSlackId(user: DbUser): Promise<string> {
-    const email = user.slackEmail || user.email;
-    const userResp = await this.client.users.lookupByEmail({ email });
+    const email = user.email;
+    const userResp = await this.client.users.lookupByEmail({
+      email,
+      token: this.slackConfig.token,
+    });
     const slackId = userResp?.user?.id;
     if (!slackId) {
       throw new RecnetError(
@@ -83,12 +103,14 @@ export class SlackTransporter {
 
   private async postDirectMessage(
     userSlackId: string,
+    accessToken: string,
     message: SlackMessageBlocks,
     notificationText?: string
   ): Promise<void> {
     // Open a direct message conversation
     const conversationResp = await this.client.conversations.open({
       users: userSlackId,
+      token: accessToken,
     });
     const conversationId = conversationResp?.channel?.id;
     if (!conversationId) {
@@ -104,6 +126,7 @@ export class SlackTransporter {
       channel: conversationId,
       text: notificationText,
       blocks: message,
+      token: accessToken,
     });
   }
 }

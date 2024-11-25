@@ -7,3 +7,9 @@ export type SendSlackResult = {
 };
 
 export type SlackMessageBlocks = Readonly<SlackBlockDto>[];
+
+export type SlackOauthInfo = {
+  slackAccessToken: string;
+  slackUserId: string;
+  slackWorkspaceName: string;
+};
