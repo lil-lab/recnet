@@ -108,7 +108,10 @@ export class SlackTransporter {
 
   private async getUserSlackId(user: DbUser): Promise<string> {
     const email = user.email;
-    const userResp = await this.client.users.lookupByEmail({ email });
+    const userResp = await this.client.users.lookupByEmail({
+      email,
+      token: this.slackConfig.token,
+    });
     const slackId = userResp?.user?.id;
     if (!slackId) {
       throw new RecnetError(
@@ -128,6 +131,7 @@ export class SlackTransporter {
     // Open a direct message conversation
     const conversationResp = await this.client.conversations.open({
       users: userSlackId,
+      token: this.slackConfig.token,
     });
     const conversationId = conversationResp?.channel?.id;
     if (!conversationId) {
@@ -143,6 +147,7 @@ export class SlackTransporter {
       channel: conversationId,
       text: notificationText,
       blocks: message,
+      token: this.slackConfig.token,
     });
   }
 }
