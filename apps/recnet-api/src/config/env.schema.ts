@@ -27,6 +27,9 @@ export const EnvSchema = z.object({
   SLACK_TOKEN: z.string().optional(),
   SLACK_CLIENT_ID: z.string(),
   SLACK_CLIENT_SECRET: z.string(),
+  SLACK_TOKEN_ENCRYPTION_KEY: z
+    .string()
+    .transform((val) => Buffer.from(val, "base64")),
 });
 
 export const parseEnv = (env: Record<string, string | undefined>) => {

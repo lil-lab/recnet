@@ -1,9 +1,10 @@
 import { HttpStatus, Inject, Injectable } from "@nestjs/common";
 import { ConfigType } from "@nestjs/config";
 
-import { AppConfig } from "@recnet-api/config/common.config";
+import { AppConfig, SlackConfig } from "@recnet-api/config/common.config";
 import { User as DbUser } from "@recnet-api/database/repository/user.repository.type";
 import { WeeklyDigestContent } from "@recnet-api/modules/subscription/subscription.type";
+import { decrypt, encrypt } from "@recnet-api/utils";
 import { RecnetError } from "@recnet-api/utils/error/recnet.error";
 import { ErrorCode } from "@recnet-api/utils/error/recnet.error.const";
 
@@ -16,6 +17,8 @@ export class SlackService {
   constructor(
     @Inject(AppConfig.KEY)
     private readonly appConfig: ConfigType<typeof AppConfig>,
+    @Inject(SlackConfig.KEY)
+    private readonly slackConfig: ConfigType<typeof SlackConfig>,
     private readonly transporter: SlackTransporter
   ) {}
 
@@ -25,7 +28,12 @@ export class SlackService {
   ): Promise<SlackOauthInfo> {
     const slackOauthInfo = await this.transporter.accessOauthInfo(userId, code);
     await this.validateSlackOauthInfo(userId, slackOauthInfo);
-    // Todo: encrypt access token
+
+    // encrypt access token
+    slackOauthInfo.slackAccessToken = encrypt(
+      slackOauthInfo.slackAccessToken,
+      this.slackConfig.tokenEncryptionKey
+    );
     return slackOauthInfo;
   }
 
@@ -41,9 +49,12 @@ export class SlackService {
         content,
         this.appConfig.nodeEnv
       );
+      const decryptedAccessToken = user.slackAccessToken
+        ? decrypt(user.slackAccessToken, this.slackConfig.tokenEncryptionKey)
+        : "";
       result = await this.transporter.sendDirectMessage(
         user,
-        user.slackAccessToken || "", // TODO: pass decrypted access token
+        decryptedAccessToken,
         weeklyDigest.messageBlocks,
         weeklyDigest.notificationText
       );
