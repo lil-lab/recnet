@@ -36,6 +36,7 @@ import {
   postUserFollowRequestSchema,
   postUserMeRequestSchema,
   postUsersSubscriptionsRequestSchema,
+  postUsersSubscriptionsSlackOauthRequestSchema,
   postUserValidateHandleRequestSchema,
   postUserValidateInviteCodeRequestSchema,
 } from "@recnet/recnet-api-model";
@@ -281,6 +282,9 @@ export class UserController {
   })
   @Post("subscriptions/slack/oauth")
   @ApiBearerAuth()
+  @UsePipes(
+    new ZodValidationBodyPipe(postUsersSubscriptionsSlackOauthRequestSchema)
+  )
   @Auth()
   public async slackOauth(
     @User() authUser: AuthUser,
