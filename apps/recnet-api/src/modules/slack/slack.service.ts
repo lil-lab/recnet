@@ -1,5 +1,7 @@
-import { HttpStatus, Inject, Injectable } from "@nestjs/common";
+import { HttpStatus, Inject, Injectable, Logger } from "@nestjs/common";
 import { ConfigType } from "@nestjs/config";
+import axios from "axios";
+import get from "lodash.get";
 
 import { AppConfig, SlackConfig } from "@recnet-api/config/common.config";
 import { User as DbUser } from "@recnet-api/database/repository/user.repository.type";
@@ -12,8 +14,12 @@ import { SendSlackResult, SlackOauthInfo } from "./slack.type";
 import { weeklyDigestSlackTemplate } from "./templates/weekly-digest.template";
 import { SlackTransporter } from "./transporters/slack.transporter";
 
+const SLACK_OAUTH_ACCESS_API = "https://slack.com/api/oauth.v2.access";
+
 @Injectable()
 export class SlackService {
+  private logger: Logger = new Logger(SlackService.name);
+
   constructor(
     @Inject(AppConfig.KEY)
     private readonly appConfig: ConfigType<typeof AppConfig>,
@@ -26,7 +32,7 @@ export class SlackService {
     userId: string,
     code: string
   ): Promise<SlackOauthInfo> {
-    const slackOauthInfo = await this.transporter.accessOauthInfo(userId, code);
+    const slackOauthInfo = await this.accessOauthInfo(userId, code);
     await this.validateSlackOauthInfo(userId, slackOauthInfo);
 
     // encrypt access token
@@ -63,6 +69,37 @@ export class SlackService {
     }
 
     return result;
+  }
+
+  public async accessOauthInfo(
+    userId: string,
+    code: string
+  ): Promise<SlackOauthInfo> {
+    const formData = new FormData();
+    formData.append("client_id", this.slackConfig.clientId);
+    formData.append("client_secret", this.slackConfig.clientSecret);
+    formData.append("code", code);
+
+    try {
+      const { data } = await axios.post(SLACK_OAUTH_ACCESS_API, formData);
+      if (!data.ok) {
+        throw new RecnetError(
+          ErrorCode.SLACK_ERROR,
+          HttpStatus.INTERNAL_SERVER_ERROR,
+          `Failed to access oauth info: ${data.error}`
+        );
+      }
+      return {
+        slackAccessToken: get(data, "access_token", ""),
+        slackUserId: get(data, "authed_user.id", ""),
+        slackWorkspaceName: get(data, "team.name", ""),
+      };
+    } catch (error) {
+      this.logger.error(
+        `Failed to access oauth info, userId: ${userId}, error: ${error}`
+      );
+      throw error;
+    }
   }
 
   private async validateSlackOauthInfo(

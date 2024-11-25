@@ -1,8 +1,6 @@
 import { HttpStatus, Inject, Injectable, Logger } from "@nestjs/common";
 import { ConfigType } from "@nestjs/config";
 import { WebClient } from "@slack/web-api";
-import axios from "axios";
-import get from "lodash.get";
 
 import { AppConfig, SlackConfig } from "@recnet-api/config/common.config";
 import { User as DbUser } from "@recnet-api/database/repository/user.repository.type";
@@ -15,13 +13,7 @@ import {
   SLACK_RETRY_DURATION_MS,
   SLACK_RETRY_LIMIT,
 } from "../slack.const";
-import {
-  SendSlackResult,
-  SlackMessageBlocks,
-  SlackOauthInfo,
-} from "../slack.type";
-
-const SLACK_OAUTH_ACCESS_API = "https://slack.com/api/oauth.v2.access";
+import { SendSlackResult, SlackMessageBlocks } from "../slack.type";
 
 @Injectable()
 export class SlackTransporter {
@@ -35,37 +27,6 @@ export class SlackTransporter {
     private readonly appConfig: ConfigType<typeof AppConfig>
   ) {
     this.client = new WebClient();
-  }
-
-  public async accessOauthInfo(
-    userId: string,
-    code: string
-  ): Promise<SlackOauthInfo> {
-    const formData = new FormData();
-    formData.append("client_id", this.slackConfig.clientId);
-    formData.append("client_secret", this.slackConfig.clientSecret);
-    formData.append("code", code);
-
-    try {
-      const { data } = await axios.post(SLACK_OAUTH_ACCESS_API, formData);
-      if (!data.ok) {
-        throw new RecnetError(
-          ErrorCode.SLACK_ERROR,
-          HttpStatus.INTERNAL_SERVER_ERROR,
-          `Failed to access oauth info: ${data.error}`
-        );
-      }
-      return {
-        slackAccessToken: get(data, "access_token", ""),
-        slackUserId: get(data, "authed_user.id", ""),
-        slackWorkspaceName: get(data, "team.name", ""),
-      };
-    } catch (error) {
-      this.logger.error(
-        `Failed to access oauth info, userId: ${userId}, error: ${error}`
-      );
-      throw error;
-    }
   }
 
   public async sendDirectMessage(
