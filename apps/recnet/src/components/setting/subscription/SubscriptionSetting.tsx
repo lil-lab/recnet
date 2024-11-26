@@ -10,7 +10,7 @@ import {
   CheckboxCards,
   Button,
 } from "@radix-ui/themes";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, Slack as SlackIcon } from "lucide-react";
 import { useState } from "react";
 import { Controller, useForm, useFormState } from "react-hook-form";
 import { toast } from "sonner";
@@ -262,7 +262,14 @@ export function SubscriptionSetting() {
         <LoadingBox />
       ) : workspaceName === null ? (
         <RecNetLink href="api/slack/oauth/install">
-          <Button variant="solid">Add our app to your workspace</Button>
+          <Button
+            variant="solid"
+            className="my-2 bg-[#2EB67D] dark:bg-[#4A154B] py-1 cursor-pointer"
+            size="3"
+          >
+            <SlackIcon />
+            Add our app to your workspace
+          </Button>
         </RecNetLink>
       ) : (
         <div className="flex flex-row justify-between items-center pr-4">
