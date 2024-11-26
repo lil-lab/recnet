@@ -8,7 +8,6 @@ import {
   Flex,
   Text,
   CheckboxCards,
-  Badge,
   Button,
 } from "@radix-ui/themes";
 import { ChevronDown } from "lucide-react";
@@ -18,6 +17,7 @@ import { toast } from "sonner";
 import { z } from "zod";
 
 import { trpc } from "@recnet/recnet-web/app/_trpc/client";
+import { DoubleConfirmButton } from "@recnet/recnet-web/components/DoubleConfirmButton";
 import { RecNetLink } from "@recnet/recnet-web/components/Link";
 import { LoadingBox } from "@recnet/recnet-web/components/LoadingBox";
 import { cn } from "@recnet/recnet-web/utils/cn";
@@ -208,13 +208,14 @@ export function SubscriptionSetting() {
   const { data, isFetching } = trpc.getSubscriptions.useQuery();
   const { data: slackOAuthData, isFetching: isFetchingSlackOAuthData } =
     trpc.getSlackOAuthStatus.useQuery();
+  const deleteSlackOAuthInfoMutation = trpc.deleteSlackOAuthInfo.useMutation();
+  const utils = trpc.useUtils();
 
   const [openedType, setOpenType] = useState<SubscriptionType | undefined>(
     undefined
   );
 
   const workspaceName = slackOAuthData?.workspaceName ?? null;
-  console.log({ slackOAuthData, isFetchingSlackOAuthData });
 
   return (
     <div>
@@ -264,11 +265,28 @@ export function SubscriptionSetting() {
           <Button variant="solid">Add our app to your workspace</Button>
         </RecNetLink>
       ) : (
-        <div className="flex flex-col gap-y-2">
+        <div className="flex flex-row justify-between items-center pr-4">
           <Text size="2" className="text-gray-11">
             ✅ Currently installed in{" "}
             <span className="text-blue-8">{workspaceName}</span>
           </Text>
+          <DoubleConfirmButton
+            onConfirm={async () => {
+              await deleteSlackOAuthInfoMutation.mutateAsync();
+              utils.getSlackOAuthStatus.invalidate();
+            }}
+            title="Are you sure?"
+            description="This will uninstall the slack integration and you will not be able to distribute subscription through slack anymore. You can go through the OAuth process to install again."
+          >
+            <Button variant="ghost" className="cursor-pointer">
+              <Text
+                size="1"
+                className="text-gray-10 hover:text-gray-11 transition-all ease-in-out"
+              >
+                remove?
+              </Text>
+            </Button>
+          </DoubleConfirmButton>
         </div>
       )}
     </div>

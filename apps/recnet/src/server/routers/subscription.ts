@@ -52,4 +52,8 @@ export const subscriptionRouter = router({
       const { data } = await recnetApi.get("/users/subscriptions/slack/oauth");
       return getUsersSubscriptionsSlackOauthResponseSchema.parse(data);
     }),
+  deleteSlackOAuthInfo: checkRecnetJWTProcedure.mutation(async (opts) => {
+    const { recnetApi } = opts.ctx;
+    await recnetApi.delete("/users/subscriptions/slack/oauth");
+  }),
 });
