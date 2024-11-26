@@ -54,7 +54,7 @@ export function SlackOAuthModal() {
           </Dialog.Title>
           <Dialog.Description className="text-gray-11" size="2">
             {oauthStatus === "success"
-              ? "Successfully installed the Slack app! You can now receive message from us in your workspace."
+              ? `Successfully installed the Slack app! You can now receive message from us in workspace: ${searchParams.get("workspace_name")}.`
               : searchParams.get("error_description") ||
                 "Slack OAuth flow failed. Please try again or contact us."}
           </Dialog.Description>

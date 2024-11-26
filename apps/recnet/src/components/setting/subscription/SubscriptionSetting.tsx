@@ -214,6 +214,7 @@ export function SubscriptionSetting() {
   );
 
   const workspaceName = slackOAuthData?.workspaceName ?? null;
+  console.log({ slackOAuthData, isFetchingSlackOAuthData });
 
   return (
     <div>
@@ -265,7 +266,7 @@ export function SubscriptionSetting() {
       ) : (
         <div className="flex flex-col gap-y-2">
           <Text size="2" className="text-gray-11">
-            ✅ Currently installed in workspace:{" "}
+            ✅ Currently installed in{" "}
             <span className="text-blue-8">{workspaceName}</span>
           </Text>
         </div>

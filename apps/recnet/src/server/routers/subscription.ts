@@ -1,6 +1,7 @@
 import {
   getUsersSubscriptionsResponseSchema,
   getUsersSubscriptionsSlackOauthResponseSchema,
+  postUsersSubscriptionsSlackOauthResponseSchema,
   postUsersSubscriptionsRequestSchema,
   postUsersSubscriptionsResponseSchema,
   postUsersSubscriptionsSlackOauthRequestSchema,
@@ -31,26 +32,24 @@ export const subscriptionRouter = router({
     }),
   slackOAuth2FA: checkRecnetJWTProcedure
     .input(postUsersSubscriptionsSlackOauthRequestSchema)
+    .output(postUsersSubscriptionsSlackOauthResponseSchema)
     .mutation(async (opts) => {
-      // const { code } = opts.input;
-      // const { recnetApi } = opts.ctx;
+      const { code } = opts.input;
+      const { recnetApi } = opts.ctx;
 
-      // TODO: uncomment this when the API is ready
-      // const { data } = await recnetApi.post("/users/subscriptions/slack/oauth");
-      // return data;
-
-      console.log("Slack OAuth 2FA success");
-      return;
+      const { data } = await recnetApi.post(
+        "/users/subscriptions/slack/oauth",
+        {
+          code,
+        }
+      );
+      return postUsersSubscriptionsSlackOauthResponseSchema.parse(data);
     }),
   getSlackOAuthStatus: checkRecnetJWTProcedure
     .output(getUsersSubscriptionsSlackOauthResponseSchema)
     .query(async (opts) => {
-      // const { recnetApi } = opts.ctx;
-      // const { data } = await recnetApi.get("/users/subscriptions/slack/oauth");
-      // return getUsersSubscriptionsSlackOAuthResponseSchema.parse(data);
-
-      return getUsersSubscriptionsSlackOauthResponseSchema.parse({
-        workspaceName: null,
-      });
+      const { recnetApi } = opts.ctx;
+      const { data } = await recnetApi.get("/users/subscriptions/slack/oauth");
+      return getUsersSubscriptionsSlackOauthResponseSchema.parse(data);
     }),
 });

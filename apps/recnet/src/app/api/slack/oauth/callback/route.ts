@@ -14,12 +14,14 @@ export async function GET(req: NextRequest) {
     );
   }
   let isSuccess = true;
+  let workspaceName = "";
   try {
-    await serverClient.slackOAuth2FA({ code });
+    const data = await serverClient.slackOAuth2FA({ code });
+    workspaceName = data.workspaceName;
   } catch (e) {
     isSuccess = false;
   }
   redirect(
-    `/feeds?slackOAuthStatus=${isSuccess ? "success" : "error"}${errorDesc ? `&error_description=${errorDesc}` : ""}`
+    `/feeds?slackOAuthStatus=${isSuccess ? `success&workspace_name=${workspaceName}` : "error"}${errorDesc ? `&error_description=${errorDesc}` : ""}`
   );
 }
