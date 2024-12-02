@@ -7,6 +7,7 @@ export async function GET(req: NextRequest) {
   const searchParams = req.nextUrl.searchParams;
   const code = searchParams.get("code");
   const errorDesc = searchParams.get("error_description");
+  console.log("req: ", req);
 
   if (!code) {
     redirect(
@@ -19,6 +20,7 @@ export async function GET(req: NextRequest) {
     const data = await serverClient.slackOAuth2FA({ code });
     workspaceName = data.workspaceName;
   } catch (e) {
+    console.error("e: ", e);
     isSuccess = false;
   }
   redirect(
