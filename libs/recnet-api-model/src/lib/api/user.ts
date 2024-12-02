@@ -139,6 +139,13 @@ export type PostUsersSubscriptionsSlackOauthRequest = z.infer<
   typeof postUsersSubscriptionsSlackOauthRequestSchema
 >;
 
+export const postUsersSubscriptionsSlackOauthResponseSchema = z.object({
+  workspaceName: z.string(),
+});
+export type PostUsersSubscriptionsSlackOauthResponse = z.infer<
+  typeof postUsersSubscriptionsSlackOauthResponseSchema
+>;
+
 // GET /users/subscriptions/slack/oauth
 export const getUsersSubscriptionsSlackOauthResponseSchema = z.object({
   workspaceName: z.string().nullable(),
