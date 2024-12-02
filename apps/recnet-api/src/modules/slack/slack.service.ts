@@ -30,9 +30,14 @@ export class SlackService {
 
   public async installApp(
     userId: string,
+    redirectUri: string,
     code: string
   ): Promise<SlackOauthInfo> {
-    const slackOauthInfo = await this.accessOauthInfo(userId, code);
+    const slackOauthInfo = await this.accessOauthInfo(
+      userId,
+      redirectUri,
+      code
+    );
     await this.validateSlackOauthInfo(userId, slackOauthInfo);
 
     // encrypt access token
@@ -73,11 +78,13 @@ export class SlackService {
 
   public async accessOauthInfo(
     userId: string,
+    redirectUri: string,
     code: string
   ): Promise<SlackOauthInfo> {
     const formData = new FormData();
     formData.append("client_id", this.slackConfig.clientId);
     formData.append("client_secret", this.slackConfig.clientSecret);
+    formData.append("redirect_uri", redirectUri);
     formData.append("code", code);
 
     try {

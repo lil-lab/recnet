@@ -34,13 +34,14 @@ export const subscriptionRouter = router({
     .input(postUsersSubscriptionsSlackOauthRequestSchema)
     .output(postUsersSubscriptionsSlackOauthResponseSchema)
     .mutation(async (opts) => {
-      const { code } = opts.input;
+      const { code, redirectUri } = opts.input;
       const { recnetApi } = opts.ctx;
 
       const { data } = await recnetApi.post(
         "/users/subscriptions/slack/oauth",
         {
           code,
+          redirectUri,
         }
       );
       return postUsersSubscriptionsSlackOauthResponseSchema.parse(data);
