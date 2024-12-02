@@ -221,6 +221,7 @@ export class UserService {
 
   public async installSlack(
     userId: string,
+    redirectUri: string,
     code: string
   ): Promise<GetSlackOauthInfoResponse> {
     const user = await this.userRepository.findUserById(userId);
@@ -230,7 +231,11 @@ export class UserService {
         HttpStatus.BAD_REQUEST
       );
     }
-    const oauthInfo = await this.slackService.installApp(userId, code);
+    const oauthInfo = await this.slackService.installApp(
+      userId,
+      redirectUri,
+      code
+    );
     await this.userRepository.updateUserSlackInfo(userId, oauthInfo);
     return {
       workspaceName: oauthInfo.slackWorkspaceName,

@@ -291,7 +291,7 @@ export class UserController {
     @Body() dto: SlackOauthDto
   ): Promise<GetSlackOauthInfoResponse> {
     const { userId } = authUser;
-    return this.userService.installSlack(userId, dto.code);
+    return this.userService.installSlack(userId, dto.redirectUri, dto.code);
   }
 
   @ApiOperation({

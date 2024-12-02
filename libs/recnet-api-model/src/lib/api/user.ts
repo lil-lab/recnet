@@ -134,6 +134,7 @@ export type PostUsersSubscriptionsResponse = z.infer<
 // POST /users/subscriptions/slack/oauth
 export const postUsersSubscriptionsSlackOauthRequestSchema = z.object({
   code: z.string(),
+  redirectUri: z.string(),
 });
 export type PostUsersSubscriptionsSlackOauthRequest = z.infer<
   typeof postUsersSubscriptionsSlackOauthRequestSchema
