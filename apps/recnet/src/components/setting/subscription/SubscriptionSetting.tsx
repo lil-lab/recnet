@@ -283,7 +283,32 @@ export function SubscriptionSetting() {
               utils.getSlackOAuthStatus.invalidate();
             }}
             title="Are you sure?"
-            description="This will uninstall the slack integration and you will not be able to distribute subscription through slack anymore. You can go through the OAuth process to install again."
+            description={
+              <div>
+                {[
+                  "We will disconnect and will not be able to distribute subscription through slack.",
+                  "But the slack app will still be installed in your workspace.",
+                  "To remove it from your workspace, follow the instructions ",
+                ].map((text, index) => (
+                  <Text
+                    key={index}
+                    size="2"
+                    className="inline-block text-gray-11 mr-1"
+                  >
+                    {text}
+                  </Text>
+                ))}
+                <RecNetLink
+                  radixLinkProps={{
+                    target: "_blank",
+                  }}
+                  href="https://slack.com/help/articles/360003125231-Remove-apps-and-custom-integrations-from-your-workspace"
+                >
+                  here
+                </RecNetLink>
+                .
+              </div>
+            }
           >
             <Button variant="ghost" className="cursor-pointer">
               <Text
