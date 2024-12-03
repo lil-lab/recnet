@@ -8,16 +8,17 @@ import {
   Flex,
   Text,
   CheckboxCards,
-  Badge,
   Button,
 } from "@radix-ui/themes";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, Slack as SlackIcon } from "lucide-react";
 import { useState } from "react";
 import { Controller, useForm, useFormState } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
 
 import { trpc } from "@recnet/recnet-web/app/_trpc/client";
+import { DoubleConfirmButton } from "@recnet/recnet-web/components/DoubleConfirmButton";
+import { RecNetLink } from "@recnet/recnet-web/components/Link";
 import { LoadingBox } from "@recnet/recnet-web/components/LoadingBox";
 import { cn } from "@recnet/recnet-web/utils/cn";
 
@@ -60,6 +61,7 @@ function SubscriptionTypeCard(props: {
   const { isDirty } = useFormState({ control });
 
   const updateSubscriptionMutation = trpc.updateSubscription.useMutation();
+  const { data: slackOAuthData } = trpc.getSlackOAuthStatus.useQuery();
 
   return (
     <Accordion.Item value={type} className="w-full">
@@ -92,9 +94,11 @@ function SubscriptionTypeCard(props: {
           onSubmit={handleSubmit(
             async (data, e) => {
               setIsSubmitting(true);
-              // handle special case for WEEKLY DIGEST
-              // for weekly digest, at least one channel must be selected
-              // if no, then show error message
+              /**
+               * Special case 1: WEEKLY_DIGEST
+               * For weekly digest, at least one channel must be selected
+               * if no, then show error message
+               */
               if (type === "WEEKLY_DIGEST" && data.channels.length === 0) {
                 setError("channels", {
                   type: "manual",
@@ -104,6 +108,24 @@ function SubscriptionTypeCard(props: {
                 setIsSubmitting(false);
                 return;
               }
+              /*
+               * Special case 2: SLACK distribution channel
+               * When user selects slack channel, we need to check if the user has completed slack integration oauth flow or not
+               * If not, then show error message and ask user to complete slack integration
+               */
+              if (
+                slackOAuthData?.workspaceName === null &&
+                data.channels.includes(subscriptionChannelSchema.enum.SLACK)
+              ) {
+                setError("channels", {
+                  type: "manual",
+                  message:
+                    "To enable slack distribution channel, you need to complete slack integration first. See 'Slack Integration' below to learn more",
+                });
+                setIsSubmitting(false);
+                return;
+              }
+
               await updateSubscriptionMutation.mutateAsync({
                 type,
                 channels: data.channels,
@@ -151,16 +173,6 @@ function SubscriptionTypeCard(props: {
               }}
             />
           </div>
-          <Flex className="gap-x-1 text-gray-11">
-            <Badge size="1" color="orange">
-              BETA
-            </Badge>
-            <Text size="1">
-              Distribute by Slack is currently in beta version. Only people in
-              Cornell-NLP slack workspace can use this feature. And the email
-              account of the slack account must match the RecNet account.
-            </Text>
-          </Flex>
           <Flex className="py-2 gap-x-1">
             <Button
               variant="solid"
@@ -194,9 +206,16 @@ function SubscriptionTypeCard(props: {
 
 export function SubscriptionSetting() {
   const { data, isFetching } = trpc.getSubscriptions.useQuery();
+  const { data: slackOAuthData, isFetching: isFetchingSlackOAuthData } =
+    trpc.getSlackOAuthStatus.useQuery();
+  const deleteSlackOAuthInfoMutation = trpc.deleteSlackOAuthInfo.useMutation();
+  const utils = trpc.useUtils();
+
   const [openedType, setOpenType] = useState<SubscriptionType | undefined>(
     undefined
   );
+
+  const workspaceName = slackOAuthData?.workspaceName ?? null;
 
   return (
     <div>
@@ -231,6 +250,76 @@ export function SubscriptionSetting() {
             );
           })}
         </Accordion.Root>
+      )}
+
+      <Text size="4" className="block mt-4">
+        Slack Integration
+      </Text>
+      <Text size="1" className="block text-gray-11 mb-2 mt-1">
+        Install our Slack App to enable distributing subscription through Slack.
+      </Text>
+      {isFetchingSlackOAuthData ? (
+        <LoadingBox />
+      ) : workspaceName === null ? (
+        <RecNetLink href="api/slack/oauth/install">
+          <Button
+            variant="solid"
+            className="my-2 bg-[#2EB67D] dark:bg-[#4A154B] py-1 cursor-pointer"
+            size="3"
+          >
+            <SlackIcon />
+            Add our app to your workspace
+          </Button>
+        </RecNetLink>
+      ) : (
+        <div className="flex flex-row justify-between items-center pr-4">
+          <Text size="2" className="text-gray-11">
+            ✅ Currently installed in{" "}
+            <span className="text-blue-8">{workspaceName}</span>
+          </Text>
+          <DoubleConfirmButton
+            onConfirm={async () => {
+              await deleteSlackOAuthInfoMutation.mutateAsync();
+              utils.getSlackOAuthStatus.invalidate();
+            }}
+            title="Are you sure?"
+            description={
+              <div>
+                {[
+                  "We will disconnect and will not be able to distribute subscription through slack.",
+                  "But the slack app will still be installed in your workspace.",
+                  "To remove it from your workspace, follow the instructions ",
+                ].map((text, index) => (
+                  <Text
+                    key={index}
+                    size="2"
+                    className="inline-block text-gray-11 mr-1"
+                  >
+                    {text}
+                  </Text>
+                ))}
+                <RecNetLink
+                  radixLinkProps={{
+                    target: "_blank",
+                  }}
+                  href="https://slack.com/help/articles/360003125231-Remove-apps-and-custom-integrations-from-your-workspace"
+                >
+                  here
+                </RecNetLink>
+                .
+              </div>
+            }
+          >
+            <Button variant="ghost" className="cursor-pointer">
+              <Text
+                size="1"
+                className="text-gray-10 hover:text-gray-11 transition-all ease-in-out"
+              >
+                remove?
+              </Text>
+            </Button>
+          </DoubleConfirmButton>
+        </div>
       )}
     </div>
   );

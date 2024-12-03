@@ -190,13 +190,35 @@ export class GitHubAPI {
   }
 
   async requestReviewers(prNumber: number, reviewers: string[]) {
+    // Get current reviewers
+    const { data: currentReviewers } = await this.octokit.request(
+      "GET /repos/{owner}/{repo}/pulls/{pull_number}/requested_reviewers",
+      {
+        owner: this.owner,
+        repo: this.repo,
+        pull_number: prNumber,
+      }
+    );
+    // Get usernames of users who are currently requested
+    const currentReviewerLogins = new Set(
+      currentReviewers.users.map((user) => user.login)
+    );
+    // Filter out reviewers who have already reviewed or are already requested
+    const reviewersToAdd = reviewers.filter(
+      (reviewer) => !currentReviewerLogins.has(reviewer)
+    );
+
+    if (reviewersToAdd.length === 0) {
+      return;
+    }
+
     await this.octokit.request(
       "POST /repos/{owner}/{repo}/pulls/{pull_number}/requested_reviewers",
       {
         owner: this.owner,
         repo: this.repo,
         pull_number: prNumber,
-        reviewers,
+        reviewers: reviewersToAdd,
       }
     );
   }

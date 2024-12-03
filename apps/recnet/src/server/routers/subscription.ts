@@ -1,7 +1,10 @@
 import {
   getUsersSubscriptionsResponseSchema,
+  getUsersSubscriptionsSlackOauthResponseSchema,
+  postUsersSubscriptionsSlackOauthResponseSchema,
   postUsersSubscriptionsRequestSchema,
   postUsersSubscriptionsResponseSchema,
+  postUsersSubscriptionsSlackOauthRequestSchema,
 } from "@recnet/recnet-api-model";
 
 import { checkRecnetJWTProcedure } from "./middleware";
@@ -27,4 +30,31 @@ export const subscriptionRouter = router({
       });
       return postUsersSubscriptionsResponseSchema.parse(data);
     }),
+  slackOAuth2FA: checkRecnetJWTProcedure
+    .input(postUsersSubscriptionsSlackOauthRequestSchema)
+    .output(postUsersSubscriptionsSlackOauthResponseSchema)
+    .mutation(async (opts) => {
+      const { code, redirectUri } = opts.input;
+      const { recnetApi } = opts.ctx;
+
+      const { data } = await recnetApi.post(
+        "/users/subscriptions/slack/oauth",
+        {
+          code,
+          redirectUri,
+        }
+      );
+      return postUsersSubscriptionsSlackOauthResponseSchema.parse(data);
+    }),
+  getSlackOAuthStatus: checkRecnetJWTProcedure
+    .output(getUsersSubscriptionsSlackOauthResponseSchema)
+    .query(async (opts) => {
+      const { recnetApi } = opts.ctx;
+      const { data } = await recnetApi.get("/users/subscriptions/slack/oauth");
+      return getUsersSubscriptionsSlackOauthResponseSchema.parse(data);
+    }),
+  deleteSlackOAuthInfo: checkRecnetJWTProcedure.mutation(async (opts) => {
+    const { recnetApi } = opts.ctx;
+    await recnetApi.delete("/users/subscriptions/slack/oauth");
+  }),
 });

@@ -2,6 +2,36 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [1.17.0](https://github.com/lil-lab/recnet/compare/recnet-web-v1.16.2...recnet-web-v1.17.0) (2024-12-03)
+
+
+### Features
+
+* add delete slack oauth api ([684b434](https://github.com/lil-lab/recnet/commit/684b434264260798cee53d46628ad073cdff4e41))
+* add new api model and trpc procedures ([c6aa4e4](https://github.com/lil-lab/recnet/commit/c6aa4e42b92ac3490fa8e350f02327a5a23b1132))
+* add slack oauth flow result dialog ([aead235](https://github.com/lil-lab/recnet/commit/aead2350138e9d33a1734db77cde464edcca84b7))
+* encrypt access token ([2e37bf4](https://github.com/lil-lab/recnet/commit/2e37bf4619f5ade5fb4a456fdc231cdb38ab10fb))
+* finish changes in subscription setting ([2451712](https://github.com/lil-lab/recnet/commit/245171205af7b42be481aacac819fd330beff295))
+* finish route handler ([71ddc42](https://github.com/lil-lab/recnet/commit/71ddc42edbeab3aa06ca32e97b1a82caf797f7f4))
+* forward error message from slack ([be75ad6](https://github.com/lil-lab/recnet/commit/be75ad61382ce7b0c31f97f22391241687fd8392))
+* integrate slack oauth access ([0811c6a](https://github.com/lil-lab/recnet/commit/0811c6a9d79745e7436faa18e916e5a6edad4ca3))
+* refactor ui ([2a0806e](https://github.com/lil-lab/recnet/commit/2a0806e762301920e85bc104759bb5c6143bdd1b))
+* refactor UI ([bc44d39](https://github.com/lil-lab/recnet/commit/bc44d3955c0e580c67659ac367d379aec52bcb51))
+* send message with new access token ([f75fa90](https://github.com/lil-lab/recnet/commit/f75fa90e49eb70fb00ea53a023df510a2be86d54))
+* slack fields db migration ([87e1f40](https://github.com/lil-lab/recnet/commit/87e1f40ecfa1d6d723827df6416b2d34948d660a))
+* update user db ([dfb61cd](https://github.com/lil-lab/recnet/commit/dfb61cdef757903a151178707ef8e0741f12236d))
+* use recnet-api endpoints ([3fa73bd](https://github.com/lil-lab/recnet/commit/3fa73bd9034d56c8e6efe9380151046a7ac4f35a))
+
+
+### Bug Fixes
+
+* bring redirect uri in req ([604b857](https://github.com/lil-lab/recnet/commit/604b857b77b25396482b3be162f784213b1d82f0))
+* env var ci ([8e6ab8d](https://github.com/lil-lab/recnet/commit/8e6ab8d1033cfae206282724904091bd83117145))
+* fix bug ([d28e288](https://github.com/lil-lab/recnet/commit/d28e2881e1bfc161ef9bd81397f1399f63e901b3))
+* fix bug ([47a2e71](https://github.com/lil-lab/recnet/commit/47a2e7136fd46608ca88d91fd2d79d258319975d))
+* pass redirect uri to slack oauth api ([0197f08](https://github.com/lil-lab/recnet/commit/0197f08a0142f637147e7dd2c243f2a2af86afe6))
+* send redirect uri to slac Oauth access API ([#369](https://github.com/lil-lab/recnet/issues/369)) ([7ee2539](https://github.com/lil-lab/recnet/commit/7ee2539255f7d059eccf1762f49158ea4843d5e0))
+
 ## [1.16.2](https://github.com/lil-lab/recnet/compare/recnet-web-v1.16.1...recnet-web-v1.16.2) (2024-11-18)
 
 

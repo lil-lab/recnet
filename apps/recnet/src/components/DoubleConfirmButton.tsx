@@ -9,7 +9,7 @@ interface DoubleConfirmButtonProps {
   onConfirm: () => Promise<void>;
   children: React.ReactNode;
   title: string;
-  description: string;
+  description: string | React.ReactNode;
   cancelButtonProps?: React.ComponentProps<typeof Button>;
   confirmButtonProps?: React.ComponentProps<typeof Button>;
 }

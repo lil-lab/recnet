@@ -19,6 +19,8 @@ import {
   formatDate,
 } from "@recnet/recnet-date-fns";
 
+import { SlackOAuthModal } from "./SlackOAuthModal";
+
 import { trpc } from "../_trpc/client";
 import { OnboardingDialog } from "../onboard/OnboardingDialog";
 
@@ -124,6 +126,7 @@ export default function FeedPage({
         "md:py-12"
       )}
     >
+      <SlackOAuthModal />
       <OnboardingDialog />
       {Object.keys(recsGroupByTitle).length > 0 ? (
         <>
