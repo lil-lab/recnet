@@ -36,7 +36,7 @@ export class EmailService {
 
     // send email
     const mailOptions = {
-      from: this.nodemailerConfig.user,
+      from: `RecNet<${this.nodemailerConfig.user}>`,
       to: user.email,
       subject: WeeklyDigestSubject(cutoff, this.appConfig.nodeEnv),
       html: render(
