@@ -32,7 +32,7 @@ export const weeklyDigestSlackTemplate = (
       }),
       ...recs.map((rec) =>
         Blocks.Section({
-          text: `${Md.link(`https://recnet.io/${rec.user.handle}`, rec.user.displayName)}${rec.isSelfRec ? Md.italic("(Self-Rec)") : ""}: ${rec.description} (${Md.link(`https://recnet.io/rec/${rec.id}`, "view")})`,
+          text: `${rec.user.displayName} ${rec.isSelfRec ? Md.italic("(Self-Rec)") : ""}: ${rec.description}`,
         })
       ),
       Blocks.Divider(),

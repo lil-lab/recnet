@@ -1,16 +1,8 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import * as Accordion from "@radix-ui/react-accordion";
-import {
-  Card,
-  Dialog,
-  Flex,
-  Text,
-  CheckboxCards,
-  Button,
-} from "@radix-ui/themes";
-import { ChevronDown, Slack as SlackIcon } from "lucide-react";
+import { Dialog, Flex, Text, CheckboxCards, Button } from "@radix-ui/themes";
+import { Slack as SlackIcon } from "lucide-react";
 import { useState } from "react";
 import { Controller, useForm, useFormState } from "react-hook-form";
 import { toast } from "sonner";
@@ -41,13 +33,12 @@ const subscriptionChannelEditSchema = z.object({
   channels: subscriptionChannelSchema.array(),
 });
 
-function SubscriptionTypeCard(props: {
+function SubscriptionTypeControlSection(props: {
   type: SubscriptionType;
   selectedChannels: SubscriptionChannel[];
 }) {
   const { type, selectedChannels } = props;
   const title = transformSubscriptionEnum(type);
-  const isActivated = selectedChannels.length > 0;
   const [isSubmitting, setIsSubmitting] = useState(false);
   const utils = trpc.useUtils();
 
@@ -64,143 +55,123 @@ function SubscriptionTypeCard(props: {
   const { data: slackOAuthData } = trpc.getSlackOAuthStatus.useQuery();
 
   return (
-    <Accordion.Item value={type} className="w-full">
-      <Accordion.Trigger className="w-full group">
-        <Card
-          className={cn(
-            "w-full p-4 rounded-4 flex flex-row justify-between items-center",
-            {
-              "bg-blueA-4 border-blue-8 border-[1px]": isActivated,
+    <>
+      <Text size="4" className="block mb-2">
+        {title}
+      </Text>
+
+      <form
+        onSubmit={handleSubmit(
+          async (data, e) => {
+            setIsSubmitting(true);
+            /**
+             * Special case 1: WEEKLY_DIGEST
+             * For weekly digest, at least one channel must be selected
+             * if no, then show error message
+             */
+            if (type === "WEEKLY_DIGEST" && data.channels.length === 0) {
+              setError("channels", {
+                type: "manual",
+                message:
+                  "At least one channel must be selected for Weekly Digest",
+              });
+              setIsSubmitting(false);
+              return;
             }
-          )}
-        >
-          <Flex className="flex flex-col gap-y-1">
-            {title}
-            <Text size="1" className="text-gray-11">
-              Channels:{" "}
-              {selectedChannels
-                .map((channel) => channel.toLowerCase())
-                .join(", ")}
+            /*
+             * Special case 2: SLACK distribution channel
+             * When user selects slack channel, we need to check if the user has completed slack integration oauth flow or not
+             * If not, then show error message and ask user to complete slack integration
+             */
+            if (
+              slackOAuthData?.workspaceName === null &&
+              data.channels.includes(subscriptionChannelSchema.enum.SLACK)
+            ) {
+              setError("channels", {
+                type: "manual",
+                message:
+                  "To enable slack distribution channel, you need to complete slack integration first. See 'Slack Integration' below to learn more",
+              });
+              setIsSubmitting(false);
+              return;
+            }
+
+            await updateSubscriptionMutation.mutateAsync({
+              type,
+              channels: data.channels,
+            });
+            utils.getSubscriptions.invalidate();
+            toast.success("Subscription updated successfully");
+            setIsSubmitting(false);
+          },
+          (e) => {
+            console.log(e);
+          }
+        )}
+      >
+        <div>
+          <Flex className="mb-1 text-[14px] flex-col gap-y-1">
+            <Text size="1" className="block text-gray-11 mb-2 mt-1">
+              Distribution Channels:
             </Text>
           </Flex>
-          <ChevronDown
-            size={16}
-            className="transition-transform duration-300 ease-[cubic-bezier(0.87,_0,_0.13,_1)] group-data-[state=open]:rotate-180"
+          <Controller
+            control={control}
+            name="channels"
+            render={({ field }) => {
+              return (
+                <div>
+                  <CheckboxCards.Root
+                    className="grid grid-cols-2 xl:grid-cols-3 py-2"
+                    value={field.value}
+                    onValueChange={(value) => field.onChange(value)}
+                  >
+                    {subscriptionChannelSchema.options.map((channel) => {
+                      return (
+                        <CheckboxCards.Item key={channel} value={channel}>
+                          {channel.charAt(0).toUpperCase() +
+                            channel.slice(1).toLowerCase()}
+                        </CheckboxCards.Item>
+                      );
+                    })}
+                  </CheckboxCards.Root>
+                  {formState.errors.channels && (
+                    <Text size="1" color="red">
+                      {`${formState.errors.channels.message}`}
+                    </Text>
+                  )}
+                </div>
+              );
+            }}
           />
-        </Card>
-      </Accordion.Trigger>
-      <Accordion.Content asChild className="px-2 flex flex-col gap-y-2 py-4">
-        <form
-          onSubmit={handleSubmit(
-            async (data, e) => {
-              setIsSubmitting(true);
-              /**
-               * Special case 1: WEEKLY_DIGEST
-               * For weekly digest, at least one channel must be selected
-               * if no, then show error message
-               */
-              if (type === "WEEKLY_DIGEST" && data.channels.length === 0) {
-                setError("channels", {
-                  type: "manual",
-                  message:
-                    "At least one channel must be selected for Weekly Digest",
-                });
-                setIsSubmitting(false);
-                return;
-              }
-              /*
-               * Special case 2: SLACK distribution channel
-               * When user selects slack channel, we need to check if the user has completed slack integration oauth flow or not
-               * If not, then show error message and ask user to complete slack integration
-               */
-              if (
-                slackOAuthData?.workspaceName === null &&
-                data.channels.includes(subscriptionChannelSchema.enum.SLACK)
-              ) {
-                setError("channels", {
-                  type: "manual",
-                  message:
-                    "To enable slack distribution channel, you need to complete slack integration first. See 'Slack Integration' below to learn more",
-                });
-                setIsSubmitting(false);
-                return;
-              }
-
-              await updateSubscriptionMutation.mutateAsync({
-                type,
-                channels: data.channels,
-              });
-              utils.getSubscriptions.invalidate();
-              toast.success("Subscription updated successfully");
-              setIsSubmitting(false);
-            },
-            (e) => {
-              console.log(e);
-            }
-          )}
-        >
-          <div>
-            <Flex className="mb-1 text-[14px] flex-col gap-y-1">
-              Distribution Channels:
-            </Flex>
-            <Controller
-              control={control}
-              name="channels"
-              render={({ field }) => {
-                return (
-                  <div>
-                    <CheckboxCards.Root
-                      className="grid grid-cols-2 xl:grid-cols-3 py-2"
-                      value={field.value}
-                      onValueChange={(value) => field.onChange(value)}
-                    >
-                      {subscriptionChannelSchema.options.map((channel) => {
-                        return (
-                          <CheckboxCards.Item key={channel} value={channel}>
-                            {channel.charAt(0).toUpperCase() +
-                              channel.slice(1).toLowerCase()}
-                          </CheckboxCards.Item>
-                        );
-                      })}
-                    </CheckboxCards.Root>
-                    {formState.errors.channels && (
-                      <Text size="1" color="red">
-                        {`${formState.errors.channels.message}`}
-                      </Text>
-                    )}
-                  </div>
-                );
-              }}
-            />
-          </div>
-          <Flex className="py-2 gap-x-1">
-            <Button
-              variant="solid"
-              color="blue"
-              className={cn(
-                isDirty ? "bg-blue-10" : "bg-gray-8",
-                "cursor-pointer"
-              )}
-              type="submit"
-              disabled={isSubmitting || !isDirty}
-              loading={isSubmitting}
-            >
-              Save
-            </Button>
-            <Button
-              variant="outline"
-              className="cursor-pointer"
-              onClick={async () => {
-                reset();
-              }}
-              type="reset"
-            >
-              Cancel
-            </Button>
-          </Flex>
-        </form>
-      </Accordion.Content>
-    </Accordion.Item>
+        </div>
+        <Flex className="py-2 gap-x-1">
+          <Button
+            variant="solid"
+            color="blue"
+            className={cn(
+              isDirty ? "bg-blue-10" : "bg-gray-8",
+              "cursor-pointer"
+            )}
+            type="submit"
+            disabled={isSubmitting || !isDirty}
+            loading={isSubmitting}
+          >
+            Save
+          </Button>
+          <Button
+            variant="outline"
+            className="cursor-pointer"
+            onClick={async () => {
+              reset();
+            }}
+            type="reset"
+          >
+            Cancel
+          </Button>
+        </Flex>
+      </form>
+    </>
   );
 }
 
@@ -211,10 +182,6 @@ export function SubscriptionSetting() {
   const deleteSlackOAuthInfoMutation = trpc.deleteSlackOAuthInfo.useMutation();
   const utils = trpc.useUtils();
 
-  const [openedType, setOpenType] = useState<SubscriptionType | undefined>(
-    undefined
-  );
-
   const workspaceName = slackOAuthData?.workspaceName ?? null;
 
   return (
@@ -224,32 +191,23 @@ export function SubscriptionSetting() {
         Customize the subscription types and channels that best fits your needs.
       </Dialog.Description>
 
-      <Text size="4" className="block mb-2">
-        Subscriptions
-      </Text>
       {isFetching ? (
         <LoadingBox />
       ) : (
-        <Accordion.Root
-          className="w-full rounded-md shadow-black/5"
-          type="single"
-          collapsible
-          value={openedType as string | undefined}
-          onValueChange={(value) => setOpenType(value as SubscriptionType)}
-        >
+        <div className="w-full">
           {subscriptionTypeSchema.options.map((subType) => {
             const subscriptionTypeObj = (data?.subscriptions ?? []).find(
               (sub) => sub.type === subType
             );
             return (
-              <SubscriptionTypeCard
+              <SubscriptionTypeControlSection
                 key={subType}
                 type={subType}
                 selectedChannels={subscriptionTypeObj?.channels ?? []}
               />
             );
           })}
-        </Accordion.Root>
+        </div>
       )}
 
       <Text size="4" className="block mt-4">
