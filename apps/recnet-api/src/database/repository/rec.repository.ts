@@ -39,6 +39,23 @@ export default class RecRepository {
     });
   }
 
+  public async findPopularRecs(
+    page: number,
+    pageSize: number,
+    cutoff: number
+  ): Promise<Rec[]> {
+    return this.prisma.recommendation.findMany({
+      where: { cutoff: new Date(cutoff) },
+      select: rec.select,
+      take: pageSize,
+      skip: getOffset(page, pageSize),
+      orderBy: [
+        { reactions: { _count: Prisma.SortOrder.desc } },
+        { createdAt: Prisma.SortOrder.desc },
+      ],
+    });
+  }
+
   public async countRecs(filter: RecFilterBy = {}): Promise<number> {
     return this.prisma.recommendation.count({
       where: this.transformRecFilterByToPrismaWhere(filter),

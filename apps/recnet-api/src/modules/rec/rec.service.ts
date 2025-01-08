@@ -18,6 +18,7 @@ import { getCutOff } from "@recnet/recnet-date-fns";
 import {
   CreateRecResponse,
   GetFeedsResponse,
+  GetPopularRecsResponse,
   GetRecResponse,
   GetRecsResponse,
   GetUpcomingRecResponse,
@@ -244,6 +245,27 @@ export class RecService {
       recId,
       reaction as ReactionType
     );
+  }
+
+  public async getPopularRecs(
+    page: number,
+    pageSize: number,
+    cutoff: number,
+    userId: string
+  ): Promise<GetPopularRecsResponse> {
+    const recCount = await this.recRepository.countRecs({
+      cutoff: new Date(cutoff),
+    });
+    const dbRecs = await this.recRepository.findPopularRecs(
+      page,
+      pageSize,
+      cutoff
+    );
+    const recs = dbRecs.map((dbRec) => transformRec(dbRec, userId));
+    return {
+      hasNext: recs.length + getOffset(page, pageSize) < recCount,
+      recs: recs,
+    };
   }
 
   /**

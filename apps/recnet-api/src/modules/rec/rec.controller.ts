@@ -228,10 +228,12 @@ export class RecController {
   @Auth()
   @UsePipes(new ZodValidationQueryPipe(getRecsFeedsParamsSchema))
   public async getPopularRecs(
-    @Query() dto: QueryPopularRecsDto
+    @Query() dto: QueryPopularRecsDto,
+    @User() authUser: AuthUser
   ): Promise<GetPopularRecsResponse> {
     const { page, pageSize } = dto;
+    const { userId } = authUser;
     const cutoff = getLatestCutOff().getTime();
-    return this.recService.getPopularRecs(page, pageSize, cutoff);
+    return this.recService.getPopularRecs(page, pageSize, cutoff, userId);
   }
 }
