@@ -41,6 +41,9 @@ export class UpdateRecResponse {
 }
 
 export class GetPopularRecsResponse {
+  @ApiProperty()
   hasNext: boolean;
+
+  @ApiProperty({ type: [Rec] })
   recs: Rec[];
 }

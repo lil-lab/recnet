@@ -224,6 +224,8 @@ export class RecController {
     return this.recService.deleteRecReaction(userId, recId, dto.reaction);
   }
 
+  @ApiOkResponse({ type: GetPopularRecsResponse })
+  @ApiBearerAuth()
   @Get("popular")
   @Auth()
   @UsePipes(new ZodValidationQueryPipe(getRecsFeedsParamsSchema))
@@ -234,6 +236,7 @@ export class RecController {
     const { page, pageSize } = dto;
     const { userId } = authUser;
     const cutoff = getLatestCutOff().getTime();
+    console.log(new Date(cutoff));
     return this.recService.getPopularRecs(page, pageSize, cutoff, userId);
   }
 }
