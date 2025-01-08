@@ -108,3 +108,12 @@ export const deleteRecReactionParamsSchema = z.object({
 export type DeleteRecReactionParams = z.infer<
   typeof deleteRecReactionParamsSchema
 >;
+
+// GET /recs/popular
+export const getRecsPopularResponseSchema = z.object({
+  page: z.coerce.number(),
+  pageSize: z.coerce.number(),
+});
+export type GetRecsPopularResponse = z.infer<
+  typeof getRecsPopularResponseSchema
+>;
