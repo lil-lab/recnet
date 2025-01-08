@@ -39,3 +39,8 @@ export class UpdateRecResponse {
   @ApiProperty()
   rec: Rec;
 }
+
+export class GetPopularRecsResponse {
+  hasNext: boolean;
+  recs: Rec[];
+}

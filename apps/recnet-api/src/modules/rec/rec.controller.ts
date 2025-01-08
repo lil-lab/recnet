@@ -41,11 +41,13 @@ import { CreateRecDto } from "./dto/create.rec.dto";
 import { CreateRecReactionDto } from "./dto/create.rec.reaction.dto";
 import { DeleteRecReactionDto } from "./dto/delete.rec.reaction.dto";
 import { QueryFeedsDto } from "./dto/query.feeds.dto";
+import { QueryPopularRecsDto } from "./dto/query.popular.recs.dto";
 import { QueryRecsDto } from "./dto/query.recs.dto";
 import { UpdateRecDto } from "./dto/update.rec.dto";
 import {
   CreateRecResponse,
   GetFeedsResponse,
+  GetPopularRecsResponse,
   GetRecResponse,
   GetRecsResponse,
   GetUpcomingRecResponse,
@@ -220,5 +222,16 @@ export class RecController {
   ): Promise<void> {
     const { userId } = authUser;
     return this.recService.deleteRecReaction(userId, recId, dto.reaction);
+  }
+
+  @Get("popular")
+  @Auth()
+  @UsePipes(new ZodValidationQueryPipe(getRecsFeedsParamsSchema))
+  public async getPopularRecs(
+    @Query() dto: QueryPopularRecsDto
+  ): Promise<GetPopularRecsResponse> {
+    const { page, pageSize } = dto;
+    const cutoff = getLatestCutOff().getTime();
+    return this.recService.getPopularRecs(page, pageSize, cutoff);
   }
 }
