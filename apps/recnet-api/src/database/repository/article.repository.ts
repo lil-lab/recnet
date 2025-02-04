@@ -28,4 +28,15 @@ export default class ArticleRepository {
       select: article.select,
     });
   }
+
+  public async updateArticle(
+    articleId: string,
+    data: Partial<CreateArticleInput>
+  ): Promise<Article> {
+    return this.prisma.article.update({
+      where: { id: articleId },
+      data,
+      select: article.select,
+    });
+  }
 }

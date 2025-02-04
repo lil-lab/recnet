@@ -126,6 +126,9 @@ export function AdminPanelNavbar() {
           label="Provision code"
         />
       </AdminPanelNav.Section>
+      <AdminPanelNav.Section label="Article">
+        <AdminPanelNav.Item route="article/management" label="Management" />
+      </AdminPanelNav.Section>
     </AdminPanelNav>
   );
 }
