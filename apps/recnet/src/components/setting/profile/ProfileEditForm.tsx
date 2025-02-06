@@ -20,7 +20,7 @@ import { trpc } from "@recnet/recnet-web/app/_trpc/client";
 import { RecNetLink } from "@recnet/recnet-web/components/Link";
 import { ErrorMessages } from "@recnet/recnet-web/constant";
 import { cn } from "@recnet/recnet-web/utils/cn";
-
+import { S3UploadButton } from "@recnet/recnet-web/components/S3UploadButton";
 import { useUserSettingDialogContext } from "../UserSettingDialog";
 
 const HandleBlacklist = [
@@ -61,6 +61,7 @@ const ProfileEditSchema = z.object({
     .max(200, "Bio must contain at most 200 character(s)")
     .nullable(),
   url: z.string().url().nullable(),
+  photoUrl: z.string().url(),
   googleScholarLink: z.string().url().nullable(),
   semanticScholarLink: z.string().url().nullable(),
   openReviewUserName: z.string().nullable(),
@@ -74,7 +75,7 @@ export function ProfileEditForm() {
   const oldHandle = user?.handle;
   const pathname = usePathname();
 
-  const { register, handleSubmit, formState, setError, control, watch } =
+  const { register, handleSubmit, formState, setError, control, watch, setValue } =
     useForm({
       resolver: zodResolver(ProfileEditSchema),
       defaultValues: {
@@ -83,6 +84,7 @@ export function ProfileEditForm() {
         affiliation: user?.affiliation ?? null,
         bio: user?.bio ?? null,
         url: user?.url ?? null,
+        photoUrl: user?.photoUrl ?? null,
         googleScholarLink: user?.googleScholarLink ?? null,
         semanticScholarLink: user?.semanticScholarLink ?? null,
         openReviewUserName: user?.openReviewUserName ?? null,
@@ -97,6 +99,7 @@ export function ProfileEditForm() {
     <form
       className="w-full"
       onSubmit={handleSubmit(async (data, e) => {
+        // console.log("Form data on submit:", data);
         e?.preventDefault();
         const res = ProfileEditSchema.safeParse(data);
         if (!res.success || !user?.id) {
@@ -183,6 +186,21 @@ export function ProfileEditForm() {
             </Text>
           ) : null}
         </label>
+      
+        <S3UploadButton 
+          formState={{
+            defaultValues: { photoUrl: formState.defaultValues?.photoUrl ?? undefined },
+            errors: { photoUrl: formState.errors?.photoUrl }
+          }}
+          setValue={(name, value) => {
+            setValue(name, value, { 
+              shouldDirty: true  // Mark the form as dirty so updateUser will be called
+            });
+            console.log('form photoUrl updated:', value);
+          }}
+          className="mt-auto" 
+        />
+
         <label>
           <Text as="div" size="2" mb="1" weight="medium">
             Affiliation
