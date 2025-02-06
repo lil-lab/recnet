@@ -10,6 +10,7 @@ import { EmailModule } from "./modules/email/email.module";
 import { HealthModule } from "./modules/health/health.module";
 import { InviteCodeModule } from "./modules/invite-code/invite-code.module";
 import { RecModule } from "./modules/rec/rec.module";
+import { S3Module } from "./modules/s3/s3.module";
 import { StatModule } from "./modules/stat/stat.module";
 import { SubscriptionModule } from "./modules/subscription/subscription.module";
 import { UserModule } from "./modules/user/user.module";
@@ -32,6 +33,7 @@ import { LoggerMiddleware } from "./utils/middlewares/logger.middleware";
     EmailModule,
     AnnouncementModule,
     SubscriptionModule,
+    S3Module,
   ],
   controllers: [],
   providers: [],
