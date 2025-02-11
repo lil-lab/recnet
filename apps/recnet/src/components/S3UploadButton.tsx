@@ -7,8 +7,6 @@ import {
     Button,
     Flex,
     Text,
-    TextField,
-    TextArea,
   } from "@radix-ui/themes";
 
 interface S3UploadButtonProps extends React.ComponentProps<typeof Button> {
