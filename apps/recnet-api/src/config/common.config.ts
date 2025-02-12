@@ -43,5 +43,5 @@ export const S3Config = registerAs("s3", () => ({
   bucketName: parsedEnv.AWS_BUCKET_NAME,
   accessKeyId: parsedEnv.AWS_ACCESS_KEY_ID,
   secretAccessKey: parsedEnv.AWS_SECRET_ACCESS_KEY,
-  s3Region: parsedEnv.AWS_REGION,
+  s3Region: parsedEnv.AWS_BUCKET_REGION,
 }));
