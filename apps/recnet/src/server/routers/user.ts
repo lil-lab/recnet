@@ -183,13 +183,20 @@ export const userRouter = router({
     }),
   getS3UploadUrl: checkRecnetJWTProcedure
     .output(z.object({ url: z.string() }))
-    .query(async (opts) => {
+    .mutation(async (opts) => {
       const { recnetApi } = opts.ctx;
       const { data } = await recnetApi.get("/s3url");
       return {
         url: data.url,
       };
     }),
+    // .query(async (opts) => {
+    //   const { recnetApi } = opts.ctx;
+    //   const { data } = await recnetApi.get("/s3url");
+    //   return {
+    //     url: data.url,
+    //   };
+    // }),
   deactivate: checkRecnetJWTProcedure
     .output(patchUserMeActivateResponseSchema)
     .mutation(async (opts) => {
