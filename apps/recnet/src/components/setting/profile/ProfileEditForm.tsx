@@ -75,7 +75,7 @@ export function ProfileEditForm() {
   const oldHandle = user?.handle;
   const pathname = usePathname();
 
-  const { register, handleSubmit, formState, setError, control, watch, setValue } =
+  const { register, handleSubmit, formState, setError, control, watch} =
     useForm({
       resolver: zodResolver(ProfileEditSchema),
       defaultValues: {
@@ -94,16 +94,19 @@ export function ProfileEditForm() {
   const { isDirty } = useFormState({ control: control });
 
   const updateProfileMutation = trpc.updateUser.useMutation();
-  const { data: uploadUrl } = trpc.getS3UploadUrl.useQuery();
-  // console.log('get uploadUrl:', uploadUrl);
+  const getUploadUrlMutation = trpc.getS3UploadUrl.useMutation();
   const [isUploading, setIsUploading] = React.useState(false);
   const [selectedFile, setSelectedFile] = React.useState<File | null>(null);
   const [photoPreviewUrl, setPhotoPreviewUrl] = React.useState<string | null>(null);
 
   const handleUploadS3 = async (formData: any) => {
-    if (!selectedFile || !uploadUrl?.url) return;
+    if (!selectedFile) return;
     try {
         setIsUploading(true);
+        const uploadUrl = await getUploadUrlMutation.mutateAsync();
+        if (!uploadUrl?.url) {
+          throw new Error('Error getting S3 upload URL');
+        }
         const response = await fetch(uploadUrl.url, {
             method: 'PUT',
             body: selectedFile,
@@ -124,7 +127,7 @@ export function ProfileEditForm() {
     } finally {
         setIsUploading(false);
     }
-};
+  };
 
   return (
     <form
@@ -230,14 +233,12 @@ export function ProfileEditForm() {
             onChange={
               async (e: React.ChangeEvent<HTMLInputElement>) => {
                 if (!e.target.files || e.target.files.length === 0) {
-                    console.log("No file selected");
                     setSelectedFile(null);
                     setPhotoPreviewUrl(null);
                     return;
                 }
                 const file = e.target.files[0];
                 setSelectedFile(file);
-                
                 // Cleanup previous preview URL if it exists
                 if (photoPreviewUrl) {
                     URL.revokeObjectURL(photoPreviewUrl);
