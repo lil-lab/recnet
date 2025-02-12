@@ -1,5 +1,5 @@
 import {
-  AdminUpdateArticleDtoSchema,
+  patchArticlesAdminRequestSchema,
   getArticlesParamsSchema,
   getArticlesResponseSchema,
 } from "@recnet/recnet-api-model";
@@ -36,12 +36,21 @@ export const articleRouter = router({
   //     });
   //     return getArticlesResponseSchema.parse(data);
   //   }),
-  updateArticleByLink: checkIsAdminProcedure
-    .input(AdminUpdateArticleDtoSchema)
+  // updateArticleByLink: checkIsAdminProcedure
+  //   .input(patchArticlesAdminRequestSchema)
+  //   .mutation(async (opts) => {
+  //     const { link, ...data } = opts.input;
+  //     const { recnetApi } = opts.ctx;
+  //
+  //     await recnetApi.patch(`/articles/admin?link=${link}`, data);
+  //   }),
+
+  updateArticleById: checkIsAdminProcedure
+    .input(patchArticlesAdminRequestSchema)
     .mutation(async (opts) => {
-      const { link, ...data } = opts.input;
+      const { id, ...data } = opts.input;
       const { recnetApi } = opts.ctx;
 
-      await recnetApi.patch(`/articles/admin?link=${link}`, data);
+      await recnetApi.patch(`/articles/admin?id=${id}`, data);
     }),
 });

@@ -20,6 +20,15 @@ export default class ArticleRepository {
     });
   }
 
+  public async findArticleById(id: string): Promise<Article | null> {
+    return this.prisma.article.findFirst({
+      where: {
+        id: id,
+      },
+      select: article.select,
+    });
+  }
+
   public async createArticle(
     articleData: CreateArticleInput
   ): Promise<Article> {

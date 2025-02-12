@@ -1,19 +1,21 @@
 "use client";
 
-import { useState } from "react";
-import { cn } from "@recnet/recnet-web/utils/cn";
 import { Button, Flex, TextField } from "@radix-ui/themes";
+import { useState } from "react";
 import { toast } from "sonner";
 
-import { AdminSectionBox, AdminSectionTitle } from "../../AdminSections";
+import { trpc } from "@recnet/recnet-web/app/_trpc/client";
+import { cn } from "@recnet/recnet-web/utils/cn";
+
+import { Article } from "@recnet/recnet-api-model";
 
 import { ArticleManagementForm } from "./ArticleManagementForm";
 
-import { trpc } from "@recnet/recnet-web/app/_trpc/client";
+import { AdminSectionBox, AdminSectionTitle } from "../../AdminSections";
 
 export default function ArticleManagementPage() {
   const [searchUrl, setSearchUrl] = useState("");
-  const [foundArticle, setFoundArticle] = useState<any>(null);
+  const [foundArticle, setFoundArticle] = useState<Article | null>(null);
 
   const getArticleQuery = trpc.getArticleByLink.useQuery(
     { link: searchUrl, useDigitalLibrary: false },
@@ -44,7 +46,9 @@ export default function ArticleManagementPage() {
   };
 
   return (
-    <div className={cn("w-full sm:w-[90%] md:w-[70%]", "flex flex-col gap-y-6")}>
+    <div
+      className={cn("w-full sm:w-[90%] md:w-[70%]", "flex flex-col gap-y-6")}
+    >
       <AdminSectionBox>
         <AdminSectionTitle description="Please enter an article URL to manage.">
           Search Article by URL

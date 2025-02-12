@@ -1,11 +1,13 @@
-import { Inject, Injectable, Logger } from "@nestjs/common";
+import { HttpStatus, Inject, Injectable, Logger } from "@nestjs/common";
+import { NotFoundException } from "@nestjs/common";
 
 import ArticleRepository from "@recnet-api/database/repository/article.repository";
 import { CreateArticleInput } from "@recnet-api/database/repository/article.repository.type";
 import { DIGITAL_LIBRARY } from "@recnet-api/modules/digital-library/digital-library.const";
 import { DigitalLibraryService } from "@recnet-api/modules/digital-library/digital-library.service";
 import { Metadata } from "@recnet-api/modules/digital-library/digital-library.type";
-import { NotFoundException } from "@nestjs/common";
+import { RecnetError } from "@recnet-api/utils/error/recnet.error";
+import { ErrorCode } from "@recnet-api/utils/error/recnet.error.const";
 
 import { GetArticleByLinkResponse } from "./article.response";
 
@@ -57,19 +59,22 @@ export class ArticleService {
 
   public async getArticleByLink(
     link: string,
-    fetchFromDigitalLibrary: boolean = true
+    fetchFromDigitalLibrary = true
   ): Promise<GetArticleByLinkResponse> {
     let unifiedLink = link;
 
+    // If choose to use digital library and digital library service is available, try to get the unified link
     if (fetchFromDigitalLibrary && this.digitalLibraryService) {
       unifiedLink = await this.digitalLibraryService.getUnifiedLink(link);
     }
 
+    // Try to find the article in the database using the unified link
     let article = await this.articleRepository.findArticleByLink(unifiedLink);
     if (article) {
       return { article };
     }
 
+    // If no article found, try to get metadata using the digital library service
     if (fetchFromDigitalLibrary && this.digitalLibraryService) {
       try {
         const metadata = await this.digitalLibraryService.getMetadata(link);
@@ -81,6 +86,7 @@ export class ArticleService {
       }
     }
 
+    // If no article found and no metadata available, return null
     return { article: null };
   }
 
@@ -109,13 +115,17 @@ export class ArticleService {
   //   };
   // }
 
-  public async updateArticleByLink(
-    link: string,
+  public async updateArticleById(
+    id: string,
     updateData: Partial<CreateArticleInput>
   ) {
-    const existing = await this.articleRepository.findArticleByLink(link);
+    const existing = await this.articleRepository.findArticleById(id);
     if (!existing) {
-      throw new NotFoundException(`Article not found by link=${link}`);
+      throw new RecnetError(
+        ErrorCode.INTERNAL_SERVER_ERROR,
+        HttpStatus.INTERNAL_SERVER_ERROR,
+        `Article not found by id=${id}`
+      );
     }
 
     const updated = await this.articleRepository.updateArticle(
