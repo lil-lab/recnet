@@ -66,20 +66,6 @@ export class ArticleService {
     };
   }
 
-  // public async getDbArticleByLink(
-  //   link: string
-  // ): Promise<GetArticleByLinkResponse> {
-  //   const article = await this.articleRepository.findArticleByLink(link);
-  //   if (article) {
-  //     return { article };
-  //   }
-  //
-  //   // If no article found and no metadata available, return null
-  //   return {
-  //     article: null,
-  //   };
-  // }
-
   public async updateArticleById(
     id: string,
     updateData: Partial<CreateArticleInput>

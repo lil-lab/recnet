@@ -19,7 +19,7 @@ export const articleRouter = router({
       const { data } = await recnetApi.get(`/articles`, {
         params: {
           link,
-          useDigitalLibrary: useDigitalLibraryFallback,
+          useDigitalLibraryFallback: useDigitalLibraryFallback,
         },
       });
       return getArticlesResponseSchema.parse(data);
