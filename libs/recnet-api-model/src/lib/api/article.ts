@@ -5,7 +5,7 @@ import { articleSchema } from "../model";
 // GET /articles
 export const getArticlesParamsSchema = z.object({
   link: z.string().url(),
-  useDigitalLibrary: z
+  useDigitalLibraryFallback: z
     .union([
       z.boolean(),
       z.enum(["true", "false"]).transform((val) => val === "true"),

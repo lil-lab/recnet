@@ -8,5 +8,5 @@ export class QueryArticleDto {
   @ApiProperty({
     description: "Use digital library service or not",
   })
-  useDigitalLibrary?: boolean;
+  useDigitalLibraryFallback?: boolean;
 }

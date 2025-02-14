@@ -3,6 +3,7 @@ import {
   Controller,
   Get,
   NotFoundException,
+  Param,
   Patch,
   Query,
   UseFilters,
@@ -52,8 +53,11 @@ export class ArticleController {
   public async getArticleByLink(
     @Query() dto: QueryArticleDto
   ): Promise<GetArticleByLinkResponse> {
-    const { link, useDigitalLibrary } = dto;
-    return this.articleService.getArticleByLink(link, useDigitalLibrary);
+    const { link, useDigitalLibraryFallback } = dto;
+    return this.articleService.getArticleByLink(
+      link,
+      useDigitalLibraryFallback
+    );
   }
 
   @ApiOperation({
@@ -64,11 +68,11 @@ export class ArticleController {
     description: "Return the updated article",
   })
   @ApiBearerAuth()
-  @Patch("admin")
+  @Patch("admin/:id")
   @Auth({ allowedRoles: ["ADMIN"] })
   @UsePipes(new ZodValidationBodyPipe(patchArticlesAdminRequestSchema))
   public async updateArticleById(
-    @Query("id") id: string,
+    @Param("id") id: string,
     @Body() dto: AdminUpdateArticleDto
   ) {
     const updatedArticle = await this.articleService.updateArticleById(id, dto);

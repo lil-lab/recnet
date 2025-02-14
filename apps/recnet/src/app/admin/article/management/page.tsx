@@ -18,7 +18,7 @@ export default function ArticleManagementPage() {
   const [foundArticle, setFoundArticle] = useState<Article | null>(null);
 
   const getArticleQuery = trpc.getArticleByLink.useQuery(
-    { link: searchUrl, useDigitalLibrary: false },
+    { link: searchUrl, useDigitalLibraryFallback: false },
     {
       enabled: false,
       retry: false,

@@ -13,37 +13,17 @@ export const articleRouter = router({
     .input(getArticlesParamsSchema)
     .output(getArticlesResponseSchema)
     .query(async (opts) => {
-      const { link, useDigitalLibrary } = opts.input;
+      const { link, useDigitalLibraryFallback: useDigitalLibraryFallback } =
+        opts.input;
       const { recnetApi } = opts.ctx;
       const { data } = await recnetApi.get(`/articles`, {
         params: {
           link,
-          useDigitalLibrary,
+          useDigitalLibrary: useDigitalLibraryFallback,
         },
       });
       return getArticlesResponseSchema.parse(data);
     }),
-  // getDbArticleByLink: checkIsAdminProcedure
-  //   .input(getArticlesParamsSchema)
-  //   .output(getArticlesResponseSchema)
-  //   .query(async (opts) => {
-  //     const { link } = opts.input;
-  //     const { recnetApi } = opts.ctx;
-  //     const { data } = await recnetApi.get(`/articles/db`, {
-  //       params: {
-  //         link,
-  //       },
-  //     });
-  //     return getArticlesResponseSchema.parse(data);
-  //   }),
-  // updateArticleByLink: checkIsAdminProcedure
-  //   .input(patchArticlesAdminRequestSchema)
-  //   .mutation(async (opts) => {
-  //     const { link, ...data } = opts.input;
-  //     const { recnetApi } = opts.ctx;
-  //
-  //     await recnetApi.patch(`/articles/admin?link=${link}`, data);
-  //   }),
 
   updateArticleById: checkIsAdminProcedure
     .input(patchArticlesAdminRequestSchema)
@@ -51,6 +31,6 @@ export const articleRouter = router({
       const { id, ...data } = opts.input;
       const { recnetApi } = opts.ctx;
 
-      await recnetApi.patch(`/articles/admin?id=${id}`, data);
+      await recnetApi.patch(`/articles/admin/${id}`, data);
     }),
 });
