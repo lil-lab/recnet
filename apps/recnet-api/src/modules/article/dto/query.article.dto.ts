@@ -5,4 +5,8 @@ export class QueryArticleDto {
     description: "The article's link",
   })
   link: string;
+  @ApiProperty({
+    description: "Use digital library service or not",
+  })
+  useDigitalLibraryFallback?: boolean;
 }
