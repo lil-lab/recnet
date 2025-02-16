@@ -1,5 +1,2 @@
--- DropForeignKey
-ALTER TABLE "Announcement" DROP CONSTRAINT "Announcement_createdById_fkey";
+-- This is an empty migration.
 
--- DropTable
-DROP TABLE "Announcement";

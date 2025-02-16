@@ -3,9 +3,10 @@ import { Inject, Injectable } from "@nestjs/common";
 import RecRepository from "@recnet-api/database/repository/rec.repository";
 import UserRepository from "@recnet-api/database/repository/user.repository";
 
+import { WeekTs } from "@recnet/recnet-date-fns";
 import { getNextCutOff } from "@recnet/recnet-date-fns";
 
-import { QueryStatResponse } from "./stat.response";
+import { QueryStatResponse, QueryPeriodStatResponse } from "./stat.response";
 
 @Injectable()
 export class StatService {
@@ -36,6 +37,34 @@ export class StatService {
           [ts]: count,
         };
       }, {}),
+    };
+  }
+
+  public async getPeriodStats(
+    timestamp: number
+  ): Promise<QueryPeriodStatResponse> {
+    const periodStart = timestamp - WeekTs;
+    const periodEnd = timestamp;
+
+    const recs = await this.recRepository.findRecs(1, 100, {
+      cutoff: {
+        from: new Date(periodStart),
+        to: new Date(periodEnd),
+      },
+    });
+
+    return {
+      recommendations: recs.map((rec) => ({
+        userId: rec.user.id,
+        userName: rec.user.displayName,
+        userHandle: rec.user.handle,
+        recId: rec.id,
+        recTitle: rec.article.title,
+        recLink: rec.article.link,
+        timestamp: rec.cutoff.getTime(),
+      })),
+      periodStart,
+      periodEnd,
     };
   }
 }
