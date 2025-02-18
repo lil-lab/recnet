@@ -49,12 +49,10 @@ export class S3Service {
     };
 
     const uploadURL = await this.s3.getSignedUrlPromise("putObject", params);
-    console.log("getS3UploadUrl", uploadURL);
     return { url: uploadURL };
   }
   
   async deleteS3Object(fileUrl: string): Promise<void> {
-    console.log('Deleting S3 object with URL:', fileUrl);
     // Extract the key (filename) from the URL
     const urlParts = fileUrl.split('/');
     const key = urlParts[urlParts.length - 1];
@@ -66,7 +64,6 @@ export class S3Service {
     try {
       await this.s3.deleteObject(params).promise();
     } catch (error: unknown) {
-      console.error('Error deleting S3 object:', error);
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
       throw new Error(`Failed to delete S3 object: ${errorMessage}`);
     }
