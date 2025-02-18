@@ -1,7 +1,10 @@
+import { S3Client } from "@aws-sdk/client-s3";
+import { PutObjectCommand } from "@aws-sdk/client-s3";
+import { DeleteObjectCommand } from "@aws-sdk/client-s3";
+import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { Injectable } from "@nestjs/common";
 import { Inject } from "@nestjs/common";
 import { ConfigType } from "@nestjs/config";
-import AWS from "aws-sdk";
 import { v4 as uuidv4 } from "uuid";
 
 import { S3Config } from "@recnet-api/config/common.config";
@@ -12,7 +15,7 @@ export class S3Service {
   private readonly s3BucketName: string;
   private readonly accessKeyId: string;
   private readonly secretAccessKey: string;
-  private readonly s3: AWS.S3;
+  private readonly s3: S3Client;
 
   constructor(
     @Inject(S3Config.KEY)
@@ -22,11 +25,12 @@ export class S3Service {
     this.s3BucketName = this.s3Config.bucketName;
     this.accessKeyId = this.s3Config.accessKeyId;
     this.secretAccessKey = this.s3Config.secretAccessKey;
-    this.s3 = new AWS.S3({
+    this.s3 = new S3Client({
       region: this.s3Region,
-      accessKeyId: this.accessKeyId,
-      secretAccessKey: this.secretAccessKey,
-      signatureVersion: "v4",
+      credentials: {
+        accessKeyId: this.accessKeyId,
+        secretAccessKey: this.secretAccessKey,
+      },
     });
   }
 
@@ -45,13 +49,12 @@ export class S3Service {
 
     const imageName = `${timestamp}-${uuidv4()}`;
 
-    const params = {
+    const command = new PutObjectCommand({
       Bucket: this.s3BucketName,
       Key: imageName,
-      Expires: 60,
-    };
+    });
 
-    const uploadURL = await this.s3.getSignedUrlPromise("putObject", params);
+    const uploadURL = await getSignedUrl(this.s3, command, { expiresIn: 60 });
     return { url: uploadURL };
   }
 
@@ -59,13 +62,14 @@ export class S3Service {
     // Extract the key (filename) from the URL
     const urlParts = fileUrl.split("/");
     const key = urlParts[urlParts.length - 1];
-    const params = {
+
+    const command = new DeleteObjectCommand({
       Bucket: this.s3BucketName,
       Key: key,
-    };
+    });
 
     try {
-      await this.s3.deleteObject(params).promise();
+      await this.s3.send(command);
     } catch (error: unknown) {
       const errorMessage =
         error instanceof Error ? error.message : "Unknown error";
