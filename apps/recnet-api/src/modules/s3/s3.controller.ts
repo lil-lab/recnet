@@ -1,7 +1,5 @@
 import { Controller, Get, Delete, Query } from "@nestjs/common";
-import {
-  ApiOperation,
-} from "@nestjs/swagger";
+import { ApiOperation } from "@nestjs/swagger";
 
 import { S3Service } from "./s3.service";
 
@@ -22,7 +20,7 @@ export class S3Controller {
     description: "Delete S3 Object (profile photo)",
   })
   @Delete()
-  async deleteS3Object(@Query('fileUrl') fileUrl: string): Promise<void> {
+  async deleteS3Object(@Query("fileUrl") fileUrl: string): Promise<void> {
     return this.s3Service.deleteS3Object(fileUrl);
   }
 }

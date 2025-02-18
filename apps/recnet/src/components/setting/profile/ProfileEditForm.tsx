@@ -1,6 +1,5 @@
 "use client";
 
-import React from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   Dialog,
@@ -11,7 +10,9 @@ import {
   TextArea,
 } from "@radix-ui/themes";
 import { TRPCClientError } from "@trpc/client";
+import Image from "next/image";
 import { useRouter, usePathname } from "next/navigation";
+import React from "react";
 import { useForm, useFormState } from "react-hook-form";
 import { toast } from "sonner";
 import * as z from "zod";
@@ -21,6 +22,7 @@ import { trpc } from "@recnet/recnet-web/app/_trpc/client";
 import { RecNetLink } from "@recnet/recnet-web/components/Link";
 import { ErrorMessages } from "@recnet/recnet-web/constant";
 import { cn } from "@recnet/recnet-web/utils/cn";
+
 import { useUserSettingDialogContext } from "../UserSettingDialog";
 
 const HandleBlacklist = [
@@ -75,7 +77,7 @@ export function ProfileEditForm() {
   const oldHandle = user?.handle;
   const pathname = usePathname();
 
-  const { register, handleSubmit, formState, setError, control, watch} =
+  const { register, handleSubmit, formState, setError, control, watch } =
     useForm({
       resolver: zodResolver(ProfileEditSchema),
       defaultValues: {
@@ -97,35 +99,37 @@ export function ProfileEditForm() {
   const getUploadUrlMutation = trpc.getS3UploadUrl.useMutation();
   const [isUploading, setIsUploading] = React.useState(false);
   const [selectedFile, setSelectedFile] = React.useState<File | null>(null);
-  const [photoPreviewUrl, setPhotoPreviewUrl] = React.useState<string | null>(null);
+  const [photoPreviewUrl, setPhotoPreviewUrl] = React.useState<string | null>(
+    null
+  );
 
   const handleUploadS3 = async (formData: any) => {
     if (!selectedFile) return;
     try {
-        setIsUploading(true);
-        const uploadUrl = await getUploadUrlMutation.mutateAsync();
-        if (!uploadUrl?.url) {
-          throw new Error('Error getting S3 upload URL');
-        }
-        const response = await fetch(uploadUrl.url, {
-            method: 'PUT',
-            body: selectedFile,
-            headers: {
-                'Content-Type': selectedFile.type,
-            },
-        });
-        if (!response.ok) {
-            throw new Error('Upload failed');
-        }
-        // The URL where the file will be accessible
-        const fileUrl = uploadUrl.url.split('?')[0];
-        // update form data directly because the form data is already passed to the handleSubmit function
-        formData.photoUrl = fileUrl;
-        return formData;
+      setIsUploading(true);
+      const uploadUrl = await getUploadUrlMutation.mutateAsync();
+      if (!uploadUrl?.url) {
+        throw new Error("Error getting S3 upload URL");
+      }
+      const response = await fetch(uploadUrl.url, {
+        method: "PUT",
+        body: selectedFile,
+        headers: {
+          "Content-Type": selectedFile.type,
+        },
+      });
+      if (!response.ok) {
+        throw new Error("Upload failed");
+      }
+      // The URL where the file will be accessible
+      const fileUrl = uploadUrl.url.split("?")[0];
+      // update form data directly because the form data is already passed to the handleSubmit function
+      formData.photoUrl = fileUrl;
+      return formData;
     } catch (error) {
-        console.error('Error uploading file:', error);
+      console.error("Error uploading file:", error);
     } finally {
-        setIsUploading(false);
+      setIsUploading(false);
     }
   };
 
@@ -230,41 +234,39 @@ export function ProfileEditForm() {
           <input
             type="file"
             accept="image/*"
-            onChange={
-              async (e: React.ChangeEvent<HTMLInputElement>) => {
-                if (!e.target.files || e.target.files.length === 0) {
-                    setSelectedFile(null);
-                    setPhotoPreviewUrl(null);
-                    return;
-                }
-                const file = e.target.files[0];
-                setSelectedFile(file);
-                // Cleanup previous preview URL if it exists
-                if (photoPreviewUrl) {
-                    URL.revokeObjectURL(photoPreviewUrl);
-                }
-                // Create preview URL for the selected image
-                const objectUrl = URL.createObjectURL(file);
-                setPhotoPreviewUrl(objectUrl);
+            onChange={async (e: React.ChangeEvent<HTMLInputElement>) => {
+              if (!e.target.files || e.target.files.length === 0) {
+                setSelectedFile(null);
+                setPhotoPreviewUrl(null);
+                return;
               }
-            }
+              const file = e.target.files[0];
+              setSelectedFile(file);
+              // Cleanup previous preview URL if it exists
+              if (photoPreviewUrl) {
+                URL.revokeObjectURL(photoPreviewUrl);
+              }
+              // Create preview URL for the selected image
+              const objectUrl = URL.createObjectURL(file);
+              setPhotoPreviewUrl(objectUrl);
+            }}
           />
           {formState.errors?.photoUrl ? (
             <Text size="1" color="red">
-                {formState.errors.photoUrl.message}
+              {formState.errors.photoUrl.message}
             </Text>
           ) : null}
           {photoPreviewUrl && (
-            <img
-              src={photoPreviewUrl} 
-              alt="Profile photo preview" 
-              style={{ 
-                width: '100px',
-                height: '100px',
-                objectFit: 'cover',
-                borderRadius: '50px',
-                marginTop: '12px',
-              }} 
+            <Image
+              src={photoPreviewUrl}
+              alt="Profile photo preview"
+              width={100}
+              height={100}
+              style={{
+                objectFit: "cover",
+                borderRadius: "50px",
+                marginTop: "12px",
+              }}
             />
           )}
         </label>
@@ -400,7 +402,7 @@ export function ProfileEditForm() {
           type="submit"
           disabled={!formState.isValid}
         >
-          {isUploading ? 'Uploading photo...' : 'Save'}
+          {isUploading ? "Uploading photo..." : "Save"}
         </Button>
       </Flex>
     </form>
