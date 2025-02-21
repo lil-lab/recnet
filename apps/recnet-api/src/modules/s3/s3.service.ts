@@ -2,12 +2,13 @@ import { S3Client } from "@aws-sdk/client-s3";
 import { PutObjectCommand } from "@aws-sdk/client-s3";
 import { DeleteObjectCommand } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
-import { Injectable } from "@nestjs/common";
-import { Inject } from "@nestjs/common";
+import { HttpStatus, Inject, Injectable } from "@nestjs/common";
 import { ConfigType } from "@nestjs/config";
 import { v4 as uuidv4 } from "uuid";
 
 import { S3Config } from "@recnet-api/config/common.config";
+import { RecnetError } from "@recnet-api/utils/error/recnet.error";
+import { ErrorCode } from "@recnet-api/utils/error/recnet.error.const";
 
 @Injectable()
 export class S3Service {
@@ -35,6 +36,9 @@ export class S3Service {
   }
 
   async getS3UploadUrl(): Promise<{ url: string }> {
+    // build time stamp as part of the image name, format: YYYY-MM-DD-HH-MM-SS
+    // e.g. the current date and time is February 21, 2025, 10:30:45 AM,
+    // the timestamp would be: 2025-02-21-10-30-45
     const timestamp = new Date()
       .toLocaleString("en-US", {
         year: "numeric",
@@ -54,8 +58,15 @@ export class S3Service {
       Key: imageName,
     });
 
-    const uploadURL = await getSignedUrl(this.s3, command, { expiresIn: 60 });
-    return { url: uploadURL };
+    try {
+      const uploadURL = await getSignedUrl(this.s3, command, { expiresIn: 60 });
+      return { url: uploadURL };
+    } catch (error: unknown) {
+      throw new RecnetError(
+        ErrorCode.AWS_S3_GET_SIGNED_URL_ERROR,
+        HttpStatus.INTERNAL_SERVER_ERROR
+      );
+    }
   }
 
   async deleteS3Object(fileUrl: string): Promise<void> {
@@ -71,9 +82,10 @@ export class S3Service {
     try {
       await this.s3.send(command);
     } catch (error: unknown) {
-      const errorMessage =
-        error instanceof Error ? error.message : "Unknown error";
-      throw new Error(`Failed to delete S3 object: ${errorMessage}`);
+      throw new RecnetError(
+        ErrorCode.AWS_S3_DELETE_OBJECT_ERROR,
+        HttpStatus.INTERNAL_SERVER_ERROR
+      );
     }
   }
 }

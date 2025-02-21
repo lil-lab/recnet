@@ -128,6 +128,7 @@ export function ProfileEditForm() {
       return formData;
     } catch (error) {
       console.error("Error uploading file:", error);
+      toast.error("Error uploading file. Please try again.");
     } finally {
       setIsUploading(false);
     }
