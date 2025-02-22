@@ -69,6 +69,8 @@ const ProfileEditSchema = z.object({
   openReviewUserName: z.string().nullable(),
 });
 
+const MAX_FILE_SIZE = 3 * 1024 * 1024; // 3MB in bytes
+
 export function ProfileEditForm() {
   const utils = trpc.useUtils();
   const router = useRouter();
@@ -102,6 +104,7 @@ export function ProfileEditForm() {
   const [photoPreviewUrl, setPhotoPreviewUrl] = React.useState<string | null>(
     null
   );
+  const [fileError, setFileError] = React.useState<string | null>(null);
 
   const handleUploadS3 = async (formData: any) => {
     if (!selectedFile) return;
@@ -236,12 +239,20 @@ export function ProfileEditForm() {
             type="file"
             accept="image/*"
             onChange={async (e: React.ChangeEvent<HTMLInputElement>) => {
+              setFileError(null);
               if (!e.target.files || e.target.files.length === 0) {
                 setSelectedFile(null);
                 setPhotoPreviewUrl(null);
                 return;
               }
               const file = e.target.files[0];
+              if (file.size > MAX_FILE_SIZE) {
+                setFileError("File size must be less than 3MB");
+                setSelectedFile(null);
+                setPhotoPreviewUrl(null);
+                return;
+              }
+
               setSelectedFile(file);
               // Cleanup previous preview URL if it exists
               if (photoPreviewUrl) {
@@ -252,6 +263,11 @@ export function ProfileEditForm() {
               setPhotoPreviewUrl(objectUrl);
             }}
           />
+          {fileError && (
+            <Text size="1" color="red">
+              {fileError}
+            </Text>
+          )}
           {formState.errors?.photoUrl ? (
             <Text size="1" color="red">
               {formState.errors.photoUrl.message}
@@ -265,7 +281,7 @@ export function ProfileEditForm() {
               height={100}
               style={{
                 objectFit: "cover",
-                borderRadius: "50px",
+                borderRadius: "50%",
                 marginTop: "12px",
               }}
             />
@@ -401,7 +417,7 @@ export function ProfileEditForm() {
             "bg-gray-5": !formState.isValid,
           })}
           type="submit"
-          disabled={!formState.isValid}
+          disabled={!formState.isValid || isUploading}
         >
           {isUploading ? "Uploading photo..." : "Save"}
         </Button>
