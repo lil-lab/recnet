@@ -177,7 +177,7 @@ export const userRouter = router({
         opts.input.photoUrl &&
         originalPhotoUrl !== opts.input.photoUrl
       ) {
-        await recnetApi.delete("/s3url", {
+        await recnetApi.delete("/photo-storage/photo", {
           params: {
             fileUrl: originalPhotoUrl,
           },
@@ -206,11 +206,11 @@ export const userRouter = router({
         },
       });
     }),
-  getS3UploadUrl: checkRecnetJWTProcedure
+  generateUploadUrl: checkRecnetJWTProcedure
     .output(z.object({ url: z.string() }))
     .mutation(async (opts) => {
       const { recnetApi } = opts.ctx;
-      const { data } = await recnetApi.get("/s3url");
+      const { data } = await recnetApi.post("/photo-storage/upload-url");
       return {
         url: data.url,
       };

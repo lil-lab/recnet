@@ -96,7 +96,7 @@ export function ProfileEditForm() {
   const { isDirty } = useFormState({ control: control });
 
   const updateProfileMutation = trpc.updateUser.useMutation();
-  const getUploadUrlMutation = trpc.getS3UploadUrl.useMutation();
+  const generateUploadUrlMutation = trpc.generateUploadUrl.useMutation();
   const [isUploading, setIsUploading] = React.useState(false);
   const [selectedFile, setSelectedFile] = React.useState<File | null>(null);
   const [photoPreviewUrl, setPhotoPreviewUrl] = React.useState<string | null>(
@@ -107,7 +107,7 @@ export function ProfileEditForm() {
     if (!selectedFile) return;
     try {
       setIsUploading(true);
-      const uploadUrl = await getUploadUrlMutation.mutateAsync();
+      const uploadUrl = await generateUploadUrlMutation.mutateAsync();
       if (!uploadUrl?.url) {
         throw new Error("Error getting S3 upload URL");
       }

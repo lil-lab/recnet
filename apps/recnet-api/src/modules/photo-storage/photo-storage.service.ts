@@ -11,7 +11,7 @@ import { RecnetError } from "@recnet-api/utils/error/recnet.error";
 import { ErrorCode } from "@recnet-api/utils/error/recnet.error.const";
 
 @Injectable()
-export class S3Service {
+export class PhotoStorageService {
   private readonly s3: S3Client;
 
   constructor(
@@ -27,7 +27,7 @@ export class S3Service {
     });
   }
 
-  async getS3UploadUrl(): Promise<{ url: string }> {
+  async generateS3UploadUrl(): Promise<{ url: string }> {
     // build time stamp as part of the image name, format: YYYY-MM-DD-HH-MM-SS
     // e.g. the current date and time is February 21, 2025, 10:30:45 AM,
     // the timestamp would be: 2025-02-21-10-30-45
