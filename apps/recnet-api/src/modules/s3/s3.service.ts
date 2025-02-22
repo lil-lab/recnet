@@ -12,25 +12,17 @@ import { ErrorCode } from "@recnet-api/utils/error/recnet.error.const";
 
 @Injectable()
 export class S3Service {
-  private readonly s3Region: string;
-  private readonly s3BucketName: string;
-  private readonly accessKeyId: string;
-  private readonly secretAccessKey: string;
   private readonly s3: S3Client;
 
   constructor(
     @Inject(S3Config.KEY)
     private readonly s3Config: ConfigType<typeof S3Config>
   ) {
-    this.s3Region = this.s3Config.s3Region;
-    this.s3BucketName = this.s3Config.bucketName;
-    this.accessKeyId = this.s3Config.accessKeyId;
-    this.secretAccessKey = this.s3Config.secretAccessKey;
     this.s3 = new S3Client({
-      region: this.s3Region,
+      region: this.s3Config.s3Region,
       credentials: {
-        accessKeyId: this.accessKeyId,
-        secretAccessKey: this.secretAccessKey,
+        accessKeyId: this.s3Config.accessKeyId,
+        secretAccessKey: this.s3Config.secretAccessKey,
       },
     });
   }
@@ -54,7 +46,7 @@ export class S3Service {
     const imageName = `${timestamp}-${uuidv4()}`;
 
     const command = new PutObjectCommand({
-      Bucket: this.s3BucketName,
+      Bucket: this.s3Config.bucketName,
       Key: imageName,
     });
 
@@ -75,7 +67,7 @@ export class S3Service {
     const key = urlParts[urlParts.length - 1];
 
     const command = new DeleteObjectCommand({
-      Bucket: this.s3BucketName,
+      Bucket: this.s3Config.bucketName,
       Key: key,
     });
 
