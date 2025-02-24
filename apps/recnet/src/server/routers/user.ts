@@ -19,7 +19,6 @@ import {
   getStatsResponseSchema,
   patchUserMeActivateRequestSchema,
   patchUserMeActivateResponseSchema,
-  userSchema,
 } from "@recnet/recnet-api-model";
 
 import {
@@ -157,34 +156,10 @@ export const userRouter = router({
     .output(patchUserMeResponseSchema)
     .mutation(async (opts) => {
       const { recnetApi } = opts.ctx;
-      // Fetch original user data before updating
-      const { data: originalData } = await recnetApi.get("/users/me");
-      const originalUser = userSchema.parse(originalData.user);
-      const originalPhotoUrl = originalUser.photoUrl;
-
-      // Update user data
       const { data } = await recnetApi.patch("/users/me", {
         ...opts.input,
       });
-      const updatedData = patchUserMeResponseSchema.parse(data);
-
-      // Only delete the original photo if:
-      // 1. There was an original photo
-      // 2. A new photo is being set
-      // 3. The new photo is different from the original
-      if (
-        originalPhotoUrl &&
-        opts.input.photoUrl &&
-        originalPhotoUrl !== opts.input.photoUrl
-      ) {
-        await recnetApi.delete("/photo-storage/photo", {
-          params: {
-            fileUrl: originalPhotoUrl,
-          },
-        });
-      }
-
-      return updatedData;
+      return patchUserMeResponseSchema.parse(data);
     }),
   follow: checkRecnetJWTProcedure
     .input(postUserFollowRequestSchema)
@@ -205,15 +180,6 @@ export const userRouter = router({
           userId,
         },
       });
-    }),
-  generateUploadUrl: checkRecnetJWTProcedure
-    .output(z.object({ url: z.string() }))
-    .mutation(async (opts) => {
-      const { recnetApi } = opts.ctx;
-      const { data } = await recnetApi.post("/photo-storage/upload-url");
-      return {
-        url: data.url,
-      };
     }),
   deactivate: checkRecnetJWTProcedure
     .output(patchUserMeActivateResponseSchema)

@@ -23,8 +23,6 @@ export const ErrorCode = {
   EMAIL_SEND_ERROR: 3000,
   FETCH_DIGITAL_LIBRARY_ERROR: 3001,
   SLACK_ERROR: 3002,
-  AWS_S3_GET_SIGNED_URL_ERROR: 3003,
-  AWS_S3_DELETE_OBJECT_ERROR: 3004,
 };
 
 export const errorMessages = {
@@ -51,6 +49,4 @@ export const errorMessages = {
   [ErrorCode.FETCH_DIGITAL_LIBRARY_ERROR]: "Fetch digital library error",
   [ErrorCode.SLACK_ERROR]: "Slack error",
   [ErrorCode.SLACK_ALREADY_INSTALLED]: "Slack already installed",
-  [ErrorCode.AWS_S3_GET_SIGNED_URL_ERROR]: "Failed to get AWS S3 signed URL",
-  [ErrorCode.AWS_S3_DELETE_OBJECT_ERROR]: "AWS S3 delete object error",
 };
