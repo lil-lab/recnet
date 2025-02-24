@@ -30,6 +30,11 @@ export const EnvSchema = z.object({
   SLACK_TOKEN_ENCRYPTION_KEY: z
     .string()
     .transform((val) => Buffer.from(val, "base64")),
+  // AWS S3 config
+  AWS_BUCKET_NAME: z.string(),
+  AWS_ACCESS_KEY_ID: z.string(),
+  AWS_SECRET_ACCESS_KEY: z.string(),
+  AWS_BUCKET_REGION: z.string(),
 });
 
 export const parseEnv = (env: Record<string, string | undefined>) => {
