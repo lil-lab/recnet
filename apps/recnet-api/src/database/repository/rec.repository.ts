@@ -173,7 +173,7 @@ export default class RecRepository {
       where.cutoff = filter.cutoff;
     } else if (filter.cutoff) {
       where.cutoff = {
-        gte: filter.cutoff.from,
+        gt: filter.cutoff.from,
         lte: filter.cutoff.to,
       };
     }

@@ -1,4 +1,10 @@
-import { Controller, UseFilters, Get } from "@nestjs/common";
+import {
+  Controller,
+  UseFilters,
+  Get,
+  Query,
+  ParseIntPipe,
+} from "@nestjs/common";
 import {
   ApiOkResponse,
   ApiOperation,
@@ -9,7 +15,7 @@ import {
 import { Auth } from "@recnet-api/utils/auth/auth.decorator";
 import { RecnetExceptionFilter } from "@recnet-api/utils/filters/recnet.exception.filter";
 
-import { QueryStatResponse } from "./stat.response";
+import { QueryStatResponse, GetStatsRecsResponse } from "./stat.response";
 import { StatService } from "./stat.service";
 
 @ApiTags("stats")
@@ -28,5 +34,19 @@ export class StatController {
   @Auth({ allowedRoles: ["ADMIN"] })
   public async getStats(): Promise<QueryStatResponse> {
     return this.statService.getStats();
+  }
+
+  @ApiOperation({
+    summary: "Get Recs Stats",
+    description: "Get all recs within a week before the cutoff date",
+  })
+  @ApiOkResponse({ type: GetStatsRecsResponse })
+  @ApiBearerAuth()
+  @Get("recs")
+  @Auth({ allowedRoles: ["ADMIN"] })
+  public async getStatsRecs(
+    @Query("cutoff", ParseIntPipe) cutoff: number
+  ): Promise<GetStatsRecsResponse> {
+    return this.statService.getStatsRecs(cutoff);
   }
 }

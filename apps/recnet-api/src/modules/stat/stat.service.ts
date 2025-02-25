@@ -1,11 +1,14 @@
 import { Inject, Injectable } from "@nestjs/common";
 
 import RecRepository from "@recnet-api/database/repository/rec.repository";
+import { RecFilterBy } from "@recnet-api/database/repository/rec.repository.type";
 import UserRepository from "@recnet-api/database/repository/user.repository";
 
 import { getNextCutOff } from "@recnet/recnet-date-fns";
 
-import { QueryStatResponse } from "./stat.response";
+import { QueryStatResponse, GetStatsRecsResponse } from "./stat.response";
+
+import { transformRec } from "../rec/rec.transformer";
 
 @Injectable()
 export class StatService {
@@ -37,5 +40,20 @@ export class StatService {
         };
       }, {}),
     };
+  }
+
+  public async getStatsRecs(cutoff: number): Promise<GetStatsRecsResponse> {
+    const endDate = new Date(cutoff);
+    const startDate = new Date(cutoff);
+    startDate.setDate(startDate.getDate() - 7);
+
+    const filter: RecFilterBy = {
+      cutoff: { from: startDate, to: endDate },
+    };
+
+    const dbRecs = await this.recRepository.findRecs(1, 1000, filter);
+    const recs = dbRecs.map((dbRec) => transformRec(dbRec, null));
+
+    return { recs };
   }
 }
