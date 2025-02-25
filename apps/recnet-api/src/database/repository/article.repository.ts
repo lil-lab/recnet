@@ -20,11 +20,31 @@ export default class ArticleRepository {
     });
   }
 
+  public async findArticleById(id: string): Promise<Article | null> {
+    return this.prisma.article.findFirst({
+      where: {
+        id: id,
+      },
+      select: article.select,
+    });
+  }
+
   public async createArticle(
     articleData: CreateArticleInput
   ): Promise<Article> {
     return this.prisma.article.create({
       data: articleData,
+      select: article.select,
+    });
+  }
+
+  public async updateArticle(
+    articleId: string,
+    data: Partial<CreateArticleInput>
+  ): Promise<Article> {
+    return this.prisma.article.update({
+      where: { id: articleId },
+      data,
       select: article.select,
     });
   }

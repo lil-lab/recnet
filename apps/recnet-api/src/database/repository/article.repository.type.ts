@@ -19,6 +19,6 @@ export type CreateArticleInput = Omit<
   Article,
   "id" | "isVerified" | "abstract"
 > & {
-  abstract?: string;
+  abstract?: string | null;
   isVerified?: boolean;
 };

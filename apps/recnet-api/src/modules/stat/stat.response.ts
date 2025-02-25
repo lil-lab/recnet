@@ -1,5 +1,7 @@
 import { ApiProperty } from "@nestjs/swagger";
 
+import { Rec } from "../rec/entities/rec.entity";
+
 export class QueryStatResponse {
   @ApiProperty()
   numUsers: number;
@@ -12,4 +14,9 @@ export class QueryStatResponse {
 
   @ApiProperty()
   numRecsOverTime: Record<string, number>;
+}
+
+export class GetStatsRecsResponse {
+  @ApiProperty({ type: [Rec] })
+  recs: Rec[];
 }

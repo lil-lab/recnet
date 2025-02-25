@@ -53,7 +53,7 @@ const RecsBarChart = withSuspense(
     const { recCountByCycle } = await serverClient.getRecCountByCycle();
     const minTs = Math.min(...Object.keys(recCountByCycle).map(Number));
     const maxTs = Math.max(...Object.keys(recCountByCycle).map(Number));
-    // fill in missing dates, increment by 1 week
+    // fill in missing dates
     for (let i = minTs; i <= maxTs; i += 604800000) {
       if (!recCountByCycle[i]) {
         recCountByCycle[i] = 0;
@@ -61,15 +61,17 @@ const RecsBarChart = withSuspense(
     }
 
     return (
-      <StatBox
-        title="Number of Recs by Cutoff Date"
-        icon={<Pencil1Icon />}
-        className="h-[300px] w-[100%] md:w-[55%] overflow-x-auto whitespace-nowrap overflow-y-hidden"
-      >
-        <div className="min-w-[400px] h-full">
-          <RecsCycleBarChart data={recCountByCycle} />
-        </div>
-      </StatBox>
+      <div className="flex flex-col md:flex-row gap-4">
+        <StatBox
+          title="Number of Recs by Cutoff Date"
+          icon={<Pencil1Icon />}
+          className="min-h-[300px] w-[100%] md:w-[85%] overflow-x-auto whitespace-nowrap"
+        >
+          <div className="min-w-[400px] h-full">
+            <RecsCycleBarChart data={recCountByCycle} />
+          </div>
+        </StatBox>
+      </div>
     );
   },
   <StatBoxSkeleton />
