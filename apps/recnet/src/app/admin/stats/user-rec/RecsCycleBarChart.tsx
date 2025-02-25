@@ -27,20 +27,6 @@ interface TooltipData {
   count: number;
 }
 
-interface PeriodStats {
-  recommendations: {
-    userId: string;
-    userName: string;
-    userHandle: string;
-    recId: string;
-    recTitle: string;
-    recLink: string;
-    timestamp: number;
-  }[];
-  periodStart: number;
-  periodEnd: number;
-}
-
 const themeColor = "#2A78D0";
 const tooltipStyles = {
   ...defaultStyles,
@@ -53,7 +39,14 @@ let tooltipTimeout: number;
 function BarChart(props: RecsCycleBarChartProps) {
   const { parentWidth, parentHeight, data } = props;
   const [selectedBar, setSelectedBar] = useState<TooltipData | null>(null);
-  const [periodStats, setPeriodStats] = useState<PeriodStats | null>(null);
+
+  const { data: statsData } = trpc.getStatsRecs.useQuery(
+    { cutoff: selectedBar?.ts ?? 0 },
+    {
+      enabled: !!selectedBar,
+    }
+  );
+
   const {
     tooltipOpen,
     tooltipLeft,
@@ -62,7 +55,6 @@ function BarChart(props: RecsCycleBarChartProps) {
     hideTooltip,
     showTooltip,
   } = useTooltip<TooltipData>();
-  const { mutateAsync: getPeriodStats } = trpc.getPeriodStats.useMutation();
 
   const { containerRef, TooltipInPortal } = useTooltipInPortal({
     // TooltipInPortal is rendered in a separate child of <body /> and positioned
@@ -121,21 +113,12 @@ function BarChart(props: RecsCycleBarChartProps) {
                     width={barWidth}
                     height={barHeight}
                     fill={selectedBar?.ts === d.ts ? "#0066CC" : "#0091FF"}
-                    onClick={async () => {
+                    onClick={() => {
                       setSelectedBar(
                         selectedBar?.ts === d.ts
                           ? null
                           : { ts: d.ts, count: d.count }
                       );
-
-                      if (selectedBar?.ts !== d.ts) {
-                        try {
-                          const stats = await getPeriodStats(d.ts);
-                          setPeriodStats(stats);
-                        } catch (error) {
-                          console.error("Failed to fetch stats:", error);
-                        }
-                      }
                     }}
                     onMouseLeave={() => {
                       tooltipTimeout = window.setTimeout(() => {
@@ -195,10 +178,10 @@ function BarChart(props: RecsCycleBarChartProps) {
         )}
       </div>
 
-      {selectedBar && periodStats && (
+      {selectedBar && statsData && (
         <div className="p-4 bg-gray-1 dark:bg-gray-dark-1 shadow-sm">
           <Text className="text-[14px] text-blue-7 dark:text-blue-dark-7 py-1 font-medium">
-            {`${formatDate(new Date(periodStats.periodStart))} ~ ${formatDate(new Date(periodStats.periodEnd))}`}
+            {`${formatDate(new Date(selectedBar.ts - WeekTs))} ~ ${formatDate(new Date(selectedBar.ts))}`}
           </Text>
           <table className="w-full mt-2">
             <thead>
@@ -212,28 +195,28 @@ function BarChart(props: RecsCycleBarChartProps) {
               </tr>
             </thead>
             <tbody>
-              {periodStats.recommendations.map((item) => (
+              {statsData.recs.map((item) => (
                 <tr
-                  key={item.recId}
+                  key={item.id}
                   className="border-b border-gray-3 dark:border-gray-dark-3 hover:bg-gray-2 dark:hover:bg-gray-dark-2"
                 >
                   <td className="py-2 px-4 text-[14px]">
                     <a
-                      href={`/${item.userHandle}`}
+                      href={`/${item.user.handle}`}
                       className="text-blue-9 hover:text-blue-10 dark:text-blue-dark-9 dark:hover:text-blue-dark-10 hover:underline"
                     >
-                      {item.userName}
+                      {item.user.displayName}
                     </a>
                   </td>
                   <td className="py-2 px-4 text-[14px] max-w-[200px] sm:max-w-[250px] md:max-w-[300px] lg:max-w-[400px]">
                     <a
-                      href={item.recLink}
+                      href={item.article.link}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="text-blue-9 hover:text-blue-10 dark:text-blue-dark-9 dark:hover:text-blue-dark-10 hover:underline block truncate"
-                      title={item.recTitle}
+                      title={item.article.title}
                     >
-                      {item.recTitle}
+                      {item.article.title}
                     </a>
                   </td>
                 </tr>

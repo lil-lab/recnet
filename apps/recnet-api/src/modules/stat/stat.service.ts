@@ -1,12 +1,14 @@
 import { Inject, Injectable } from "@nestjs/common";
 
 import RecRepository from "@recnet-api/database/repository/rec.repository";
+import { RecFilterBy } from "@recnet-api/database/repository/rec.repository.type";
 import UserRepository from "@recnet-api/database/repository/user.repository";
 
-import { WeekTs } from "@recnet/recnet-date-fns";
 import { getNextCutOff } from "@recnet/recnet-date-fns";
 
-import { QueryStatResponse, QueryPeriodStatResponse } from "./stat.response";
+import { QueryStatResponse, GetStatsRecsResponse } from "./stat.response";
+
+import { transformRec } from "../rec/rec.transformer";
 
 @Injectable()
 export class StatService {
@@ -40,31 +42,18 @@ export class StatService {
     };
   }
 
-  public async getPeriodStats(
-    timestamp: number
-  ): Promise<QueryPeriodStatResponse> {
-    const periodStart = timestamp - WeekTs;
-    const periodEnd = timestamp;
+  public async getStatsRecs(cutoff: number): Promise<GetStatsRecsResponse> {
+    const endDate = new Date(cutoff);
+    const startDate = new Date(cutoff);
+    startDate.setDate(startDate.getDate() - 7);
 
-    const recs = await this.recRepository.findRecs(1, 100, {
-      cutoff: {
-        from: new Date(periodStart),
-        to: new Date(periodEnd),
-      },
-    });
-
-    return {
-      recommendations: recs.map((rec) => ({
-        userId: rec.user.id,
-        userName: rec.user.displayName,
-        userHandle: rec.user.handle,
-        recId: rec.id,
-        recTitle: rec.article.title,
-        recLink: rec.article.link,
-        timestamp: rec.cutoff.getTime(),
-      })),
-      periodStart,
-      periodEnd,
+    const filter: RecFilterBy = {
+      cutoff: { from: startDate, to: endDate },
     };
+
+    const dbRecs = await this.recRepository.findRecs(1, 1000, filter);
+    const recs = dbRecs.map((dbRec) => transformRec(dbRec, null));
+
+    return { recs };
   }
 }

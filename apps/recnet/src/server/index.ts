@@ -3,7 +3,7 @@ import { articleRouter } from "./routers/article";
 import { inviteCodeRouter } from "./routers/inviteCode";
 import { publicRouter } from "./routers/public";
 import { recRouter } from "./routers/rec";
-import { statsRouter } from "./routers/stats";
+import { statRouter } from "./routers/stat";
 import { subscriptionRouter } from "./routers/subscription";
 import { userRouter } from "./routers/user";
 import { mergeRouters } from "./trpc";
@@ -16,7 +16,7 @@ export const appRouter = mergeRouters(
   articleRouter,
   announcementRouter,
   subscriptionRouter,
-  statsRouter
+  statRouter
 );
 
 export type AppRouter = typeof appRouter;

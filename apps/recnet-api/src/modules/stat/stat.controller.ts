@@ -2,7 +2,7 @@ import {
   Controller,
   UseFilters,
   Get,
-  Param,
+  Query,
   ParseIntPipe,
 } from "@nestjs/common";
 import {
@@ -15,7 +15,7 @@ import {
 import { Auth } from "@recnet-api/utils/auth/auth.decorator";
 import { RecnetExceptionFilter } from "@recnet-api/utils/filters/recnet.exception.filter";
 
-import { QueryStatResponse, QueryPeriodStatResponse } from "./stat.response";
+import { QueryStatResponse, GetStatsRecsResponse } from "./stat.response";
 import { StatService } from "./stat.service";
 
 @ApiTags("stats")
@@ -37,16 +37,16 @@ export class StatController {
   }
 
   @ApiOperation({
-    summary: "Get Period Stats",
-    description: "Get detailed recommendations for a specific time period",
+    summary: "Get Recs Stats",
+    description: "Get all recs within a week before the cutoff date",
   })
-  @ApiOkResponse({ type: QueryPeriodStatResponse })
+  @ApiOkResponse({ type: GetStatsRecsResponse })
   @ApiBearerAuth()
-  @Get("period/:timestamp")
+  @Get("recs")
   @Auth({ allowedRoles: ["ADMIN"] })
-  public async getPeriodStats(
-    @Param("timestamp", ParseIntPipe) timestamp: number
-  ): Promise<QueryPeriodStatResponse> {
-    return this.statService.getPeriodStats(timestamp);
+  public async getStatsRecs(
+    @Query("cutoff", ParseIntPipe) cutoff: number
+  ): Promise<GetStatsRecsResponse> {
+    return this.statService.getStatsRecs(cutoff);
   }
 }

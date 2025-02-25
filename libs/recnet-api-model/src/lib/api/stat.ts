@@ -1,15 +1,6 @@
 import { z } from "zod";
 
-// Define the recommendation detail schema
-export const recDetailSchema = z.object({
-  userId: z.string(),
-  userName: z.string(),
-  userHandle: z.string(),
-  recId: z.string(),
-  recTitle: z.string(),
-  recLink: z.string(),
-  timestamp: z.number(),
-});
+import { recSchema } from "../model";
 
 // GET /stats
 export const getStatsResponseSchema = z.object({
@@ -20,12 +11,16 @@ export const getStatsResponseSchema = z.object({
 });
 export type GetStatsResponse = z.infer<typeof getStatsResponseSchema>;
 
-// GET /stats/period/:timestamp
-export const getStatsPeriodResponseSchema = z.object({
-  recommendations: z.array(recDetailSchema),
-  periodStart: z.number(),
-  periodEnd: z.number(),
+// GET /stats/recs
+export const getStatsRecsParamsSchema = z.object({
+  cutoff: z.union([
+    z.string().transform((val) => parseInt(val, 10)),
+    z.number(),
+  ]),
 });
-export type GetStatsPeriodResponse = z.infer<
-  typeof getStatsPeriodResponseSchema
->;
+export type GetStatsRecsParams = z.infer<typeof getStatsRecsParamsSchema>;
+
+export const getStatsRecsResponseSchema = z.object({
+  recs: z.array(recSchema),
+});
+export type GetStatsRecsResponse = z.infer<typeof getStatsRecsResponseSchema>;
