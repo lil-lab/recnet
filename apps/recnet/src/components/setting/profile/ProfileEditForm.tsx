@@ -283,6 +283,8 @@ export function ProfileEditForm() {
                 objectFit: "cover",
                 borderRadius: "50%",
                 marginTop: "12px",
+                width: "100px",
+                height: "100px",
               }}
             />
           )}
