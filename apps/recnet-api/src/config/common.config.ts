@@ -38,10 +38,3 @@ export const SlackConfig = registerAs("slack", () => ({
   clientSecret: parsedEnv.SLACK_CLIENT_SECRET,
   tokenEncryptionKey: parsedEnv.SLACK_TOKEN_ENCRYPTION_KEY,
 }));
-
-export const S3Config = registerAs("s3", () => ({
-  bucketName: parsedEnv.AWS_BUCKET_NAME,
-  accessKeyId: parsedEnv.AWS_ACCESS_KEY_ID,
-  secretAccessKey: parsedEnv.AWS_SECRET_ACCESS_KEY,
-  s3Region: parsedEnv.AWS_BUCKET_REGION,
-}));
