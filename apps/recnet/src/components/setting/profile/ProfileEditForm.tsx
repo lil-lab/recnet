@@ -10,7 +10,9 @@ import {
   TextArea,
 } from "@radix-ui/themes";
 import { TRPCClientError } from "@trpc/client";
+import Image from "next/image";
 import { useRouter, usePathname } from "next/navigation";
+import React from "react";
 import { useForm, useFormState } from "react-hook-form";
 import { toast } from "sonner";
 import * as z from "zod";
@@ -61,10 +63,13 @@ const ProfileEditSchema = z.object({
     .max(200, "Bio must contain at most 200 character(s)")
     .nullable(),
   url: z.string().url().nullable(),
+  photoUrl: z.string().url(),
   googleScholarLink: z.string().url().nullable(),
   semanticScholarLink: z.string().url().nullable(),
   openReviewUserName: z.string().nullable(),
 });
+
+const MAX_FILE_SIZE = 3 * 1024 * 1024; // 3MB in bytes
 
 export function ProfileEditForm() {
   const utils = trpc.useUtils();
@@ -83,6 +88,7 @@ export function ProfileEditForm() {
         affiliation: user?.affiliation ?? null,
         bio: user?.bio ?? null,
         url: user?.url ?? null,
+        photoUrl: user?.photoUrl ?? null,
         googleScholarLink: user?.googleScholarLink ?? null,
         semanticScholarLink: user?.semanticScholarLink ?? null,
         openReviewUserName: user?.openReviewUserName ?? null,
@@ -92,6 +98,44 @@ export function ProfileEditForm() {
   const { isDirty } = useFormState({ control: control });
 
   const updateProfileMutation = trpc.updateUser.useMutation();
+  const generateUploadUrlMutation = trpc.generateUploadUrl.useMutation();
+  const [isUploading, setIsUploading] = React.useState(false);
+  const [selectedFile, setSelectedFile] = React.useState<File | null>(null);
+  const [photoPreviewUrl, setPhotoPreviewUrl] = React.useState<string | null>(
+    null
+  );
+  const [fileError, setFileError] = React.useState<string | null>(null);
+
+  const handleUploadS3 = async (formData: any) => {
+    if (!selectedFile) return;
+    try {
+      setIsUploading(true);
+      const uploadUrl = await generateUploadUrlMutation.mutateAsync();
+      if (!uploadUrl?.url) {
+        throw new Error("Error getting S3 upload URL");
+      }
+      const response = await fetch(uploadUrl.url, {
+        method: "PUT",
+        body: selectedFile,
+        headers: {
+          "Content-Type": selectedFile.type,
+        },
+      });
+      if (!response.ok) {
+        throw new Error("Upload failed");
+      }
+      // The URL where the file will be accessible
+      const fileUrl = uploadUrl.url.split("?")[0];
+      // update form data directly because the form data is already passed to the handleSubmit function
+      formData.photoUrl = fileUrl;
+      return formData;
+    } catch (error) {
+      console.error("Error uploading file:", error);
+      toast.error("Error uploading file. Please try again.");
+    } finally {
+      setIsUploading(false);
+    }
+  };
 
   return (
     <form
@@ -104,8 +148,12 @@ export function ProfileEditForm() {
           console.error("Invalid form data.");
           return;
         }
+        // Handle the file upload if there's a selected file
+        if (selectedFile) {
+          res.data = await handleUploadS3(res.data);
+        }
         // if no changes, close dialog
-        if (!isDirty) {
+        if (!isDirty && !selectedFile) {
           setOpen(false);
           return;
         }
@@ -371,9 +419,9 @@ export function ProfileEditForm() {
             "bg-gray-5": !formState.isValid,
           })}
           type="submit"
-          disabled={!formState.isValid}
+          disabled={!formState.isValid || isUploading}
         >
-          Save
+          {isUploading ? "Uploading photo..." : "Save"}
         </Button>
       </Flex>
     </form>
