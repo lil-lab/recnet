@@ -67,3 +67,6 @@ apps/**/pnpm-lock.yaml
 
 # nx migration files
 migrations.json
+
+# IDE
+.cursor/*

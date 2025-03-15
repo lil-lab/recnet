@@ -4,7 +4,7 @@ import { ScheduleModule } from "@nestjs/schedule";
 
 import * as CommonConfigs from "./config/common.config";
 import { parseEnv } from "./config/env.schema";
-import { ActivitiesModule } from "./modules/activities/activities.module";
+import { ActivityModule } from "./modules/activity/activity.module";
 import { AnnouncementModule } from "./modules/announcement/announcement.module";
 import { ArticleModule } from "./modules/article/article.module";
 import { EmailModule } from "./modules/email/email.module";
@@ -35,7 +35,7 @@ import { LoggerMiddleware } from "./utils/middlewares/logger.middleware";
     AnnouncementModule,
     SubscriptionModule,
     PhotoStorageModule,
-    ActivitiesModule,
+    ActivityModule,
   ],
   controllers: [],
   providers: [],
