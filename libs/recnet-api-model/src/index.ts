@@ -6,4 +6,5 @@ export * from "./lib/api/rec";
 export * from "./lib/api/stat";
 export * from "./lib/api/user";
 export * from "./lib/model";
+export * from "./lib/api/activity";
 export { generateMock } from "@anatine/zod-mock";

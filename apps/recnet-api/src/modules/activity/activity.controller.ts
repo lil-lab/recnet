@@ -15,8 +15,8 @@ import {
 } from "@nestjs/swagger";
 
 import { Auth } from "@recnet-api/utils/auth/auth.decorator";
-import { AuthUser, AuthOptionalUser } from "@recnet-api/utils/auth/auth.type";
-import { User, UserOptional } from "@recnet-api/utils/auth/auth.user.decorator";
+import { AuthUser } from "@recnet-api/utils/auth/auth.type";
+import { User } from "@recnet-api/utils/auth/auth.user.decorator";
 import { RecnetExceptionFilter } from "@recnet-api/utils/filters/recnet.exception.filter";
 import {
   ZodValidationBodyPipe,
@@ -30,9 +30,10 @@ import {
   getRecsParamsSchema,
 } from "@recnet/recnet-api-model";
 
-import { GetActivitiesResponse } from "./activity.response";
+import { GetActivitiesResponse, GetFeedsResponse } from "./activity.response";
 import { ActivityService } from "./activity.service";
 import { QueryActivitiesDto } from "./dto/query.activities.dto";
+import { QueryFeedsDto } from "./dto/query.feeds.dto";
 
 @ApiTags("activities")
 @Controller("activities")
@@ -66,5 +67,24 @@ export class ActivityController {
       to,
       authUserId
     );
+  }
+
+  @ApiOperation({
+    summary: "Get feeds",
+    description: "Get feeds by userId with pagination.",
+  })
+  @ApiOkResponse({ type: GetFeedsResponse })
+  @ApiBearerAuth()
+  @Get("feeds")
+  @Auth()
+  @UsePipes(new ZodValidationQueryPipe(getRecsFeedsParamsSchema))
+  public async getFeeds(
+    @Query() dto: QueryFeedsDto,
+    @User() authUser: AuthUser
+  ): Promise<GetFeedsResponse> {
+    const { page, pageSize, ...rest } = dto;
+    const cutoff = rest?.cutoff ?? getLatestCutOff().getTime();
+    const { userId } = authUser;
+    return this.activityService.getFeeds(page, pageSize, cutoff, userId);
   }
 }

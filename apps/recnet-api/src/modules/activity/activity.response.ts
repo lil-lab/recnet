@@ -17,3 +17,11 @@ export class GetReactionsResponse {
   @ApiProperty({ type: [Reaction] })
   reactions: Reaction[];
 }
+
+export class GetFeedsResponse {
+  @ApiProperty()
+  hasNext: boolean;
+
+  @ApiProperty({ type: [Activity] })
+  activities: Activity[];
+}

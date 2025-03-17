@@ -17,7 +17,7 @@ export class QueryActivitiesDto {
   pageSize: number;
 
   @ApiProperty({
-    description: "The user's id",
+    description: "The id of the user whose activities are being retrieved.",
   })
   userId: string;
 }
