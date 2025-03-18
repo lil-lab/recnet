@@ -1,12 +1,4 @@
-import {
-  Body,
-  Controller,
-  Get,
-  Query,
-  UseFilters,
-  UsePipes,
-  Param,
-} from "@nestjs/common";
+import { Controller, Get, Query, UseFilters, UsePipes } from "@nestjs/common";
 import {
   ApiBearerAuth,
   ApiOkResponse,
@@ -18,10 +10,7 @@ import { Auth } from "@recnet-api/utils/auth/auth.decorator";
 import { AuthUser } from "@recnet-api/utils/auth/auth.type";
 import { User } from "@recnet-api/utils/auth/auth.user.decorator";
 import { RecnetExceptionFilter } from "@recnet-api/utils/filters/recnet.exception.filter";
-import {
-  ZodValidationBodyPipe,
-  ZodValidationQueryPipe,
-} from "@recnet-api/utils/pipes/zod.validation.pipe";
+import { ZodValidationQueryPipe } from "@recnet-api/utils/pipes/zod.validation.pipe";
 
 import { getLatestCutOff } from "@recnet/recnet-date-fns";
 

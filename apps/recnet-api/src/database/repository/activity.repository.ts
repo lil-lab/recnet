@@ -21,39 +21,50 @@ export default class ActivityRepository {
     pageSize: number,
     filter: ActivityFilterBy
   ): Promise<Activity[]> {
-    // Get recommendations
-    const recs = await this.prisma.recommendation.findMany({
-      where: this.transformRecFilterByToPrismaWhere(filter),
-      select: rec.select,
-    });
-    // consider setting an upper bound for the number of records to get.
-    // e.g: currently on page 5, page_size: 10, consider max return size of 4 pages: 40 records.
-    // Get reactions
-    const reactions = await this.prisma.recReaction.findMany({
-      where: this.transformReactionFilterByToPrismaWhere(filter),
-      select: reaction.select,
-    });
-
-    // Combine and transform results
-    const activities: Activity[] = [
-      ...recs.map((rec) => ({
-        type: "rec" as const,
-        timestamp: rec.cutoff,
-        data: rec,
-      })),
-      ...reactions.map((reaction) => ({
-        type: "reaction" as const,
-        timestamp: reaction.createdAt,
-        data: reaction,
-      })),
-    ];
-
-    // Sort by timestamp in descending order
-    activities.sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime());
-
-    // Apply pagination
     const offset = getOffset(page, pageSize);
-    return activities.slice(offset, offset + pageSize);
+
+    // Create a raw SQL query that unions recommendations and reactions
+    const result = await this.prisma.$queryRaw<
+      Array<(Rec | Reaction) & { type: "rec" | "reaction"; timestamp: Date }>
+    >`
+      (
+        SELECT 
+          'rec'::text as type,
+          r.cutoff as timestamp,
+          r.id,
+          r.description,
+          r.isSelfRec,
+          r.cutoff,
+          r.user,
+          r.article,
+          r.reactions
+        FROM "Recommendation" r
+        WHERE ${this.buildRecWhereClause(filter)}
+      )
+      UNION ALL
+      (
+        SELECT 
+          'reaction'::text as type,
+          rr.createdAt as timestamp,
+          rr.id,
+          rr.userId,
+          rr.reaction,
+          rr.createdAt,
+          rr.recommendation
+        FROM "RecReaction" rr
+        WHERE ${this.buildReactionWhereClause(filter)}
+      )
+      ORDER BY timestamp DESC
+      LIMIT ${pageSize}
+      OFFSET ${offset}
+    `;
+
+    // Transform the results into the expected Activity format
+    return result.map((item) => ({
+      type: item.type as "rec" | "reaction",
+      timestamp: new Date(item.timestamp),
+      data: item,
+    }));
   }
 
   public async countActivities(filter: ActivityFilterBy = {}): Promise<number> {
@@ -102,14 +113,71 @@ export default class ActivityRepository {
     }
 
     if (filter.cutoff instanceof Date) {
-      where.createdAt = { lte: filter.cutoff }; // Fetch reactions created before cutoff date
+      // Calculate cutoff date for the previous cycle
+      const prevCutoff = new Date(
+        filter.cutoff.getTime() - 24 * 60 * 60 * 1000
+      );
+      // only get reactions created during this cycle for feeds
+      where.createdAt = {
+        gt: prevCutoff,
+        lte: filter.cutoff,
+      };
     } else if (filter.cutoff) {
       where.createdAt = {
-        gte: filter.cutoff.from,
+        gt: filter.cutoff.from,
         lte: filter.cutoff.to,
       };
     }
 
     return where;
+  }
+
+  private buildRecWhereClause(filter: ActivityFilterBy): Prisma.Sql {
+    const conditions: Prisma.Sql[] = [];
+
+    if (filter.userId) {
+      conditions.push(Prisma.sql`r.userId = ${filter.userId}`);
+    }
+    if (filter.userIds) {
+      conditions.push(Prisma.sql`r.userId = ANY(${filter.userIds})`);
+    }
+    if (filter.cutoff instanceof Date) {
+      conditions.push(Prisma.sql`r.cutoff = ${filter.cutoff}`);
+    } else if (filter.cutoff) {
+      conditions.push(
+        Prisma.sql`r.cutoff > ${filter.cutoff.from} AND r.cutoff <= ${filter.cutoff.to}`
+      );
+    }
+
+    return conditions.length > 0
+      ? Prisma.sql`${Prisma.join(conditions, " AND ")}`
+      : Prisma.sql`TRUE`;
+  }
+
+  private buildReactionWhereClause(filter: ActivityFilterBy): Prisma.Sql {
+    const conditions: Prisma.Sql[] = [];
+
+    if (filter.userId) {
+      conditions.push(Prisma.sql`rr.userId = ${filter.userId}`);
+    }
+    if (filter.userIds) {
+      conditions.push(Prisma.sql`rr.userId = ANY(${filter.userIds})`);
+    }
+    if (filter.cutoff instanceof Date) {
+      const prevCutoff = new Date(
+        filter.cutoff.getTime() - 24 * 60 * 60 * 1000
+      );
+      conditions.push(
+        Prisma.sql`rr.createdAt > ${prevCutoff} AND rr.createdAt <= ${filter.cutoff}`
+      );
+    } else if (filter.cutoff) {
+      conditions.push(
+        Prisma.sql`rr.createdAt > ${filter.cutoff.from} AND rr.createdAt <= ${filter.cutoff.to}`
+      );
+    }
+
+    return conditions.length > 0
+      ? Prisma.sql`${Prisma.join(conditions, " AND ")}`
+      : Prisma.sql`TRUE`;
   }
 }

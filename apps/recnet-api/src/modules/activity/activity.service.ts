@@ -59,7 +59,7 @@ export class ActivityService {
     // Set up filter for activities
     const filter: ActivityFilterBy = {
       userId: userId,
-      cutoff: { to },
+      cutoff: { to }, // use to date to get all historical records
     };
 
     // Get activities using the repository
