@@ -81,6 +81,22 @@ export const recSchema = z.object({
 });
 export type Rec = z.infer<typeof recSchema>;
 
+export const reactionSchema = z.object({
+  id: z.number(),
+  userId: z.string(),
+  reaction: reactionTypeSchema,
+  createdAt: dateSchema,
+  recommendation: recSchema,
+});
+export type Reaction = z.infer<typeof reactionSchema>;
+
+export const activitySchema = z.object({
+  type: z.enum(["rec", "reaction"]),
+  timestamp: dateSchema,
+  data: z.union([recSchema, reactionSchema]),
+});
+export type Activity = z.infer<typeof activitySchema>;
+
 export const inviteCodeSchema = z.object({
   id: z.number(),
   code: z.string(), // add further regex validation?

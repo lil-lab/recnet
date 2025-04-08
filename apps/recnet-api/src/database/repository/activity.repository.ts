@@ -5,12 +5,11 @@ import PrismaConnectionProvider from "@recnet-api/database/prisma/prisma.connect
 import {
   Activity,
   ActivityFilterBy,
-  reaction,
   Reaction,
 } from "@recnet-api/database/repository/activity.repository.type";
 import { getOffset } from "@recnet-api/utils";
 
-import { rec, Rec, RecFilterBy } from "./rec.repository.type";
+import { Rec, RecFilterBy } from "./rec.repository.type";
 
 @Injectable()
 export default class ActivityRepository {

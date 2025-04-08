@@ -2,7 +2,6 @@ import { HttpStatus, Inject, Injectable } from "@nestjs/common";
 
 import ActivityRepository from "@recnet-api/database/repository/activity.repository";
 import {
-  Activity,
   ActivityFilterBy,
   Reaction as DbReaction,
 } from "@recnet-api/database/repository/activity.repository.type";
