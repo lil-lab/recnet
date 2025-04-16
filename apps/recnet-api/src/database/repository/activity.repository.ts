@@ -29,14 +29,20 @@ export default class ActivityRepository {
       (
         SELECT 
           'rec'::text as type,
-          r.cutoff as timestamp,
-          r.id,
-          r.description,
-          r.isSelfRec,
-          r.cutoff,
-          r.user,
-          r.article,
-          r.reactions
+          r."cutoff" as timestamp,
+          r."id"::varchar,
+          r."description"::text,
+          r."isSelfRec"::boolean,
+          r."cutoff"::timestamp,
+          r."userId"::varchar,
+          r."articleId"::varchar,
+          (
+            SELECT json_agg(rr.*)
+            FROM "RecReaction" rr
+            WHERE rr."recId" = r."id"
+          ) as reactions,
+          NULL::text as "reaction",
+          NULL::json as "recommendation"
         FROM "Recommendation" r
         WHERE ${this.buildRecWhereClause(filter)}
       )
@@ -44,12 +50,20 @@ export default class ActivityRepository {
       (
         SELECT 
           'reaction'::text as type,
-          rr.createdAt as timestamp,
-          rr.id,
-          rr.userId,
-          rr.reaction,
-          rr.createdAt,
-          rr.recommendation
+          rr."createdAt" as timestamp,
+          rr."id"::text,
+          NULL::text as "description",
+          NULL::boolean as "isSelfRec",
+          NULL::timestamp as "cutoff",
+          rr."userId"::varchar,
+          NULL::varchar as "articleId",
+          NULL::json as reactions,
+          rr."reaction"::text,
+          (
+            SELECT row_to_json(rec.*)
+            FROM "Recommendation" rec
+            WHERE rec."id" = rr."recId"
+          ) as recommendation
         FROM "RecReaction" rr
         WHERE ${this.buildReactionWhereClause(filter)}
       )
@@ -135,16 +149,16 @@ export default class ActivityRepository {
     const conditions: Prisma.Sql[] = [];
 
     if (filter.userId) {
-      conditions.push(Prisma.sql`r.userId = ${filter.userId}`);
+      conditions.push(Prisma.sql`r."userId" = ${filter.userId}`);
     }
     if (filter.userIds) {
-      conditions.push(Prisma.sql`r.userId = ANY(${filter.userIds})`);
+      conditions.push(Prisma.sql`r."userId" = ANY(${filter.userIds})`);
     }
     if (filter.cutoff instanceof Date) {
-      conditions.push(Prisma.sql`r.cutoff = ${filter.cutoff}`);
+      conditions.push(Prisma.sql`r."cutoff" = ${filter.cutoff}`);
     } else if (filter.cutoff) {
       conditions.push(
-        Prisma.sql`r.cutoff > ${filter.cutoff.from} AND r.cutoff <= ${filter.cutoff.to}`
+        Prisma.sql`r."cutoff" > ${filter.cutoff.from} AND r."cutoff" <= ${filter.cutoff.to}`
       );
     }
 
@@ -157,21 +171,21 @@ export default class ActivityRepository {
     const conditions: Prisma.Sql[] = [];
 
     if (filter.userId) {
-      conditions.push(Prisma.sql`rr.userId = ${filter.userId}`);
+      conditions.push(Prisma.sql`rr."userId" = ${filter.userId}`);
     }
     if (filter.userIds) {
-      conditions.push(Prisma.sql`rr.userId = ANY(${filter.userIds})`);
+      conditions.push(Prisma.sql`rr."userId" = ANY(${filter.userIds})`);
     }
     if (filter.cutoff instanceof Date) {
       const prevCutoff = new Date(
         filter.cutoff.getTime() - 24 * 60 * 60 * 1000
       );
       conditions.push(
-        Prisma.sql`rr.createdAt > ${prevCutoff} AND rr.createdAt <= ${filter.cutoff}`
+        Prisma.sql`rr."createdAt" > ${prevCutoff} AND rr."createdAt" <= ${filter.cutoff}`
       );
     } else if (filter.cutoff) {
       conditions.push(
-        Prisma.sql`rr.createdAt > ${filter.cutoff.from} AND rr.createdAt <= ${filter.cutoff.to}`
+        Prisma.sql`rr."createdAt" > ${filter.cutoff.from} AND rr."createdAt" <= ${filter.cutoff.to}`
       );
     }
 
