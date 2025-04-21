@@ -5,11 +5,12 @@ import PrismaConnectionProvider from "@recnet-api/database/prisma/prisma.connect
 import {
   Activity,
   ActivityFilterBy,
+  reaction,
   Reaction,
 } from "@recnet-api/database/repository/activity.repository.type";
 import { getOffset } from "@recnet-api/utils";
 
-import { Rec, RecFilterBy } from "./rec.repository.type";
+import { rec, Rec, RecFilterBy } from "./rec.repository.type";
 
 @Injectable()
 export default class ActivityRepository {
@@ -20,65 +21,95 @@ export default class ActivityRepository {
     pageSize: number,
     filter: ActivityFilterBy
   ): Promise<Activity[]> {
-    const offset = getOffset(page, pageSize);
+    
+    const recs = await this.prisma.recommendation.findMany({
+      where: this.transformRecFilterByToPrismaWhere(filter),
+      select: rec.select,
+    });
 
+    const reactions = await this.prisma.recReaction.findMany({
+      where: this.transformReactionFilterByToPrismaWhere(filter),
+      select: reaction.select,
+    });
+
+    // Combine and transform results
+    const activities: Activity[] = [
+      ...recs.map((rec: Rec) => ({
+        type: "rec" as const,
+        timestamp: rec.cutoff,
+        data: rec,
+      })),
+      ...reactions.map((reaction: Reaction) => ({
+        type: "reaction" as const,
+        timestamp: reaction.createdAt,
+        data: reaction,
+      })),
+    ];
+
+    // Sort by timestamp in descending order
+    activities.sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime());
+
+    // Apply pagination
+    const offset = getOffset(page, pageSize);
+    return activities.slice(offset, offset + pageSize);
+  }
     // Create a raw SQL query that unions recommendations and reactions
-    const result = await this.prisma.$queryRaw<
-      Array<(Rec | Reaction) & { type: "rec" | "reaction"; timestamp: Date }>
-    >`
-      (
-        SELECT 
-          'rec'::text as type,
-          r."cutoff" as timestamp,
-          r."id"::varchar,
-          r."description"::text,
-          r."isSelfRec"::boolean,
-          r."cutoff"::timestamp,
-          r."userId"::varchar,
-          r."articleId"::varchar,
-          (
-            SELECT json_agg(rr.*)
-            FROM "RecReaction" rr
-            WHERE rr."recId" = r."id"
-          ) as reactions,
-          NULL::text as "reaction",
-          NULL::json as "recommendation"
-        FROM "Recommendation" r
-        WHERE ${this.buildRecWhereClause(filter)}
-      )
-      UNION ALL
-      (
-        SELECT 
-          'reaction'::text as type,
-          rr."createdAt" as timestamp,
-          rr."id"::text,
-          NULL::text as "description",
-          NULL::boolean as "isSelfRec",
-          NULL::timestamp as "cutoff",
-          rr."userId"::varchar,
-          NULL::varchar as "articleId",
-          NULL::json as reactions,
-          rr."reaction"::text,
-          (
-            SELECT row_to_json(rec.*)
-            FROM "Recommendation" rec
-            WHERE rec."id" = rr."recId"
-          ) as recommendation
-        FROM "RecReaction" rr
-        WHERE ${this.buildReactionWhereClause(filter)}
-      )
-      ORDER BY timestamp DESC
-      LIMIT ${pageSize}
-      OFFSET ${offset}
-    `;
+    // const result = await this.prisma.$queryRaw<
+    //   Array<(Rec | Reaction) & { type: "rec" | "reaction"; timestamp: Date }>
+    // >`
+    //   (
+    //     SELECT 
+    //       'rec'::text as type,
+    //       r."cutoff" as timestamp,
+    //       r."id"::varchar,
+    //       r."description"::text,
+    //       r."isSelfRec"::boolean,
+    //       r."cutoff"::timestamp,
+    //       r."userId"::varchar,
+    //       r."articleId"::varchar,
+    //       (
+    //         SELECT json_agg(rr.*)
+    //         FROM "RecReaction" rr
+    //         WHERE rr."recId" = r."id"
+    //       ) as reactions,
+    //       NULL::text as "reaction",
+    //       NULL::json as "recommendation"
+    //     FROM "Recommendation" r
+    //     WHERE ${this.buildRecWhereClause(filter)}
+    //   )
+    //   UNION ALL
+    //   (
+    //     SELECT 
+    //       'reaction'::text as type,
+    //       rr."createdAt" as timestamp,
+    //       rr."id"::text,
+    //       NULL::text as "description",
+    //       NULL::boolean as "isSelfRec",
+    //       NULL::timestamp as "cutoff",
+    //       rr."userId"::varchar,
+    //       NULL::varchar as "articleId",
+    //       NULL::json as reactions,
+    //       rr."reaction"::text,
+    //       (
+    //         SELECT row_to_json(rec.*)
+    //         FROM "Recommendation" rec
+    //         WHERE rec."id" = rr."recId"
+    //       ) as recommendation
+    //     FROM "RecReaction" rr
+    //     WHERE ${this.buildReactionWhereClause(filter)}
+    //   )
+    //   ORDER BY timestamp DESC
+    //   LIMIT ${pageSize}
+    //   OFFSET ${offset}
+    // `;
 
     // Transform the results into the expected Activity format
-    return result.map((item) => ({
-      type: item.type as "rec" | "reaction",
-      timestamp: new Date(item.timestamp),
-      data: item,
-    }));
-  }
+  //   return result.map((item) => ({
+  //     type: item.type as "rec" | "reaction",
+  //     timestamp: new Date(item.timestamp),
+  //     data: item,
+  //   }));
+  // }
 
   public async countActivities(filter: ActivityFilterBy = {}): Promise<number> {
     const recCount = await this.prisma.recommendation.count({
