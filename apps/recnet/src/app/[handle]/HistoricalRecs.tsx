@@ -4,6 +4,7 @@ import { useMemo } from "react";
 import InfiniteScroll from "react-infinite-scroll-component";
 
 import {
+  ActivityCard,
   RecCard,
   RecCardSkeleton,
 } from "@recnet/recnet-web/components/RecCard";
@@ -17,7 +18,7 @@ export function HistoricalRecs(props: { userId: string }) {
   const { userId } = props;
 
   const { data, isPending, fetchNextPage, hasNextPage } =
-    trpc.getHistoricalRecs.useInfiniteQuery(
+    trpc.getActivities.useInfiniteQuery(
       {
         userId,
         pageSize: PAGE_SIZE,
@@ -33,12 +34,12 @@ export function HistoricalRecs(props: { userId: string }) {
       }
     );
 
-  const recs = useMemo(() => {
+  const activities = useMemo(() => {
     if (!data) {
       return [];
     }
     return getDataFromInfiniteQuery(data, (page) => {
-      return page.recs;
+      return page.activities;
     });
   }, [data]);
 
@@ -54,7 +55,7 @@ export function HistoricalRecs(props: { userId: string }) {
 
   return (
     <div className="flex my-6">
-      {recs.length === 0 ? (
+      {activities.length === 0 ? (
         <div className="h-[150px] w-full flex justify-center items-center">
           <Text size="3" className="text-gray-10">
             No recommendations yet.
@@ -62,7 +63,7 @@ export function HistoricalRecs(props: { userId: string }) {
         </div>
       ) : (
         <InfiniteScroll
-          dataLength={recs.length}
+          dataLength={activities.length}
           next={fetchNextPage}
           hasMore={hasNextPage}
           loader={
@@ -75,8 +76,15 @@ export function HistoricalRecs(props: { userId: string }) {
           endMessage={null}
           className="flex flex-col gap-y-6"
         >
-          {recs.map((rec, idx) => {
-            return <RecCard key={`${rec.id}-${idx}`} recs={[rec]} showDate />;
+          {activities.map((activity, idx) => {
+            // return <RecCard key={`${rec.id}-${idx}`} recs={[rec]} showDate />;
+            return (
+              <ActivityCard
+                key={`${activity.data.id}-${idx}`}
+                activity={activity}
+                showDate
+              />
+            );
           })}
         </InfiniteScroll>
       )}

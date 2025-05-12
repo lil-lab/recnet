@@ -28,6 +28,7 @@ import { getLatestCutOff } from "@recnet/recnet-date-fns";
 import {
   getRecsFeedsParamsSchema,
   getRecsParamsSchema,
+  getActivitiesParamsSchema,
 } from "@recnet/recnet-api-model";
 
 import { GetActivitiesResponse, GetFeedsResponse } from "./activity.response";
@@ -42,7 +43,7 @@ export class ActivityController {
   constructor(private readonly activityService: ActivityService) {}
 
   @ApiOperation({
-    summary: "Get historical activities of a single user",
+    summary: "Get activities of a user",
     description:
       "Get historical activities of a single user identified by userId with pagination.",
   })
@@ -50,7 +51,7 @@ export class ActivityController {
   @ApiBearerAuth()
   @Get()
   @Auth()
-  @UsePipes(new ZodValidationQueryPipe(getRecsParamsSchema))
+  @UsePipes(new ZodValidationQueryPipe(getActivitiesParamsSchema))
   public async getActivities(
     @Query() dto: QueryActivitiesDto,
     @User() authUser: AuthUser

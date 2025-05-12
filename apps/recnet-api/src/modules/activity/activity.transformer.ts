@@ -9,5 +9,6 @@ export const transformReaction = (dbReaction: DbReaction): Reaction => {
     ...dbReaction, // id, userId, reaction: ReactionType
     createdAt: dbReaction.createdAt.toISOString(),
     recommendation: transformRec(dbReaction.recommendation),
+    userId: dbReaction.user.id,
   };
 };

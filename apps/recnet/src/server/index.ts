@@ -1,3 +1,4 @@
+import { activitiesRouter } from "./routers/activities";
 import { announcementRouter } from "./routers/announcement";
 import { articleRouter } from "./routers/article";
 import { inviteCodeRouter } from "./routers/inviteCode";
@@ -16,7 +17,8 @@ export const appRouter = mergeRouters(
   articleRouter,
   announcementRouter,
   subscriptionRouter,
-  statRouter
+  statRouter,
+  activitiesRouter
 );
 
 export type AppRouter = typeof appRouter;

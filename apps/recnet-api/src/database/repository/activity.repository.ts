@@ -5,6 +5,7 @@ import PrismaConnectionProvider from "@recnet-api/database/prisma/prisma.connect
 import {
   Activity,
   ActivityFilterBy,
+  DateRange,
   reaction,
   Reaction,
 } from "@recnet-api/database/repository/activity.repository.type";
@@ -19,7 +20,7 @@ export default class ActivityRepository {
   public async findActivities(
     page: number,
     pageSize: number,
-    filter: ActivityFilterBy
+    filter: ActivityFilterBy = {}
   ): Promise<Activity[]> {
     // Get recommendations
     const recs = await this.prisma.recommendation.findMany({
@@ -36,13 +37,13 @@ export default class ActivityRepository {
 
     // Combine and transform results
     const activities: Activity[] = [
-      ...recs.map((rec) => ({
-        type: "rec" as const,
+      ...recs.map((rec: Rec) => ({
+        type: "REC" as const,
         timestamp: rec.cutoff,
         data: rec,
       })),
-      ...reactions.map((reaction) => ({
-        type: "reaction" as const,
+      ...reactions.map((reaction: Reaction) => ({
+        type: "REACTION" as const,
         timestamp: reaction.createdAt,
         data: reaction,
       })),
@@ -68,13 +69,14 @@ export default class ActivityRepository {
   }
 
   private transformRecFilterByToPrismaWhere(
-    filter: RecFilterBy
+    filter: ActivityFilterBy = {}
   ): Prisma.RecommendationWhereInput {
     const where: Prisma.RecommendationWhereInput = {};
+
     if (filter.userId) {
       where.userId = filter.userId;
     }
-    if (filter.userIds) {
+    if (filter.userIds && filter.userIds.length > 0) {
       where.userId = { in: filter.userIds };
     }
 
@@ -97,7 +99,7 @@ export default class ActivityRepository {
     if (filter.userId) {
       where.userId = filter.userId;
     }
-    if (filter.userIds) {
+    if (filter.userIds && filter.userIds.length > 0) {
       where.userId = { in: filter.userIds };
     }
 

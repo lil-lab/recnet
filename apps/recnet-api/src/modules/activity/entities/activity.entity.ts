@@ -22,7 +22,7 @@ export class Reaction {
 
 export class Activity {
   @ApiProperty()
-  type: "rec" | "reaction";
+  type: "REC" | "REACTION";
 
   @ApiProperty()
   timestamp: Date;

@@ -11,7 +11,7 @@ import { cn } from "@recnet/recnet-web/utils/cn";
 import { numToMonth } from "@recnet/recnet-date-fns";
 import { formatDate } from "@recnet/recnet-date-fns";
 
-import { Rec } from "@recnet/recnet-api-model";
+import { Rec, Activity, Reaction } from "@recnet/recnet-api-model";
 
 import { LinkCopyButton } from "./LinkCopyButton";
 import { SelfRecBadge } from "./SelfRecBadge";
@@ -168,6 +168,155 @@ export function RecCard(props: { recs: Rec[]; showDate?: boolean }) {
           </Flex>
         );
       })}
+    </div>
+  );
+}
+
+export function ActivityCard(props: {
+  activity: Activity;
+  showDate?: boolean;
+}) {
+  const { activity, showDate = false } = props;
+
+  if (activity.type === "REC") {
+    return <RecCard recs={[activity.data as Rec]} showDate={showDate} />;
+  }
+
+  // For reaction type activities
+  const reaction = activity.data as Reaction;
+  const rec = reaction.recommendation;
+
+  if (!rec) {
+    return null;
+  }
+
+  // Get emoji for reaction type
+  const reactionEmoji = (() => {
+    switch (reaction.reaction) {
+      case "THUMBS_UP":
+        return "👍";
+      case "THINKING":
+        return "🤔";
+      case "SURPRISED":
+        return "😮";
+      case "CRYING":
+        return "😢";
+      case "STARRY_EYES":
+        return "🤩";
+      case "MINDBLOWN":
+        return "🤯";
+      case "EYES":
+        return "👀";
+      case "ROCKET":
+        return "🚀";
+      case "HEART":
+        return "❤️";
+      case "PRAY":
+        return "🙏";
+      case "PARTY":
+        return "🎉";
+      default:
+        return "👍";
+    }
+  })();
+
+  return (
+    <div
+      className={cn(
+        "flex",
+        "flex-col",
+        "p-3",
+        "gap-y-2",
+        "border-[1px]",
+        "border-gray-6",
+        "rounded-[8px]",
+        "shadow-2"
+      )}
+    >
+      <Flex className="items-center gap-x-2 px-4 py-2 text-gray-10">
+        <Avatar user={reaction.user} className="w-[40px] aspect-square" />
+        <Text size="3">
+          {reaction.user.displayName} reacted {reactionEmoji}
+        </Text>
+      </Flex>
+
+      <a
+        href={rec.article.link}
+        target="_blank"
+        rel="noreferrer"
+        className="group"
+      >
+        <Flex
+          direction={"column"}
+          className={cn("p-3", "gap-y-2", "bg-gray-2", "rounded-2")}
+        >
+          <Text size="4" className="text-accent-10 font-medium">
+            {rec.article.title}
+          </Text>
+          <Text size="1" className="text-gray-9">
+            {rec.article.author}
+          </Text>
+          <Flex className="items-center justify-between p-1">
+            <Flex className="items-center gap-x-2 text-gray-9">
+              <CalendarIcon width={14} height={14} />
+              <Text size="1">{`${!rec.article.month ? "" : `${numToMonth[rec.article.month]}, `}${rec.article.year}`}</Text>
+              {rec.article.isVerified ? (
+                <Tooltip content="This article comes from trusted sources.">
+                  <div className="flex items-center gap-x-1 cursor-pointer mx-2">
+                    <CheckCircledIcon width={14} height={14} />
+                    <Text size="1">Verified</Text>
+                  </div>
+                </Tooltip>
+              ) : null}
+            </Flex>
+            <Flex className="items-center gap-x-1 text-accent-10">
+              <Text size="1">Read</Text>{" "}
+              <ChevronRight
+                size="14"
+                className="relative left-0 group-hover:left-[4px] transition-all duration-200 ease-in-out"
+              />
+            </Flex>
+          </Flex>
+        </Flex>
+      </a>
+
+      <Flex className="items-start gap-x-3 px-4 py-2">
+        <Avatar user={rec.user} className="w-[40px] aspect-square" />
+        <Flex className="flex flex-col gap-y-1">
+          <Flex className="items-center gap-x-2">
+            <RecNetLink
+              href={`/${rec.user.handle}`}
+              radixLinkProps={{
+                size: "2",
+              }}
+            >
+              <Text size="2">{rec.user.displayName}</Text>
+            </RecNetLink>
+            {showDate ? (
+              <Text
+                size="1"
+                className="text-gray-9"
+                weight="medium"
+              >{` recommended on ${formatDate(new Date(rec.cutoff))}`}</Text>
+            ) : null}
+            {rec.isSelfRec ? <SelfRecBadge /> : null}
+            <LinkCopyButton link={getSharableLink(rec)} />
+          </Flex>
+          <Link
+            href={getSharableLink(rec)}
+            className="hover:bg-gray-2 rounded-4 transition-all ease-in-out"
+          >
+            <Flex>
+              <Text size="2" className="text-gray-10">
+                {rec.description}
+              </Text>
+            </Flex>
+          </Link>
+          <div className="mt-2">
+            <RecReactionsList id={rec.id} />
+          </div>
+        </Flex>
+      </Flex>
     </div>
   );
 }

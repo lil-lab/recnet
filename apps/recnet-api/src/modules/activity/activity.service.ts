@@ -75,7 +75,7 @@ export class ActivityService {
     return {
       hasNext: activities.length + getOffset(page, pageSize) < activityCount,
       activities: activities.map((activity) => {
-        if (activity.type === "rec") {
+        if (activity.type === "REC") {
           return {
             ...activity,
             data: transformRec(activity.data as DbRec, authUserId),
@@ -122,7 +122,7 @@ export class ActivityService {
     return {
       hasNext: activities.length + getOffset(page, pageSize) < activityCount,
       activities: activities.map((activity) => {
-        if (activity.type === "rec") {
+        if (activity.type === "REC") {
           return {
             ...activity,
             data: transformRec(activity.data as DbRec, userId),
