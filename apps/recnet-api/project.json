@@ -58,7 +58,7 @@
       "options": {
         "commands": [
           {
-            "command": "pnpx prisma generate --schema=apps/recnet-api/prisma/schema.prisma",
+            "command": "pnpm prisma generate --schema=apps/recnet-api/prisma/schema.prisma",
             "forwardAllArgs": false
           }
         ],

@@ -3,6 +3,8 @@ import { z } from "zod";
 import {
   getActivitiesParamsSchema,
   getActivitiesResponseSchema,
+  getActivitiesFeedsParamsSchema,
+  getActivitiesFeedsResponseSchema,
 } from "@recnet/recnet-api-model";
 
 import {
@@ -32,5 +34,24 @@ export const activitiesRouter = router({
         },
       });
       return getActivitiesResponseSchema.parse(data);
+    }),
+  getActivitiesFeeds: checkRecnetJWTProcedure
+    .input(
+      z.object({
+        userId: z.string(),
+        cursor: z.number(),
+        pageSize: z.number(),
+      })
+    )
+    .output(getActivitiesFeedsResponseSchema)
+    .query(async (opts) => {
+      const { userId, cursor: page, pageSize } = opts.input;
+      const { recnetApi } = opts.ctx;
+      const { data } = await recnetApi.get("/activities/feeds", {
+        params: {
+          ...getActivitiesFeedsParamsSchema.parse({ userId, page, pageSize }),
+        },
+      });
+      return getActivitiesFeedsResponseSchema.parse(data);
     }),
 });

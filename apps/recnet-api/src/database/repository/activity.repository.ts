@@ -5,13 +5,16 @@ import PrismaConnectionProvider from "@recnet-api/database/prisma/prisma.connect
 import {
   Activity,
   ActivityFilterBy,
-  DateRange,
   reaction,
   Reaction,
 } from "@recnet-api/database/repository/activity.repository.type";
 import { getOffset } from "@recnet-api/utils";
 
-import { rec, Rec, RecFilterBy } from "./rec.repository.type";
+import { rec, Rec } from "./rec.repository.type";
+
+// Constants for query optimization
+const QUERY_MULTIPLIER = 3; // Query pageSize * multiplier records to ensure pagination accuracy
+const MAX_QUERY_LIMIT = 500; // Hard limit to prevent excessive memory usage
 
 @Injectable()
 export default class ActivityRepository {
@@ -22,17 +25,24 @@ export default class ActivityRepository {
     pageSize: number,
     filter: ActivityFilterBy = {}
   ): Promise<Activity[]> {
-    // Get recommendations
+    // Calculate query limit: fetch more records than needed to ensure pagination accuracy
+    // after merging recs and reactions, but cap at MAX_QUERY_LIMIT to prevent excessive memory usage
+    const queryLimit = Math.min(pageSize * QUERY_MULTIPLIER, MAX_QUERY_LIMIT);
+
+    // Get recommendations with database-level sorting and limit
     const recs = await this.prisma.recommendation.findMany({
       where: this.transformRecFilterByToPrismaWhere(filter),
       select: rec.select,
+      orderBy: { cutoff: Prisma.SortOrder.desc },
+      take: queryLimit,
     });
-    // consider setting an upper bound for the number of records to get.
-    // e.g: currently on page 5, page_size: 10, consider max return size of 4 pages: 40 records.
-    // Get reactions
+
+    // Get reactions with database-level sorting and limit
     const reactions = await this.prisma.recReaction.findMany({
       where: this.transformReactionFilterByToPrismaWhere(filter),
       select: reaction.select,
+      orderBy: { createdAt: Prisma.SortOrder.desc },
+      take: queryLimit,
     });
 
     // Combine and transform results
@@ -49,7 +59,8 @@ export default class ActivityRepository {
       })),
     ];
 
-    // Sort by timestamp in descending order
+    // Sort by timestamp in descending order (final merge sort)
+    // Note: This is still needed because we're merging two sorted lists
     activities.sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime());
 
     // Apply pagination

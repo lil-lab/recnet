@@ -94,24 +94,18 @@ export class ActivityService {
    * Get feeds for a single user
    * @param page Page number for pagination
    * @param pageSize Number of items per page
-   * @param cutoff Cutoff date for activities
    * @param userId User ID whose feeds are being fetched
    * @returns Combined feeds response with pagination
    */
   public async getFeeds(
     page: number,
     pageSize: number,
-    cutoff: number,
     userId: string
   ): Promise<GetFeedsResponse> {
-    if (cutoff !== getCutOff(new Date(cutoff)).getTime()) {
-      throw new RecnetError(ErrorCode.INVALID_CUTOFF, HttpStatus.BAD_REQUEST);
-    }
     const user = await this.userRepository.findUserById(userId);
     const followings = user.following.map((following) => following.followingId);
     const filter: ActivityFilterBy = {
       userIds: followings,
-      cutoff: new Date(cutoff),
     };
     const activityCount = await this.activityRepository.countActivities(filter);
     const activities = await this.activityRepository.findActivities(

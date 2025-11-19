@@ -235,9 +235,8 @@ export function ActivityCard(props: {
     >
       <Flex className="items-center gap-x-2 px-4 py-2 text-gray-10">
         <Avatar user={reaction.user} className="w-[40px] aspect-square" />
-        <Text size="3">
-          {reaction.user.displayName} reacted {reactionEmoji}
-        </Text>
+        <Text size="3">{reaction.user.displayName} reacted</Text>
+        <Text size="6">{reactionEmoji}</Text>
       </Flex>
 
       <a

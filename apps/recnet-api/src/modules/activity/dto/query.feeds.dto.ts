@@ -1,4 +1,4 @@
-import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
+import { ApiProperty } from "@nestjs/swagger";
 
 export class QueryFeedsDto {
   @ApiProperty({
@@ -16,9 +16,8 @@ export class QueryFeedsDto {
   })
   pageSize: number;
 
-  @ApiPropertyOptional({
-    description:
-      "Cutoff timestamp. It not specified, it will use the latest cycle cutoff timestamp from the current date. The timestamp is in milliseconds and the time should be 11:59:59.999 PM, Tuesday.",
+  @ApiProperty({
+    description: "The id of the user whose activities are being retrieved.",
   })
-  cutoff?: number;
+  userId: string;
 }

@@ -117,6 +117,8 @@ model Recommendation {
   user      User          @relation(fields: [userId], references: [id]) // User who made the recommendation
   article   Article       @relation(fields: [articleId], references: [id]) // Article being recommended
   reactions RecReaction[]
+
+  @@index([userId, cutoff])
 }
 
 model Article {
@@ -183,6 +185,7 @@ model RecReaction {
   recommendation Recommendation @relation(fields: [recId], references: [id])
 
   @@unique([userId, recId, reaction])
+  @@index([userId, createdAt])
 }
 
 model Subscription {

@@ -84,8 +84,7 @@ export class ActivityController {
     @User() authUser: AuthUser
   ): Promise<GetFeedsResponse> {
     const { page, pageSize, ...rest } = dto;
-    const cutoff = rest?.cutoff ?? getLatestCutOff().getTime();
     const { userId } = authUser;
-    return this.activityService.getFeeds(page, pageSize, cutoff, userId);
+    return this.activityService.getFeeds(page, pageSize, userId);
   }
 }
