@@ -72,8 +72,11 @@ export class ActivityService {
     // Get total count for pagination
     const activityCount = await this.activityRepository.countActivities(filter);
 
+    const offset = getOffset(page, pageSize);
+    const hasNextByCount = activities.length + offset < activityCount;
+
     return {
-      hasNext: activities.length + getOffset(page, pageSize) < activityCount,
+      hasNext: activities.length > 0 && hasNextByCount,
       activities: activities.map((activity) => {
         if (activity.type === "REC") {
           return {
