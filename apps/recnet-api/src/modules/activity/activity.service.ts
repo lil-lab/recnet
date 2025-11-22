@@ -2,7 +2,6 @@ import { HttpStatus, Inject, Injectable } from "@nestjs/common";
 
 import ActivityRepository from "@recnet-api/database/repository/activity.repository";
 import {
-  Activity,
   ActivityFilterBy,
   Reaction as DbReaction,
 } from "@recnet-api/database/repository/activity.repository.type";
@@ -12,8 +11,6 @@ import UserRepository from "@recnet-api/database/repository/user.repository";
 import { getOffset } from "@recnet-api/utils";
 import { RecnetError } from "@recnet-api/utils/error/recnet.error";
 import { ErrorCode } from "@recnet-api/utils/error/recnet.error.const";
-
-import { getCutOff } from "@recnet/recnet-date-fns";
 
 import { GetActivitiesResponse, GetFeedsResponse } from "./activity.response";
 import { transformReaction } from "./activity.transformer";
@@ -116,8 +113,10 @@ export class ActivityService {
       pageSize,
       filter
     );
+    const offset = getOffset(page, pageSize);
+    const hasNextByCount = activities.length + offset < activityCount;
     return {
-      hasNext: activities.length + getOffset(page, pageSize) < activityCount,
+      hasNext: activities.length > 0 && hasNextByCount,
       activities: activities.map((activity) => {
         if (activity.type === "REC") {
           return {

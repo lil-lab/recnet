@@ -27,7 +27,8 @@ export default class ActivityRepository {
   ): Promise<Activity[]> {
     // Calculate query limit: fetch more records than needed to ensure pagination accuracy
     // after merging recs and reactions, but cap at MAX_QUERY_LIMIT to prevent excessive memory usage
-    const queryLimit = Math.min(pageSize * QUERY_MULTIPLIER, MAX_QUERY_LIMIT);
+    const dynamicLimit = Math.max(page * pageSize, pageSize * QUERY_MULTIPLIER);
+    const queryLimit = Math.min(dynamicLimit, MAX_QUERY_LIMIT);
 
     // Get recommendations with database-level sorting and limit
     const recs = await this.prisma.recommendation.findMany({

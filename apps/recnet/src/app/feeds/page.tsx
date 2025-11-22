@@ -1,16 +1,17 @@
 "use client";
 
 import { Text } from "@radix-ui/themes";
-import groupBy from "lodash.groupby";
 import { useRouter } from "next/navigation";
 import { useMemo } from "react";
 import InfiniteScroll from "react-infinite-scroll-component";
 
-import { RecCardSkeleton } from "@recnet/recnet-web/components/RecCard";
-import { RecCard } from "@recnet/recnet-web/components/RecCard";
+import { useAuth } from "@recnet/recnet-web/app/AuthContext";
+import {
+  ActivityCard,
+  RecCardSkeleton,
+} from "@recnet/recnet-web/components/RecCard";
 import { cn } from "@recnet/recnet-web/utils/cn";
 import { getDataFromInfiniteQuery } from "@recnet/recnet-web/utils/getDataFromInfiniteQuery";
-import { notEmpty } from "@recnet/recnet-web/utils/notEmpty";
 
 import {
   getCutOff,
@@ -18,6 +19,8 @@ import {
   START_DATE,
   formatDate,
 } from "@recnet/recnet-date-fns";
+
+import { GetActivitiesFeedsResponse } from "@recnet/recnet-api-model";
 
 import { SlackOAuthModal } from "./SlackOAuthModal";
 
@@ -33,6 +36,9 @@ export default function FeedPage({
     date?: string;
   };
 }) {
+  const { user } = useAuth();
+  const userId = user?.id;
+  const queryUserId = userId ?? "";
   const date = searchParams["date"];
   const router = useRouter();
 
@@ -56,62 +62,58 @@ export default function FeedPage({
     return getCutOff(parsedDate);
   }, [date, router]);
 
-  const { data, isPending, hasNextPage, fetchNextPage } =
-    trpc.getFeeds.useInfiniteQuery(
-      {
-        cutoff: cutoff.getTime(),
-        pageSize: PAGE_SIZE,
+  const renderLoadingState = () => (
+    <div
+      className={cn(
+        "w-[80%]",
+        "md:w-[65%]",
+        "flex",
+        "flex-col",
+        "gap-y-4",
+        "mx-auto",
+        "py-12"
+      )}
+    >
+      {Array.from({ length: 5 }).map((_, idx) => {
+        return <RecCardSkeleton key={idx} />;
+      })}
+    </div>
+  );
+
+  const {
+    data,
+    isPending,
+    hasNextPage = false,
+    fetchNextPage,
+  } = trpc.getActivitiesFeeds.useInfiniteQuery(
+    {
+      userId: queryUserId,
+      pageSize: PAGE_SIZE,
+    },
+    {
+      getNextPageParam: (
+        lastPage: GetActivitiesFeedsResponse,
+        allPages: GetActivitiesFeedsResponse[]
+      ) => {
+        if (!lastPage.hasNext) {
+          return null;
+        }
+        return allPages.length + 1;
       },
-      {
-        getNextPageParam: (lastPage, allPages) => {
-          if (!lastPage.hasNext) {
-            return null;
-          }
-          return allPages.length + 1;
-        },
-        initialCursor: 1,
-      }
-    );
-  const recs = useMemo(() => {
+      initialCursor: 1,
+    } as Parameters<typeof trpc.getActivitiesFeeds.useInfiniteQuery>[1]
+  );
+  const activities = useMemo(() => {
     if (!data) {
       return [];
     }
     return getDataFromInfiniteQuery(data, (page) => {
-      return page.recs;
+      return page.activities;
     });
   }, [data]);
 
-  const recsGroupByTitle = useMemo(
-    () =>
-      groupBy(recs, (rec) => {
-        const titleLowercase = rec.article.title.toLowerCase();
-        const words = titleLowercase
-          .split(" ")
-          .filter((w) => w.length > 0)
-          .filter(notEmpty);
-        return words.join("");
-      }),
-    [recs]
-  );
-
-  if (isPending) {
-    return (
-      <div
-        className={cn(
-          "w-[80%]",
-          "md:w-[65%]",
-          "flex",
-          "flex-col",
-          "gap-y-4",
-          "mx-auto",
-          "py-12"
-        )}
-      >
-        {Array.from({ length: 5 }).map((_, idx) => {
-          return <RecCardSkeleton key={idx} />;
-        })}
-      </div>
-    );
+  if (isPending || !userId) {
+    return renderLoadingState();
   }
 
   return (
@@ -128,7 +130,7 @@ export default function FeedPage({
     >
       <SlackOAuthModal />
       <OnboardingDialog />
-      {Object.keys(recsGroupByTitle).length > 0 ? (
+      {activities.length > 0 ? (
         <>
           <div className="w-full mb-2 hidden md:flex flex-row justify-start">
             <Text size="1" className="text-gray-10">
@@ -136,22 +138,27 @@ export default function FeedPage({
             </Text>
           </div>
           <InfiniteScroll
-            dataLength={Object.keys(recsGroupByTitle).length}
+            dataLength={activities.length}
             next={fetchNextPage}
             hasMore={hasNextPage}
             loader={<RecCardSkeleton />}
             className="flex flex-col gap-y-4"
           >
-            {Object.keys(recsGroupByTitle).map((recTitle, idx) => {
-              const recs = recsGroupByTitle[recTitle];
-              return <RecCard key={`${recTitle}-${idx}`} recs={recs} />;
+            {activities.map((activity, idx) => {
+              return (
+                <ActivityCard
+                  key={`${activity.data.id}-${idx}`}
+                  activity={activity}
+                  showDate
+                />
+              );
             })}
           </InfiniteScroll>
         </>
       ) : (
         <div className="h-[150px] w-full flex justify-center items-center">
           <Text size="3" className="text-gray-10">
-            No recommendations from your network on {formatDate(cutoff)}.
+            No activities from your network on {formatDate(cutoff)}.
           </Text>
         </div>
       )}
