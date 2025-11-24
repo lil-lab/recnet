@@ -2,7 +2,7 @@
 
 import { Text } from "@radix-ui/themes";
 import { useRouter } from "next/navigation";
-import { useMemo } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import InfiniteScroll from "react-infinite-scroll-component";
 
 import { useAuth } from "@recnet/recnet-web/app/AuthContext";
@@ -85,6 +85,7 @@ export default function FeedPage({
     isPending,
     hasNextPage = false,
     fetchNextPage,
+    isFetchingNextPage,
   } = trpc.getActivitiesFeeds.useInfiniteQuery(
     {
       userId: queryUserId,
@@ -112,6 +113,76 @@ export default function FeedPage({
     });
   }, [data]);
 
+  const cycleRefs = useRef<Map<number, HTMLDivElement | null>>(new Map());
+
+  const activitiesWithCycleHeaders = useMemo(() => {
+    const items: JSX.Element[] = [];
+    let lastCycleTs: number | null = null;
+    cycleRefs.current.clear();
+
+    activities.forEach((activity, idx) => {
+      const timestamp = new Date(activity.timestamp);
+      if (!Number.isNaN(timestamp.getTime())) {
+        const cycleDate = getCutOff(timestamp);
+        const cycleTs = cycleDate.getTime();
+        if (lastCycleTs !== cycleTs) {
+          const isFirstCycle = lastCycleTs === null;
+          items.push(
+            <div
+              key={`cycle-${cycleTs}`}
+              className={cn(
+                "w-full mb-2 flex flex-row justify-start",
+                isFirstCycle ? "mt-0" : "mt-6"
+              )}
+              ref={(node) => {
+                if (node) {
+                  cycleRefs.current.set(cycleTs, node);
+                } else {
+                  cycleRefs.current.delete(cycleTs);
+                }
+              }}
+            >
+              <Text size="1" className="text-gray-10">
+                Cycle: {formatDate(cycleDate)}
+              </Text>
+            </div>
+          );
+          lastCycleTs = cycleTs;
+        }
+      }
+
+      items.push(
+        <ActivityCard
+          key={`${activity.data.id}-${idx}`}
+          activity={activity}
+          showDate
+        />
+      );
+    });
+
+    return items;
+  }, [activities]);
+
+  useEffect(() => {
+    if (!activities.length) {
+      return;
+    }
+    const targetCycle = cycleRefs.current.get(cutoff.getTime());
+    if (targetCycle) {
+      targetCycle.scrollIntoView({ behavior: "smooth", block: "start" });
+      return;
+    }
+    if (hasNextPage && !isFetchingNextPage) {
+      fetchNextPage();
+    }
+  }, [
+    activities.length,
+    cutoff,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+  ]);
+
   if (isPending || !userId) {
     return renderLoadingState();
   }
@@ -132,11 +203,6 @@ export default function FeedPage({
       <OnboardingDialog />
       {activities.length > 0 ? (
         <>
-          <div className="w-full mb-2 hidden md:flex flex-row justify-start">
-            <Text size="1" className="text-gray-10">
-              Current cycle: {formatDate(cutoff)}
-            </Text>
-          </div>
           <InfiniteScroll
             dataLength={activities.length}
             next={fetchNextPage}
@@ -144,15 +210,7 @@ export default function FeedPage({
             loader={<RecCardSkeleton />}
             className="flex flex-col gap-y-4"
           >
-            {activities.map((activity, idx) => {
-              return (
-                <ActivityCard
-                  key={`${activity.data.id}-${idx}`}
-                  activity={activity}
-                  showDate
-                />
-              );
-            })}
+            {activitiesWithCycleHeaders}
           </InfiniteScroll>
         </>
       ) : (

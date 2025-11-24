@@ -250,7 +250,7 @@ export function LeftPanel() {
                     width: "450px",
                   }}
                 />
-                {/* <CutoffDatePicker currentSelectedCutoff={cutoff} /> */}
+                <CutoffDatePicker currentSelectedCutoff={cutoff} />
               </div>
             </motion.div>
           )}

@@ -76,6 +76,7 @@ export function CutoffDatePicker(props: CutoffDatePickerProps) {
           value={currentSelectedCutoff}
           onChange={onDateChange}
           shouldDisable={shouldDisable}
+          stepDays={7}
           renderTrigger={() => (
             <Button variant="ghost" className="w-fit cursor-pointer" size="1">
               More

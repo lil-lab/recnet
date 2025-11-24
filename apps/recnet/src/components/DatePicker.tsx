@@ -17,6 +17,8 @@ import {
   monthValMap,
 } from "@recnet/recnet-date-fns";
 
+const DAY_IN_MS = 24 * 60 * 60 * 1000;
+
 function getWeekDay(date: Date) {
   return Intl.DateTimeFormat("default", {
     weekday: "short",
@@ -128,6 +130,7 @@ interface DatePickerProps {
   mode?: "date" | "datetime";
   shouldDisable?: (date: Date) => boolean;
   popoverContentProps?: React.ComponentProps<typeof Popover.Content>;
+  stepDays?: number;
 }
 
 /**
@@ -149,6 +152,7 @@ export function DatePicker(props: DatePickerProps) {
     mode = "date",
     shouldDisable = () => false,
     popoverContentProps = {},
+    stepDays,
   } = props;
   const [isOpen, setIsOpen] = useState(false);
   const [view, setView] = useState<View>("default");
@@ -171,6 +175,28 @@ export function DatePicker(props: DatePickerProps) {
   for (let i = startYear - 10; i <= now.getFullYear() + 10; i++) {
     years.push(i);
   }
+
+  const handleNavigate = (direction: "previous" | "next") => {
+    if (stepDays) {
+      const currentValue = new Date(value);
+      const deltaDays = direction === "next" ? stepDays : -stepDays;
+      const targetDate = new Date(
+        currentValue.getTime() + deltaDays * DAY_IN_MS
+      );
+      if (shouldDisable(targetDate)) {
+        return;
+      }
+      navigation.setDate(targetDate);
+      onChange(targetDate);
+      return;
+    }
+
+    if (direction === "next") {
+      navigation.toNext();
+    } else {
+      navigation.toPrev();
+    }
+  };
 
   return (
     <Popover.Root
@@ -216,7 +242,7 @@ export function DatePicker(props: DatePickerProps) {
                 variant="ghost"
                 className="mr-auto cursor-pointer"
                 onClick={() => {
-                  navigation.toPrev();
+                  handleNavigate("previous");
                 }}
               >
                 Previous
@@ -255,7 +281,7 @@ export function DatePicker(props: DatePickerProps) {
                 variant="ghost"
                 className=" ml-auto cursor-pointer"
                 onClick={() => {
-                  navigation.toNext();
+                  handleNavigate("next");
                 }}
               >
                 Next
@@ -281,7 +307,7 @@ export function DatePicker(props: DatePickerProps) {
                       <table className="table-fixed border-separate border-spacing-2 w-full">
                         <thead>
                           <tr>
-                            {headers.weekDays.map(({ key, value }) => {
+                            {headers.weekdays.map(({ key, value }) => {
                               return (
                                 <th
                                   key={key}
