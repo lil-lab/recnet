@@ -166,6 +166,12 @@ export function DatePicker(props: DatePickerProps) {
     navigation,
   } = useCalendar();
 
+  // Handle API inconsistency: @h6s/calendar may use weekdays or weekDays depending on version
+  // Runtime check to ensure compatibility across different environments
+  const weekDays = 'weekDays' in headers 
+    ? (headers as { weekDays: typeof headers.weekdays }).weekDays
+    : headers.weekdays;
+
   const tableCellBaseClass = "font-[12px] text-gray-9 px-1";
 
   // get years from START_DATE to current year +- 10
@@ -307,7 +313,7 @@ export function DatePicker(props: DatePickerProps) {
                       <table className="table-fixed border-separate border-spacing-2 w-full">
                         <thead>
                           <tr>
-                            {headers.weekdays.map(({ key, value }) => {
+                            {weekDays.map(({ key, value }) => {
                               return (
                                 <th
                                   key={key}
